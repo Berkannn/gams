@@ -1,2 +1,5 @@
 *.so
 *.o
+Makefile
+*algorithm*.txt
+*.csv
