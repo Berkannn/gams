@@ -1,0 +1,5 @@
+
+workspace {
+  cmdline += -feature_file $SMASH_ROOT/DroneController/default.features
+  DroneController.mpc
+}

@@ -1,4 +1,3 @@
-
 project (V-RepMadaraSystemControllerSimplePlugin) : using_ace, using_madara, using_vrep_plugin, using_kb_setup, using_utilities, using_sc_api {
 
   sharedname = v_repExtMadaraSystemControllerSimplePlugin

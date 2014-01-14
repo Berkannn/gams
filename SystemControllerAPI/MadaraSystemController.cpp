@@ -6,9 +6,12 @@
  *********************************************************************/
 
 #include "MadaraSystemController.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
 
-#include "kb_setup.h"
 #include "CommonMadaraVariables.h"
+#include "kb_setup.h"
+#include "transport_vrep.h"
+#include "transport_ardrone2.h"
 #include "string_utils.h"
 
 #include <map>
@@ -19,7 +22,7 @@ using namespace SMASH::Utilities;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Constructor, sets up a Madara knowledge base and basic values.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-MadaraController::MadaraController(int id, Madara::Transport::Types transportType)
+MadaraController::MadaraController(int id, std::string platform)
 {
     // Start the counter at 0.
     m_regionId = 0;
@@ -31,8 +34,26 @@ MadaraController::MadaraController(int id, Madara::Transport::Types transportTyp
     MADARA_debug_level = 1;
     bool enableLogging = true;
 
-    // Get a proper simulation knowledge base.
-    m_knowledge = setup_knowledge_base(id, enableLogging, transportType);
+    // Create the knowledge base.
+    m_knowledge = new Madara::Knowledge_Engine::Knowledge_Base();
+
+    // Get the transport(s).
+    std::vector<Madara::Transport::Base*> transports;
+    if(platform == "vrep")
+    {
+      Madara::Transport::Multicast_Transport* vrepTransport = 
+        get_vrep_multicast_transport(id, m_knowledge);
+      transports.push_back(vrepTransport);
+    }
+    else if(platform == "ardrone2")
+    {
+      Madara::Transport::Broadcast_Transport* ardroneTransport = 
+        get_ardrone2_broadcast_transport(id, m_knowledge);
+      transports.push_back(ardroneTransport);
+    }
+
+    // Setup the knowledge base.
+    setup_knowledge_base(m_knowledge, transports, id, enableLogging);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

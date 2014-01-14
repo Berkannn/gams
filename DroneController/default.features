@@ -1,0 +1,15 @@
+///============================================================================
+///
+/// @file       default.features
+///
+/// @brief      Defines features that control project builds.
+///
+/// @author     James Root
+///
+///============================================================================
+
+/// Only one of the options below can be 1. This would select the target 
+/// platform to compile to.
+soft       = 0
+ar_drone_2 = 0
+v_rep	   = 0
