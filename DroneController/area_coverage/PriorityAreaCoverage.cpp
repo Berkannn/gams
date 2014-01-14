@@ -38,7 +38,6 @@ using namespace SMASH::Utilities;
 using namespace SMASH::AreaCoverage;
 
 const std::string directions[] = {"stay", "up-left", "up", "up-right", "left", "right", "down-left", "down", "down-right"};
-int SIZE = 5;
 int globalSum = 0;
 int globalStep = 0;
 int globalAlgorithm = 0;
@@ -67,41 +66,41 @@ PriorityAreaCoverage::~PriorityAreaCoverage() {}
 Region* PriorityAreaCoverage::initialize(const Region& grid, int deviceIdx, 
     int numDrones)
 {
-	m_delta = degreesToRadians(m_delta);
-	printf("Initializing priority area coverage algorithm.\n");
-	m_cellToSearch = new Region(grid);
+    m_delta = degreesToRadians(m_delta);
+    printf("Initializing priority area coverage algorithm.\n");
+    m_cellToSearch = new Region(grid);
 
-	m_id = deviceIdx;
+    m_id = deviceIdx;
 
-	// Calculate matrix size.
-	m_width  = std::ceil( std::abs(grid.northWest.latitude - grid.southEast.latitude) / m_delta );
-	m_height = std::ceil( std::abs(grid.northWest.longitude - grid.southEast.longitude) / m_delta );
-	m_ref_lat = grid.southEast.latitude;
-	m_ref_long = grid.northWest.longitude;
+    // Calculate matrix size.
+    m_width  = std::ceil( std::abs(grid.northWest.latitude - grid.southEast.latitude) / m_delta );
+    m_height = std::ceil( std::abs(grid.northWest.longitude - grid.southEast.longitude) / m_delta );
+    m_ref_lat = grid.southEast.latitude;
+    m_ref_long = grid.northWest.longitude;
 
-	std::cout << "nw lat:  " << std::setprecision(8) << grid.northWest.latitude  << "\n";
-	std::cout << "se lat:  " << std::setprecision(8) << grid.southEast.latitude  << "\n";
-	std::cout << "nw long: " << std::setprecision(8) << grid.northWest.longitude << "\n";
-	std::cout << "se long: " << std::setprecision(8) << grid.southEast.longitude << "\n";
+    std::cout << "nw lat:  " << std::setprecision(8) << grid.northWest.latitude  << "\n";
+    std::cout << "se lat:  " << std::setprecision(8) << grid.southEast.latitude  << "\n";
+    std::cout << "nw long: " << std::setprecision(8) << grid.northWest.longitude << "\n";
+    std::cout << "se long: " << std::setprecision(8) << grid.southEast.longitude << "\n";
 
-	std::cout << "m_delta: " << m_delta << "\n";
+    std::cout << "m_delta: " << m_delta << "\n";
 
-	std::cout << "matrix width:  " << m_width  << "\n";
-	std::cout << "matrix height: " << m_height << "\n";
+    std::cout << "matrix width:  " << m_width  << "\n";
+    std::cout << "matrix height: " << m_height << "\n";
 
-	std::cout << "Algorithm:" << m_variables.get("device.0.area_coverage_requested").to_string() << "\n";
+    std::cout << "Algorithm:" << m_variables.get("device.0.area_coverage_requested").to_string() << "\n";
 
 
-	// Create Search matrix
-	m_matrix = std::vector<std::vector<int> > (m_height, std::vector<int>(m_width));
-	init(m_matrix);
+    // Create Search matrix
+    m_matrix = std::vector<std::vector<int> > (m_height, std::vector<int>(m_width));
+    init(m_matrix);
         print(m_matrix, -1, -1);
-	solveMatrix(m_matrix, numDrones, m_id);
+    solveMatrix(m_matrix, numDrones, m_id);
 
-	// Wait - time to look at data
+    // Wait - time to look at data
 //	sleep(5);
    
-	return m_cellToSearch;
+    return m_cellToSearch;
 }
 
 void PriorityAreaCoverage::solveMatrix(std::vector<std::vector<int> > &matrix, int numDrones, int myId)
@@ -110,14 +109,14 @@ void PriorityAreaCoverage::solveMatrix(std::vector<std::vector<int> > &matrix, i
 
     for (int i = 0; i < numDrones; i++)
     {
-	// initalize future move tracker
-	std::vector<std::pair<int, int> > temp;
-	temp.push_back(std::make_pair(0, 0));
-	futureMoves.push_back(temp);
+    // initalize future move tracker
+    std::vector<std::pair<int, int> > temp;
+    temp.push_back(std::make_pair(0, 0));
+    futureMoves.push_back(temp);
 
-	// start initial positions
-	std::cout << "Adding starting position for drone " << i << std::endl;
-	dronePositions.push_back(QueueObject(i, 0, 0, 0));
+    // start initial positions
+    std::cout << "Adding starting position for drone " << i << std::endl;
+    dronePositions.push_back(QueueObject(i, 0, 0, 0));
     }
 
     // sort the positions by least moved
@@ -131,8 +130,8 @@ void PriorityAreaCoverage::solveMatrix(std::vector<std::vector<int> > &matrix, i
     while (sumMatrix(matrix) > 0) 
     {
         std::pair<int, int> nextPosition = nextMove(matrix, temp.x, temp.y);
-	futureMoves[turn % numDrones].push_back(std::make_pair(nextPosition.first, nextPosition.second));	
-	turn++;
+    futureMoves[turn % numDrones].push_back(std::make_pair(nextPosition.first, nextPosition.second));	
+    turn++;
     }
 
     // Display future moves
@@ -165,7 +164,7 @@ std::pair<int, int> PriorityAreaCoverage::nextMove(std::vector<std::vector<int> 
 
 double PriorityAreaCoverage::distance(int x1, int y1, int x2, int y2)
 {
-  return std::sqrt((x2-x1)^2 + (y2-y1)^2);
+  return std::sqrt((double)((x2-x1)^2 + (y2-y1)^2));
 }
 
 // Calculates the next location to move to, assuming we have reached our
@@ -231,7 +230,7 @@ void PriorityAreaCoverage::init(std::vector<std::vector<int> > &matrix)
   {
     for (int i = 0; i < m_height; i++) 
     {
-	matrix[i][j] = m_searchRegion.priorityValue;
+    matrix[i][j] = m_searchRegion.priorityValue;
 //      matrix[i][j] = i;
     }
   }
@@ -264,10 +263,10 @@ std::pair<int, int> PriorityAreaCoverage::stupidSearch(std::vector<std::vector<i
   for (int j = 0; j < m_width; j++) {
     for (int i = 0; i < m_height; i++) {
       if (matrix[i][j] > maxPriority || (matrix[i][j] == maxPriority && distance(x,y,i,j) < minDistance) ) {
-	maxPriority = matrix[i][j];
-	minDistance = distance(x,y,i,j);
-	xy.first = i;
-	xy.second = j;
+    maxPriority = matrix[i][j];
+    minDistance = distance(x,y,i,j);
+    xy.first = i;
+    xy.second = j;
       }
     }
   }
@@ -275,7 +274,7 @@ std::pair<int, int> PriorityAreaCoverage::stupidSearch(std::vector<std::vector<i
 }
 
 std::pair<int, int> PriorityAreaCoverage::decreasingOrder(std::vector<std::vector<int> > matrix, int x, int y) {
-  int nextDirection;
+//  int nextDirection;
   int max = 0;
   int origX = x;
   int origY = y;

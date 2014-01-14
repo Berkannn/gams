@@ -18,7 +18,6 @@
 #include <cstdlib>
 #include <ctime> 
 #include <string>
-#include <unistd.h>
 #include <algorithm>
 #include <sstream>
 #include <cmath>
