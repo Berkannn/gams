@@ -13,8 +13,10 @@ Set objConfig = objWMIService.Get("Win32_ProcessStartup")
 objConfig.SpawnInstance_
 
 ' Setup the command line to start the drones.
-exePath = sCurPath  & "\bin"
-startCommand = "cmd.exe /K DroneControllerSimulator.exe -l 1 -i "
+Set oShell = CreateObject( "WScript.Shell" )
+gams_root=oShell.ExpandEnvironmentStrings("%GAMS_ROOT%")
+exePath = gams_root & "\DroneController"
+startCommand = "cmd.exe /K droneController.exe -l 1 -i "
 
 ' Start all drones.
 objConfig.X = 100
