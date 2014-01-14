@@ -1,19 +1,19 @@
 
 project (DroneController) : using_madara, using_ace, platforms/soft/soft, platforms/ar_drone_2/ar_drone_2, platforms/v_rep/v_rep {
 
-  exeout = $(SMASH_ROOT)/DroneController
+  exeout = $(GAMS_ROOT)/DroneController
   exename = droneController
 
-  includes += $(SMASH_ROOT)/DroneController
+  includes += $(GAMS_ROOT)/DroneController
 
   verbatim (gnuace, local) {
     CPPFLAGS += -w
   }
 
   Build_Files {
-    $(SMASH_ROOT)/DroneController/SMASH.mwc
-    $(SMASH_ROOT)/DroneController/default.features
-    $(SMASH_ROOT)/DroneController/DroneController.mpc
+    $(GAMS_ROOT)/DroneController/SMASH.mwc
+    $(GAMS_ROOT)/DroneController/default.features
+    $(GAMS_ROOT)/DroneController/DroneController.mpc
   }
 
   Source_Files {
