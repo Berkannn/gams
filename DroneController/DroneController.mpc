@@ -11,7 +11,7 @@ project (DroneController) : using_madara, using_ace, platforms/soft/soft, platfo
   }
 
   Build_Files {
-    $(GAMS_ROOT)/DroneController/SMASH.mwc
+    $(GAMS_ROOT)/DroneController/GAMS.mwc
     $(GAMS_ROOT)/DroneController/default.features
     $(GAMS_ROOT)/DroneController/DroneController.mpc
   }
