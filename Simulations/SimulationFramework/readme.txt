@@ -48,9 +48,9 @@ code they will use on a real drone, and and plugins to simulate parts of it in V
      executable folder. The communication with V-Rep is handled through a separate Madara knowledge base, and it consists
      mainly of requests to get sensor information or movement commands sent to V-Rep through Madara.
  
-     Most of the code is actually located in the DroneController/packages/madara_client 
+     All of the code is actually located in the DroneController/packages/madara_client 
      folder or the repository, and is only referenced from this project.     
-     The project itself only compiles the code in that folder including only the V-REP platform code.
+     The project itself only compiles the code in that folder, including the V-REP platform only.
      
      To execute, add the "-i" option, followed by an integer number starting from 0. 
      This indicates the id that this pseudo-drone will have. Running this in multiple
@@ -78,3 +78,14 @@ code they will use on a real drone, and and plugins to simulate parts of it in V
 	as reporting information back to them. This is done through a dedicated Madara knowledge base. This works in conjunction
 	with the code in smash-root\DroneController\platforms\v_rep\simulation_client. The code there and the plugin can be used
 	independently of the rest of the project (that is, without any systemcontroller, and with any other Drone controller).
+
+ 4. CommandLineSystemController
+ 
+    This project just includes code from the gams-cmu/CommandLineSystemController project, and compiles it for the appropriate OS being used. 
+	This is a SystemController called from the command line, which can be used to send commands to real or simulated drones. For now, it only
+	sends a predefined sequence of commands (basically takeoff, setup main parameters, and search a specific area), using the parameters
+	provided by the command line. This could be made more interactive or to support more sequences of commands.
+	
+ 5. Tester
+ 
+	This is just a dummy project used for testing particular features or bugs in isolation.
