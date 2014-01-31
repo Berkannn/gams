@@ -295,7 +295,11 @@ Madara::Knowledge_Record madaraSetupBridgeProcessing(Madara::Knowledge_Engine::F
   }
   else
   {
-    // TODO: Do something.
+    // Print an error.
+    std::stringstream sstream;
+    sstream << "madaraSetupBridgeProcessing(algo = \"" << algorithmName << "\") failed to find match\n";
+    variables.print(sstream.str(), MADARA_LOG_NONFATAL_ERROR);
+
     return Madara::Knowledge_Record(0.0);
   }
 
@@ -313,6 +317,17 @@ Madara::Knowledge_Record madaraSetupBridgeProcessing(Madara::Knowledge_Engine::F
 Madara::Knowledge_Record madaraFindPositionInBridge (Madara::Knowledge_Engine::Function_Arguments &args,
   Madara::Knowledge_Engine::Variables &variables)
 {
+  // Check that we have a valid algorithm to use.
+  if(m_selectedBridgeAlgorithm == NULL)
+  {
+    // Print an error.
+    std::stringstream sstream;
+    sstream << "madaraFindPositionInBridge: no valid algorithm has been selected.\n";
+    variables.print(sstream.str(), MADARA_LOG_NONFATAL_ERROR);
+
+    return Madara::Knowledge_Record(0.0);
+  }
+
   // Get the positions of all available drones.
   std::map<int, Position> availableDronePositions = getAvailableDronesPositions(variables);
 

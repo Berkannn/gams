@@ -67,32 +67,42 @@ MadaraController::~MadaraController()
     m_knowledge = NULL;
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Method that updates general parameters of thw swarm.
-// numberOfDrones: The number of drones in the system.
-// commRange: The communications range for the network.
-// minAltitude: The min altitude for the flying devices.
-// lineWidth: The width of a search line.
-// heightDiff: The vertical distance to leave between drones.
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-void MadaraController::updateGeneralParameters(const int& numberOfDrones, const double& commRange, const double& minAltitude, 
-                                               const double& heightDiff, const int& coverageTrackingEnabled, const int& coverageTrackingFileEnabled,
-                                               const double& thermalSensorAngle, const double& defaultPriority, const std::string& prioritizedAreas)
+void MadaraController::disseminateParameters()
 {
-    // Set up the general parameters from the class into Madara variables.
-    m_knowledge->set(MV_COMM_RANGE, commRange, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_MIN_ALTITUDE, minAltitude, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_AREA_COVERAGE_HEIGHT_DIFF, heightDiff, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_TOTAL_DEVICES_GLOBAL, (Madara::Knowledge_Record::Integer) numberOfDrones, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_COVERAGE_TRACKING_ENABLED, (Madara::Knowledge_Record::Integer) coverageTrackingEnabled, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_COVERAGE_TRACKING_FILE_ENABLED, (Madara::Knowledge_Record::Integer) coverageTrackingFileEnabled, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_THERMAL_SENSOR_ANGLE, thermalSensorAngle, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_DEFAULT_PRIORITY, defaultPriority, Madara::Knowledge_Engine::Eval_Settings(true));
-    m_knowledge->set(MV_PRIORITIZED_AREAS, prioritizedAreas, Madara::Knowledge_Engine::Eval_Settings(true));
-
-
     // This call will flush all past changes.
     m_knowledge->send_modifieds();
+}
+
+// Sets basic parameters, LOCALLY. Call to disseminateParameters is needed to share.
+void MadaraController::setParamNumDrones(const int& numberOfDrones)
+{
+    m_knowledge->set(MV_TOTAL_DEVICES_GLOBAL, (Madara::Knowledge_Record::Integer) numberOfDrones, Madara::Knowledge_Engine::Eval_Settings(true));
+}
+
+void MadaraController::setParamCommRange(const double& commRange)
+{
+    m_knowledge->set(MV_COMM_RANGE, commRange, Madara::Knowledge_Engine::Eval_Settings(true));
+}
+
+void MadaraController::setParamMinAltitude(const double& minAltitude)
+{
+    m_knowledge->set(MV_MIN_ALTITUDE, minAltitude, Madara::Knowledge_Engine::Eval_Settings(true));
+}
+
+void MadaraController::setParamHeightDiff(const double& heightDiff)
+{
+    m_knowledge->set(MV_AREA_COVERAGE_HEIGHT_DIFF, heightDiff, Madara::Knowledge_Engine::Eval_Settings(true));
+}
+
+void MadaraController::setParamCoverageTracking(const int& enabled, const int& writeToFile)
+{
+    m_knowledge->set(MV_COVERAGE_TRACKING_ENABLED, (Madara::Knowledge_Record::Integer) enabled, Madara::Knowledge_Engine::Eval_Settings(true));
+    m_knowledge->set(MV_COVERAGE_TRACKING_FILE_ENABLED, (Madara::Knowledge_Record::Integer) writeToFile, Madara::Knowledge_Engine::Eval_Settings(true));
+}
+
+void MadaraController::setParamThermalSensorAngle(const double& thermalSensorAngle)
+{
+    m_knowledge->set(MV_THERMAL_SENSOR_ANGLE, thermalSensorAngle, Madara::Knowledge_Engine::Eval_Settings(true));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -114,9 +124,16 @@ void MadaraController::sendLandCommand()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Sets up all the variables required for a bridge request.
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-void MadaraController::setupBridgeRequest(int bridgeId, Region startRegion, Region endRegion)
+void MadaraController::setupBridgeRequest(int bridgeId, Region startRegion, Region endRegion, std::string bridgeAlgorithm)
 {
-    int rectangleType = 0;
+    // Set the bridge algorithm, if a specific one was given.
+    if(bridgeAlgorithm != "")
+    {
+        m_knowledge->set(MV_BRIDGE_ALGO_REQUESTED, bridgeAlgorithm,
+            Madara::Knowledge_Engine::Eval_Settings(true));
+    }
+
+    // Turn the bridge id into a string for easier processing.
     std::string bridgeIdString = NUM_TO_STR(bridgeId);
 
     // We set the total bridges to the bridge id + 1, since it starts at 0.
@@ -125,6 +142,7 @@ void MadaraController::setupBridgeRequest(int bridgeId, Region startRegion, Regi
       Madara::Knowledge_Engine::Eval_Settings(true));
 
     // Store the id of the source region for this bridge.
+    int rectangleType = 0;
     int sourceRegionId = m_regionId++;
     std::string sourceRegionIdString = NUM_TO_STR(sourceRegionId);
     m_knowledge->set(MV_BRIDGE_SOURCE_REGION_ID(bridgeIdString),
@@ -160,8 +178,23 @@ void MadaraController::setupBridgeRequest(int bridgeId, Region startRegion, Regi
       Madara::Knowledge_Engine::Eval_Settings(true));
 
     // Indicates that we are requesting a bridge.
-    // This call has no delay to flush all past changes.
-    m_knowledge->set(MV_BRIDGE_REQUESTED, (Madara::Knowledge_Record::Integer) 1.0);
+    m_knowledge->set(MV_BRIDGE_REQUESTED, (Madara::Knowledge_Record::Integer) 1.0,
+      Madara::Knowledge_Engine::Eval_Settings(true));
+
+    // This call is used to flush all past changes.
+    m_knowledge->send_modifieds();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Sets basic parameters related to prioritized search.
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+void MadaraController::setPrioritizedSearchParameters(const double& defaultPriority, const std::string& prioritizedAreas)
+{
+    m_knowledge->set(MV_DEFAULT_PRIORITY, defaultPriority, Madara::Knowledge_Engine::Eval_Settings(true));
+    m_knowledge->set(MV_PRIORITIZED_AREAS, prioritizedAreas, Madara::Knowledge_Engine::Eval_Settings(true));
+
+    // This call will flush all past changes.
+    m_knowledge->send_modifieds();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -46,17 +46,24 @@ public:
     void sendTakeoffCommand();
     void sendLandCommand();
 
-    // Sets general parameters in Madara variables.
-    void updateGeneralParameters(const int& numberOfDrones, const double& commRange, const double& minAltitude, 
-                                 const double& heightDiff, const int& coverageTrackingEnabled, const int& coverageTrackingFileEnabled,
-                                 const double& thermalSensorAngle, const double& defaultPriority, const std::string& prioritizedAreas);
+    // Sets basic parameters.
+    void setParamNumDrones(const int& numberOfDrones);
+    void setParamCommRange(const double& commRange);
+    void setParamMinAltitude(const double& minAltitude);
+    void setParamHeightDiff(const double& heightDiff);
+    void setParamCoverageTracking(const int& enabled, const int& writeToFile);
+    void setParamThermalSensorAngle(const double& thermalSensorAngle);
+
+    // This will disseminate all parameters previously set.
+    void disseminateParameters();
 
     // Bridge methods.
     void setupBridgeRequest(int bridgeId, SMASH::Utilities::Region startRegion, 
-                                          SMASH::Utilities::Region endRegion);
+                                          SMASH::Utilities::Region endRegion, std::string bridgeAlgorithm = "");
 
     // Area coverage methods.
     void setNewSearchArea(int searchAreaId, SMASH::Utilities::Region& areaBoundaries);
+    void setPrioritizedSearchParameters(const double& defaultPriority, const std::string& prioritizedAreas);
     void requestAreaCoverage(std::vector<int> droneIds, int searchAreaId, string searchAlgorithm, int wait, double lineWidth, 
                              std::string humanDetectionAlgorithm);
 

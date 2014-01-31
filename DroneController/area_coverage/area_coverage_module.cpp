@@ -334,77 +334,66 @@ void compileExpressions(Madara::Knowledge_Engine::Knowledge_Base &knowledge)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 AreaCoverage* selectAreaCoverageAlgorithm(string algorithm, Madara::Knowledge_Engine::Variables &variables)
 {
-    AreaCoverage* coverageAlgorithm = NULL;
-    if(algorithm == MO_AREA_COVERAGE_RANDOM)
-    {
-        // Use my index in the search area plus the current time as the seed for the random algorithm.
-        int myIndexInArea = (int) variables.get(MV_MY_POS_IN_MY_AREA).to_integer();
-        int seed = time(NULL) + myIndexInArea;
-        coverageAlgorithm = new RandomAreaCoverage(seed);
-    }
-    else if(algorithm == MO_AREA_COVERAGE_SNAKE)
-    {
-        double searchLineOffset = variables.get(MV_AREA_COVERAGE_LINE_WIDTH).to_double();
-        coverageAlgorithm = new SnakeAreaCoverage(Region::NORTH_WEST, searchLineOffset);
-    }
-    else if(algorithm == MO_AREA_COVERAGE_INSIDEOUT)
-    {
-        double searchLineOffset = variables.get(MV_AREA_COVERAGE_LINE_WIDTH).to_double();
-        coverageAlgorithm = new InsideOutAreaCoverage(searchLineOffset);
-    }
-    else if(algorithm == MO_AREA_COVERAGE_PRIORITY)
-    {
-        double searchLineOffset = variables.get(MV_AREA_COVERAGE_LINE_WIDTH).to_double();		// use width and height of a box
+  AreaCoverage* coverageAlgorithm = NULL;
+  if(algorithm == MO_AREA_COVERAGE_RANDOM)
+  {
+    // Use my index in the search area plus the current time as the seed for the random algorithm.
+    int myIndexInArea = (int) variables.get(MV_MY_POS_IN_MY_AREA).to_integer();
+    int seed = time(NULL) + myIndexInArea;
+    coverageAlgorithm = new RandomAreaCoverage(seed);
+  }
+  else if(algorithm == MO_AREA_COVERAGE_SNAKE)
+  {
+    double searchLineOffset = variables.get(MV_AREA_COVERAGE_LINE_WIDTH).to_double();
+    coverageAlgorithm = new SnakeAreaCoverage(Region::NORTH_WEST, searchLineOffset);
+  }
+  else if(algorithm == MO_AREA_COVERAGE_INSIDEOUT)
+  {
+    double searchLineOffset = variables.get(MV_AREA_COVERAGE_LINE_WIDTH).to_double();
+    coverageAlgorithm = new InsideOutAreaCoverage(searchLineOffset);
+  }
+  else if(algorithm == MO_AREA_COVERAGE_PRIORITY)
+  {
+    // Use width and height of a box.
+    double searchLineOffset = variables.get(MV_AREA_COVERAGE_LINE_WIDTH).to_double();
 
- 	// Find all the available drones, called here to ensure atomicity and we have the most up to date data.
-    	variables.evaluate(m_expressions[ACE_FIND_AVAILABLE_DRONES_POSITIONS],
-        Madara::Knowledge_Engine::Knowledge_Update_Settings(true, false));
+    // Find all the available drones, called here to ensure atomicity and we have the most up to date data.
+    variables.evaluate(m_expressions[ACE_FIND_AVAILABLE_DRONES_POSITIONS],
+    Madara::Knowledge_Engine::Knowledge_Update_Settings(true, false));
 
-    	// Obtain drone information
-  	int availableDrones = (int) variables.get(MV_AVAILABLE_DRONES_IN_MY_AREA).to_integer();
-        int myIndexInList = (int) variables.get(MV_MY_POS_IN_MY_AREA).to_integer();
-    	std::string myAssignedSearchArea = variables.get(variables.expand_statement(MV_ASSIGNED_SEARCH_AREA("{" MV_MY_ID "}"))).to_string();
-    	std::string myAssignedSearchRegion = variables.get(MV_SEARCH_AREA_REGION(myAssignedSearchArea)).to_string();
+    // Obtain drone information.
+    int availableDrones = (int) variables.get(MV_AVAILABLE_DRONES_IN_MY_AREA).to_integer();
+    int myIndexInList = (int) variables.get(MV_MY_POS_IN_MY_AREA).to_integer();
+    std::string myAssignedSearchArea = variables.get(variables.expand_statement(MV_ASSIGNED_SEARCH_AREA("{" MV_MY_ID "}"))).to_string();
+    std::string myAssignedSearchRegion = variables.get(MV_SEARCH_AREA_REGION(myAssignedSearchArea)).to_string();
 
-	// super region	
-	double nwLat = variables.get(MV_REGION_TOPLEFT_LAT(myAssignedSearchRegion)).to_double();
-	double nwLon = variables.get(MV_REGION_TOPLEFT_LON(myAssignedSearchRegion)).to_double();
-	double seLat = variables.get(MV_REGION_BOTRIGHT_LAT(myAssignedSearchRegion)).to_double();
-	double seLon = variables.get(MV_REGION_BOTRIGHT_LON(myAssignedSearchRegion)).to_double();
-	double priorityValue = 1;
-	
-        Region searchArea = Region(Position(nwLon, nwLat), Position(seLon, seLat));
-	searchArea.priorityValue = priorityValue;
+    // Super region.
+    double nwLat = variables.get(MV_REGION_TOPLEFT_LAT(myAssignedSearchRegion)).to_double();
+    double nwLon = variables.get(MV_REGION_TOPLEFT_LON(myAssignedSearchRegion)).to_double();
+    double seLat = variables.get(MV_REGION_BOTRIGHT_LAT(myAssignedSearchRegion)).to_double();
+    double seLon = variables.get(MV_REGION_BOTRIGHT_LON(myAssignedSearchRegion)).to_double();
+    double priorityValue = 1;
+    
+    Region searchArea = Region(Position(nwLon, nwLat), Position(seLon, seLat));
+    searchArea.priorityValue = priorityValue;
         
-	// sub regions
-	std::vector<Region> regions;
-	regions.push_back(searchArea);
-	std::string prioritizedAreas = MV_PRIORITIZED_AREAS;
-//	std::vector<std::string> subAreas = m_coverageAlgorithm->split(prioritizedAreas, ';');
+    // Sub regions.
+    std::vector<Region> regions;
+    regions.push_back(searchArea);
+    std::string prioritizedAreas = MV_PRIORITIZED_AREAS;
+    
+    // Get the actual algorithm object.
+    coverageAlgorithm = new PriorityAreaCoverage(variables, regions, searchArea, searchLineOffset);
+  }
+  else
+  {
+    // Print an error.
+    std::stringstream sstream;
+    sstream << "selectAreaCoverageAlgorithm(algo = \"" << algorithm << "\") failed to find match\n";
+    variables.print(sstream.str(), MADARA_LOG_NONFATAL_ERROR);
+  }
 
-	// convert strings of sub regions into Region objects.
-//	for (int i = 0; i < subAreas.size(); i++)
-//	{
-//		std::vector<std::string> piecesOfArea = m_coverageAlgorithm->split(prioritizedAreas, ',');	
-//		nwLat = std::atof( piecesOfArea[0].c_str() );
-//		nwLon = std::atof( piecesOfArea[1].c_str() );
-//		seLat = std::atof( piecesOfArea[2].c_str() );
-//		seLon = std::atof( piecesOfArea[3].c_str() );
-//		priorityValue = std::atof( piecesOfArea[4].c_str() );
-//    		regions.push_back( Region(Position(nwLon, nwLat), Position(seLon, seLat), priorityValue) );
-//	}
-	
-        coverageAlgorithm = new PriorityAreaCoverage(variables, regions, searchArea, searchLineOffset);
-    }
-    else
-    {
-        // Print an error.
-        std::stringstream sstream;
-        sstream << "selectAreaCoverageAlgorithm(algo = \"" << algorithm << "\") failed to find match\n";
-        variables.print(sstream.str(), MADARA_LOG_NONFATAL_ERROR);
-    }
-
-    return coverageAlgorithm;
+  return coverageAlgorithm;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
