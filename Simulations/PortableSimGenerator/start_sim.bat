@@ -1,5 +1,5 @@
 cd Drones
-start_simulated_drones.vbs
+cscript.exe start_simulated_drones.vbs \bin
 cd ..
 cd Scene
 SET VREP_HOME=..\V-REP
