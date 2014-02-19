@@ -47,7 +47,8 @@ may prove pivotal in bringing group-based UAS control into more mainstream usage
 \end{abstract}
 
 %---------------------------------------------------------------------%
-\section{sec:introduction}
+\section{Introduction}
+\label{sec:introduction}
 
 As unmanned aerial vehicles and ground robots become less expensive and more
 pervasive, the need for intuitive control interfaces for multiple distributed
@@ -121,16 +122,16 @@ those mentioned in Section~\ref{sec:introduction}.
 \end{figure}
 
 
-In a waypoint navigation system, the user must select a device in an interface
-and then select a waypoint to traverse to. Most of these interfaces allow users
-to queue up waypoints (essentially plot a path of points), which allows an
-operator to plan out complicated missions. Figure ~\ref{fig:guiding} lays out
-the mission we asked of three volunteers, whom we allowed to replot their
-missions after seeing results that displayed the required clicks and the area
-that actually ended up being covered. The larger area is the main search area
-and the smaller areas are priority regions, places that are more important due
-to the mission and must be searched quickly (e.g., in a search-and-rescue
-mission where known survivors are at and triage decisions need to be made).
+Imagine a search-and-rescue situation during an earthquake where two large
+buildings have collapsed and rescuers need to search the area for survivors. We
+highlight such a situation in Figure~\ref{fig:guiding}. Survivors could be located
+throughout the affected area (the larger region) but are more likely to be found
+in the collapsed building locations, specified as the smaller rectangles. As part
+of a simple experiment, we offered a waypoint interface with this overlay, the
+sensor range of a small UAV, and asked them to search the entire area with
+a preference on the building locations. Each user was allowed to redo their
+waypoints after an initial attempt, and we kept track of the number of actions
+required, the unexplored areas, and the time required to input the mission.
 
 \iffalse
 
@@ -150,19 +151,14 @@ mission where known survivors are at and triage decisions need to be made).
   \label{fig:user2_2}
 \end{figure}
 
-The following figures (Figure ~\ref{fig:user1_1}, 
-~\ref{fig:user2_2}, ~\ref{fig:user3_2})
-are the results of handing the waypoint navigation to random
-people in our research lab, one of whom had experience flying waypoint systems.
-For space reasons, we picked only the three that showed the most interesting
-characters--whether showing higher user error or excessive diligence.
-
-These are by no means meant to categorically and exhaustively explore the space
-of user interactions possible in the system. We show these here to highlight the
-differences between the mission requirements and the kinds of errors that are likely with
-human usage. Additionally, after these images, we breakdown the average user
-actions required to send one drone on a mission like this. As swarms grow larger,
-the waypoint system becomes even more cumbersome to use.
+Figures~\ref{fig:user1_1}, ~\ref{fig:user1_2}
+~\ref{fig:user2_2}, and ~\ref{fig:user3_2}) show the results of these
+simple experiments with three random persons in our lab, only one of whom
+had any experience with waypoint systems. Even when given extra attempts
+and allowed time to observe the map and mission with ample time before
+moving UAVs around the map, human operators required dozens of actions,
+inserted human error, and took dozens of seconds to tell even a single UAV
+how to search the area.
 
 \iffalse
 \begin{figure}[h]
@@ -185,12 +181,9 @@ user actions and time taken to use the waypoint navigation interface to search t
 three areas. The time taken and user actions varied wildly, and the accuracy of the
 search was also highly variable. These results highlight some of the problems in
 using such waypoint-based systems in mission-critical contexts like
-search-and-rescue but also in agriculture or any number of other scenarios where
-accuracy is important. A
-UAV attempting to spray pesticides over a field and missing large patches can
-be disasterous for crop growth and maintenance. A UAV that does not locate a
-survivor could result in unnecessary fatalities and improper triage in a disaster
-area. 
+search-and-rescue but are also applicable in agriculture, where spraying the wrong
+field can result in the loss of a crop, or any number of other scenarios where
+accuracy and timing are important.
 
 \begin{table}[htb]
 \caption{Results of Waypoint Navigation System Usage}
@@ -207,12 +200,13 @@ Time Taken \B & 51s  & 123s & 79.706s \\ \hline
 \end{tabular}
 \end{table}
 
-In the next section, we will discuss the results of using the GAMS
-interface on similar problems. 
+In the next section, we will discuss the development of user interfaces and
+coupled artificial intelligence to simplify interactions with one or more robotic
+systems.
 
 %---------------------------------------------------------------------%
 \section{The GAMS Interface and Software}
-\label{sec:gams_interface}
+\label{sec:gamsinterface}
 
 As we have shown in section ~\ref{sec:waypoints}, waypoint-based
 navigation systems are highly error prone and take a significant amount
@@ -237,28 +231,53 @@ The usage of the GAMS interface includes the following steps:
 
 Primitive operations are functions like takeoff, land, move-to-gps, and other
 operations that are considered primitive AI. Network bridging is an instruction
-to the drones to move to locations that allow network traffic to pass between
-locations. Area coverage is a distributed AI that causes the drones to collaborate
-to cover a single rectangular area. Prioritized area coverage is a distributed AI
-that allows for the designation of prioritized regions within a main area coverage
+to the UAS to move to locations that allow network traffic to pass between
+locations. Area coverage is a distributed AI that instructs the UAS to collaborate
+in order to cover a single rectangular area. Prioritized area coverage is a distributed AI
+that provides for prioritized regions within a main area coverage
 that the UAS will try to cover first.
 
 The underlying artificial intelligence is implemented in the MADARA Knowledge and
 Reasoning Engine (KaRL) engine ~\cite{Edmondson-KaRL-ksem2011}, a specialized
 and fast, real-time reasoning engine that was built for contextual inferencing in
-distributed, decentralized sensor networks. Our interface, which allows
-interaction with this AI, is built in Java for any device running the Android
-operating system. This allows us to control a swarm from a tablet or smartphone.
-Both the interfaces and the AI is released as open source under a BSD license
+distributed, decentralized sensor networks. Our control interface is built for Google's
+Android Operating System~\cite{nimodia2012android}, which allows us to control a swarm from any Google
+tablet or smartphone. Both the interfaces and the AI is released as open source under a BSD license
 at http://gams-cmu.googlecode.com.
 
 In the next section, we will detail a small series of experiments that showcase the
-power of the interface and how it improves on the state-of-the-art in both required
-user actions and time taken to input a new swarm mission.
+power of the interface and how it improves on the state-of-the-art in reducing the
+required user actions and consequently the time taken to input a new swarm mission.
 
 %---------------------------------------------------------------------%
 \section{Experimental Results}
 \label{sec:exp}
+
+Table~\ref{tab:expresults} details the results of comparing the optimal usage of
+a waypoint system and the GAMS interface to perform area coverage with
+two UAS ($n=2$) with a 4 meter sensor radius ($\theta$). Due to space limitations and
+symmetry between number of drones used and minimum actions required, we
+only show the usage of two drones. The table reflects the following
+mathematical equation for determining user actions from a waypoint system.
+%
+\[
+\gamma = 2 \left (\frac {\beta} {\theta (1 - \delta)} \right) + n
+\]
+%
+Where $\beta$ is the length of the shortest side of a rectangular search area.
+This is the key metric for determining the minimum number of waypoints required
+by a waypoint interface
+because of how it interacts with $\theta$, the sensor radius of the UAS. $\gamma$ is
+the minimum number of user actions required and is what we attempt to minimize in this
+research. $\delta$ is
+the user error as an underestimate or overestimate of the sensor radius by the
+human operator. $\kappa$ represents the percentage of area covered as a result
+of the user actions. This becomes more important as results are shown when the
+user has deviations in $\delta$ (the user error in approximating sensor radius).
+$\rho$ represents the percentage of overlap, which happens when the user
+underestimates $\theta$ and is indicated as a positive $\delta$.
+Finally,
+$n$ is the number of UAS, which is set to 2 due to space reasons and not shown in table.
 
 \begin{table}[ht]
 \caption{Comparison of GAMS and Waypoint Interface}
@@ -298,40 +317,15 @@ Waypoints \B & 69 & 80 & 0.4 & 1.0 & 0.4 \\ \hline
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:expresults} details the results of comparing the optimal usage of
-a waypoint system and the GAMS interface to perform area coverage with
-two UAS ($n=2$) with a 4 meter sensor radius ($\theta$). Due to space limitations and
-symmetry between number of drones used and minimum actions required, we
-only show the usage of two drones. The table reflects the following
-mathematical equation for determining user actions from a waypoint system.
-%
-\[
-\gamma = 2 \left (\frac {\beta} {\theta (1 - \delta)} \right) + n
-\]
-%
-Where $\beta$ is the length of the shortest side of a rectangular search area.
-This is the key metric for determining the minimum number of waypoints required
-by a waypoint interface
-because of how it interacts with $\theta$, the sensor radius of the UAS. $\gamma$ is
-the minimum number of user actions required and is what we attempt to minimize in this
-research. $\delta$ is
-the user error as an underestimate or overestimate of the sensor radius by the
-human operator. $\kappa$ represents the percentage of area covered as a result
-of the user actions. This becomes more important as results are shown when the
-user has deviations in $\delta$ (the user error in approximating sensor radius).
-$\rho$ represents the percentage of overlap, which happens when the user
-underestimates $\theta$ and is indicated as a positive $\delta$.
-Finally,
-$n$ is the number of UAS, which is set to 2 due to space reasons and not shown in table.
-
 The major takeaways from this data are that the waypoint system interface, even
 with just two drones, requires more user actions than the GAMS interface.
 Additionally, as shown in Section~\ref{sec:waypoints}, waypoint systems are prone to
 error, and the more error inserted into guessing the sensor radius, the more actions
 required and the more the area covered has overlaps or gaps. In the expressed data,
 we do not require additional user actions ($\gamma$) to fix gaps in the area covered
-by waypoint navigation systems.
-
+by waypoint navigation systems. In the real world, unexplored areas would have to
+be retasked, which will result in more time taken and focus by the human operator.
+Retasking for missed areas would also increase the number of required user actions.
 
 %---------------------------------------------------------------------%
 \section{Future Work and Conclusion}
@@ -340,7 +334,7 @@ by waypoint navigation systems.
 In this paper, we have discussed insights into research conducted in the Group
 Autonomy for Mobile Systems project at Carnegie Mellon University in regards
 to user interfaces for swarms of unmanned autonomous systems. The user
-interfaces developed and showcased here have been shown to decrease
+interfaces described here have been shown to decrease
 user actions required and also reduce error by relying on autonomy within
 the devices to cover areas correctly. Future work on this project is directed toward
 using these interfaces to direct dozens of UAS to perform complex mission tasks
