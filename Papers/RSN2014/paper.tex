@@ -128,7 +128,7 @@ highlight such a situation in Figure~\ref{fig:guiding}. Survivors could be locat
 throughout the affected area (the larger region) but are more likely to be found
 in the collapsed building locations, specified as the smaller rectangles. As part
 of a simple experiment, we offered a waypoint interface with this overlay, the
-sensor range of a small UAV, and asked them to search the entire area with
+sensor range of a small UAV, and asked users to search the entire area with
 a preference on the building locations. Each user was allowed to redo their
 waypoints after an initial attempt, and we kept track of the number of actions
 required, the unexplored areas, and the time required to input the mission.
@@ -218,7 +218,8 @@ search-and-rescue.
 
 The usage of the GAMS interface includes the following steps:
 \begin{enumerate}
-  \item Select the UAS that will be participating with a box or by list of names
+  \item Select the UAS that will be participating by selecting an area or individual UAS 
+  by list of names
   \item Select an action to perform from a list
   \begin{enumerate}
     \item Primitive operations
@@ -234,7 +235,7 @@ operations that are considered primitive AI. Network bridging is an instruction
 to the UAS to move to locations that allow network traffic to pass between
 locations. Area coverage is a distributed AI that instructs the UAS to collaborate
 in order to cover a single rectangular area. Prioritized area coverage is a distributed AI
-that provides for prioritized regions within a main area coverage
+that provides for prioritized regions within a main area
 that the UAS will try to cover first.
 
 The underlying artificial intelligence is implemented in the MADARA Knowledge and
