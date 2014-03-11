@@ -371,28 +371,43 @@ AreaCoverage* selectAreaCoverageAlgorithm(string algorithm, Madara::Knowledge_En
 	double nwLon = variables.get(MV_REGION_TOPLEFT_LON(myAssignedSearchRegion)).to_double();
 	double seLat = variables.get(MV_REGION_BOTRIGHT_LAT(myAssignedSearchRegion)).to_double();
 	double seLon = variables.get(MV_REGION_BOTRIGHT_LON(myAssignedSearchRegion)).to_double();
-	double priorityValue = 1;
-	
-        Region searchArea = Region(Position(nwLon, nwLat), Position(seLon, seLat));
-	searchArea.priorityValue = priorityValue;
+	int priorityValue;
+
+        Region searchArea = Region(Position(nwLat, nwLon), Position(seLat, seLon));
         
 	// sub regions
 	std::vector<Region> regions;
 	regions.push_back(searchArea);
-	std::string prioritizedAreas = MV_PRIORITIZED_AREAS;
-//	std::vector<std::string> subAreas = m_coverageAlgorithm->split(prioritizedAreas, ';');
+	std::string prioritizedAreas = variables.get(MV_PRIORITIZED_AREAS).to_string();
+	std::vector<std::string> subAreas = m_coverageAlgorithm->split(prioritizedAreas, ';');
 
 	// convert strings of sub regions into Region objects.
-//	for (int i = 0; i < subAreas.size(); i++)
-//	{
-//		std::vector<std::string> piecesOfArea = m_coverageAlgorithm->split(prioritizedAreas, ',');	
+	for (int i = 0; i < subAreas.size(); i++)
+	{
+		std::vector<std::string> piecesOfArea = m_coverageAlgorithm->split(prioritizedAreas, ',');	
+		sscanf(piecesOfArea[0].c_str(), "%lf", &nwLat);
+		sscanf(piecesOfArea[1].c_str(), "%lf", &nwLon);
+		sscanf(piecesOfArea[2].c_str(), "%lf", &seLat);
+		sscanf(piecesOfArea[3].c_str(), "%lf", &seLon);
+
 //		nwLat = std::atof( piecesOfArea[0].c_str() );
 //		nwLon = std::atof( piecesOfArea[1].c_str() );
 //		seLat = std::atof( piecesOfArea[2].c_str() );
 //		seLon = std::atof( piecesOfArea[3].c_str() );
-//		priorityValue = std::atof( piecesOfArea[4].c_str() );
-//    		regions.push_back( Region(Position(nwLon, nwLat), Position(seLon, seLat), priorityValue) );
-//	}
+		priorityValue = std::atof( piecesOfArea[4].c_str() );
+    		regions.push_back( Region(Position(nwLat, nwLon), Position(seLat, seLon), priorityValue) );
+
+		std::printf("nwLat: %.8f\n", nwLat);
+		std::printf("nwLon: %.8f\n", nwLon);
+		std::printf("seLat: %.8f\n", seLat);
+		std::printf("seLon: %.8f\n", seLon);
+//        	std::cout << "nwLat: " << nwLat << std::endl;
+//        	std::cout << "nwLon: " << nwLon << std::endl;
+//        	std::cout << "seLat: " << seLat << std::endl;
+//        	std::cout << "seLon: " << seLon << std::endl;
+        	std::cout << "priorityValue: " << priorityValue << std::endl << std::endl;
+//		sleep(10);
+	}
 	
         coverageAlgorithm = new PriorityAreaCoverage(variables, regions, searchArea, searchLineOffset);
     }

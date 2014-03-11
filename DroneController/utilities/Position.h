@@ -92,6 +92,7 @@ namespace SMASH
             {
                 northWest = newNorthWestCorner;
                 southEast = newSouthEastCorner;
+                priorityValue = priority;
                 invertRegionIfRequired();
             }
 
@@ -114,6 +115,13 @@ namespace SMASH
 
             bool contains(const Position& test)
             {
+
+                std::cout << test.longitude << ">=" << northWest.longitude << std::endl;
+                std::cout << test.longitude << "<=" << southEast.longitude << std::endl;
+                std::cout << test.latitude << ">=" << southEast.latitude << std::endl;
+                std::cout << test.latitude << "<=" << northWest.latitude << std::endl;
+
+//		return true;
                 return ((test.longitude >= northWest.longitude) &&
                         (test.longitude <= southEast.longitude) &&
                         (test.latitude >= southEast.latitude) &&

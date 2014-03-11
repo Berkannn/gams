@@ -248,13 +248,29 @@ void updateCoveragePercentage(
   double gridHeight = variables.get(MV_GRID_HEIGHT).to_double();
   double gridSize = variables.get(MV_GRID_SIZE).to_double();
 
-  // Loop over the array to summ all values.
+  double totalPriority = 0;
+  std::vector<int> cellValue;
+  //matrix = std::vector<std::vector<int> > (m_height, std::vector<int>(m_width));
+  for (int j = 0; j < gridWidth; j++) 
+  {
+    for (int i = 0; i < gridHeight; i++) 
+    {
+      cellValue.push_back(j);
+      totalPriority += j;
+    }
+  }
+
+  // Loop over the array to sum all values.
   int totalCellsCovered = 0;
+  int totalPriorityCovered = 0;
   for(double i = 0; i < gridSize; i++)
   {
     std::string cellNumberString = NUM_TO_STR(i);
     int currCellCovered = variables.get(MV_GRID_CELL(cellNumberString))
       .to_integer();
+    if (currCellCovered > 0) {
+      totalPriorityCovered += cellValue[i];
+    }
     totalCellsCovered += currCellCovered;
   }
 
@@ -263,12 +279,15 @@ void updateCoveragePercentage(
   double percentageCovered = totalCellsCovered / gridSize * 100;
   variables.set(MV_PERCENT_COVERED, percentageCovered);
 
+  double percentagePriorityCovered = totalPriorityCovered / totalPriority  * 100;
+
   // Store in file.
   int fileEnabled = variables.get(MV_COVERAGE_TRACKING_FILE_ENABLED).to_integer();
   bool useFile = (fileEnabled == 1);
   if(useFile)
   {
     double timePassedInSeconds = variables.get(".coverage_tracking.time_passed_s").to_double();
-    outputFile << timePassedInSeconds << "," << percentageCovered << std::endl;
+    outputFile << timePassedInSeconds << "," << percentageCovered;
+    outputFile << "," << percentagePriorityCovered << std::endl;
   }
 }

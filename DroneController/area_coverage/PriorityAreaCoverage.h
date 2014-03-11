@@ -101,13 +101,19 @@ public:
 
     std::pair<int, int> stupidSearch(std::vector<std::vector<int> > matrix, int x, int y);
 
+    std::pair<int, int> distanceBasedSearch(std::vector<std::vector<int> > matrix, int x, int y);
+
     double degreesToRadians(double degrees);
 
-int valueOfDirection(std::vector<std::vector<int> > &matrix, int &x, int &y, int direction);
-void move(std::vector<std::vector<int> > &matrix, int &x, int &y, int direction);
-int highestNeighbor(std::vector<std::vector<int> > matrix, int x, int y);
-int mostValuableDirection(std::vector<std::vector<int> > matrix, int x, int y);
-double valueOfDirection(std::vector<std::vector<int> > matrix, int startX, int startY, int directionX, int directionY);
+    int valueOfDirection(std::vector<std::vector<int> > &matrix, int &x, int &y, int direction);
+    
+    void move(std::vector<std::vector<int> > &matrix, int &x, int &y, int direction);
+
+    int highestNeighbor(std::vector<std::vector<int> > matrix, int x, int y);
+
+    int mostValuableDirection(std::vector<std::vector<int> > matrix, int x, int y);
+
+    double valueOfDirection(std::vector<std::vector<int> > matrix, int startX, int startY, int directionX, int directionY);
 
 protected:
     // distance between two waypoints 
