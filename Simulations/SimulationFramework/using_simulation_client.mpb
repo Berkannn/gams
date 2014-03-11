@@ -6,13 +6,13 @@ project {
   }   
   
   Source_Files {
-    Sim_Knowledge {
+    DroneController_SimClient {
       ../../DroneController/platforms/v_rep/simulation_client
     }
   }
 
   Header_Files {
-    Sim_Knowledge {
+    DroneController_SimClient {
       ../../DroneController/platforms/v_rep/simulation_client
     }
   }

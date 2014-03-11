@@ -101,19 +101,31 @@ void SystemControllerPlugin::handleNewCommand()
         {
             // Get the various user setup parameters.
             int numDrones = PluginUtils::getIntParam("numberOfDrones");
+            m_madaraController->setParamNumDrones(numDrones);
+
             double radioRange = PluginUtils::getDoubleParam("radioRange");
+            m_madaraController->setParamCommRange(radioRange);
+
             double minAltitude = PluginUtils::getDoubleParam("minimumAltitude");
+            m_madaraController->setParamMinAltitude(minAltitude);
+
             double heightDiff = PluginUtils::getDoubleParam("heightDiff");
+            m_madaraController->setParamHeightDiff(heightDiff);
+
             double coverageTrackingEnabled = PluginUtils::getIntParam("coverageTracking");
             double coverageTrackingFileEnabled = PluginUtils::getIntParam("coverageTrackingFile");
+            m_madaraController->setParamCoverageTracking(coverageTrackingEnabled, coverageTrackingFileEnabled);
+
             double sensorAngle = PluginUtils::getDoubleParam("sensorAngle");
-            double defaultPriority = PluginUtils::getDoubleParam("defaultPriority");
-	    std::string prioritizedAreas = PluginUtils::getStringParam("prioritizedAreas");
+            m_madaraController->setParamThermalSensorAngle(sensorAngle);
 
             // Send the parameters.
-            m_madaraController->updateGeneralParameters(numDrones, radioRange, 
-              minAltitude, heightDiff, coverageTrackingEnabled, 
-              coverageTrackingFileEnabled, sensorAngle, defaultPriority, prioritizedAreas);
+            m_madaraController->disseminateParameters();
+
+            // Set priority-search specific params.
+            double defaultPriority = PluginUtils::getDoubleParam("defaultPriority");
+            std::string prioritizedAreas = PluginUtils::getStringParam("prioritizedAreas");
+            m_madaraController->setPrioritizedSearchParameters(defaultPriority, prioritizedAreas);
         }
 
         // Send network-wide parameters (radio range, num drones, min height).

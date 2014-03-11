@@ -71,6 +71,8 @@
 #define MV_COMM_RANGE                           "bridge.max_communication_distance"                // The range of the high-banwidth radio, in degrees.
 #define MV_BRIDGE_SOURCE_REGION_ID(bridgeId)    "bridge." + std::string(bridgeId) + ".endpoint.1"  // The region where one of the endpoints of the bridge is.
 #define MV_BRIDGE_SINK_REGION_ID(bridgeId)      "bridge." + std::string(bridgeId) + ".endpoint.2"  // The region where the other endpoint of the bridge is.
+#define MV_BRIDGE_ALGO_REQUESTED                "bridge.algorithm"                                 // Algorithm to use for bridge building.
+#define MO_BRIDGE_ALGO_LINE                     "line"                                             // selects LineBridgeAlgorithm
 
 // Human detection information.
 #define MV_HUMAN_DETECTION_REQUESTED(deviceId)  "device." + std::string(deviceId) + ".human_detection_requested"        // Tells if this device was tasked with human detection.

@@ -26,22 +26,22 @@ namespace SMASH
         struct DistanceTuple
         {
             // The id of the drone.
-	        int droneId;
+            int droneId;
 
             // The id of one of the locations where drones should go to to form the bridge.
-	        int relayLocationId;
+            int relayLocationId;
 
             // The distance between the drone identified by droneId, and the location relayLocationId.
-	        double distance;
+            double distance;
         };
 
         /**
          * @brief Represents a simple bridge algorithm.
          **/
-        class BridgeAlgorithm
+        struct BridgeAlgorithm
         {
         public:
-	        /** 
+            /** 
              * Calculates the drones more appropriate for a bridge, and returns the position for the indicated drone to go to, if it should participate in the bridge.
              * @param   myId                      The ID of the drone that we want to find a new position to, if any, to move to in the new bridge.
              * @param   commRange                 The range of the radio (in degrees), used to calculate how many drones are required to form a bridge where each drone is within range of the next.
@@ -51,11 +51,11 @@ namespace SMASH
              *
              * @return  The position this drone should go to, or NULL if this drone was not selected for the bridge.
              **/
-	        SMASH::Utilities::Position* getPositionInBridge(int myId, 
+            virtual SMASH::Utilities::Position* getPositionInBridge(int myId, 
                                                             double commRange, 
                                                             SMASH::Utilities::Position sourcePosition, 
                                                             SMASH::Utilities::Position sinkPosition, 
-                                                            std::map<int, SMASH::Utilities::Position> availableDronePositions);
+                                                            std::map<int, SMASH::Utilities::Position> availableDronePositions) = 0;
         };
     }
 }

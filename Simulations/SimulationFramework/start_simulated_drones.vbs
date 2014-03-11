@@ -14,9 +14,15 @@ objConfig.SpawnInstance_
 
 ' Setup the command line to start the drones.
 Set oShell = CreateObject( "WScript.Shell" )
-gams_root=oShell.ExpandEnvironmentStrings("%GAMS_ROOT%")
-exePath = gams_root & "\DroneController"
 startCommand = "cmd.exe /K droneController.exe -l 1 -i "
+
+' Select the default folder, or the given one if there was a parameter.
+if WScript.Arguments.Count = 0 then
+	gams_root=oShell.ExpandEnvironmentStrings("%GAMS_ROOT%")
+    exePath = gams_root & "\DroneController"
+else
+	exePath = sCurPath & WScript.Arguments(0)
+end if
 
 ' Start all drones.
 objConfig.X = 100

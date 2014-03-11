@@ -6,7 +6,7 @@ project {
   }   
   
   Header_Files {
-    ARDRONE2 {
+    DroneController_ARDRONE2_Platform {
       ../../DroneController/platforms/ar_drone_2/transport_ardrone2.h
     }
   }

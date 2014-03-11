@@ -6,13 +6,13 @@ project {
   }   
   
   Source_Files {
-    KB_Setup {
+    DroneController_Comm {
       ../../DroneController/comm/kb_setup.cpp
     }
   }
 
   Header_Files {
-    KB_Setup {
+    DroneController_Comm {
       ../../DroneController/comm/kb_setup.h
     }
   }

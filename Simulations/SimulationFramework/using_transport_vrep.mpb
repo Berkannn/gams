@@ -6,7 +6,7 @@ project {
   }   
   
   Header_Files {
-    VREP {
+    DroneController_VREP_Platform {
       ../../DroneController/platforms/v_rep/transport_vrep.h
     }
   }
