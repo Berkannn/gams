@@ -1,0 +1,25 @@
+project (gams) : using_madara, using_ace {
+  libout = lib
+  sharedname = GAMS
+  includes += src
+  dynamicflags += GAMS_BUILD_DLL 
+  
+  Documentation_Files {
+    
+  }
+  
+  Build_Files {
+    gams.mpc
+    gams.mwc
+  }
+
+  Header_Files {
+    src/gams/controller
+    src/gams
+  }
+
+  Source_Files {
+    src/gams/controller
+  }
+}
+
