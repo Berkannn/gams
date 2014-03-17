@@ -43,76 +43,71 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+#include "Device.h"
 
-/**
- * @file Loop.h
- * @author James Edmondson <jedmondson@gmail.com>
- *
- * This file contains the definition of the MAPE loop used to autonomously
- * control a UAS node.
- **/
+typedef  Madara::Knowledge_Record::Integer  Integer;
 
-#ifndef   _GAMS_LOOP_H_
-#define   _GAMS_LOOP_H_
 
-#include "gams/GAMS_Export.h"
-#include "gams/variables/Device.h"
-#include "madara/knowledge_engine/containers/Integer.h"
-#include "madara/knowledge_engine/containers/Double.h"
-#include "madara/knowledge_engine/containers/String.h"
-#include "madara/knowledge_engine/containers/Double_Vector.h"
-#include "madara/knowledge_engine/Knowledge_Base.h"
-
-namespace gams
+gams::variables::Device::Device ()
 {
-  namespace controller
+}
+
+gams::variables::Device::~Device ()
+{
+}
+
+void
+gams::variables::Device::operator= (const Device & device)
+{
+  if (this != &device)
   {
-    class GAMS_Export Loop
-    {
-    public:
-      /**
-       * Constructor
-       * @param   knowledge   The knowledge base to reference and mutate
-       **/
-      Loop (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
-
-      /**
-       * Destructor
-       **/
-      ~Loop ();
-
-      /**
-       * Initializes global variable containers
-       * @param   id         node identifier
-       * @param   processes  processes
-       **/
-      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const Madara::Knowledge_Record::Integer & processes);
-
-      /**
-       * Defines the MAPE loop
-       **/
-      void define_mape (const std::string & loop =
-        "monitor (); analyze (); plan (); execute ()");
-
-      /**
-       * Runs one iteration of the MAPE loop
-       * @return  the result of the MAPE loop
-       **/
-      Madara::Knowledge_Record run (void);
-
-    private:
-
-      /// knowledge base
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge_;
-
-      /// Compiled MAPE Loop
-      Madara::Knowledge_Engine::Compiled_Expression mape_loop_;
-
-      /// Containers for device-related variables
-      variables::Devices devices_;
-    };
+    this->battery_remaining_ = device.battery_remaining_;
+    this->bridge_id_ = device.bridge_id_;
+    this->coverage_type_ = device.coverage_type_;
+    this->is_mobile_ = device.is_mobile_;
+    this->location_ = device.location_;
+    this->min_alt_ = device.min_alt_;
+    this->next_coverage_type_ = device.next_coverage_type_;
+    this->search_area_id_ = device.search_area_id_;
+    this->temperature_ = device.temperature_;
   }
 }
 
-#endif // _GAMS_LOOP_H_
+
+void
+gams::variables::Device::init_vars (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const Integer & id)
+{
+  // create the device name string identifier ('device.{id}')
+  std::stringstream buffer;
+  buffer << "device.";
+  buffer << id;
+  std::string device_name (buffer.str ());
+
+  // initialize the variable containers
+  min_alt_.set_name (device_name + ".min_alt", knowledge);
+  location_.set_name (device_name + ".location", knowledge, 3);
+  is_mobile_.set_name (device_name + ".mobile", knowledge);
+  battery_remaining_.set_name (device_name + ".battery", knowledge);
+  bridge_id_.set_name (device_name + ".bridge_id", knowledge);
+  coverage_type_.set_name (device_name + ".area_coverage_type", knowledge);
+  next_coverage_type_.set_name (device_name + ".next_area_coverage_type",
+    knowledge);
+  search_area_id_.set_name (device_name + ".search_area_id", knowledge);
+
+  // environment variables
+  temperature_.set_name (device_name + ".temperature", knowledge);
+}
+
+void gams::variables::init_vars (Devices & devices,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const Madara::Knowledge_Record::Integer & processes)
+{
+  devices.resize ((size_t) processes);
+
+  for (Integer i = 0; i < processes; ++i)
+  {
+    devices[i].init_vars (knowledge, i);
+  }
+}

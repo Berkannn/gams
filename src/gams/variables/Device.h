@@ -45,18 +45,18 @@
  **/
 
 /**
- * @file Loop.h
+ * @file Device.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the MAPE loop used to autonomously
- * control a UAS node.
+ * This file contains the definition of the Device variables
  **/
 
-#ifndef   _GAMS_LOOP_H_
-#define   _GAMS_LOOP_H_
+#ifndef   _GAMS_VARIABLES_DEVICES_H_
+#define   _GAMS_VARIABLES_DEVICES_H_
+
+#include <vector>
 
 #include "gams/GAMS_Export.h"
-#include "gams/variables/Device.h"
 #include "madara/knowledge_engine/containers/Integer.h"
 #include "madara/knowledge_engine/containers/Double.h"
 #include "madara/knowledge_engine/containers/String.h"
@@ -65,21 +65,26 @@
 
 namespace gams
 {
-  namespace controller
+  namespace variables
   {
-    class GAMS_Export Loop
+    class GAMS_Export Device
     {
     public:
       /**
        * Constructor
-       * @param   knowledge   The knowledge base to reference and mutate
        **/
-      Loop (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+      Device ();
 
       /**
        * Destructor
        **/
-      ~Loop ();
+      ~Device ();
+
+      /**
+       * Assignment operator
+       * @param  device   device to copy
+       **/
+      void operator= (const Device & device);
 
       /**
        * Initializes global variable containers
@@ -87,32 +92,45 @@ namespace gams
        * @param   processes  processes
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const Madara::Knowledge_Record::Integer & processes);
+        const Madara::Knowledge_Record::Integer & id);
 
-      /**
-       * Defines the MAPE loop
-       **/
-      void define_mape (const std::string & loop =
-        "monitor (); analyze (); plan (); execute ()");
+      /// the minimum altitude for this device
+      Madara::Knowledge_Engine::Containers::Double min_alt_;
 
-      /**
-       * Runs one iteration of the MAPE loop
-       * @return  the result of the MAPE loop
-       **/
-      Madara::Knowledge_Record run (void);
+      /// the location, usually encoded in GPS, for this device
+      Madara::Knowledge_Engine::Containers::Double_Array location_;
 
-    private:
+      /// the mobility indicator for this device (true if mobile)
+      Madara::Knowledge_Engine::Containers::Integer is_mobile_;
 
-      /// knowledge base
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge_;
+      /// the battery indicator for this device
+      Madara::Knowledge_Engine::Containers::Integer battery_remaining_;
 
-      /// Compiled MAPE Loop
-      Madara::Knowledge_Engine::Compiled_Expression mape_loop_;
+      /// indicator for whether or not the device is busy with a mission
+      Madara::Knowledge_Engine::Containers::Integer bridge_id_;
 
-      /// Containers for device-related variables
-      variables::Devices devices_;
+      /// indicator for type of area coverage requested of the device
+      Madara::Knowledge_Engine::Containers::String coverage_type_;
+
+      /// indicator for next type of area coverage requested (queue like)
+      Madara::Knowledge_Engine::Containers::String next_coverage_type_;
+
+      /// indicator for next assigned search area id
+      Madara::Knowledge_Engine::Containers::Integer search_area_id_;
+
+      /// indicator for temperature
+      Madara::Knowledge_Engine::Containers::Double temperature_;
     };
+
+    /**
+     * An array of devices
+     **/
+    typedef std::vector <Device>   Devices;
+
+    GAMS_Export void init_vars (Devices & devices,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const Madara::Knowledge_Record::Integer & processes);
   }
 }
 
-#endif // _GAMS_LOOP_H_
+#endif // _GAMS_VARIABLES_DEVICES_H_

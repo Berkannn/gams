@@ -43,6 +43,7 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+
 #include "Loop.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
@@ -62,28 +63,9 @@ gams::controller::Loop::~Loop ()
 void
 gams::controller::Loop::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Integer & id,
   const Integer & processes)
 {
-  // create the device name string identifier ('device.{id}')
-  std::stringstream buffer;
-  buffer << "device.";
-  buffer << id;
-  std::string device_name (buffer.str ());
-
-  // initialize the variable containers
-  min_alt_.set_name (device_name + ".min_alt", knowledge);
-  location_.set_name (device_name + ".location", knowledge, 3);
-  is_mobile_.set_name (device_name + ".mobile", knowledge);
-  battery_remaining_.set_name (device_name + ".battery", knowledge);
-  bridge_id_.set_name (device_name + ".bridge_id", knowledge);
-  coverage_type_.set_name (device_name + ".area_coverage_type", knowledge);
-  next_coverage_type_.set_name (device_name + ".next_area_coverage_type",
-    knowledge);
-  search_area_id_.set_name (device_name + ".search_area_id", knowledge);
-
-  // environment variables
-  temperature_.set_name ("environment.temperature", knowledge);
+  variables::init_vars (devices_, knowledge_, processes);
 }
 
 void

@@ -54,7 +54,7 @@ int main (int argc, char ** argv)
   engine::Knowledge_Base knowledge;
   controller::Loop loop (knowledge);
 
-  loop.init_vars (knowledge, 0, 4);
+  loop.init_vars (knowledge, 4);
 
   for (int i = 0; i < 50; ++i)
   {

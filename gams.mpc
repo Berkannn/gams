@@ -15,11 +15,13 @@ project (gams) : using_madara, using_ace {
 
   Header_Files {
     src/gams/controller
+    src/gams/variables
     src/gams
   }
 
   Source_Files {
     src/gams/controller
+    src/gams/variables
   }
 }
 
