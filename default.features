@@ -1,0 +1,15 @@
+///============================================================================
+///
+/// @file       default.features
+///
+/// @brief      Defines features that control project builds.
+///
+/// @author     James Edmondson
+///
+///============================================================================
+
+
+/// @feature tests
+/// Enable this feature if you want to generate test applications
+tests                   = 1
+
