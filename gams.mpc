@@ -5,7 +5,10 @@ project (gams) : using_madara, using_ace {
   dynamicflags += GAMS_BUILD_DLL 
   
   Documentation_Files {
-    
+    INSTALL.txt
+    LICENSE.txt
+    README.txt
+    VERSION.txt
   }
   
   Build_Files {

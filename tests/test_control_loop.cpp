@@ -46,20 +46,79 @@
 #include "madara/knowledge_engine/Knowledge_Base.h"
 #include "gams/controller/Loop.h"
 
+// create shortcuts to MADARA classes and namespaces
 namespace engine = Madara::Knowledge_Engine;
 namespace controller = gams::controller;
+typedef Madara::Knowledge_Record   Record;
+typedef Record::Integer Integer;
 
+/**
+ * Monitor function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record monitor (engine::Function_Arguments & args, engine::Variables & vars)
+{
+  vars.inc (".monitor");
+
+  return Integer (0);
+}
+
+/**
+ * Analyze function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record analyze (engine::Function_Arguments & args, engine::Variables & vars)
+{
+  vars.inc (".analyze");
+
+  return Integer (0);
+}
+
+/**
+ * Plan function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record plan (engine::Function_Arguments & args, engine::Variables & vars)
+{
+  Record value = vars.inc (".plan");
+
+  return Integer (value == Integer (20));
+}
+
+/**
+ * Execute function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record execute (engine::Function_Arguments & args, engine::Variables & vars)
+{
+  vars.inc (".execute");
+
+  return Integer (0);
+}
+
+// perform main logic of program
 int main (int argc, char ** argv)
 {
+  // create knowledge base and a control loop
   engine::Knowledge_Base knowledge;
   controller::Loop loop (knowledge);
 
-  loop.init_vars (knowledge, 4);
+  // initialize variables and function stubs
+  loop.init_vars (knowledge, 0, 4);
+  loop.define_monitor (monitor);
+  loop.define_analyze (analyze);
+  loop.define_plan (plan);
+  loop.define_execute (execute);
 
-  for (int i = 0; i < 50; ++i)
-  {
-    loop.run ();
-  }
+  // run a mape loop every 1s for 50s
+  loop.run (1.0, 50.0);
+
+  // print all knowledge values
+  knowledge.print ();
 
   return 0;
 }

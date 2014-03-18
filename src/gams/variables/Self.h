@@ -44,88 +44,72 @@
  *      distribution.
  **/
 
-#include "Loop.h"
+/**
+ * @file Self.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the self-referencing MADARA variables
+ **/
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+#ifndef   _GAMS_VARIABLES_SELF_H_
+#define   _GAMS_VARIABLES_SELF_H_
 
-gams::controller::Loop::Loop (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-  : knowledge_ (knowledge)
+#include <vector>
+
+#include "gams/GAMS_Export.h"
+#include "madara/knowledge_engine/containers/Integer.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+#include "Device.h"
+
+
+namespace gams
 {
-  define_mape ();
+  namespace variables
+  {
+    class GAMS_Export Self
+    {
+    public:
+      /**
+       * Constructor
+       **/
+      Self ();
+
+      /**
+       * Destructor
+       **/
+      ~Self ();
+
+      /**
+       * Assignment operator
+       * @param  device   device to copy
+       **/
+      void operator= (const Self & device);
+
+      /**
+       * Initializes global variable containers
+       * @param   knowledge  the knowledge base that houses the variables
+       * @param   id         node identifier
+       **/
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const Madara::Knowledge_Record::Integer & id);
+
+      /// the id of this device
+      Madara::Knowledge_Engine::Containers::Integer id;
+      
+      /// the device-specific variables
+      Device device;
+    };
+    
+    /**
+      * Initializes a self containers
+      * @param   variables  the variables to initialize
+      * @param   knowledge  the knowledge base that houses the variables
+      * @param   id         node identifier
+      **/
+    GAMS_Export void init_vars (Self & container,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const Madara::Knowledge_Record::Integer & id);
+  }
 }
 
-gams::controller::Loop::~Loop ()
-{
-
-}
-
-void
-gams::controller::Loop::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Integer & id,
-  const Integer & processes)
-{
-  // initialize the devices, swarm, and self variables
-  variables::init_vars (devices_, knowledge_, processes);
-  swarm_.init_vars (knowledge);
-  self_.init_vars (knowledge, id);
-}
-
-void
-gams::controller::Loop::define_mape (const std::string & loop)
-{
-  // define the mape loop via KaRL compilation
-  mape_loop_ = knowledge_.compile (loop);
-}
-
-void
-gams::controller::Loop::define_monitor (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the monitor function
-  knowledge_.define_function ("monitor", func);
-}
-
-void
-gams::controller::Loop::define_analyze (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the analyze function
-  knowledge_.define_function ("analyze", func);
-}
-
-void gams::controller::Loop::define_plan (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the plan function
-  knowledge_.define_function ("plan", func);
-}
-
-void gams::controller::Loop::define_execute (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the execute function
-  knowledge_.define_function ("execute", func);
-}
-
-Madara::Knowledge_Record
-gams::controller::Loop::run (double period, double max_runtime)
-{
-  // initialize wait settings
-  Madara::Knowledge_Engine::Wait_Settings  settings;
-  settings.max_wait_time = max_runtime;
-  settings.poll_frequency = period;
-
-  // wait for the max_runtime or for monitor, analyze, plan, or execute
-  // to return non-zero
-  return knowledge_.wait (mape_loop_, settings);
-}
+#endif // _GAMS_VARIABLES_SWARM_H_

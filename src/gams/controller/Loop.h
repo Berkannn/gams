@@ -57,6 +57,8 @@
 
 #include "gams/GAMS_Export.h"
 #include "gams/variables/Device.h"
+#include "gams/variables/Swarm.h"
+#include "gams/variables/Self.h"
 #include "madara/knowledge_engine/containers/Integer.h"
 #include "madara/knowledge_engine/containers/Double.h"
 #include "madara/knowledge_engine/containers/String.h"
@@ -87,19 +89,63 @@ namespace gams
        * @param   processes  processes
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const Madara::Knowledge_Record::Integer & processes);
+        const Madara::Knowledge_Record::Integer & id = 0,
+        const Madara::Knowledge_Record::Integer & processes = -1);
 
       /**
        * Defines the MAPE loop
        **/
       void define_mape (const std::string & loop =
         "monitor (); analyze (); plan (); execute ()");
+      
+      /**
+       * Defines the monitor function (the M of MAPE). This function should
+       * return a 0 unless the MAPE loop should stop.
+       * @param  func   the function to call
+       **/
+      void define_monitor (
+        Madara::Knowledge_Record (*func) (
+          Madara::Knowledge_Engine::Function_Arguments &,
+          Madara::Knowledge_Engine::Variables &));
+      
+      /**
+       * Defines the analyze function (the A of MAPE). This function should
+       * return a 0 unless the MAPE loop should stop.
+       * @param  func   the function to call
+       **/
+      void define_analyze (
+        Madara::Knowledge_Record (*func) (
+          Madara::Knowledge_Engine::Function_Arguments &,
+          Madara::Knowledge_Engine::Variables &));
+      
+      /**
+       * Defines the plan function (the P of MAPE). This function should
+       * return a 0 unless the MAPE loop should stop.
+       * @param  func   the function to call
+       **/
+      void define_plan (
+        Madara::Knowledge_Record (*func) (
+          Madara::Knowledge_Engine::Function_Arguments &,
+          Madara::Knowledge_Engine::Variables &));
+      
+      /**
+       * Defines the execute function (the E of MAPE). This function should
+       * return a 0 unless the MAPE loop should stop.
+       * @param  func   the function to call
+       **/
+      void define_execute (
+        Madara::Knowledge_Record (*func) (
+          Madara::Knowledge_Engine::Function_Arguments &,
+          Madara::Knowledge_Engine::Variables &));
 
       /**
        * Runs one iteration of the MAPE loop
+       * @param  period       time between executions of the loop
+       * @param  max_runtime  maximum runtime within the MAPE loop
        * @return  the result of the MAPE loop
        **/
-      Madara::Knowledge_Record run (void);
+      Madara::Knowledge_Record run (double period = 0.5,
+        double max_runtime = -1);
 
     private:
 
@@ -111,6 +157,12 @@ namespace gams
 
       /// Containers for device-related variables
       variables::Devices devices_;
+
+      /// Containers for swarm-related variables
+      variables::Swarm swarm_;
+
+      /// Containers for self-referencing variables
+      variables::Self self_;
     };
   }
 }

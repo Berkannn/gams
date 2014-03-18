@@ -61,15 +61,15 @@ gams::variables::Device::operator= (const Device & device)
 {
   if (this != &device)
   {
-    this->battery_remaining_ = device.battery_remaining_;
-    this->bridge_id_ = device.bridge_id_;
-    this->coverage_type_ = device.coverage_type_;
-    this->is_mobile_ = device.is_mobile_;
-    this->location_ = device.location_;
-    this->min_alt_ = device.min_alt_;
-    this->next_coverage_type_ = device.next_coverage_type_;
-    this->search_area_id_ = device.search_area_id_;
-    this->temperature_ = device.temperature_;
+    this->battery_remaining = device.battery_remaining;
+    this->bridge_id = device.bridge_id;
+    this->coverage_type = device.coverage_type;
+    this->is_mobile = device.is_mobile;
+    this->location = device.location;
+    this->min_alt = device.min_alt;
+    this->next_coverage_type = device.next_coverage_type;
+    this->search_area_id = device.search_area_id;
+    this->temperature = device.temperature;
   }
 }
 
@@ -86,28 +86,36 @@ gams::variables::Device::init_vars (
   std::string device_name (buffer.str ());
 
   // initialize the variable containers
-  min_alt_.set_name (device_name + ".min_alt", knowledge);
-  location_.set_name (device_name + ".location", knowledge, 3);
-  is_mobile_.set_name (device_name + ".mobile", knowledge);
-  battery_remaining_.set_name (device_name + ".battery", knowledge);
-  bridge_id_.set_name (device_name + ".bridge_id", knowledge);
-  coverage_type_.set_name (device_name + ".area_coverage_type", knowledge);
-  next_coverage_type_.set_name (device_name + ".next_area_coverage_type",
+  min_alt.set_name (device_name + ".min_alt", knowledge);
+  location.set_name (device_name + ".location", knowledge, 3);
+  is_mobile.set_name (device_name + ".mobile", knowledge);
+  battery_remaining.set_name (device_name + ".battery", knowledge);
+  bridge_id.set_name (device_name + ".bridge_id", knowledge);
+  coverage_type.set_name (device_name + ".area_coverage_type", knowledge);
+  next_coverage_type.set_name (device_name + ".next_area_coverage_type",
     knowledge);
-  search_area_id_.set_name (device_name + ".search_area_id", knowledge);
+  search_area_id.set_name (device_name + ".search_area_id", knowledge);
 
   // environment variables
-  temperature_.set_name (device_name + ".temperature", knowledge);
+  temperature.set_name (device_name + ".temperature", knowledge);
 }
 
-void gams::variables::init_vars (Devices & devices,
+void gams::variables::init_vars (Devices & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,
       const Madara::Knowledge_Record::Integer & processes)
 {
-  devices.resize ((size_t) processes);
-
-  for (Integer i = 0; i < processes; ++i)
+  Integer limit = processes;
+  if (processes >= 0)
   {
-    devices[i].init_vars (knowledge, i);
+    variables.resize ((size_t) processes);
+  }
+  else
+  {
+    limit = knowledge.get ("device.size").to_integer ();
+  }
+
+  for (Integer i = 0; i < limit; ++i)
+  {
+    variables[i].init_vars (knowledge, i);
   }
 }

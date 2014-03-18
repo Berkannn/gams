@@ -44,88 +44,72 @@
  *      distribution.
  **/
 
-#include "Loop.h"
+/**
+ * @file Swarm.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the swarm-prefixed MADARA variables
+ **/
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+#ifndef   _GAMS_VARIABLES_SWARM_H_
+#define   _GAMS_VARIABLES_SWARM_H_
 
-gams::controller::Loop::Loop (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-  : knowledge_ (knowledge)
+#include <vector>
+
+#include "gams/GAMS_Export.h"
+#include "madara/knowledge_engine/containers/Vector.h"
+#include "madara/knowledge_engine/containers/String.h"
+#include "madara/knowledge_engine/containers/Double.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+
+namespace gams
 {
-  define_mape ();
+  namespace variables
+  {
+    class GAMS_Export Swarm
+    {
+    public:
+      /**
+       * Constructor
+       **/
+      Swarm ();
+
+      /**
+       * Destructor
+       **/
+      ~Swarm ();
+
+      /**
+       * Assignment operator
+       * @param  device   device to copy
+       **/
+      void operator= (const Swarm & device);
+
+      /**
+       * Initializes global variable containers
+       * @param   id         node identifier
+       * @param   processes  processes
+       **/
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+
+      /// the current command given to the swarm
+      Madara::Knowledge_Engine::Containers::String command;
+      
+      /// arguments for the command
+      Madara::Knowledge_Engine::Containers::Array args;
+      
+      /// minimum altitude for swarm to use
+      Madara::Knowledge_Engine::Containers::Double min_alt;
+    };
+    
+    /**
+      * Initializes a self containers
+      * @param   variables  the variables to initialize
+      * @param   knowledge  the knowledge base that houses the variables
+      **/
+    GAMS_Export void init_vars (Swarm & variables,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+  }
 }
 
-gams::controller::Loop::~Loop ()
-{
-
-}
-
-void
-gams::controller::Loop::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Integer & id,
-  const Integer & processes)
-{
-  // initialize the devices, swarm, and self variables
-  variables::init_vars (devices_, knowledge_, processes);
-  swarm_.init_vars (knowledge);
-  self_.init_vars (knowledge, id);
-}
-
-void
-gams::controller::Loop::define_mape (const std::string & loop)
-{
-  // define the mape loop via KaRL compilation
-  mape_loop_ = knowledge_.compile (loop);
-}
-
-void
-gams::controller::Loop::define_monitor (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the monitor function
-  knowledge_.define_function ("monitor", func);
-}
-
-void
-gams::controller::Loop::define_analyze (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the analyze function
-  knowledge_.define_function ("analyze", func);
-}
-
-void gams::controller::Loop::define_plan (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the plan function
-  knowledge_.define_function ("plan", func);
-}
-
-void gams::controller::Loop::define_execute (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the execute function
-  knowledge_.define_function ("execute", func);
-}
-
-Madara::Knowledge_Record
-gams::controller::Loop::run (double period, double max_runtime)
-{
-  // initialize wait settings
-  Madara::Knowledge_Engine::Wait_Settings  settings;
-  settings.max_wait_time = max_runtime;
-  settings.poll_frequency = period;
-
-  // wait for the max_runtime or for monitor, analyze, plan, or execute
-  // to return non-zero
-  return knowledge_.wait (mape_loop_, settings);
-}
+#endif // _GAMS_VARIABLES_SWARM_H_

@@ -48,7 +48,7 @@
  * @file Device.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the Device variables
+ * This file contains the definition of the device-prefixed MADARA variables
  **/
 
 #ifndef   _GAMS_VARIABLES_DEVICES_H_
@@ -95,39 +95,44 @@ namespace gams
         const Madara::Knowledge_Record::Integer & id);
 
       /// the minimum altitude for this device
-      Madara::Knowledge_Engine::Containers::Double min_alt_;
+      Madara::Knowledge_Engine::Containers::Double min_alt;
 
       /// the location, usually encoded in GPS, for this device
-      Madara::Knowledge_Engine::Containers::Double_Array location_;
+      Madara::Knowledge_Engine::Containers::Double_Array location;
 
       /// the mobility indicator for this device (true if mobile)
-      Madara::Knowledge_Engine::Containers::Integer is_mobile_;
+      Madara::Knowledge_Engine::Containers::Integer is_mobile;
 
       /// the battery indicator for this device
-      Madara::Knowledge_Engine::Containers::Integer battery_remaining_;
+      Madara::Knowledge_Engine::Containers::Integer battery_remaining;
 
       /// indicator for whether or not the device is busy with a mission
-      Madara::Knowledge_Engine::Containers::Integer bridge_id_;
+      Madara::Knowledge_Engine::Containers::Integer bridge_id;
 
       /// indicator for type of area coverage requested of the device
-      Madara::Knowledge_Engine::Containers::String coverage_type_;
+      Madara::Knowledge_Engine::Containers::String coverage_type;
 
       /// indicator for next type of area coverage requested (queue like)
-      Madara::Knowledge_Engine::Containers::String next_coverage_type_;
+      Madara::Knowledge_Engine::Containers::String next_coverage_type;
 
       /// indicator for next assigned search area id
-      Madara::Knowledge_Engine::Containers::Integer search_area_id_;
+      Madara::Knowledge_Engine::Containers::Integer search_area_id;
 
       /// indicator for temperature
-      Madara::Knowledge_Engine::Containers::Double temperature_;
+      Madara::Knowledge_Engine::Containers::Double temperature;
     };
 
     /**
      * An array of devices
      **/
     typedef std::vector <Device>   Devices;
-
-    GAMS_Export void init_vars (Devices & devices,
+    
+    /**
+      * Initializes a self containers
+      * @param   variables  the variables to initialize
+      * @param   knowledge  the knowledge base that houses the variables
+      **/
+    GAMS_Export void init_vars (Devices & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,
       const Madara::Knowledge_Record::Integer & processes);
   }

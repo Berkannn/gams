@@ -43,89 +43,46 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-
-#include "Loop.h"
+#include "Swarm.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
-gams::controller::Loop::Loop (
+
+gams::variables::Swarm::Swarm ()
+{
+}
+
+gams::variables::Swarm::~Swarm ()
+{
+}
+
+void
+gams::variables::Swarm::operator= (const Swarm & rhs)
+{
+  if (this != &rhs)
+  {
+    this->command = rhs.command;
+    this->args = rhs.args;
+    this->min_alt = rhs.min_alt;
+  }
+}
+
+
+void
+gams::variables::Swarm::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-  : knowledge_ (knowledge)
 {
-  define_mape ();
+  // swarm commands are prefixed with "swarm.movement_command"
+  std::string prefix ("swarm.command");
+
+  // initialize the variable containers
+  min_alt.set_name (prefix + ".min_alt", knowledge);
+  command.set_name (prefix, knowledge);
+  args.set_name (prefix, knowledge);
 }
 
-gams::controller::Loop::~Loop ()
+void gams::variables::init_vars (Swarm & variables,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
 {
-
-}
-
-void
-gams::controller::Loop::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Integer & id,
-  const Integer & processes)
-{
-  // initialize the devices, swarm, and self variables
-  variables::init_vars (devices_, knowledge_, processes);
-  swarm_.init_vars (knowledge);
-  self_.init_vars (knowledge, id);
-}
-
-void
-gams::controller::Loop::define_mape (const std::string & loop)
-{
-  // define the mape loop via KaRL compilation
-  mape_loop_ = knowledge_.compile (loop);
-}
-
-void
-gams::controller::Loop::define_monitor (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the monitor function
-  knowledge_.define_function ("monitor", func);
-}
-
-void
-gams::controller::Loop::define_analyze (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the analyze function
-  knowledge_.define_function ("analyze", func);
-}
-
-void gams::controller::Loop::define_plan (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the plan function
-  knowledge_.define_function ("plan", func);
-}
-
-void gams::controller::Loop::define_execute (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the execute function
-  knowledge_.define_function ("execute", func);
-}
-
-Madara::Knowledge_Record
-gams::controller::Loop::run (double period, double max_runtime)
-{
-  // initialize wait settings
-  Madara::Knowledge_Engine::Wait_Settings  settings;
-  settings.max_wait_time = max_runtime;
-  settings.poll_frequency = period;
-
-  // wait for the max_runtime or for monitor, analyze, plan, or execute
-  // to return non-zero
-  return knowledge_.wait (mape_loop_, settings);
+  variables.init_vars (knowledge);
 }
