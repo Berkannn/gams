@@ -43,6 +43,14 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+
+/**
+ * @file test_control_loop.cpp
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains a test driver for the GAMS controller loop.
+ **/
+
 #include "madara/knowledge_engine/Knowledge_Base.h"
 #include "gams/controller/Loop.h"
 

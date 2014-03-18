@@ -76,7 +76,7 @@ gams::variables::Swarm::init_vars (
   std::string prefix ("swarm.command");
 
   // initialize the variable containers
-  min_alt.set_name (prefix + ".min_alt", knowledge);
+  min_alt.set_name ("swarm.min_alt", knowledge);
   command.set_name (prefix, knowledge);
   args.set_name (prefix, knowledge);
 }
