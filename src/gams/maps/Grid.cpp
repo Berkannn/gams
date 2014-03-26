@@ -43,59 +43,36 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
+#include "Grid.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
 
-gams::variables::Swarm::Swarm ()
+gams::variables::Grid::Grid ()
 {
 }
 
-gams::variables::Swarm::~Swarm ()
+gams::variables::Grid::~Grid ()
 {
 }
 
 void
-gams::variables::Swarm::operator= (const Swarm & rhs)
+gams::variables::Grid::operator= (const Grid & rhs)
 {
   if (this != &rhs)
   {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
   }
 }
 
 
 void
-gams::variables::Swarm::init_vars (
+gams::variables::Grid::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
 }
 
 void
-gams::variables::Swarm::init_vars (
+gams::variables::Grid::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  variables.init_vars (knowledge);
 }

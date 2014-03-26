@@ -43,59 +43,90 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+/**
+ * @file test_control_loop.cpp
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains a test driver for the GAMS controller loop.
+ **/
 
+#include "madara/knowledge_engine/Knowledge_Base.h"
+#include "gams/controller/Mape_Loop.h"
 
-gams::variables::Swarm::Swarm ()
+// create shortcuts to MADARA classes and namespaces
+namespace engine = Madara::Knowledge_Engine;
+namespace controller = gams::controller;
+typedef Madara::Knowledge_Record   Record;
+typedef Record::Integer Integer;
+
+/**
+ * Monitor function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record monitor (engine::Function_Arguments & args, engine::Variables & vars)
 {
+  vars.inc (".monitor");
+
+  return Integer (0);
 }
 
-gams::variables::Swarm::~Swarm ()
+/**
+ * Analyze function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record analyze (engine::Function_Arguments & args, engine::Variables & vars)
 {
+  vars.inc (".analyze");
+
+  return Integer (0);
 }
 
-void
-gams::variables::Swarm::operator= (const Swarm & rhs)
+/**
+ * Plan function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record plan (engine::Function_Arguments & args, engine::Variables & vars)
 {
-  if (this != &rhs)
-  {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
-  }
+  Record value = vars.inc (".plan");
+
+  return Integer (value == Integer (20));
 }
 
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+/**
+ * Execute function
+ * @param  args   arguments to the function
+ * @param  vars   interface to the knowledge base
+ **/
+Record execute (engine::Function_Arguments & args, engine::Variables & vars)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
+  vars.inc (".execute");
 
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  return Integer (0);
 }
 
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
+// perform main logic of program
+int main (int argc, char ** argv)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
+  // create knowledge base and a control loop
+  engine::Knowledge_Base knowledge;
+  controller::Mape_Loop loop (knowledge);
 
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
+  // initialize variables and function stubs
+  loop.init_vars (knowledge, 0, 4);
+  loop.define_monitor (monitor);
+  loop.define_analyze (analyze);
+  loop.define_plan (plan);
+  loop.define_execute (execute);
 
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  variables.init_vars (knowledge);
+  // run a mape loop every 1s for 50s
+  loop.run (1.0, 50.0);
+
+  // print all knowledge values
+  knowledge.print ();
+
+  return 0;
 }

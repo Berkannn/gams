@@ -43,59 +43,37 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
-
-typedef  Madara::Knowledge_Record::Integer  Integer;
+#include "Base_Algorithm.h"
 
 
-gams::variables::Swarm::Swarm ()
+gams::algorithms::Base::Base (platforms::Base * platform, variables::Sensors * sensors)
+  : platform_ (platform), sensors_ (sensors)
 {
 }
 
-gams::variables::Swarm::~Swarm ()
+gams::algorithms::Base::~Base ()
 {
 }
 
 void
-gams::variables::Swarm::operator= (const Swarm & rhs)
+gams::algorithms::Base::operator= (const Base & rhs)
 {
   if (this != &rhs)
   {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
+    this->platform_ = rhs.platform_;
+    this->sensors_ = rhs.sensors_;
   }
 }
 
-
 void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  sensors_ = sensors;
 }
 
 void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
+gams::algorithms::Base::set_platform (platforms::Base * platform)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  platform_ = platform;
 }
-
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  variables.init_vars (knowledge);
-}
+      

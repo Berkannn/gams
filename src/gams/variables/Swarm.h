@@ -86,11 +86,18 @@ namespace gams
       void operator= (const Swarm & device);
 
       /**
-       * Initializes global variable containers
+       * Initializes variable containers
        * @param   id         node identifier
        * @param   processes  processes
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+      
+      /**
+       * Initializes variable containers
+       * @param   knowledge  the variable context
+       * @param   processes  processes
+       **/
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge);
 
       /// the current command given to the swarm
       Madara::Knowledge_Engine::Containers::String command;

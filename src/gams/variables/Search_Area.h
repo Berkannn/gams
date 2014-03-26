@@ -43,59 +43,79 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+/**
+ * @file Search_Area.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the search area-prefixed MADARA variables
+ **/
 
+#ifndef   _GAMS_VARIABLES_SEARCH_AREA_H_
+#define   _GAMS_VARIABLES_SEARCH_AREA_H_
 
-gams::variables::Swarm::Swarm ()
+#include <vector>
+
+#include "Region.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+
+namespace gams
 {
-}
-
-gams::variables::Swarm::~Swarm ()
-{
-}
-
-void
-gams::variables::Swarm::operator= (const Swarm & rhs)
-{
-  if (this != &rhs)
+  namespace variables
   {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
+    class GAMS_Export Search_Area
+    {
+    public:
+      /**
+       * Constructor
+       * @param  sensor_name  name of the sensor
+       **/
+      Search_Area ();
+
+      /**
+       * Destructor
+       **/
+      ~Search_Area ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Search_Area & rhs);
+
+      /**
+       * Initializes variable containers
+       * @param   knowledge  the knowledge base that houses the variables
+       * @param   area_name  name of the area
+       **/
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const std::string & area_name = "0");
+      
+      /**
+       * Initializes variable containers
+       * @param   knowledge  the variable context
+       * @param   area_name  name of the area
+       **/
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
+      const std::string & area_name = "0");
+
+      /// region that the named search area points to
+      Region region;
+
+      /// name of the search area
+      std::string name;
+    };
+    
+    /**
+      * Initializes a self containers
+      * @param   variables  the variables to initialize
+      * @param   knowledge  the knowledge base that houses the variables
+      * @param   area_name  name of the area
+      **/
+    GAMS_Export void init_vars (Search_Area & variables,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const std::string & area_name = "0");
   }
 }
 
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  variables.init_vars (knowledge);
-}
+#endif // _GAMS_VARIABLES_SEARCH_AREA_H_

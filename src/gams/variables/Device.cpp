@@ -100,6 +100,32 @@ gams::variables::Device::init_vars (
   temperature.set_name (device_name + ".temperature", knowledge);
 }
 
+void
+gams::variables::Device::init_vars (
+  Madara::Knowledge_Engine::Variables & knowledge,
+  const Integer & id)
+{
+  // create the device name string identifier ('device.{id}')
+  std::stringstream buffer;
+  buffer << "device.";
+  buffer << id;
+  std::string device_name (buffer.str ());
+
+  // initialize the variable containers
+  min_alt.set_name (device_name + ".min_alt", knowledge);
+  location.set_name (device_name + ".location", knowledge, 3);
+  is_mobile.set_name (device_name + ".mobile", knowledge);
+  battery_remaining.set_name (device_name + ".battery", knowledge);
+  bridge_id.set_name (device_name + ".bridge_id", knowledge);
+  coverage_type.set_name (device_name + ".area_coverage_type", knowledge);
+  next_coverage_type.set_name (device_name + ".next_area_coverage_type",
+    knowledge);
+  search_area_id.set_name (device_name + ".search_area_id", knowledge);
+
+  // environment variables
+  temperature.set_name (device_name + ".temperature", knowledge);
+}
+
 void gams::variables::init_vars (Devices & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,
       const Madara::Knowledge_Record::Integer & processes)

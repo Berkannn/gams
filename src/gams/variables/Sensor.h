@@ -43,59 +43,90 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+/**
+ * @file Sensor.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the sensor-prefixed MADARA variables
+ **/
 
+#ifndef   _GAMS_VARIABLES_SENSOR_H_
+#define   _GAMS_VARIABLES_SENSOR_H_
 
-gams::variables::Swarm::Swarm ()
+#include <vector>
+#include <map>
+
+#include "gams/GAMS_Export.h"
+#include "madara/knowledge_engine/containers/Double.h"
+#include "madara/knowledge_engine/containers/Map.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+
+namespace gams
 {
-}
-
-gams::variables::Swarm::~Swarm ()
-{
-}
-
-void
-gams::variables::Swarm::operator= (const Swarm & rhs)
-{
-  if (this != &rhs)
+  namespace variables
   {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
+    class GAMS_Export Sensor
+    {
+    public:
+      /**
+       * Constructor
+       **/
+      Sensor ();
+
+      /**
+       * Destructor
+       **/
+      ~Sensor ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Sensor & rhs);
+
+      /**
+       * Initializes variable containers
+       * @param  knowledge    the knowledge base that houses the variables
+       * @param  sensor_name  name of the sensor
+       **/
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const std::string & sensor_name);
+      
+      /**
+       * Initializes variable containers
+       * @param   knowledge    the variable context
+       * @param   sensor_name  name of the sensor
+       **/
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
+        const std::string & sensor_name);
+
+      /// the current command given to the swarm
+      Madara::Knowledge_Engine::Containers::Double range;
+
+      /// the map area that has been covered by the sensor
+      Madara::Knowledge_Engine::Containers::Map covered;
+
+      /// name of the sensor
+      std::string name;
+    };
+    
+    /**
+      * Initializes a self containers
+      * @param   variables  the variables to initialize
+      * @param   knowledge  the knowledge base that houses the variables
+      * @param   sensor_name  name of the sensor
+      **/
+    GAMS_Export void init_vars (Sensor & variables,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const std::string & sensor_name = "0");
+
+    /// a map of sensor names to the sensor information
+    typedef  std::map <std::string, Sensor>   Sensors;
+
+    /// a list of sensor names
+    typedef  std::vector <std::string>        Sensor_Names;
   }
 }
 
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  variables.init_vars (knowledge);
-}
+#endif // _GAMS_VARIABLES_SENSOR_H_

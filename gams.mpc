@@ -17,13 +17,21 @@ project (gams) : using_madara, using_ace {
   }
 
   Header_Files {
+    src/gams/algorithms
     src/gams/controller
+    src/gams/maps
+    src/gams/platforms
+    src/gams/utility
     src/gams/variables
     src/gams
   }
 
   Source_Files {
+    src/gams/algorithms
     src/gams/controller
+    src/gams/maps
+    src/gams/platforms
+    src/gams/utility
     src/gams/variables
   }
 }

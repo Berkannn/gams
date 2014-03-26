@@ -77,6 +77,16 @@ gams::variables::Self::init_vars (
   this->device.init_vars (knowledge, id);
 }
 
+void
+gams::variables::Self::init_vars (
+  Madara::Knowledge_Engine::Variables & knowledge,
+  const Integer & id)
+{
+  // initialize the variable containers
+  this->id.set_name ("id", knowledge);
+  this->device.init_vars (knowledge, id);
+}
+
 void gams::variables::init_vars (Self & variables,
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   const Integer & id)

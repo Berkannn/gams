@@ -45,7 +45,7 @@
  **/
 
 /**
- * @file Loop.h
+ * @file Mape_Loop.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
  * This file contains the definition of the MAPE loop used to autonomously
@@ -59,6 +59,9 @@
 #include "gams/variables/Device.h"
 #include "gams/variables/Swarm.h"
 #include "gams/variables/Self.h"
+#include "gams/variables/Sensor.h"
+#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/platforms/Base_Platform.h"
 #include "madara/knowledge_engine/containers/Integer.h"
 #include "madara/knowledge_engine/containers/Double.h"
 #include "madara/knowledge_engine/containers/String.h"
@@ -69,19 +72,19 @@ namespace gams
 {
   namespace controller
   {
-    class GAMS_Export Loop
+    class GAMS_Export Mape_Loop
     {
     public:
       /**
        * Constructor
        * @param   knowledge   The knowledge base to reference and mutate
        **/
-      Loop (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+      Mape_Loop (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
 
       /**
        * Destructor
        **/
-      ~Loop ();
+      ~Mape_Loop ();
 
       /**
        * Initializes global variable containers
@@ -147,12 +150,12 @@ namespace gams
       Madara::Knowledge_Record run (double period = 0.5,
         double max_runtime = -1);
 
-    private:
+    protected:
 
       /// knowledge base
       Madara::Knowledge_Engine::Knowledge_Base & knowledge_;
 
-      /// Compiled MAPE Loop
+      /// Compiled MAPE Mape_Loop
       Madara::Knowledge_Engine::Compiled_Expression mape_loop_;
 
       /// Containers for device-related variables
@@ -163,6 +166,9 @@ namespace gams
 
       /// Containers for self-referencing variables
       variables::Self self_;
+
+      /// Containers for sensor information
+      variables::Sensors sensors_;
     };
   }
 }

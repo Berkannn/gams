@@ -43,59 +43,41 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
+#include "GPS.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
-
-
-gams::variables::Swarm::Swarm ()
+double
+gams::utility::get_distance (
+      double lat1, double long1,
+      double lat2, double long2)
 {
-}
+  /**
+   * We use Haversine here, though it is known to be less accurate than
+   * Vincenty's formula. Unfortunately, Vincenty's formula is iterative
+   * and can be time consuming. Harversine is less accurate but easier to
+   * code and much quicker.
+   *
+   * From literature reviews, Haversine can be inaccurate up to .3% and
+   * this varies with altitude since Haversine assumes a perfect sphere
+   * and Earth simply isn't one (it's actually an ellipsoid with an irregular
+   * surface).
+   **/
 
-gams::variables::Swarm::~Swarm ()
-{
-}
+  // Convert the coordinates into radians for haversine method
+  lat1 = DEGREES_TO_RADIANS (lat1);
+  lat2 = DEGREES_TO_RADIANS (lat2);
 
-void
-gams::variables::Swarm::operator= (const Swarm & rhs)
-{
-  if (this != &rhs)
-  {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
-  }
-}
+  // get difference in radians
+  double lat_rad_diff = DEGREES_TO_RADIANS (lat2 - lat1);
+  double long_rad_diff = DEGREES_TO_RADIANS (long2 - long1);
 
+  // Here is the meat of the Haversine formula
+  double a =
+    sin (lat_rad_diff / 2) * sin (lat_rad_diff / 2) + (
+      sin (long_rad_diff / 2) * sin (long_rad_diff / 2) *
+        cos (lat1) * cos (lat2));
 
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
+  double c = 2 * atan2(sqrt (a), sqrt (1 - a));
 
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  variables.init_vars (knowledge);
+  // Return Earth's radius 
+  return 6371000 * c;
 }

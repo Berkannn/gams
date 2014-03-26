@@ -43,59 +43,71 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
+#include "Search_Area.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
 
-gams::variables::Swarm::Swarm ()
+gams::variables::Search_Area::Search_Area ()
 {
 }
 
-gams::variables::Swarm::~Swarm ()
+gams::variables::Search_Area::~Search_Area ()
 {
 }
 
 void
-gams::variables::Swarm::operator= (const Swarm & rhs)
+gams::variables::Search_Area::operator= (const Search_Area & rhs)
 {
   if (this != &rhs)
   {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
+    this->region = rhs.region;
+    this->name = rhs.name;
   }
 }
 
 
 void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+gams::variables::Search_Area::init_vars (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const std::string & area_name)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
+  // set name
+  name = area_name;
 
+  // swarm commands are prefixed with "swarm.movement_command"
+  std::string prefix ("search_area");
+  prefix += ".";
+  prefix += area_name;
+
+  Madara::Knowledge_Record region_id = knowledge.get (prefix);
+  
   // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  region.init_vars (knowledge, region_id.to_string ());
 }
 
 void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
+gams::variables::Search_Area::init_vars (
+  Madara::Knowledge_Engine::Variables & knowledge,
+  const std::string & area_name)
 {
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
+  // set name
+  name = area_name;
 
+  // swarm commands are prefixed with "swarm.movement_command"
+  std::string prefix ("search_area");
+  prefix += ".";
+  prefix += area_name;
+
+  Madara::Knowledge_Record region_id = knowledge.get (prefix);
+  
   // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  region.init_vars (knowledge, region_id.to_string ());
 }
 
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+void gams::variables::init_vars (Search_Area & variables,
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const std::string & area_name)
 {
-  variables.init_vars (knowledge);
+  variables.init_vars (knowledge, area_name);
 }

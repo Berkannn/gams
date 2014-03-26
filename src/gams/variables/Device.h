@@ -87,11 +87,19 @@ namespace gams
       void operator= (const Device & device);
 
       /**
-       * Initializes global variable containers
+       * Initializes variable containers
+       * @param   knowledge  the variable context
        * @param   id         node identifier
-       * @param   processes  processes
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const Madara::Knowledge_Record::Integer & id);
+      
+      /**
+       * Initializes variable containers
+       * @param   knowledge  the variable context
+       * @param   id         node identifier
+       **/
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
         const Madara::Knowledge_Record::Integer & id);
 
       /// the minimum altitude for this device

@@ -86,11 +86,19 @@ namespace gams
       void operator= (const Self & device);
 
       /**
-       * Initializes global variable containers
+       * Initializes variable containers
        * @param   knowledge  the knowledge base that houses the variables
        * @param   id         node identifier
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const Madara::Knowledge_Record::Integer & id);
+      
+      /**
+       * Initializes variable containers
+       * @param   knowledge  the variable context
+       * @param   id         node identifier
+       **/
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
         const Madara::Knowledge_Record::Integer & id);
 
       /// the id of this device

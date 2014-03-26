@@ -43,59 +43,93 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+/**
+ * @file Base.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the base platform class
+ **/
 
+#ifndef   _GAMS_PLATFORM_BASE_H_
+#define   _GAMS_PLATFORM_BASE_H_
 
-gams::variables::Swarm::Swarm ()
+#include "gams/variables/Sensor.h"
+
+namespace gams
 {
-}
-
-gams::variables::Swarm::~Swarm ()
-{
-}
-
-void
-gams::variables::Swarm::operator= (const Swarm & rhs)
-{
-  if (this != &rhs)
+  namespace platforms
   {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
+    /**
+     * Possible platform statuses, as returnable by analyze ()
+     **/
+    enum Status
+    {
+      SENSORS_AVAILABLE = 1,
+      MOVEMENT_AVAILABLE = 2,
+      REDUCED_SENSING_AVAILABLE = 4,
+      REDUCED_MOVEMENT_AVAILABLE = 8,
+      COMMUNICATION_AVAILABLE = 16
+    };
+
+    class GAMS_Export Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  sensors  map of sensor names to sensor information
+       **/
+      Base (variables::Sensors * sensors = 0);
+
+      /**
+       * Destructor
+       **/
+      ~Base ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Base & rhs);
+
+      /**
+       * Moves the platform to an x, y, z location
+       * @param   x   x coordinate, often latitude
+       * @param   y   y coordinate, often longitude
+       * @param   z   z coordinate, often altitude
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int move (double x, double y, double z) = 0;
+      
+      /**
+       * Polls the sensor environment for useful information
+       * @return number of sensors updated/used
+       **/
+      virtual int sense (void) = 0;
+      
+      /**
+       * Analyzes platform information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void) = 0;
+
+      /**
+       * Fills a list of sensor names with sensors available on the platform
+       **/
+      virtual void get_sensors (variables::Sensor_Names & sensors) = 0;
+
+      /**
+       * Sets the map of sensor names to sensor information
+       * @param  sensors      map of sensor names to sensor information
+       **/
+      virtual void set_sensors (variables::Sensors * sensors);
+      
+    protected:
+
+      /// provides access to a sensor
+      variables::Sensors * sensors_;
+    };
   }
 }
 
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
-{
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
-}
-
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-{
-  variables.init_vars (knowledge);
-}
+#endif // _GAMS_PLATFORM_BASE_H_

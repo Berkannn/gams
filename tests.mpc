@@ -1,7 +1,7 @@
 
-project (Test_Control_Loop) : using_gams, using_madara, using_ace {
+project (Test_Mape_Loop) : using_gams, using_madara, using_ace {
   exeout = $(GAMS_ROOT)/bin
-  exename = test_control_loop
+  exename = test_mape_loop
   
   requires += tests
 
@@ -17,7 +17,7 @@ project (Test_Control_Loop) : using_gams, using_madara, using_ace {
   }
 
   Source_Files {
-    tests/test_control_loop.cpp
+    tests/test_mape_loop.cpp
   }
 }
 

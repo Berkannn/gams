@@ -45,88 +45,84 @@
  **/
 
 /**
- * @file test_control_loop.cpp
+ * @file Region.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains a test driver for the GAMS controller loop.
+ * This file contains the definition of the region-prefixed MADARA variables
  **/
 
+#ifndef   _GAMS_VARIABLES_REGION_H_
+#define   _GAMS_VARIABLES_REGION_H_
+
+#include <vector>
+
+#include "gams/GAMS_Export.h"
+#include "madara/knowledge_engine/containers/Integer.h"
+#include "madara/knowledge_engine/containers/Double_Vector.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
-#include "gams/controller/Loop.h"
 
-// create shortcuts to MADARA classes and namespaces
-namespace engine = Madara::Knowledge_Engine;
-namespace controller = gams::controller;
-typedef Madara::Knowledge_Record   Record;
-typedef Record::Integer Integer;
-
-/**
- * Monitor function
- * @param  args   arguments to the function
- * @param  vars   interface to the knowledge base
- **/
-Record monitor (engine::Function_Arguments & args, engine::Variables & vars)
+namespace gams
 {
-  vars.inc (".monitor");
+  namespace variables
+  {
+    class GAMS_Export Region
+    {
+    public:
+      /**
+       * Constructor
+       **/
+      Region ();
 
-  return Integer (0);
+      /**
+       * Destructor
+       **/
+      ~Region ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Region & rhs);
+
+      /**
+       * Initializes variable containers
+       * @param   knowledge    the knowledge base that houses the variables
+       * @param   region_name  name of the region
+       **/
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const std::string & region_name = "0");
+      
+      /**
+       * Initializes variable containers
+       * @param   knowledge  the variable context
+       * @param   region_name  name of the region
+       **/
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
+        const std::string & region_name = "0");
+
+      /// the type of region (0 for Rectangle)
+      Madara::Knowledge_Engine::Containers::Integer type;
+
+      /// the top left coordinate
+      Madara::Knowledge_Engine::Containers::Double_Vector top_left;
+      
+      /// the bottom right coordinate
+      Madara::Knowledge_Engine::Containers::Double_Vector bottom_right;
+
+      /// region identifier
+      std::string name;
+    };
+    
+    /**
+      * Initializes a self containers
+      * @param   variables    the variables to initialize
+      * @param   knowledge    the knowledge base that houses the variables
+      * @param   region_name  name of the region
+      **/
+    GAMS_Export void init_vars (Region & variables,
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const std::string & region_name = "0");
+  }
 }
 
-/**
- * Analyze function
- * @param  args   arguments to the function
- * @param  vars   interface to the knowledge base
- **/
-Record analyze (engine::Function_Arguments & args, engine::Variables & vars)
-{
-  vars.inc (".analyze");
-
-  return Integer (0);
-}
-
-/**
- * Plan function
- * @param  args   arguments to the function
- * @param  vars   interface to the knowledge base
- **/
-Record plan (engine::Function_Arguments & args, engine::Variables & vars)
-{
-  Record value = vars.inc (".plan");
-
-  return Integer (value == Integer (20));
-}
-
-/**
- * Execute function
- * @param  args   arguments to the function
- * @param  vars   interface to the knowledge base
- **/
-Record execute (engine::Function_Arguments & args, engine::Variables & vars)
-{
-  vars.inc (".execute");
-
-  return Integer (0);
-}
-
-// perform main logic of program
-int main (int argc, char ** argv)
-{
-  // create knowledge base and a control loop
-  engine::Knowledge_Base knowledge;
-  controller::Loop loop (knowledge);
-
-  // initialize variables and function stubs
-  loop.init_vars (knowledge, 0, 4);
-  loop.define_monitor (monitor);
-  loop.define_analyze (analyze);
-  loop.define_plan (plan);
-  loop.define_execute (execute);
-
-  // run a mape loop every 1s for 50s
-  loop.run (1.0, 50.0);
-
-  // print all knowledge values
-  knowledge.print ();
-
-  return 0;
-}
+#endif // _GAMS_VARIABLES_REGION_H_

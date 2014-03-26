@@ -43,59 +43,73 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
+#include "Region.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
 
-gams::variables::Swarm::Swarm ()
+gams::variables::Region::Region ()
 {
 }
 
-gams::variables::Swarm::~Swarm ()
+gams::variables::Region::~Region ()
 {
 }
 
 void
-gams::variables::Swarm::operator= (const Swarm & rhs)
+gams::variables::Region::operator= (const Region & rhs)
 {
   if (this != &rhs)
   {
-    this->command = rhs.command;
-    this->args = rhs.args;
-    this->min_alt = rhs.min_alt;
+    this->type = rhs.type;
+    this->name = rhs.name;
+    this->top_left = rhs.top_left;
+    this->bottom_right = rhs.bottom_right;
   }
 }
 
 
 void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+gams::variables::Region::init_vars (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const std::string & region_name)
 {
+  // set the name of the region
+  name = region_name;
+
   // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
+  std::string prefix ("region");
+  prefix += ".";
+  prefix += name;
 
   // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  type.set_name (prefix + ".type", knowledge);
+  top_left.set_name (prefix + ".top_left", knowledge);
+  bottom_right.set_name (prefix + ".bottom_right", knowledge);
 }
 
 void
-gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
+gams::variables::Region::init_vars (
+  Madara::Knowledge_Engine::Variables & knowledge,
+  const std::string & region_name)
 {
+  // set the name of the region
+  name = region_name;
+
   // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
+  std::string prefix ("region");
+  prefix += ".";
+  prefix += name;
 
   // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  type.set_name (prefix + ".type", knowledge);
+  top_left.set_name (prefix + ".top_left", knowledge);
+  bottom_right.set_name (prefix + ".bottom_right", knowledge);
 }
 
-void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+void gams::variables::init_vars (Region & variables,
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const std::string & region_name)
 {
-  variables.init_vars (knowledge);
+  variables.init_vars (knowledge, region_name);
 }
