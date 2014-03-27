@@ -43,30 +43,86 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Base_Platform.h"
 
+/**
+ * @file Drone_RK.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the Drone-RK platform class
+ **/
 
-gams::platforms::Base::Base (variables::Sensors * sensors)
-  : sensors_ (sensors)
+#ifndef   _GAMS_PLATFORM_DRONE_RK_H_
+#define   _GAMS_PLATFORM_DRONE_RK_H_
+
+#include "gams/variables/Self.h"
+#include "gams/variables/Sensor.h"
+#include "gams/variables/Platform.h"
+#include "gams/platforms/Base_Platform.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+
+namespace gams
 {
-}
-
-gams::platforms::Base::~Base ()
-{
-}
-
-void
-gams::platforms::Base::operator= (const Base & rhs)
-{
-  if (this != &rhs)
+  namespace platforms
   {
-    this->sensors_ = rhs.sensors_;
-    this->status_ = rhs.status_;
+    class GAMS_Export Drone_RK : public Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  knowledge  knowledge base
+       * @param  sensors    map of sensor names to sensor information
+       * @param  platforms  map of platform names to platform information
+       * @param  self       device variables that describe self state
+       **/
+      Drone_RK (
+        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        variables::Sensors * sensors,
+        variables::Platforms & platforms,
+        variables::Self & self);
+
+      /**
+       * Destructor
+       **/
+      ~Drone_RK ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Drone_RK & rhs);
+
+      /**
+       * Moves the platform to an x, y, z location
+       * @param   x   x coordinate, often latitude
+       * @param   y   y coordinate, often longitude
+       * @param   z   z coordinate, often altitude
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int move (double x, double y, double z);
+      
+      /**
+       * Polls the sensor environment for useful information
+       * @return number of sensors updated/used
+       **/
+      virtual int sense (void);
+      
+      /**
+       * Analyzes platform information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+
+      /**
+       * Fills a list of sensor names with sensors available on the platform
+       **/
+      virtual void get_sensors (variables::Sensor_Names & sensors);
+
+    protected:
+
+      /// provides access to variables denoting self state
+      variables::Self self_;
+    };
   }
 }
 
-void
-gams::platforms::Base::set_sensors (variables::Sensors * sensors)
-{
-  sensors_ = sensors;
-}
+#endif // _GAMS_PLATFORM_DRONE_RK_H_

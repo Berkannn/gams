@@ -136,6 +136,9 @@ namespace gams
 
       /// status flag for full movement availability
       Madara::Knowledge_Engine::Containers::Integer movement_available;
+
+      /// status flag for the detection of active spoofing of GPS
+      Madara::Knowledge_Engine::Containers::Integer gps_spoofed;
     };
 
     /// a map of sensor names to the sensor information

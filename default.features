@@ -13,3 +13,7 @@
 /// Enable this feature if you want to generate test applications
 tests                   = 1
 
+
+/// @feature dronerk
+/// Enable this feature if you want to support the Drone RK platform
+dronerk                   = 1

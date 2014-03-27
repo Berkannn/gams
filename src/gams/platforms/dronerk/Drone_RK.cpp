@@ -43,20 +43,25 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Base_Platform.h"
+#include "Drone_RK.h"
 
 
-gams::platforms::Base::Base (variables::Sensors * sensors)
-  : sensors_ (sensors)
+gams::platforms::Drone_RK::Drone_RK (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  variables::Sensors * sensors,
+  variables::Platforms & platforms,
+  variables::Self & self)
+  : Base (sensors), self_ (self)
 {
+  platforms["drone_rk"].init_vars (knowledge, "drone_rk");
 }
 
-gams::platforms::Base::~Base ()
+gams::platforms::Drone_RK::~Drone_RK ()
 {
 }
 
 void
-gams::platforms::Base::operator= (const Base & rhs)
+gams::platforms::Drone_RK::operator= (const Drone_RK & rhs)
 {
   if (this != &rhs)
   {
@@ -66,7 +71,42 @@ gams::platforms::Base::operator= (const Base & rhs)
 }
 
 void
-gams::platforms::Base::set_sensors (variables::Sensors * sensors)
+gams::platforms::Drone_RK::get_sensors (variables::Sensor_Names & sensors)
 {
-  sensors_ = sensors;
+  bool needs_change (false);
+
+  if (sensors.size () != 1)
+  {
+    needs_change = true;
+    sensors.resize (1);
+  }
+  else
+  {
+    if (sensors[0] != "thermal")
+        needs_change = true;
+  }
+
+  if (needs_change)
+  {
+    sensors[0] = "thermal";
+  }
+}
+
+
+int
+gams::platforms::Drone_RK::move (double x, double y, double z)
+{
+  return 0;
+}
+      
+int
+gams::platforms::Drone_RK::sense (void)
+{
+  return 0;
+}
+      
+int
+gams::platforms::Drone_RK::analyze (void)
+{
+  return 0;
 }

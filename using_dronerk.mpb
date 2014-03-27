@@ -1,0 +1,12 @@
+feature (dronerk) {
+  
+  macros += _GAMS_DRONERK_
+
+  Header_Files {
+    src/gams/platforms/dronerk
+  }
+
+  Source_Files {
+    src/gams/platforms/dronerk
+  }
+}

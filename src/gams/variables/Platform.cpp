@@ -72,6 +72,7 @@ gams::variables::Platform::operator= (const Platform & rhs)
     this->communication_available = rhs.communication_available;
     this->sensors_available = rhs.sensors_available;
     this->movement_available = rhs.movement_available;
+    this->gps_spoofed = rhs.gps_spoofed;
   }
 }
 
@@ -102,6 +103,7 @@ gams::variables::Platform::init_vars (
   this->sensors_available.set_name (prefix + ".sensors_available", knowledge);
   this->movement_available.set_name (
     prefix + ".movement_available", knowledge);
+  this->gps_spoofed.set_name (prefix + ".gps_spoofed", knowledge);
 }
 
 void
@@ -130,4 +132,5 @@ gams::variables::Platform::init_vars (
   this->sensors_available.set_name (prefix + ".sensors_available", knowledge);
   this->movement_available.set_name (
     prefix + ".movement_available", knowledge);
+  this->gps_spoofed.set_name (prefix + ".gps_spoofed", knowledge);
 }

@@ -12,8 +12,13 @@ project (gams) : using_madara, using_ace {
   }
   
   Build_Files {
+    default.features
     gams.mpc
     gams.mwc
+    using_ace.mpb
+    using_madara.mpb
+    using_gams.mpb
+    using_dronerk.mpb
   }
 
   Header_Files {
