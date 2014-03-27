@@ -45,98 +45,105 @@
  **/
 
 /**
- * @file Base.h
+ * @file Self.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the base algorithm class
+ * This file contains the definition of the self-referencing MADARA variables
  **/
 
-#ifndef   _GAMS_ALGORITHMS_BASE_H_
-#define   _GAMS_ALGORITHMS_BASE_H_
+#ifndef   _GAMS_VARIABLES_PLATFORM_H_
+#define   _GAMS_VARIABLES_PLATFORM_H_
 
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
+#include <vector>
+
+#include "gams/GAMS_Export.h"
+#include "madara/knowledge_engine/containers/Integer.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+#include "Device.h"
+
 
 namespace gams
 {
-  namespace algorithms
+  namespace variables
   {
-    /**
-     * Possible algorithm statuses, as returnable by analyze ()
-     **/
-    enum Status
-    {
-      UNKNOWN = 0,
-      OK  = 1,
-      WAITING = 2,
-      DEADLOCKED = 4,
-      FAILED = 8
-    };
-
-    class GAMS_Export Base
+    class GAMS_Export Platform
     {
     public:
       /**
        * Constructor
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
        **/
-      Base (platforms::Base * platform = 0, variables::Sensors * sensors = 0);
+      Platform ();
 
       /**
        * Destructor
        **/
-      ~Base ();
+      ~Platform ();
 
       /**
        * Assignment operator
-       * @param  rhs   values to copy
+       * @param  rhs   value to copy
        **/
-      void operator= (const Base & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void) = 0;
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void) = 0;
+      void operator= (const Platform & rhs);
 
       /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
+       * Initializes variable containers
+       * @param   knowledge  the knowledge base that houses the variables
+       * @param   new_name   the name of the platform
        **/
-      virtual int plan (void) = 0;
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const std::string & new_name);
       
       /**
-       * Sets the platform
-       * @param  platform     the underlying platform the algorithm will use
+       * Initializes variable containers
+       * @param   knowledge  the variable context
+       * @param   new_name   the name of the platform
        **/
-      virtual void set_platform (platforms::Base * platform);
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
+        const std::string & new_name);
+
+      /// the id of this device
+      std::string name;
       
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      virtual void set_sensors (variables::Sensors * sensors);
+      /// the device-specific variables
+      Device device;
       
-    protected:
+      /// status flag for ok
+      Madara::Knowledge_Engine::Containers::Integer ok;
 
-      /// provides access to the platform
-      platforms::Base * platform_;
+      /// status flag for waiting
+      Madara::Knowledge_Engine::Containers::Integer waiting;
 
-      /// provides access to sensor information
-      variables::Sensors * sensors_;
+      /// status flag for deadlocked
+      Madara::Knowledge_Engine::Containers::Integer deadlocked;
 
-      /// provides access to status information for this platform
-      variables::Algorithm status_;
+      /// status flag for failed
+      Madara::Knowledge_Engine::Containers::Integer failed;
+
+      /// status flag for unknown
+      Madara::Knowledge_Engine::Containers::Integer moving;
+
+      /// status flag for reduced sensing available
+      Madara::Knowledge_Engine::Containers::Integer reduced_sensing;
+
+      /// status flag for reduced movement available
+      Madara::Knowledge_Engine::Containers::Integer reduced_movement;
+
+      /// status flag for number of communication channels available
+      Madara::Knowledge_Engine::Containers::Integer communication_available;
+
+      /// status flag for full sensor availability
+      Madara::Knowledge_Engine::Containers::Integer sensors_available;
+
+      /// status flag for full movement availability
+      Madara::Knowledge_Engine::Containers::Integer movement_available;
     };
+
+    /// a map of sensor names to the sensor information
+    typedef  std::map <std::string, Platform>   Platforms;
+
+    /// a list of sensor names
+    typedef  std::vector <std::string>        Platform_Names;
   }
 }
 
-#endif // _GAMS_VARIABLES_SWARM_H_
+#endif // _GAMS_VARIABLES_PLATFORM_H_

@@ -59,6 +59,8 @@
 #include "gams/variables/Swarm.h"
 #include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Platform.h"
 #include "gams/algorithms/Base_Algorithm.h"
 #include "gams/platforms/Base_Platform.h"
 
@@ -148,6 +150,12 @@ namespace gams
 
       /// Containers for sensor information
       variables::Sensors sensors_;
+
+      /// Containers for algorithm information
+      variables::Algorithms algorithms_;
+      
+      /// Containers for platform information
+      variables::Platforms platforms_;
 
       /// Platform on which the controller is running
       platforms::Base * platform_;

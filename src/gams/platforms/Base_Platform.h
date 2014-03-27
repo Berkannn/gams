@@ -55,6 +55,7 @@
 #define   _GAMS_PLATFORM_BASE_H_
 
 #include "gams/variables/Sensor.h"
+#include "gams/variables/Platform.h"
 
 namespace gams
 {
@@ -65,11 +66,16 @@ namespace gams
      **/
     enum Status
     {
-      SENSORS_AVAILABLE = 1,
-      MOVEMENT_AVAILABLE = 2,
-      REDUCED_SENSING_AVAILABLE = 4,
-      REDUCED_MOVEMENT_AVAILABLE = 8,
-      COMMUNICATION_AVAILABLE = 16
+      OK  = 1,
+      WAITING = 2,
+      DEADLOCKED = 4,
+      FAILED = 8,
+      MOVING = 16,
+      REDUCED_SENSING_AVAILABLE = 128,
+      REDUCED_MOVEMENT_AVAILABLE = 256,
+      COMMUNICATION_AVAILABLE = 512,
+      SENSORS_AVAILABLE = 1024,
+      MOVEMENT_AVAILABLE = 2048
     };
 
     class GAMS_Export Base
@@ -124,10 +130,18 @@ namespace gams
        **/
       virtual void set_sensors (variables::Sensors * sensors);
       
+      /**
+       * returns the name of the platform
+       **/
+      const std::string & get_name (void);
+
     protected:
 
       /// provides access to a sensor
       variables::Sensors * sensors_;
+
+      /// provides access to status information for this platform
+      variables::Platform status_;
     };
   }
 }

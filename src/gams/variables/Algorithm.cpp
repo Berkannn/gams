@@ -43,100 +43,72 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+#include "Algorithm.h"
 
-/**
- * @file Base.h
- * @author James Edmondson <jedmondson@gmail.com>
- *
- * This file contains the definition of the base algorithm class
- **/
+typedef  Madara::Knowledge_Record::Integer  Integer;
 
-#ifndef   _GAMS_ALGORITHMS_BASE_H_
-#define   _GAMS_ALGORITHMS_BASE_H_
 
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
-
-namespace gams
+gams::variables::Algorithm::Algorithm ()
 {
-  namespace algorithms
+}
+
+gams::variables::Algorithm::~Algorithm ()
+{
+}
+
+void
+gams::variables::Algorithm::operator= (const Algorithm & rhs)
+{
+  if (this != &rhs)
   {
-    /**
-     * Possible algorithm statuses, as returnable by analyze ()
-     **/
-    enum Status
-    {
-      UNKNOWN = 0,
-      OK  = 1,
-      WAITING = 2,
-      DEADLOCKED = 4,
-      FAILED = 8
-    };
-
-    class GAMS_Export Base
-    {
-    public:
-      /**
-       * Constructor
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      Base (platforms::Base * platform = 0, variables::Sensors * sensors = 0);
-
-      /**
-       * Destructor
-       **/
-      ~Base ();
-
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Base & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void) = 0;
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void) = 0;
-
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void) = 0;
-      
-      /**
-       * Sets the platform
-       * @param  platform     the underlying platform the algorithm will use
-       **/
-      virtual void set_platform (platforms::Base * platform);
-      
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      virtual void set_sensors (variables::Sensors * sensors);
-      
-    protected:
-
-      /// provides access to the platform
-      platforms::Base * platform_;
-
-      /// provides access to sensor information
-      variables::Sensors * sensors_;
-
-      /// provides access to status information for this platform
-      variables::Algorithm status_;
-    };
+    this->name = rhs.name;
+    this->ok = rhs.ok;
+    this->waiting = rhs.waiting;
+    this->deadlocked = rhs.deadlocked;
+    this->failed = rhs.failed;
+    this->unknown = rhs.unknown;
   }
 }
 
-#endif // _GAMS_VARIABLES_SWARM_H_
+
+void
+gams::variables::Algorithm::init_vars (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const std::string & new_name)
+{
+  name = new_name;
+
+  std::stringstream buffer;
+  buffer << "algorithm.";
+  buffer << new_name;
+
+  std::string prefix (buffer.str ());
+
+  // initialize the variable containers
+  this->ok.set_name (prefix + ".ok", knowledge);
+  this->waiting.set_name (prefix + ".waiting", knowledge);
+  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
+  this->failed.set_name (prefix + ".failed", knowledge);
+  this->unknown.set_name (prefix + ".unknown", knowledge);
+}
+
+void
+gams::variables::Algorithm::init_vars (
+  Madara::Knowledge_Engine::Variables & knowledge,
+  const std::string & new_name)
+{
+  name = new_name;
+
+  std::stringstream buffer;
+  buffer << "algorithm.";
+  buffer << new_name;
+
+  std::string prefix (buffer.str ());
+
+  // initialize the variable containers
+  this->ok.set_name (prefix + ".ok", knowledge);
+  this->waiting.set_name (prefix + ".waiting", knowledge);
+  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
+  this->failed.set_name (prefix + ".failed", knowledge);
+  this->unknown.set_name (prefix + ".unknown", knowledge);
+}
