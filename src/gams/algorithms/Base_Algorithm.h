@@ -57,6 +57,7 @@
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
 
 namespace gams
 {
@@ -82,7 +83,8 @@ namespace gams
        * @param  platform     the underlying platform the algorithm will use
        * @param  sensors      map of sensor names to sensor information
        **/
-      Base (platforms::Base * platform = 0, variables::Sensors * sensors = 0);
+      Base (platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
 
       /**
        * Destructor
@@ -125,6 +127,12 @@ namespace gams
        **/
       virtual void set_sensors (variables::Sensors * sensors);
       
+      /**
+       * Sets the map of sensor names to sensor information
+       * @param  sensors      map of sensor names to sensor information
+       **/
+      virtual void set_self (variables::Self * self);
+      
     protected:
 
       /// provides access to the platform
@@ -135,6 +143,9 @@ namespace gams
 
       /// provides access to status information for this platform
       variables::Algorithm status_;
+
+      /// the algorithm's concept of self
+      variables::Self * self_;
     };
   }
 }

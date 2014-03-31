@@ -43,23 +43,23 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Base_Algorithm.h"
+#include "Random_Area_Coverage.h"
 
 
-gams::algorithms::Base::Base (
+gams::algorithms::Random_Area_Coverage::Random_Area_Coverage (
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : platform_ (platform), sensors_ (sensors), self_ (self)
+  : Base (platform, sensors, self)
 {
 }
 
-gams::algorithms::Base::~Base ()
+gams::algorithms::Random_Area_Coverage::~Random_Area_Coverage ()
 {
 }
 
 void
-gams::algorithms::Base::operator= (const Base & rhs)
+gams::algorithms::Random_Area_Coverage::operator= (const Random_Area_Coverage & rhs)
 {
   if (this != &rhs)
   {
@@ -70,21 +70,23 @@ gams::algorithms::Base::operator= (const Base & rhs)
   }
 }
 
-void
-gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
+
+int
+gams::algorithms::Random_Area_Coverage::analyze (void)
 {
-  sensors_ = sensors;
+  return 0;
+}
+      
+
+int
+gams::algorithms::Random_Area_Coverage::execute (void)
+{
+  return 0;
 }
 
-void
-gams::algorithms::Base::set_platform (platforms::Base * platform)
+
+int
+gams::algorithms::Random_Area_Coverage::plan (void)
 {
-  platform_ = platform;
+  return 0;
 }
-   
-void
-gams::algorithms::Base::set_self (variables::Self * self)
-{
-  self_ = self;
-}
-     

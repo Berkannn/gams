@@ -26,6 +26,7 @@ project (gams) : using_madara, using_ace {
     src/gams/controller
     src/gams/maps
     src/gams/platforms
+    src/gams/platforms/dronerk
     src/gams/utility
     src/gams/variables
     src/gams
@@ -36,6 +37,7 @@ project (gams) : using_madara, using_ace {
     src/gams/controller
     src/gams/maps
     src/gams/platforms
+    src/gams/platforms/dronerk
     src/gams/utility
     src/gams/variables
   }

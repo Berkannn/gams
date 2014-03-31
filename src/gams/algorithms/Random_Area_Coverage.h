@@ -43,48 +43,71 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Base_Algorithm.h"
 
+/**
+ * @file Random_Area_Coverage.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the random area coverage class
+ **/
 
-gams::algorithms::Base::Base (
-  platforms::Base * platform,
-  variables::Sensors * sensors,
-  variables::Self * self)
-  : platform_ (platform), sensors_ (sensors), self_ (self)
+#ifndef   _GAMS_ALGORITHMS_RANDOM_AREA_COVERAGE_H_
+#define   _GAMS_ALGORITHMS_RANDOM_AREA_COVERAGE_H_
+
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
+#include "gams/algorithms/Base_Algorithm.h"
+
+namespace gams
 {
-}
-
-gams::algorithms::Base::~Base ()
-{
-}
-
-void
-gams::algorithms::Base::operator= (const Base & rhs)
-{
-  if (this != &rhs)
+  namespace algorithms
   {
-    this->platform_ = rhs.platform_;
-    this->sensors_ = rhs.sensors_;
-    this->self_ = rhs.self_;
-    this->status_ = rhs.status_;
+    class GAMS_Export Random_Area_Coverage : public Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  platform     the underlying platform the algorithm will use
+       * @param  sensors      map of sensor names to sensor information
+       **/
+      Random_Area_Coverage (platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
+
+      /**
+       * Destructor
+       **/
+      ~Random_Area_Coverage ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Random_Area_Coverage & rhs);
+      
+      /**
+       * Analyzes environment, platform, or other information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+      
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int execute (void);
+
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int plan (void);
+      
+    protected:
+
+    };
   }
 }
 
-void
-gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
-{
-  sensors_ = sensors;
-}
-
-void
-gams::algorithms::Base::set_platform (platforms::Base * platform)
-{
-  platform_ = platform;
-}
-   
-void
-gams::algorithms::Base::set_self (variables::Self * self)
-{
-  self_ = self;
-}
-     
+#endif // _GAMS_VARIABLES_SWARM_H_
