@@ -45,119 +45,109 @@
  **/
 
 /**
- * @file Base.h
+ * @file Algorithm_Factory.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the base algorithm class
+ * This file contains the algorithm factory
  **/
 
-#ifndef   _GAMS_ALGORITHMS_BASE_H_
-#define   _GAMS_ALGORITHMS_BASE_H_
+#ifndef   _GAMS_ALGORITHM_FACTORY_H_
+#define   _GAMS_ALGORITHM_FACTORY_H_
 
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
+#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/variables/Platform.h"
 #include "gams/variables/Self.h"
+#include "gams/variables/Sensor.h"
+#include "gams/variables/Device.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
 {
   namespace algorithms
   {
-    /**
-     * Possible algorithm statuses, as returnable by analyze ()
-     **/
-    enum Status
-    {
-      UNKNOWN = 0,
-      OK  = 1,
-      WAITING = 2,
-      DEADLOCKED = 4,
-      FAILED = 8
-    };
-
-    class GAMS_Export Base
+    class GAMS_Export Factory
     {
     public:
       /**
        * Constructor
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  devices      list of devices in the swarm
+       * @param  knowledge  the knowledge base
+       * @param  sensors    variables for all sensors
+       * @param  platform   the current platform
+       * @param  self       self-referencing variables
+       * @param  devices    devices of the swarm
        **/
-      Base (platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0, variables::Devices * devices = 0);
+      Factory (Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+               variables::Sensors * sensors = 0,
+               platforms::Base * platform = 0,
+               variables::Self * self = 0,
+               variables::Devices * devices = 0);
 
       /**
        * Destructor
        **/
-      ~Base ();
+      ~Factory ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Base & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void) = 0;
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void) = 0;
+      void operator= (const Factory & rhs);
 
       /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
+       * Creates a platform
+       * @param  type   type of platform to create
+       * @return  the new platform
        **/
-      virtual int plan (void) = 0;
+      Base * create (const std::string & type);
       
       /**
-       * Sets the platform
-       * @param  platform     the underlying platform the algorithm will use
+       * Sets the knowledge base
+       * @param  knowledge    the knowledge base to use
        **/
-      virtual void set_platform (platforms::Base * platform);
+      void set_knowledge (Madara::Knowledge_Engine::Knowledge_Base * knowledge);
       
       /**
        * Sets the map of sensor names to sensor information
        * @param  sensors      map of sensor names to sensor information
        **/
-      virtual void set_sensors (variables::Sensors * sensors);
+      void set_sensors (variables::Sensors * sensors);
       
       /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
+       * Sets the map of platform names to platform information
+       * @param  algorithms   map of platform names to platform information
        **/
-      virtual void set_self (variables::Self * self);
+      void set_platform (platforms::Base * platform);
       
       /**
-       * Sets the list of devices in the swarm
-       * @param  devices      list of devices
+       * Sets self-referencing variables
+       * @param  self       self-referencing variables
        **/
-      virtual void set_devices (variables::Devices * devices);
+      void set_self (variables::Self * self);
       
-    protected:
+      /**
+       * Sets list of devices participating in swarm
+       * @param  devices    devices in the swarm
+       **/
+      void set_devices (variables::Devices * devices);
+      
+    private:
 
-      /// provides access to the platform
-      platforms::Base * platform_;
+      /// knowledge base containing variables
+      Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
 
-      /// provides access to sensor information
+      /// sensor variables
       variables::Sensors * sensors_;
 
-      /// provides access to status information for this platform
-      variables::Algorithm status_;
+      /// platform variables
+      platforms::Base * platform_;
 
-      /// the algorithm's concept of self
+      /// self-referencing variables
       variables::Self * self_;
 
-      /// the list of devices potentially participating in the algorithm
+      /// list of devices participating in the swarm
       variables::Devices * devices_;
     };
   }
 }
 
-#endif // _GAMS_VARIABLES_SWARM_H_
+#endif // _GAMS_ALGORITHM_FACTORY_H_

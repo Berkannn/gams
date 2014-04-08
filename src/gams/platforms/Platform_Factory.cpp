@@ -43,54 +43,65 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Base_Algorithm.h"
+#include "Platform_Factory.h"
+#include "dronerk/Drone_RK.h"
 
 
-gams::algorithms::Base::Base (
-  platforms::Base * platform,
+gams::platforms::Factory::Factory (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
-  variables::Self * self,
-  variables::Devices * devices)
-  : platform_ (platform), sensors_ (sensors), self_ (self), devices_ (devices)
+  variables::Platforms * platforms,
+  variables::Self * self)
+: knowledge_ (knowledge), sensors_ (sensors),
+  platforms_ (platforms), self_ (self)
 {
 }
 
-gams::algorithms::Base::~Base ()
+gams::platforms::Factory::~Factory ()
 {
 }
 
 void
-gams::algorithms::Base::operator= (const Base & rhs)
+gams::platforms::Factory::operator= (const Factory & rhs)
 {
-  if (this != &rhs)
+}
+
+gams::platforms::Base *
+gams::platforms::Factory::create (const std::string & type)
+{
+  if (type == "drone-rk" || type == "dronerk")
   {
-    this->platform_ = rhs.platform_;
-    this->sensors_ = rhs.sensors_;
-    this->self_ = rhs.self_;
-    this->status_ = rhs.status_;
+    if (knowledge_ && sensors_ && platforms_ && self_)
+      return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
   }
+
+  return 0;
 }
 
 void
-gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
+gams::platforms::Factory::set_knowledge (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge)
+{
+  knowledge_ = knowledge;
+}
+      
+
+void
+gams::platforms::Factory::set_sensors (variables::Sensors * sensors)
 {
   sensors_ = sensors;
 }
+      
 
 void
-gams::algorithms::Base::set_platform (platforms::Base * platform)
+gams::platforms::Factory::set_platforms (variables::Platforms * platforms)
 {
-  platform_ = platform;
+  platforms_ = platforms;
 }
-   
+      
+
 void
-gams::algorithms::Base::set_self (variables::Self * self)
+gams::platforms::Factory::set_self (variables::Self * self)
 {
   self_ = self;
-}
-   
-void
-gams::algorithms::Base::set_devices (variables::Devices * devices)
-{
-  devices_ = devices;
 }

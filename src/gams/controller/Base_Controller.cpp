@@ -48,6 +48,8 @@
 #include "ace/High_Res_Timer.h"
 #include "ace/OS_NS_sys_time.h"
 #include "madara/utility/Utility.h"
+#include "gams/platforms/Platform_Factory.h"
+#include "gams/algorithms/Algorithm_Factory.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
@@ -87,6 +89,11 @@ gams::controller::Base::init_platform (
     std::cerr << "  drone-rk\n";
     std::cerr << "  vrep\n";
   }
+  else
+  {
+    platforms::Factory factory (&knowledge_, &sensors_, &platforms_, &self_);
+    platform_ = factory.create (platform);
+  }
 }
 
 void
@@ -103,6 +110,12 @@ gams::controller::Base::init_algorithm (
     std::cerr << "  bridge | bridging\n";
     std::cerr << "  random area coverage\n";
     std::cerr << "  priotized area coverage\n";
+  }
+  else
+  {
+    algorithms::Factory factory (&knowledge_, &sensors_,
+      platform_, &self_, &devices_);
+    algorithm_ = factory.create (algorithm);
   }
 }
 

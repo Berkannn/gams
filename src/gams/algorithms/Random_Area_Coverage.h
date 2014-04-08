@@ -71,6 +71,7 @@ namespace gams
        * Constructor
        * @param  platform     the underlying platform the algorithm will use
        * @param  sensors      map of sensor names to sensor information
+       * @param  self         self-referencing variables
        **/
       Random_Area_Coverage (platforms::Base * platform = 0, variables::Sensors * sensors = 0,
         variables::Self * self = 0);

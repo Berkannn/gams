@@ -43,54 +43,73 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Base_Algorithm.h"
+#include "Algorithm_Factory.h"
+#include "Random_Area_Coverage.h"
 
 
-gams::algorithms::Base::Base (
-  platforms::Base * platform,
+gams::algorithms::Factory::Factory (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
+  platforms::Base * platform,
   variables::Self * self,
   variables::Devices * devices)
-  : platform_ (platform), sensors_ (sensors), self_ (self), devices_ (devices)
+: knowledge_ (knowledge), sensors_ (sensors),
+  platform_ (platform), self_ (self),
+  devices_ (devices)
 {
 }
 
-gams::algorithms::Base::~Base ()
+gams::algorithms::Factory::~Factory ()
 {
 }
 
 void
-gams::algorithms::Base::operator= (const Base & rhs)
+gams::algorithms::Factory::operator= (const Factory & rhs)
 {
-  if (this != &rhs)
+}
+
+gams::algorithms::Base *
+gams::algorithms::Factory::create (const std::string & type)
+{
+  if (type == "random area coverage")
   {
-    this->platform_ = rhs.platform_;
-    this->sensors_ = rhs.sensors_;
-    this->self_ = rhs.self_;
-    this->status_ = rhs.status_;
+    if (knowledge_ && sensors_ && platform_ && self_)
+      return new Random_Area_Coverage (platform_, sensors_, self_);
   }
+
+  return 0;
 }
 
 void
-gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
+gams::algorithms::Factory::set_knowledge (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge)
+{
+  knowledge_ = knowledge;
+}
+      
+
+void
+gams::algorithms::Factory::set_sensors (variables::Sensors * sensors)
 {
   sensors_ = sensors;
 }
+      
 
 void
-gams::algorithms::Base::set_platform (platforms::Base * platform)
+gams::algorithms::Factory::set_platform (platforms::Base * platform)
 {
   platform_ = platform;
 }
-   
+      
+
 void
-gams::algorithms::Base::set_self (variables::Self * self)
+gams::algorithms::Factory::set_self (variables::Self * self)
 {
   self_ = self;
 }
-   
+
 void
-gams::algorithms::Base::set_devices (variables::Devices * devices)
+gams::algorithms::Factory::set_devices (variables::Devices * devices)
 {
   devices_ = devices;
 }
