@@ -51,7 +51,7 @@ gams::platforms::Drone_RK::Drone_RK (
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
-  : Base (sensors), self_ (self)
+  : Base (&knowledge, sensors), self_ (self)
 {
   platforms["drone_rk"].init_vars (knowledge, "drone_rk");
 }

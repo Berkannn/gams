@@ -218,11 +218,19 @@ Generate the GAMS project for your system
 
   * Linux
       cd $GAMS_ROOT
-      mwc.pl -type gnuace GAMS.mwc 
+      mwc.pl -type gnuace gams.mwc 
 
   * Windows
       cd $GAMS_ROOT
-      mwc.pl -type vc9 GAMS.mwc
+      mwc.pl -type vc9 gams.mwc
+
+  Note that this does not generate features like vrep or dronerk. To enable
+  these features, add -features and set the appropriate feature from the
+  default.features file. For instance:
+
+  mwc.pl -type gnuace -features vrep=1,dronerk=1 gams.mwc
+
+  This will generate makefiles that include the VREP and Drone-RK platforms.
 
 ---------------------------------------
 Compiling the GAMS library on your system

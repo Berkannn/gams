@@ -47,11 +47,13 @@
 
 
 gams::algorithms::Base::Base (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self,
   variables::Devices * devices)
-  : platform_ (platform), sensors_ (sensors), self_ (self), devices_ (devices)
+  : knowledge_ (knowledge), platform_ (platform),
+    sensors_ (sensors), self_ (self), devices_ (devices)
 {
 }
 
@@ -64,6 +66,7 @@ gams::algorithms::Base::operator= (const Base & rhs)
 {
   if (this != &rhs)
   {
+    this->knowledge_ = rhs.knowledge_;
     this->platform_ = rhs.platform_;
     this->sensors_ = rhs.sensors_;
     this->self_ = rhs.self_;

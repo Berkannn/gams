@@ -47,11 +47,13 @@
 
 
 gams::algorithms::Random_Area_Coverage::Random_Area_Coverage (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : Base (platform, sensors, self)
+  : Base (knowledge, platform, sensors, self)
 {
+  status_.init_vars (*knowledge, "rac");
 }
 
 gams::algorithms::Random_Area_Coverage::~Random_Area_Coverage ()

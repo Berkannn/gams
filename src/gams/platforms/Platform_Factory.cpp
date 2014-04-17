@@ -44,8 +44,15 @@
  *      distribution.
  **/
 #include "Platform_Factory.h"
-#include "dronerk/Drone_RK.h"
+#include "Printer_Platform.h"
 
+#ifdef _GAMS_DRONERK_
+#include "dronerk/Drone_RK.h"
+#endif
+
+#ifdef _GAMS_VREP_
+#include "vrep/VREP_UAV.h"
+#endif
 
 gams::platforms::Factory::Factory (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -69,11 +76,26 @@ gams::platforms::Factory::operator= (const Factory & rhs)
 gams::platforms::Base *
 gams::platforms::Factory::create (const std::string & type)
 {
-  if (type == "drone-rk" || type == "dronerk")
+  if (type == "debug" || type == "printer" || type == "print")
+  {
+    if (knowledge_ && sensors_ && platforms_ && self_)
+      return new Printer_Platform (*knowledge_, sensors_, *platforms_, *self_);
+  }
+#ifdef _GAMS_DRONERK_
+  else if (type == "drone-rk" || type == "dronerk")
   {
     if (knowledge_ && sensors_ && platforms_ && self_)
       return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
   }
+#endif
+
+#ifdef _GAMS_VREP_
+  else if (type == "vrep")
+  {
+    if (knowledge_ && sensors_ && platforms_ && self_)
+      return new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
+  }
+#endif
 
   return 0;
 }

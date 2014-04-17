@@ -1,0 +1,12 @@
+feature (vrep) {
+  
+  macros += _GAMS_VREP_
+
+  Header_Files {
+    src/gams/platforms/vrep
+  }
+
+  Source_Files {
+    src/gams/platforms/vrep
+  }
+}

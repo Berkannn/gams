@@ -58,6 +58,7 @@
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
 {
@@ -80,11 +81,14 @@ namespace gams
     public:
       /**
        * Constructor
+       * @param  knowledge    the knowledge base of variables and values
        * @param  platform     the underlying platform the algorithm will use
        * @param  sensors      map of sensor names to sensor information
        * @param  devices      list of devices in the swarm
        **/
-      Base (platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+      Base (
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
         variables::Self * self = 0, variables::Devices * devices = 0);
 
       /**
@@ -141,6 +145,9 @@ namespace gams
       virtual void set_devices (variables::Devices * devices);
       
     protected:
+
+      /// provides access to the knowledge base
+      Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
 
       /// provides access to the platform
       platforms::Base * platform_;

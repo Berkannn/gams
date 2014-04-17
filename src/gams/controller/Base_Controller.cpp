@@ -55,7 +55,7 @@ typedef  Madara::Knowledge_Record::Integer  Integer;
 
 gams::controller::Base::Base (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-  : knowledge_ (knowledge)
+  : knowledge_ (knowledge), platform_ (0), algorithm_ (0)
 {
 }
 
@@ -91,8 +91,12 @@ gams::controller::Base::init_platform (
   }
   else
   {
+    delete platform_;
     platforms::Factory factory (&knowledge_, &sensors_, &platforms_, &self_);
     platform_ = factory.create (platform);
+
+    if (algorithm_)
+      algorithm_->set_platform (platform_);
   }
 }
 
@@ -113,6 +117,7 @@ gams::controller::Base::init_algorithm (
   }
   else
   {
+    delete algorithm_;
     algorithms::Factory factory (&knowledge_, &sensors_,
       platform_, &self_, &devices_);
     algorithm_ = factory.create (algorithm);
@@ -192,6 +197,13 @@ gams::controller::Base::run (double period, double max_runtime)
       knowledge_.send_modifieds ();
 
       current = ACE_OS::gettimeofday ();
+
+      if (current < next_epoch)
+      {
+        Madara::Utility::sleep (next_epoch - current);  
+      }
+
+      next_epoch = next_epoch + poll_frequency;
     }
   }
 

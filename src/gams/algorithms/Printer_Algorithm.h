@@ -43,78 +43,76 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+/**
+ * @file Printer_Algorithm.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the snake area coverage class
+ **/
 
+#ifndef   _GAMS_ALGORITHMS_PRINTER_H_
+#define   _GAMS_ALGORITHMS_PRINTER_H_
 
-gams::variables::Algorithm::Algorithm ()
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
+#include "gams/algorithms/Base_Algorithm.h"
+
+namespace gams
 {
-}
-
-gams::variables::Algorithm::~Algorithm ()
-{
-}
-
-void
-gams::variables::Algorithm::operator= (const Algorithm & rhs)
-{
-  if (this != &rhs)
+  namespace algorithms
   {
-    this->name = rhs.name;
-    this->ok = rhs.ok;
-    this->waiting = rhs.waiting;
-    this->deadlocked = rhs.deadlocked;
-    this->failed = rhs.failed;
-    this->unknown = rhs.unknown;
+    class GAMS_Export Printer_Algorithm : public Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  knowledge    the context containing variables and values
+       * @param  platform     the underlying platform the algorithm will use
+       * @param  sensors      map of sensor names to sensor information
+       * @param  self         self-referencing variables
+       **/
+      Printer_Algorithm (
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        platforms::Base * platform = 0,
+        variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
+
+      /**
+       * Destructor
+       **/
+      ~Printer_Algorithm ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Printer_Algorithm & rhs);
+      
+      /**
+       * Analyzes environment, platform, or other information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+      
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int execute (void);
+
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int plan (void);
+      
+    protected:
+
+    };
   }
 }
 
-
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & new_name)
-{
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << ".algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
-
-  ok = 1;
-  waiting = 0;
-  deadlocked = 0;
-  failed = 0;
-  unknown = 0;
-}
-
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge,
-  const std::string & new_name)
-{
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << "algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
-}
+#endif // _GAMS_ALGORITHMS_PRINTER_H_

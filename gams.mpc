@@ -1,4 +1,4 @@
-project (gams) : using_madara, using_ace {
+project (gams) : using_madara, using_ace, using_dronerk, using_vrep {
   libout = lib
   sharedname = GAMS
   includes += src
@@ -19,6 +19,7 @@ project (gams) : using_madara, using_ace {
     using_madara.mpb
     using_gams.mpb
     using_dronerk.mpb
+    using_vrep.mpb
   }
 
   Header_Files {
@@ -26,7 +27,6 @@ project (gams) : using_madara, using_ace {
     src/gams/controller
     src/gams/maps
     src/gams/platforms
-    src/gams/platforms/dronerk
     src/gams/utility
     src/gams/variables
     src/gams
@@ -37,7 +37,6 @@ project (gams) : using_madara, using_ace {
     src/gams/controller
     src/gams/maps
     src/gams/platforms
-    src/gams/platforms/dronerk
     src/gams/utility
     src/gams/variables
   }

@@ -46,8 +46,10 @@
 #include "Base_Platform.h"
 
 
-gams::platforms::Base::Base (variables::Sensors * sensors)
-  : sensors_ (sensors)
+gams::platforms::Base::Base (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  variables::Sensors * sensors)
+  : knowledge_ (knowledge), sensors_ (sensors)
 {
 }
 
@@ -60,6 +62,7 @@ gams::platforms::Base::operator= (const Base & rhs)
 {
   if (this != &rhs)
   {
+    this->knowledge_ = rhs.knowledge_;
     this->sensors_ = rhs.sensors_;
     this->status_ = rhs.status_;
   }
@@ -70,3 +73,11 @@ gams::platforms::Base::set_sensors (variables::Sensors * sensors)
 {
   sensors_ = sensors;
 }
+
+void
+gams::platforms::Base::set_knowledge (
+  Madara::Knowledge_Engine::Knowledge_Base * rhs)
+{
+  knowledge_ = rhs;
+}
+      

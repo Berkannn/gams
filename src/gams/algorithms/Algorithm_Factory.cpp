@@ -45,6 +45,8 @@
  **/
 #include "Algorithm_Factory.h"
 #include "Random_Area_Coverage.h"
+#include "Snake_Area_Coverage.h"
+#include "Printer_Algorithm.h"
 
 
 gams::algorithms::Factory::Factory (
@@ -71,10 +73,20 @@ gams::algorithms::Factory::operator= (const Factory & rhs)
 gams::algorithms::Base *
 gams::algorithms::Factory::create (const std::string & type)
 {
-  if (type == "random area coverage")
+  if (type == "debug" || type == "print" || type == "printer")
+  {
+    if (knowledge_ && sensors_ && self_)
+      return new Printer_Algorithm (knowledge_, platform_, sensors_, self_);
+  }
+  if (type == "random area coverage" || type == "rac")
+  {
+    if (knowledge_ && sensors_  && self_)
+      return new Random_Area_Coverage (knowledge_, platform_, sensors_, self_);
+  }
+  else if (type == "snake" || type == "sac")
   {
     if (knowledge_ && sensors_ && platform_ && self_)
-      return new Random_Area_Coverage (platform_, sensors_, self_);
+      return new Snake_Area_Coverage (knowledge_, platform_, sensors_, self_);
   }
 
   return 0;

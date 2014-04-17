@@ -43,78 +43,42 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+/**
+ * @file test_control_loop.cpp
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains a test driver for the GAMS controller loop.
+ **/
 
+#include "madara/knowledge_engine/Knowledge_Base.h"
+#include "gams/controller/Base_Controller.h"
 
-gams::variables::Algorithm::Algorithm ()
+// create shortcuts to MADARA classes and namespaces
+namespace engine = Madara::Knowledge_Engine;
+namespace controller = gams::controller;
+typedef Madara::Knowledge_Record   Record;
+typedef Record::Integer Integer;
+
+// perform main logic of program
+int main (int argc, char ** argv)
 {
-}
+  // create knowledge base and a control loop
+  engine::Knowledge_Base knowledge;
+  controller::Base loop (knowledge);
 
-gams::variables::Algorithm::~Algorithm ()
-{
-}
+  // initialize variables and function stubs
+  loop.init_vars (0, 4);
+  
+  // initialize the platform and algorithm
+  loop.init_algorithm ("debug");
+  loop.init_platform ("debug");
 
-void
-gams::variables::Algorithm::operator= (const Algorithm & rhs)
-{
-  if (this != &rhs)
-  {
-    this->name = rhs.name;
-    this->ok = rhs.ok;
-    this->waiting = rhs.waiting;
-    this->deadlocked = rhs.deadlocked;
-    this->failed = rhs.failed;
-    this->unknown = rhs.unknown;
-  }
-}
+  // run a mape loop every 1s for 50s
+  loop.run (1.0, 50.0);
 
+  // print all knowledge values
+  knowledge.print ();
 
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & new_name)
-{
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << ".algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
-
-  ok = 1;
-  waiting = 0;
-  deadlocked = 0;
-  failed = 0;
-  unknown = 0;
-}
-
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge,
-  const std::string & new_name)
-{
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << "algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
+  return 0;
 }

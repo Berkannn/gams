@@ -43,78 +43,52 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm.h"
-
-typedef  Madara::Knowledge_Record::Integer  Integer;
+#include "Snake_Area_Coverage.h"
 
 
-gams::variables::Algorithm::Algorithm ()
+gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  platforms::Base * platform,
+  variables::Sensors * sensors,
+  variables::Self * self)
+  : Base (knowledge, platform, sensors, self)
 {
+  status_.init_vars (*knowledge, "sac");
 }
 
-gams::variables::Algorithm::~Algorithm ()
+gams::algorithms::Snake_Area_Coverage::~Snake_Area_Coverage ()
 {
 }
 
 void
-gams::variables::Algorithm::operator= (const Algorithm & rhs)
+gams::algorithms::Snake_Area_Coverage::operator= (const Snake_Area_Coverage & rhs)
 {
   if (this != &rhs)
   {
-    this->name = rhs.name;
-    this->ok = rhs.ok;
-    this->waiting = rhs.waiting;
-    this->deadlocked = rhs.deadlocked;
-    this->failed = rhs.failed;
-    this->unknown = rhs.unknown;
+    this->platform_ = rhs.platform_;
+    this->sensors_ = rhs.sensors_;
+    this->self_ = rhs.self_;
+    this->status_ = rhs.status_;
   }
 }
 
 
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & new_name)
+int
+gams::algorithms::Snake_Area_Coverage::analyze (void)
 {
-  name = new_name;
+  return 0;
+}
+      
 
-  std::stringstream buffer;
-  buffer << ".algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
-
-  ok = 1;
-  waiting = 0;
-  deadlocked = 0;
-  failed = 0;
-  unknown = 0;
+int
+gams::algorithms::Snake_Area_Coverage::execute (void)
+{
+  return 0;
 }
 
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge,
-  const std::string & new_name)
+
+int
+gams::algorithms::Snake_Area_Coverage::plan (void)
 {
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << "algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
+  return 0;
 }

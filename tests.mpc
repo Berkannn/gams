@@ -21,3 +21,25 @@ project (Test_Mape_Loop) : using_gams, using_madara, using_ace {
   }
 }
 
+
+project (Test_Controller) : using_gams, using_madara, using_ace {
+  exeout = $(GAMS_ROOT)/bin
+  exename = test_controller
+  
+  requires += tests
+
+  Documentation_Files {
+  }
+  
+  Build_Files {
+    using_gams.mpb
+    tests.mpc
+  }
+
+  Header_Files {
+  }
+
+  Source_Files {
+    tests/test_controller.cpp
+  }
+}

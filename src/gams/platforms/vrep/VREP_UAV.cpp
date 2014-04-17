@@ -43,78 +43,71 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm.h"
-
-typedef  Madara::Knowledge_Record::Integer  Integer;
+#include "VREP_UAV.h"
 
 
-gams::variables::Algorithm::Algorithm ()
+gams::platforms::VREP_UAV::VREP_UAV (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  variables::Sensors * sensors,
+  variables::Platforms & platforms,
+  variables::Self & self)
+  : Base (&knowledge, sensors), self_ (self)
 {
+  platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 }
 
-gams::variables::Algorithm::~Algorithm ()
+gams::platforms::VREP_UAV::~VREP_UAV ()
 {
 }
 
 void
-gams::variables::Algorithm::operator= (const Algorithm & rhs)
+gams::platforms::VREP_UAV::operator= (const VREP_UAV & rhs)
 {
   if (this != &rhs)
   {
-    this->name = rhs.name;
-    this->ok = rhs.ok;
-    this->waiting = rhs.waiting;
-    this->deadlocked = rhs.deadlocked;
-    this->failed = rhs.failed;
-    this->unknown = rhs.unknown;
+    this->sensors_ = rhs.sensors_;
+    this->status_ = rhs.status_;
+    this->self_ = rhs.self_;
+  }
+}
+
+void
+gams::platforms::VREP_UAV::get_sensors (variables::Sensor_Names & sensors)
+{
+  bool needs_change (false);
+
+  if (sensors.size () != 1)
+  {
+    needs_change = true;
+    sensors.resize (1);
+  }
+  else
+  {
+    if (sensors[0] != "thermal")
+        needs_change = true;
+  }
+
+  if (needs_change)
+  {
+    sensors[0] = "thermal";
   }
 }
 
 
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & new_name)
+int
+gams::platforms::VREP_UAV::move (double x, double y, double z)
 {
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << ".algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
-
-  ok = 1;
-  waiting = 0;
-  deadlocked = 0;
-  failed = 0;
-  unknown = 0;
+  return 0;
 }
-
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge,
-  const std::string & new_name)
+      
+int
+gams::platforms::VREP_UAV::sense (void)
 {
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << "algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
+  return 0;
+}
+      
+int
+gams::platforms::VREP_UAV::analyze (void)
+{
+  return 0;
 }

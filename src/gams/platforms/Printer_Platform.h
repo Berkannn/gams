@@ -43,78 +43,86 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+/**
+ * @file Printer_Platform.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the platform debug class
+ **/
 
+#ifndef   _GAMS_PLATFORM_PRINTER_H_
+#define   _GAMS_PLATFORM_PRINTER_H_
 
-gams::variables::Algorithm::Algorithm ()
+#include "gams/variables/Self.h"
+#include "gams/variables/Sensor.h"
+#include "gams/variables/Platform.h"
+#include "gams/platforms/Base_Platform.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+
+namespace gams
 {
-}
-
-gams::variables::Algorithm::~Algorithm ()
-{
-}
-
-void
-gams::variables::Algorithm::operator= (const Algorithm & rhs)
-{
-  if (this != &rhs)
+  namespace platforms
   {
-    this->name = rhs.name;
-    this->ok = rhs.ok;
-    this->waiting = rhs.waiting;
-    this->deadlocked = rhs.deadlocked;
-    this->failed = rhs.failed;
-    this->unknown = rhs.unknown;
+    class GAMS_Export Printer_Platform : public Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  knowledge  knowledge base
+       * @param  sensors    map of sensor names to sensor information
+       * @param  platforms  map of platform names to platform information
+       * @param  self       device variables that describe self state
+       **/
+      Printer_Platform (
+        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        variables::Sensors * sensors,
+        variables::Platforms & platforms,
+        variables::Self & self);
+
+      /**
+       * Destructor
+       **/
+      ~Printer_Platform ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Printer_Platform & rhs);
+
+      /**
+       * Moves the platform to an x, y, z location
+       * @param   x   x coordinate, often latitude
+       * @param   y   y coordinate, often longitude
+       * @param   z   z coordinate, often altitude
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int move (double x, double y, double z);
+      
+      /**
+       * Polls the sensor environment for useful information
+       * @return number of sensors updated/used
+       **/
+      virtual int sense (void);
+      
+      /**
+       * Analyzes platform information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+
+      /**
+       * Fills a list of sensor names with sensors available on the platform
+       **/
+      virtual void get_sensors (variables::Sensor_Names & sensors);
+
+    protected:
+
+      /// provides access to variables denoting self state
+      variables::Self * self_;
+    };
   }
 }
 
-
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & new_name)
-{
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << ".algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
-
-  ok = 1;
-  waiting = 0;
-  deadlocked = 0;
-  failed = 0;
-  unknown = 0;
-}
-
-void
-gams::variables::Algorithm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge,
-  const std::string & new_name)
-{
-  name = new_name;
-
-  std::stringstream buffer;
-  buffer << "algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
-
-  // initialize the variable containers
-  this->ok.set_name (prefix + ".ok", knowledge);
-  this->waiting.set_name (prefix + ".waiting", knowledge);
-  this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
-  this->failed.set_name (prefix + ".failed", knowledge);
-  this->unknown.set_name (prefix + ".unknown", knowledge);
-}
+#endif // _GAMS_PLATFORM_PRINTER_H_

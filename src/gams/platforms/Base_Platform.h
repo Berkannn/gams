@@ -56,6 +56,7 @@
 
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
 {
@@ -83,9 +84,11 @@ namespace gams
     public:
       /**
        * Constructor
+       * @param  knowledge  context containing variables and values
        * @param  sensors  map of sensor names to sensor information
        **/
-      Base (variables::Sensors * sensors = 0);
+      Base (Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        variables::Sensors * sensors = 0);
 
       /**
        * Destructor
@@ -131,11 +134,20 @@ namespace gams
       virtual void set_sensors (variables::Sensors * sensors);
       
       /**
+       * Sets the knowledge base to use for the platform
+       * @param  rhs  the new knowledge base to use
+       **/
+      void set_knowledge (Madara::Knowledge_Engine::Knowledge_Base * rhs);
+      
+      /**
        * returns the name of the platform
        **/
       const std::string & get_name (void);
 
     protected:
+
+      /// provides access to variables and values
+      Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
 
       /// provides access to a sensor
       variables::Sensors * sensors_;

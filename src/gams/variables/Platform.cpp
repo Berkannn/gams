@@ -104,6 +104,18 @@ gams::variables::Platform::init_vars (
   this->movement_available.set_name (
     prefix + ".movement_available", knowledge);
   this->gps_spoofed.set_name (prefix + ".gps_spoofed", knowledge);
+
+  ok = 1;
+  waiting = 0;
+  deadlocked = 0;
+  failed = 0;
+  moving = 0;
+  reduced_sensing = 0;
+  reduced_movement = 0;
+  communication_available = 0;
+  sensors_available = 0;
+  movement_available = 0;
+  gps_spoofed = 0;
 }
 
 void
