@@ -43,93 +43,48 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+#include <sstream>
+#include "Position.h"
 
-/**
- * @file Drone_RK.h
- * @author James Edmondson <jedmondson@gmail.com>
- *
- * This file contains the definition of the Drone-RK platform class
- **/
-
-#ifndef   _GAMS_PLATFORM_DRONE_RK_H_
-#define   _GAMS_PLATFORM_DRONE_RK_H_
-
-#include "gams/variables/Self.h"
-#include "gams/variables/Sensor.h"
-#include "gams/variables/Platform.h"
-#include "gams/platforms/Base_Platform.h"
-#include "madara/knowledge_engine/Knowledge_Base.h"
-
-namespace gams
+gams::utility::Position::Position (
+  double init_x, double init_y, double init_z)
+: x (init_x), y (init_y), z (init_z)
 {
-  namespace platforms
+}
+
+gams::utility::Position::~Position ()
+{
+}
+
+void
+gams::utility::Position::operator= (const Position & rhs)
+{
+  if (this != &rhs)
   {
-    class GAMS_Export Drone_RK : public Base
-    {
-    public:
-      /**
-       * Constructor
-       * @param  knowledge  knowledge base
-       * @param  sensors    map of sensor names to sensor information
-       * @param  platforms  map of platform names to platform information
-       * @param  self       device variables that describe self state
-       **/
-      Drone_RK (
-        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        variables::Sensors * sensors,
-        variables::Platforms & platforms,
-        variables::Self & self);
-
-      /**
-       * Destructor
-       **/
-      ~Drone_RK ();
-
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Drone_RK & rhs);
-      
-      /**
-       * Moves the platform to a position
-       * @param   position  the coordinate to move to
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int move (const utility::Position & position);
-      
-      /**
-       * Polls the sensor environment for useful information
-       * @return number of sensors updated/used
-       **/
-      virtual int sense (void);
-      
-      /**
-       * Analyzes platform information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-
-      /**
-       * Fills a list of sensor names with sensors available on the platform
-       **/
-      virtual void get_sensors (variables::Sensor_Names & sensors);
-      
-      /**
-       * Obtains the current position
-       * @param  position  after the call, filled with the current position
-       **/
-      virtual void get_position (utility::Position & position);
-
-    protected:
-
-      /// provides access to variables denoting self state
-      variables::Self self_;
-
-      /// current position
-      utility::Position position_;
-    };
+    this->x = rhs.x;
+    this->y = rhs.y;
+    this->z = rhs.z;
   }
 }
 
-#endif // _GAMS_PLATFORM_DRONE_RK_H_
+std::string
+gams::utility::Position::to_string (const std::string & delimiter) const
+{
+  std::stringstream buffer;
+  buffer << x;
+  buffer << delimiter;
+  buffer << y;
+  buffer << delimiter;
+  buffer << z;
+
+  return buffer.str ();
+}
+
+void
+gams::utility::Position::to_container (
+  Madara::Knowledge_Engine::Containers::Double_Array & target) const
+{
+  target.set (0, x);
+  target.set (1, y);
+  target.set (2, z);
+}

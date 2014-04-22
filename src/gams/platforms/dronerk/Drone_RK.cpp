@@ -93,12 +93,20 @@ gams::platforms::Drone_RK::get_sensors (variables::Sensor_Names & sensors)
 }
 
 
-int
-gams::platforms::Drone_RK::move (double x, double y, double z)
+void
+gams::platforms::Drone_RK::get_position (utility::Position & position)
 {
+  position = position_;
+}
+
+int
+gams::platforms::Drone_RK::move (const utility::Position & position)
+{
+  position_ = position;
+
   return 0;
 }
-      
+   
 int
 gams::platforms::Drone_RK::sense (void)
 {

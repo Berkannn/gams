@@ -56,6 +56,7 @@
 
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
+#include "gams/utility/Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
@@ -102,13 +103,11 @@ namespace gams
       void operator= (const Base & rhs);
 
       /**
-       * Moves the platform to an x, y, z location
-       * @param   x   x coordinate, often latitude
-       * @param   y   y coordinate, often longitude
-       * @param   z   z coordinate, often altitude
+       * Moves the platform to a position
+       * @param   position  the coordinate to move to
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual int move (double x, double y, double z) = 0;
+      virtual int move (const utility::Position & position) = 0;
       
       /**
        * Polls the sensor environment for useful information
@@ -124,8 +123,15 @@ namespace gams
 
       /**
        * Fills a list of sensor names with sensors available on the platform
+       * @param  sensors   list of sensors to fill
        **/
       virtual void get_sensors (variables::Sensor_Names & sensors) = 0;
+
+      /**
+       * Obtains the current position
+       * @param  position  after the call, filled with the current position
+       **/
+      virtual void get_position (utility::Position & position) = 0;
 
       /**
        * Sets the map of sensor names to sensor information

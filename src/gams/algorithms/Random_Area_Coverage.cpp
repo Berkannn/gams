@@ -76,6 +76,12 @@ gams::algorithms::Random_Area_Coverage::operator= (const Random_Area_Coverage & 
 int
 gams::algorithms::Random_Area_Coverage::analyze (void)
 {
+  this->platform_->get_sensors (sensor_names_);
+
+  platform_->get_position (current_position_);
+
+  current_position_.to_container (self_->device.location);
+
   return 0;
 }
       

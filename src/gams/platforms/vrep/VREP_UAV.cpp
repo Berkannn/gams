@@ -93,10 +93,18 @@ gams::platforms::VREP_UAV::get_sensors (variables::Sensor_Names & sensors)
   }
 }
 
+void
+gams::platforms::VREP_UAV::get_position (utility::Position & position)
+{
+  position = position_;
+}
+
 
 int
-gams::platforms::VREP_UAV::move (double x, double y, double z)
+gams::platforms::VREP_UAV::move (const utility::Position & position)
 {
+  position_ = position;
+
   return 0;
 }
       

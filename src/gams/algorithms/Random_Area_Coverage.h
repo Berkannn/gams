@@ -109,7 +109,14 @@ namespace gams
       virtual int plan (void);
       
     protected:
+      /// list of sensor names
+      variables::Sensor_Names sensor_names_;
 
+      /// current position
+      utility::Position current_position_;
+
+      /// next position
+      utility::Position next_position_;
     };
   }
 }

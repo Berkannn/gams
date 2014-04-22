@@ -138,7 +138,8 @@ gams::algorithms::Printer_Algorithm::execute (void)
 
   if (platform_)
   {
-    platform_->move (1, 2, 3);
+    utility::Position next (1, 2, 3);
+    platform_->move (next);
   }
   else
   {

@@ -90,15 +90,13 @@ namespace gams
        * @param  rhs   values to copy
        **/
       void operator= (const Printer_Platform & rhs);
-
+      
       /**
-       * Moves the platform to an x, y, z location
-       * @param   x   x coordinate, often latitude
-       * @param   y   y coordinate, often longitude
-       * @param   z   z coordinate, often altitude
+       * Moves the platform to a position
+       * @param   position  the coordinate to move to
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual int move (double x, double y, double z);
+      virtual int move (const utility::Position & position);
       
       /**
        * Polls the sensor environment for useful information
@@ -116,11 +114,20 @@ namespace gams
        * Fills a list of sensor names with sensors available on the platform
        **/
       virtual void get_sensors (variables::Sensor_Names & sensors);
+      
+      /**
+       * Obtains the current position
+       * @param  position  after the call, filled with the current position
+       **/
+      virtual void get_position (utility::Position & position);
 
     protected:
 
       /// provides access to variables denoting self state
       variables::Self * self_;
+
+      /// current position
+      utility::Position position_;
     };
   }
 }

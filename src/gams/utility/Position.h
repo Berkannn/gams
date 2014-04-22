@@ -45,91 +45,70 @@
  **/
 
 /**
- * @file Drone_RK.h
+ * @file Position.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the Drone-RK platform class
+ * This file contains a utility class for working with position
  **/
 
-#ifndef   _GAMS_PLATFORM_DRONE_RK_H_
-#define   _GAMS_PLATFORM_DRONE_RK_H_
+#ifndef   _GAMS_UTILITY_GPS_H_
+#define   _GAMS_UTILITY_GPS_H_
 
-#include "gams/variables/Self.h"
-#include "gams/variables/Sensor.h"
-#include "gams/variables/Platform.h"
-#include "gams/platforms/Base_Platform.h"
-#include "madara/knowledge_engine/Knowledge_Base.h"
+#include <vector>
+
+#include "gams/GAMS_Export.h"
+#include "madara/knowledge_engine/containers/Double_Vector.h"
 
 namespace gams
 {
-  namespace platforms
+  namespace utility
   {
-    class GAMS_Export Drone_RK : public Base
+    class GAMS_Export Position
     {
     public:
       /**
        * Constructor
-       * @param  knowledge  knowledge base
-       * @param  sensors    map of sensor names to sensor information
-       * @param  platforms  map of platform names to platform information
-       * @param  self       device variables that describe self state
+       * @param  init_x    the x axis coordinate (e.g. latitude)
+       * @param  init_y    the y axis coordinate (e.g. longitude)
+       * @param  init_z    the z axis coordinate (e.g. altitude)
        **/
-      Drone_RK (
-        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        variables::Sensors * sensors,
-        variables::Platforms & platforms,
-        variables::Self & self);
+      Position (
+        double init_x = 0.0, double init_y = 0.0, double init_z = 0.0);
 
       /**
        * Destructor
        **/
-      ~Drone_RK ();
+      ~Position ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Drone_RK & rhs);
+      void operator= (const Position & rhs);
       
       /**
-       * Moves the platform to a position
-       * @param   position  the coordinate to move to
-       * @return 1 if moving, 2 if arrived, 0 if error
+       * Helper function for converting the position to a string
+       * @param delimiter characters to insert between position components
        **/
-      virtual int move (const utility::Position & position);
-      
-      /**
-       * Polls the sensor environment for useful information
-       * @return number of sensors updated/used
-       **/
-      virtual int sense (void);
-      
-      /**
-       * Analyzes platform information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
+      std::string to_string (const std::string & delimiter = ",") const;
 
       /**
-       * Fills a list of sensor names with sensors available on the platform
+       * Helper function for copying values to a MADARA double array
+       * @param target     target container to copy values to
        **/
-      virtual void get_sensors (variables::Sensor_Names & sensors);
-      
-      /**
-       * Obtains the current position
-       * @param  position  after the call, filled with the current position
-       **/
-      virtual void get_position (utility::Position & position);
+      void to_container (
+        Madara::Knowledge_Engine::Containers::Double_Array & target) const;
 
-    protected:
+      /// the x coordinate (e.g. latitude)
+      double x;
 
-      /// provides access to variables denoting self state
-      variables::Self self_;
+      /// the y coordinate (e.g. longitude)
+      double y;
 
-      /// current position
-      utility::Position position_;
+      /// the z coordinate (e.g. altitude)
+      double z;
     };
   }
 }
 
-#endif // _GAMS_PLATFORM_DRONE_RK_H_
+#endif // _GAMS_UTILITY_GPS_H_
