@@ -23,22 +23,59 @@ project (gams) : using_madara, using_ace, using_dronerk, using_vrep {
   }
 
   Header_Files {
-    src/gams/algorithms
-    src/gams/controller
-    src/gams/maps
-    src/gams/platforms
-    src/gams/utility
-    src/gams/variables
+
+    Algorithms {
+      src/gams/algorithms
+    }
+
+    Controllers {
+      src/gams/controller
+    }
+
+    Maps {
+      src/gams/maps
+    }
+
+    Platforms {
+      src/gams/platforms
+    }
+
+    Utility {
+      src/gams/utility
+    }
+
+    Variables {
+      src/gams/variables
+    }
+
     src/gams
   }
 
   Source_Files {
-    src/gams/algorithms
-    src/gams/controller
-    src/gams/maps
-    src/gams/platforms
-    src/gams/utility
-    src/gams/variables
+
+    Algorithms {
+      src/gams/algorithms
+    }
+
+    Controllers {
+      src/gams/controller
+    }
+
+    Maps {
+      src/gams/maps
+    }
+
+    Platforms {
+      src/gams/platforms
+    }
+
+    Utility {
+      src/gams/utility
+    }
+
+    Variables {
+      src/gams/variables
+    }
   }
 }
 
