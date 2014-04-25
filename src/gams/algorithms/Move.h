@@ -45,129 +45,80 @@
  **/
 
 /**
- * @file Base.h
+ * @file Move.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the base algorithm class
+ * This file contains the definition of the snake area coverage class
  **/
 
-#ifndef   _GAMS_ALGORITHMS_BASE_H_
-#define   _GAMS_ALGORITHMS_BASE_H_
+#ifndef   _GAMS_ALGORITHMS_MOVE_H_
+#define   _GAMS_ALGORITHMS_MOVE_H_
 
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
-#include "madara/knowledge_engine/Knowledge_Base.h"
+#include "gams/algorithms/Base_Algorithm.h"
 
 namespace gams
 {
   namespace algorithms
   {
-    /**
-     * Possible algorithm statuses, as returnable by analyze ()
-     **/
-    enum Status
-    {
-      UNKNOWN = 0,
-      OK  = 1,
-      WAITING = 2,
-      DEADLOCKED = 4,
-      FAILED = 8
-    };
-
-    class GAMS_Export Base
+    class GAMS_Export Move : public Base
     {
     public:
       /**
        * Constructor
-       * @param  knowledge    the knowledge base of variables and values
+       * @param  knowledge    the context containing variables and values
        * @param  platform     the underlying platform the algorithm will use
        * @param  sensors      map of sensor names to sensor information
-       * @param  devices      list of devices in the swarm
+       * @param  self         self-referencing variables
        **/
-      Base (
+      Move (
+        const std::string & type,
+        unsigned int max_executions = 20,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0, variables::Devices * devices = 0);
+        platforms::Base * platform = 0,
+        variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
 
       /**
        * Destructor
        **/
-      ~Base ();
+      ~Move ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Base & rhs);
+      void operator= (const Move & rhs);
       
       /**
        * Analyzes environment, platform, or other information
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int analyze (void) = 0;
+      virtual int analyze (void);
       
       /**
        * Plans the next execution of the algorithm
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int execute (void) = 0;
+      virtual int execute (void);
 
       /**
        * Plans the next execution of the algorithm
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int plan (void) = 0;
-      
-      /**
-       * Sets the platform
-       * @param  platform     the underlying platform the algorithm will use
-       **/
-      virtual void set_platform (platforms::Base * platform);
-      
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      virtual void set_sensors (variables::Sensors * sensors);
-      
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      virtual void set_self (variables::Self * self);
-      
-      /**
-       * Sets the list of devices in the swarm
-       * @param  devices      list of devices
-       **/
-      virtual void set_devices (variables::Devices * devices);
+      virtual int plan (void);
       
     protected:
+      /// type of movement being executed
+      std::string type_;
 
-      /// provides access to the knowledge base
-      Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
-
-      /// provides access to the platform
-      platforms::Base * platform_;
-
-      /// provides access to sensor information
-      variables::Sensors * sensors_;
-
-      /// provides access to status information for this platform
-      variables::Algorithm status_;
-
-      /// the algorithm's concept of self
-      variables::Self * self_;
-
-      /// the list of devices potentially participating in the algorithm
-      variables::Devices * devices_;
-
-      /// number of executions
-      unsigned int executions_;
+      /// maximum number of consecutive executions allowed
+      unsigned int max_executions_;
     };
   }
 }
 
-#endif // _GAMS_VARIABLES_SWARM_H_
+#endif // _GAMS_ALGORITHMS_MOVE_H_

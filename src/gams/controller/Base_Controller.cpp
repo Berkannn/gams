@@ -145,6 +145,25 @@ gams::controller::Base::analyze (void)
 }
 
 int
+gams::controller::Base::system_analyze (void)
+{
+  int return_value (0);
+
+  if (this->self_.device.command == "land" || this->swarm_.command == "land")
+  {
+    init_algorithm ("land");
+  }
+
+  else if (this->self_.device.command == "takeoff" || 
+    this->swarm_.command == "takeoff")
+  {
+    init_algorithm ("takeoff");
+  }
+
+  return return_value;
+}
+
+int
 gams::controller::Base::plan (void)
 {
   int return_value (0);

@@ -43,98 +43,56 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm_Factory.h"
 #include "Land.h"
-#include "Move.h"
-#include "Printer_Algorithm.h"
-#include "Random_Area_Coverage.h"
-#include "Snake_Area_Coverage.h"
-#include "Takeoff.h"
 
 
-gams::algorithms::Factory::Factory (
+gams::algorithms::Land::Land (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  variables::Sensors * sensors,
   platforms::Base * platform,
-  variables::Self * self,
-  variables::Devices * devices)
-: knowledge_ (knowledge), sensors_ (sensors),
-  platform_ (platform), self_ (self),
-  devices_ (devices)
+  variables::Sensors * sensors,
+  variables::Self * self)
+  : Base (knowledge, platform, sensors, self)
 {
+  status_.init_vars (*knowledge, "sac");
 }
 
-gams::algorithms::Factory::~Factory ()
+gams::algorithms::Land::~Land ()
 {
 }
 
 void
-gams::algorithms::Factory::operator= (const Factory & rhs)
+gams::algorithms::Land::operator= (const Land & rhs)
 {
+  if (this != &rhs)
+  {
+    this->platform_ = rhs.platform_;
+    this->sensors_ = rhs.sensors_;
+    this->self_ = rhs.self_;
+    this->status_ = rhs.status_;
+  }
 }
 
-gams::algorithms::Base *
-gams::algorithms::Factory::create (const std::string & type)
-{
-  if (type == "debug" || type == "print" || type == "printer")
-  {
-    if (knowledge_ && sensors_ && self_)
-      return new Printer_Algorithm (knowledge_, platform_, sensors_, self_);
-  }
-  if (type == "random area coverage" || type == "rac")
-  {
-    if (knowledge_ && sensors_  && self_)
-      return new Random_Area_Coverage (knowledge_, platform_, sensors_, self_);
-  }
-  else if (type == "snake" || type == "sac")
-  {
-    if (knowledge_ && sensors_ && platform_ && self_)
-      return new Snake_Area_Coverage (knowledge_, platform_, sensors_, self_);
-  }
-  else if (type == "takeoff")
-  {
-    if (knowledge_ && sensors_ && platform_ && self_)
-      return new Takeoff (knowledge_, platform_, sensors_, self_);
-  }
-  else if (type == "land")
-  {
-    if (knowledge_ && sensors_ && platform_ && self_)
-      return new Land (knowledge_, platform_, sensors_, self_);
-  }
 
+int
+gams::algorithms::Land::analyze (void)
+{
+  return 0;
+}
+      
+
+int
+gams::algorithms::Land::execute (void)
+{
+  if (executions_ == 0)
+  {
+    std::cerr << "Landing...\n";
+  }
   return 0;
 }
 
-void
-gams::algorithms::Factory::set_knowledge (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge)
-{
-  knowledge_ = knowledge;
-}
-      
 
-void
-gams::algorithms::Factory::set_sensors (variables::Sensors * sensors)
+int
+gams::algorithms::Land::plan (void)
 {
-  sensors_ = sensors;
-}
-      
-
-void
-gams::algorithms::Factory::set_platform (platforms::Base * platform)
-{
-  platform_ = platform;
-}
-      
-
-void
-gams::algorithms::Factory::set_self (variables::Self * self)
-{
-  self_ = self;
-}
-
-void
-gams::algorithms::Factory::set_devices (variables::Devices * devices)
-{
-  devices_ = devices;
+  return 0;
 }

@@ -70,6 +70,7 @@ gams::variables::Device::operator= (const Device & device)
     this->next_coverage_type = device.next_coverage_type;
     this->search_area_id = device.search_area_id;
     this->temperature = device.temperature;
+    this->command = device.command;
   }
 }
 
@@ -95,6 +96,7 @@ gams::variables::Device::init_vars (
   next_coverage_type.set_name (device_name + ".next_area_coverage_type",
     knowledge);
   search_area_id.set_name (device_name + ".search_area_id", knowledge);
+  command.set_name (device_name + ".command", knowledge);
 
   // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);
@@ -121,6 +123,7 @@ gams::variables::Device::init_vars (
   next_coverage_type.set_name (device_name + ".next_area_coverage_type",
     knowledge);
   search_area_id.set_name (device_name + ".search_area_id", knowledge);
+  command.set_name (device_name + ".command", knowledge);
 
   // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);

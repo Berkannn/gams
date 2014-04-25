@@ -43,98 +43,67 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm_Factory.h"
-#include "Land.h"
 #include "Move.h"
-#include "Printer_Algorithm.h"
-#include "Random_Area_Coverage.h"
-#include "Snake_Area_Coverage.h"
-#include "Takeoff.h"
 
 
-gams::algorithms::Factory::Factory (
+gams::algorithms::Move::Move (
+  const std::string & type,
+  unsigned int max_executions,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  variables::Sensors * sensors,
   platforms::Base * platform,
-  variables::Self * self,
-  variables::Devices * devices)
-: knowledge_ (knowledge), sensors_ (sensors),
-  platform_ (platform), self_ (self),
-  devices_ (devices)
+  variables::Sensors * sensors,
+  variables::Self * self)
+  : Base (knowledge, platform, sensors, self), type_ (type),
+  max_executions_ (max_executions)
 {
+  status_.init_vars (*knowledge, "sac");
 }
 
-gams::algorithms::Factory::~Factory ()
+gams::algorithms::Move::~Move ()
 {
 }
 
 void
-gams::algorithms::Factory::operator= (const Factory & rhs)
+gams::algorithms::Move::operator= (const Move & rhs)
 {
+  if (this != &rhs)
+  {
+    this->platform_ = rhs.platform_;
+    this->sensors_ = rhs.sensors_;
+    this->self_ = rhs.self_;
+    this->status_ = rhs.status_;
+  }
 }
 
-gams::algorithms::Base *
-gams::algorithms::Factory::create (const std::string & type)
+
+int
+gams::algorithms::Move::analyze (void)
 {
-  if (type == "debug" || type == "print" || type == "printer")
+  return 0;
+}
+      
+
+int
+gams::algorithms::Move::execute (void)
+{
+  if (executions_ < max_executions_)
   {
-    if (knowledge_ && sensors_ && self_)
-      return new Printer_Algorithm (knowledge_, platform_, sensors_, self_);
+    std::cerr << "Executing " << type_ << " movement...\n";
   }
-  if (type == "random area coverage" || type == "rac")
+  else
   {
-    if (knowledge_ && sensors_  && self_)
-      return new Random_Area_Coverage (knowledge_, platform_, sensors_, self_);
+    std::cerr << "Executed movement " << max_executions_ << "times.";
+    std::cerr << " Awaiting new commands...\n";
   }
-  else if (type == "snake" || type == "sac")
-  {
-    if (knowledge_ && sensors_ && platform_ && self_)
-      return new Snake_Area_Coverage (knowledge_, platform_, sensors_, self_);
-  }
-  else if (type == "takeoff")
-  {
-    if (knowledge_ && sensors_ && platform_ && self_)
-      return new Takeoff (knowledge_, platform_, sensors_, self_);
-  }
-  else if (type == "land")
-  {
-    if (knowledge_ && sensors_ && platform_ && self_)
-      return new Land (knowledge_, platform_, sensors_, self_);
-  }
+
+  ++executions_;
 
   return 0;
 }
 
-void
-gams::algorithms::Factory::set_knowledge (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge)
-{
-  knowledge_ = knowledge;
-}
-      
 
-void
-gams::algorithms::Factory::set_sensors (variables::Sensors * sensors)
+int
+gams::algorithms::Move::plan (void)
 {
-  sensors_ = sensors;
-}
-      
-
-void
-gams::algorithms::Factory::set_platform (platforms::Base * platform)
-{
-  platform_ = platform;
-}
-      
-
-void
-gams::algorithms::Factory::set_self (variables::Self * self)
-{
-  self_ = self;
-}
-
-void
-gams::algorithms::Factory::set_devices (variables::Devices * devices)
-{
-  devices_ = devices;
+  return 0;
 }

@@ -53,7 +53,8 @@ gams::algorithms::Base::Base (
   variables::Self * self,
   variables::Devices * devices)
   : knowledge_ (knowledge), platform_ (platform),
-    sensors_ (sensors), self_ (self), devices_ (devices)
+    sensors_ (sensors), self_ (self), devices_ (devices),
+    executions_ (0)
 {
 }
 

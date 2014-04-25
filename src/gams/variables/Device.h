@@ -128,6 +128,9 @@ namespace gams
 
       /// indicator for temperature
       Madara::Knowledge_Engine::Containers::Double temperature;
+
+      /// device specific command
+      Madara::Knowledge_Engine::Containers::String command;
     };
 
     /**

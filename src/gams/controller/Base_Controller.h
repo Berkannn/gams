@@ -113,6 +113,13 @@ namespace gams
        * return a 0 unless the MAPE loop should stop.
        **/
       virtual int analyze (void);
+      
+      /**
+       * Analyzes the system to determine if platform or algorithm changes
+       * are necessary. This function should
+       * return a 0 unless the MAPE loop should stop.
+       **/
+      virtual int system_analyze (void);
 
       /**
        * Defines the plan function (the P of MAPE). This function should
