@@ -107,6 +107,15 @@ namespace gams
 
       /// the location, usually encoded in GPS, for this device
       Madara::Knowledge_Engine::Containers::Double_Array location;
+      
+      /// the source location
+      Madara::Knowledge_Engine::Containers::Double_Array source;
+      
+      /// the destination location
+      Madara::Knowledge_Engine::Containers::Double_Array dest;
+      
+      /// the home location
+      Madara::Knowledge_Engine::Containers::Double_Array home;
 
       /// the mobility indicator for this device (true if mobile)
       Madara::Knowledge_Engine::Containers::Integer is_mobile;

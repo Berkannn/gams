@@ -51,7 +51,7 @@ gams::platforms::Drone_RK::Drone_RK (
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
-  : Base (&knowledge, sensors), self_ (self)
+  : Base (&knowledge, sensors), self_ (self), airborne_ (false)
 {
   platforms["drone_rk"].init_vars (knowledge, "drone_rk");
 }
@@ -100,8 +100,30 @@ gams::platforms::Drone_RK::get_position (utility::Position & position)
 }
 
 int
+gams::platforms::Drone_RK::home (void)
+{
+  // check if home has been set
+  if (self_.device.home.size () == 3)
+  {
+    // read the home position
+    utility::Position position;
+    position.from_container (self_.device.home);
+
+    // move to home
+    move (position);
+  }
+
+  return 0;
+}
+
+int
 gams::platforms::Drone_RK::move (const utility::Position & position)
 {
+  // check if not airborne and takeoff if appropriate
+  if (!airborne_)
+    takeoff ();
+
+  // move to the position
   position_ = position;
 
   return 0;
@@ -116,5 +138,27 @@ gams::platforms::Drone_RK::sense (void)
 int
 gams::platforms::Drone_RK::analyze (void)
 {
+  return 0;
+}
+
+int
+gams::platforms::Drone_RK::takeoff (void)
+{
+  if (!airborne_)
+  {
+    airborne_ = true;
+  }
+
+  return 0;
+}
+      
+int
+gams::platforms::Drone_RK::land (void)
+{
+  if (airborne_)
+  {
+    airborne_ = false;
+  }
+
   return 0;
 }

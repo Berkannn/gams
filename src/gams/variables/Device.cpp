@@ -66,6 +66,9 @@ gams::variables::Device::operator= (const Device & device)
     this->coverage_type = device.coverage_type;
     this->is_mobile = device.is_mobile;
     this->location = device.location;
+    this->source = device.source;
+    this->dest = device.dest;
+    this->home = device.home;
     this->min_alt = device.min_alt;
     this->next_coverage_type = device.next_coverage_type;
     this->search_area_id = device.search_area_id;
@@ -86,6 +89,11 @@ gams::variables::Device::init_vars (
   buffer << id;
   std::string device_name (buffer.str ());
 
+  std::stringstream local_buffer;
+  local_buffer << ".device.";
+  local_buffer << id;
+  std::string local_device_name (local_buffer.str ());
+
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
   location.set_name (device_name + ".location", knowledge, 3);
@@ -97,6 +105,9 @@ gams::variables::Device::init_vars (
     knowledge);
   search_area_id.set_name (device_name + ".search_area_id", knowledge);
   command.set_name (device_name + ".command", knowledge);
+  home.set_name (device_name + ".home", knowledge);
+  source.set_name (local_device_name + ".source", knowledge);
+  dest.set_name (local_device_name + ".dest", knowledge);
 
   // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);
@@ -112,6 +123,11 @@ gams::variables::Device::init_vars (
   buffer << "device.";
   buffer << id;
   std::string device_name (buffer.str ());
+  
+  std::stringstream local_buffer;
+  local_buffer << ".device.";
+  local_buffer << id;
+  std::string local_device_name (local_buffer.str ());
 
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
@@ -124,6 +140,9 @@ gams::variables::Device::init_vars (
     knowledge);
   search_area_id.set_name (device_name + ".search_area_id", knowledge);
   command.set_name (device_name + ".command", knowledge);
+  home.set_name (device_name + ".home", knowledge);
+  source.set_name (local_device_name + ".source", knowledge);
+  dest.set_name (local_device_name + ".dest", knowledge);
 
   // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);

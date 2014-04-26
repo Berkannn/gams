@@ -51,7 +51,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
-  : Base (&knowledge, sensors), self_ (self)
+  : Base (&knowledge, sensors), self_ (self), airborne_ (false)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 }
@@ -99,10 +99,32 @@ gams::platforms::VREP_UAV::get_position (utility::Position & position)
   position = position_;
 }
 
+int
+gams::platforms::VREP_UAV::home (void)
+{
+  // check if home has been set
+  if (self_.device.home.size () == 3)
+  {
+    // read the home position
+    utility::Position position;
+    position.from_container (self_.device.home);
+
+    // move to home
+    move (position);
+  }
+
+  return 0;
+}
+
 
 int
 gams::platforms::VREP_UAV::move (const utility::Position & position)
 {
+  // check if not airborne and takeoff if appropriate
+  if (!airborne_)
+    takeoff ();
+
+  // move to the position
   position_ = position;
 
   return 0;
@@ -117,5 +139,27 @@ gams::platforms::VREP_UAV::sense (void)
 int
 gams::platforms::VREP_UAV::analyze (void)
 {
+  return 0;
+}
+   
+int
+gams::platforms::VREP_UAV::takeoff (void)
+{
+  if (!airborne_)
+  {
+    airborne_ = true;
+  }
+
+  return 0;
+}
+      
+int
+gams::platforms::VREP_UAV::land (void)
+{
+  if (airborne_)
+  {
+    airborne_ = false;
+  }
+
   return 0;
 }

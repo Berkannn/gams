@@ -92,6 +92,18 @@ namespace gams
       void operator= (const VREP_UAV & rhs);
       
       /**
+       * Instructs the device to return home
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int home (void);
+      
+      /**
+       * Instructs the platform to land
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int land (void);
+      
+      /**
        * Moves the platform to a position
        * @param   position  the coordinate to move to
        * @return 1 if moving, 2 if arrived, 0 if error
@@ -103,6 +115,12 @@ namespace gams
        * @return number of sensors updated/used
        **/
       virtual int sense (void);
+      
+      /**
+       * Instructs the platform to take off
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int takeoff (void);
       
       /**
        * Analyzes platform information
@@ -128,6 +146,9 @@ namespace gams
 
       /// current position
       utility::Position position_;
+
+      /// flag for drone being airborne
+      bool airborne_;
     };
   }
 }

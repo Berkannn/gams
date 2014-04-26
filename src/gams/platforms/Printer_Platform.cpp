@@ -136,7 +136,133 @@ gams::platforms::Printer_Platform::move (const utility::Position & position)
   
   return 0;
 }
-      
+
+int
+gams::platforms::Printer_Platform::home (void)
+{
+  std::cerr << "  platform.home ()\n";
+
+  if (sensors_)
+    std::cerr << "    platform.sensors_ is set.\n";
+  else
+    std::cerr << "    ERROR: platform.sensors_ is not set.\n";
+  
+  if (self_)
+    std::cerr << "    platform.self_ is set.\n";
+  else
+    std::cerr << "    ERROR: platform.self_ is not set.\n";
+  
+  status_.waiting = 0;
+  status_.moving = 1;
+
+  std::cerr << "    platform.status_.ok == " << *status_.ok << "\n";
+  std::cerr << "    platform.status_.waiting == " << *status_.waiting << "\n";
+  std::cerr << "    platform.status_.deadlocked == "
+    << *status_.deadlocked << "\n";
+  std::cerr << "    platform.status_.failed == "
+    << *status_.failed << "\n";
+  std::cerr << "    platform.status_.moving == "
+    << *status_.moving << "\n";
+  std::cerr << "    platform.status_.reduced_sensing == "
+    << *status_.reduced_sensing << "\n";
+  std::cerr << "    platform.status_.reduced_movement == "
+    << *status_.reduced_movement << "\n";
+  std::cerr << "    platform.status_.communication_available == "
+    << *status_.communication_available << "\n";
+  std::cerr << "    platform.status_.sensors_available == "
+    << *status_.sensors_available << "\n";
+  std::cerr << "    platform.status_.movement_available == "
+    << *status_.movement_available << "\n";
+  std::cerr << "    platform.status_.gps_spoofed == "
+    << *status_.gps_spoofed << "\n";
+  
+  return 0;
+}
+
+int
+gams::platforms::Printer_Platform::land (void)
+{
+  std::cerr << "  platform.land ()\n";
+
+  if (sensors_)
+    std::cerr << "    platform.sensors_ is set.\n";
+  else
+    std::cerr << "    ERROR: platform.sensors_ is not set.\n";
+  
+  if (self_)
+    std::cerr << "    platform.self_ is set.\n";
+  else
+    std::cerr << "    ERROR: platform.self_ is not set.\n";
+  
+  status_.waiting = 0;
+  status_.moving = 1;
+
+  std::cerr << "    platform.status_.ok == " << *status_.ok << "\n";
+  std::cerr << "    platform.status_.waiting == " << *status_.waiting << "\n";
+  std::cerr << "    platform.status_.deadlocked == "
+    << *status_.deadlocked << "\n";
+  std::cerr << "    platform.status_.failed == "
+    << *status_.failed << "\n";
+  std::cerr << "    platform.status_.moving == "
+    << *status_.moving << "\n";
+  std::cerr << "    platform.status_.reduced_sensing == "
+    << *status_.reduced_sensing << "\n";
+  std::cerr << "    platform.status_.reduced_movement == "
+    << *status_.reduced_movement << "\n";
+  std::cerr << "    platform.status_.communication_available == "
+    << *status_.communication_available << "\n";
+  std::cerr << "    platform.status_.sensors_available == "
+    << *status_.sensors_available << "\n";
+  std::cerr << "    platform.status_.movement_available == "
+    << *status_.movement_available << "\n";
+  std::cerr << "    platform.status_.gps_spoofed == "
+    << *status_.gps_spoofed << "\n";
+  
+  return 0;
+}
+
+int
+gams::platforms::Printer_Platform::takeoff (void)
+{
+  std::cerr << "  platform.takeoff ()\n";
+
+  if (sensors_)
+    std::cerr << "    platform.sensors_ is set.\n";
+  else
+    std::cerr << "    ERROR: platform.sensors_ is not set.\n";
+  
+  if (self_)
+    std::cerr << "    platform.self_ is set.\n";
+  else
+    std::cerr << "    ERROR: platform.self_ is not set.\n";
+  
+  status_.waiting = 0;
+  status_.moving = 1;
+
+  std::cerr << "    platform.status_.ok == " << *status_.ok << "\n";
+  std::cerr << "    platform.status_.waiting == " << *status_.waiting << "\n";
+  std::cerr << "    platform.status_.deadlocked == "
+    << *status_.deadlocked << "\n";
+  std::cerr << "    platform.status_.failed == "
+    << *status_.failed << "\n";
+  std::cerr << "    platform.status_.moving == "
+    << *status_.moving << "\n";
+  std::cerr << "    platform.status_.reduced_sensing == "
+    << *status_.reduced_sensing << "\n";
+  std::cerr << "    platform.status_.reduced_movement == "
+    << *status_.reduced_movement << "\n";
+  std::cerr << "    platform.status_.communication_available == "
+    << *status_.communication_available << "\n";
+  std::cerr << "    platform.status_.sensors_available == "
+    << *status_.sensors_available << "\n";
+  std::cerr << "    platform.status_.movement_available == "
+    << *status_.movement_available << "\n";
+  std::cerr << "    platform.status_.gps_spoofed == "
+    << *status_.gps_spoofed << "\n";
+  
+  return 0;
+}
+
 void
 gams::platforms::Printer_Platform::get_position (utility::Position & position)
 {

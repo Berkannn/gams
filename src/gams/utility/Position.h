@@ -98,6 +98,13 @@ namespace gams
        **/
       void to_container (
         Madara::Knowledge_Engine::Containers::Double_Array & target) const;
+      
+      /**
+       * Helper function for copying values to a MADARA double array
+       * @param source     source container to copy values from
+       **/
+      void from_container (
+        Madara::Knowledge_Engine::Containers::Double_Array & source);
 
       /// the x coordinate (e.g. latitude)
       double x;

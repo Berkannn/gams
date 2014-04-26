@@ -90,6 +90,18 @@ namespace gams
        * @param  rhs   values to copy
        **/
       void operator= (const Printer_Platform & rhs);
+       
+      /**
+       * Instructs the device to return home
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int home (void);
+      
+      /**
+       * Instructs the platform to land
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int land (void);
       
       /**
        * Moves the platform to a position
@@ -103,6 +115,12 @@ namespace gams
        * @return number of sensors updated/used
        **/
       virtual int sense (void);
+      
+      /**
+       * Instructs the platform to take off
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int takeoff (void);
       
       /**
        * Analyzes platform information

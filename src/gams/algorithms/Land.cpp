@@ -86,6 +86,15 @@ gams::algorithms::Land::execute (void)
   if (executions_ == 0)
   {
     std::cerr << "Landing...\n";
+
+    if (platform_)
+    {
+      platform_->takeoff ();
+    }
+    else
+    {
+      std::cerr << "ERROR: No platform. Landing aborted.\n";
+    }
   }
   return 0;
 }

@@ -86,6 +86,15 @@ gams::algorithms::Takeoff::execute (void)
   if (executions_ == 0)
   {
     std::cerr << "Taking off...\n";
+
+    if (platform_)
+    {
+      platform_->takeoff ();
+    }
+    else
+    {
+      std::cerr << "ERROR: No platform. Takeoff aborted.\n";
+    }
   }
 
   return 0;

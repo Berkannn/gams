@@ -110,6 +110,24 @@ namespace gams
       virtual int move (const utility::Position & position) = 0;
       
       /**
+       * Instructs the device to take off
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int takeoff (void) = 0;
+      
+      /**
+       * Instructs the device to land
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int land (void) = 0;
+      
+      /**
+       * Instructs the device to return home
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int home (void) = 0;
+      
+      /**
        * Polls the sensor environment for useful information
        * @return number of sensors updated/used
        **/
