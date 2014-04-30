@@ -73,7 +73,7 @@ gams::variables::Self::init_vars (
   const Integer & id)
 {
   // initialize the variable containers
-  this->id.set_name ("id", knowledge);
+  this->id.set_name (".id", knowledge);
   this->device.init_vars (knowledge, id);
 }
 
@@ -83,7 +83,7 @@ gams::variables::Self::init_vars (
   const Integer & id)
 {
   // initialize the variable containers
-  this->id.set_name ("id", knowledge);
+  this->id.set_name (".id", knowledge);
   this->device.init_vars (knowledge, id);
 }
 

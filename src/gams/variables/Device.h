@@ -140,6 +140,9 @@ namespace gams
 
       /// device specific command
       Madara::Knowledge_Engine::Containers::String command;
+
+      /// number of arguments for command
+      Madara::Knowledge_Engine::Containers::Integer command_args;
     };
 
     /**

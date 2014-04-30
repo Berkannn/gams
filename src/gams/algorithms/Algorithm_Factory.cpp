@@ -74,7 +74,9 @@ gams::algorithms::Factory::operator= (const Factory & rhs)
 }
 
 gams::algorithms::Base *
-gams::algorithms::Factory::create (const std::string & type)
+gams::algorithms::Factory::create (const std::string & type,
+  const Madara::Knowledge_Record & arg1,
+  const Madara::Knowledge_Record & arg2)
 {
   if (type == "debug" || type == "print" || type == "printer")
   {
@@ -100,6 +102,11 @@ gams::algorithms::Factory::create (const std::string & type)
   {
     if (knowledge_ && sensors_ && platform_ && self_)
       return new Land (knowledge_, platform_, sensors_, self_);
+  }
+  else if (type == "move")
+  {
+    if (knowledge_ && sensors_ && platform_ && self_ && arg1.is_string_type ())
+      return new Move (arg1.to_string ());
   }
 
   return 0;

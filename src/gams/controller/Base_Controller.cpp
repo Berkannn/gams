@@ -148,6 +148,13 @@ int
 gams::controller::Base::system_analyze (void)
 {
   int return_value (0);
+  bool error (false);
+
+  /**
+   * note that certain device variables like command are kept local only.
+   * @see gams::variables::Device::init_vars
+   * @see gams::variables::Swarm::init_vars
+   **/
 
   if (this->self_.device.command == "land" || this->swarm_.command == "land")
   {
@@ -159,6 +166,118 @@ gams::controller::Base::system_analyze (void)
   {
     init_algorithm ("takeoff");
   }
+
+  else if (this->self_.device.command == "cover" ||
+    this->swarm_.command == "cover")
+  {
+    Madara::Knowledge_Record type;
+    Madara::Knowledge_Record area;
+
+    // check if proper number of arguments were given
+    if (swarm_.command_args == 2)
+    {
+      type = knowledge_.get ("swarm.command.0");
+      area = knowledge_.get ("swarm.command.1");
+    }
+    else if (this->self_.device.command_args == 2)
+    {
+      type = knowledge_.get ("device.{.id}.command.0",
+        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+      area = knowledge_.get ("device.{.id}.command.1",
+        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+    }
+    else
+    {
+      std::cerr << "ERROR: Area coverage requested with improper args.\n";
+      error = true;
+    }
+
+    // check if args were of the right type
+    if (!error)
+    {
+      if (!type.is_string_type ())
+      {
+        std::cerr << "ERROR: Area coverage type (first arg) " <<
+          "needs to be a string.\n";
+        error = true;
+      }
+      if (!area.is_string_type ())
+      {
+        std::cerr << "ERROR: Area coverage area (second arg) " <<
+          "needs to be a string.\n";
+        error = true;
+      }
+    }
+  }
+  
+  else if (this->self_.device.command == "move" ||
+    this->swarm_.command == "move")
+  {
+    Madara::Knowledge_Record type;
+    Madara::Knowledge_Record extra;
+    int num_args = 0;
+    int command_level = 0;
+
+    // check if proper number of arguments were given
+    if (swarm_.command_args == 2)
+    {
+      type = knowledge_.get ("swarm.command.0");
+      extra = knowledge_.get ("swarm.command.1");
+      num_args = 2;
+    }
+    else if (this->self_.device.command_args == 2)
+    {
+      type = knowledge_.get ("device.{.id}.command.0",
+        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+      extra = knowledge_.get ("device.{.id}.command.1",
+        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+      num_args = 2;
+      command_level = 1;
+    }
+    else if (swarm_.command_args == 1)
+    {
+      type = knowledge_.get ("swarm.command.0");
+      num_args = 1;
+    }
+    else if (this->self_.device.command_args == 1)
+    {
+      type = knowledge_.get ("device.{.id}.command.0",
+        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+      num_args = 1;
+      command_level = 1;
+    }
+    else if (swarm_.command_args == 0)
+    {
+      type = knowledge_.get ("swarm.command.0");
+    }
+    else if (this->self_.device.command_args == 0)
+    {
+      type = knowledge_.get ("device.{.id}.command.0",
+        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+      command_level = 1;
+    }
+    else
+    {
+      std::cerr << "ERROR: Move requested with improper args.\n";
+      error = true;
+    }
+
+    // check if args were of the right type
+    if (!error)
+    {
+      if (!type.is_string_type ())
+      {
+        std::cerr << "ERROR: Move type (first arg) " <<
+          "needs to be a string.\n";
+        error = true;
+      }
+    }
+  }
+  
+  self_.device.command = "";
+  swarm_.command = "";
+  self_.device.command_args = 0;
+  swarm_.command_args = 0;
 
   return return_value;
 }

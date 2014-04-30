@@ -62,7 +62,7 @@ gams::variables::Swarm::operator= (const Swarm & rhs)
   if (this != &rhs)
   {
     this->command = rhs.command;
-    this->args = rhs.args;
+    this->command_args = rhs.command_args;
     this->min_alt = rhs.min_alt;
   }
 }
@@ -72,26 +72,38 @@ void
 gams::variables::Swarm::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge)
 {
+  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
+
   // swarm commands are prefixed with "swarm.movement_command"
   std::string prefix ("swarm.command");
 
   // initialize the variable containers
   min_alt.set_name ("swarm.min_alt", knowledge);
   command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  command_args.set_name (prefix + ".size", knowledge);
+
+  // keep certain varaible changes as local only
+  command.set_settings (keep_local);
+  command_args.set_settings (keep_local);
 }
 
 void
 gams::variables::Swarm::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge)
 {
+  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
+
   // swarm commands are prefixed with "swarm.movement_command"
   std::string prefix ("swarm.command");
 
   // initialize the variable containers
   min_alt.set_name ("swarm.min_alt", knowledge);
   command.set_name (prefix, knowledge);
-  args.set_name (prefix, knowledge);
+  command_args.set_name (prefix + ".size", knowledge);
+
+  // keep certain varaible changes as local only
+  command.set_settings (keep_local);
+  command_args.set_settings (keep_local);
 }
 
 void gams::variables::init_vars (Swarm & variables,

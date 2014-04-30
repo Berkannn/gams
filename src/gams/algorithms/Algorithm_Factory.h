@@ -96,9 +96,13 @@ namespace gams
       /**
        * Creates a platform
        * @param  type   type of platform to create
+       * @param  arg1   first argument
+       * @param  arg2   second argument
        * @return  the new platform
        **/
-      Base * create (const std::string & type);
+      Base * create (const std::string & type,
+        const Madara::Knowledge_Record & arg1 = Madara::Knowledge_Record (),
+        const Madara::Knowledge_Record & arg2 = Madara::Knowledge_Record ());
       
       /**
        * Sets the knowledge base

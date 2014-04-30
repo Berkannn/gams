@@ -74,6 +74,7 @@ gams::variables::Device::operator= (const Device & device)
     this->search_area_id = device.search_area_id;
     this->temperature = device.temperature;
     this->command = device.command;
+    this->command_args = device.command_args;
   }
 }
 
@@ -83,6 +84,8 @@ gams::variables::Device::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   const Integer & id)
 {
+  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
+
   // create the device name string identifier ('device.{id}')
   std::stringstream buffer;
   buffer << "device.";
@@ -106,8 +109,13 @@ gams::variables::Device::init_vars (
   search_area_id.set_name (device_name + ".search_area_id", knowledge);
   command.set_name (device_name + ".command", knowledge);
   home.set_name (device_name + ".home", knowledge);
-  source.set_name (local_device_name + ".source", knowledge);
-  dest.set_name (local_device_name + ".dest", knowledge);
+  source.set_name (device_name + ".source", knowledge);
+  dest.set_name (device_name + ".dest", knowledge);
+  command_args.set_name (device_name + ".command.size", knowledge);
+  
+  // keep certain varaible changes as local only
+  command.set_settings (keep_local);
+  command_args.set_settings (keep_local);
 
   // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);
@@ -118,6 +126,8 @@ gams::variables::Device::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge,
   const Integer & id)
 {
+  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
+
   // create the device name string identifier ('device.{id}')
   std::stringstream buffer;
   buffer << "device.";
@@ -141,8 +151,13 @@ gams::variables::Device::init_vars (
   search_area_id.set_name (device_name + ".search_area_id", knowledge);
   command.set_name (device_name + ".command", knowledge);
   home.set_name (device_name + ".home", knowledge);
-  source.set_name (local_device_name + ".source", knowledge);
-  dest.set_name (local_device_name + ".dest", knowledge);
+  source.set_name (device_name + ".source", knowledge);
+  dest.set_name (device_name + ".dest", knowledge);
+  command_args.set_name (device_name + ".command.size", knowledge);
+
+  // keep certain varaible changes as local only
+  command.set_settings (keep_local);
+  command_args.set_settings (keep_local);
 
   // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);
