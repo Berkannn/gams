@@ -45,28 +45,26 @@
  **/
 
 /**
- * @file Move.h
+ * @file Random_Edge_Coverage.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the snake area coverage class
+ * This file contains the definition of the random area coverage class
  **/
 
-#ifndef   _GAMS_ALGORITHMS_MOVE_H_
-#define   _GAMS_ALGORITHMS_MOVE_H_
+#ifndef   _GAMS_ALGORITHMS_RANDOM_EDGE_COVERAGE_H_
+#define   _GAMS_ALGORITHMS_RANDOM_EDGE_COVERAGE_H_
 
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
-#include "ace/High_Res_Timer.h"
-#include "ace/OS_NS_sys_time.h"
 
 namespace gams
 {
   namespace algorithms
   {
-    class GAMS_Export Move : public Base
+    class GAMS_Export Random_Edge_Coverage : public Base
     {
     public:
       /**
@@ -76,25 +74,21 @@ namespace gams
        * @param  sensors      map of sensor names to sensor information
        * @param  self         self-referencing variables
        **/
-      Move (
-        const std::string & type,
-        unsigned int max_executions = -1,
-        double max_execution_time = 5.0,
+      Random_Edge_Coverage (
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0,
-        variables::Sensors * sensors = 0,
+        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
         variables::Self * self = 0);
 
       /**
        * Destructor
        **/
-      ~Move ();
+      ~Random_Edge_Coverage ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Move & rhs);
+      void operator= (const Random_Edge_Coverage & rhs);
       
       /**
        * Analyzes environment, platform, or other information
@@ -115,19 +109,16 @@ namespace gams
       virtual int plan (void);
       
     protected:
-      /// type of movement being executed
-      std::string type_;
+      /// list of sensor names
+      variables::Sensor_Names sensor_names_;
 
-      /// maximum number of consecutive executions allowed
-      unsigned int max_executions_;
+      /// current position
+      utility::Position current_position_;
 
-      /// maximum number of consecutive executions allowed
-      unsigned int max_execution_time_;
-
-      /// the end time
-      ACE_Time_Value end_time_;  
+      /// next position
+      utility::Position next_position_;
     };
   }
 }
 
-#endif // _GAMS_ALGORITHMS_MOVE_H_
+#endif // _GAMS_ALGORITHMS_RANDOM_EDGE_COVERAGE_H_

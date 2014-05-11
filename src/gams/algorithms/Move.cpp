@@ -49,12 +49,15 @@
 gams::algorithms::Move::Move (
   const std::string & type,
   unsigned int max_executions,
+  double max_execution_time,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
   : Base (knowledge, platform, sensors, self), type_ (type),
-  max_executions_ (max_executions)
+  max_executions_ (max_executions),
+  max_execution_time_ (max_execution_time),
+  end_time_ (ACE_OS::gettimeofday ())
 {
   status_.init_vars (*knowledge, "sac");
 }
@@ -72,6 +75,9 @@ gams::algorithms::Move::operator= (const Move & rhs)
     this->sensors_ = rhs.sensors_;
     this->self_ = rhs.self_;
     this->status_ = rhs.status_;
+    this->max_executions_ = rhs.max_executions_;
+    this->max_execution_time_ = rhs.max_execution_time_;
+    this->end_time_ = rhs.end_time_;
   }
 }
 

@@ -48,6 +48,7 @@
 #include "Move.h"
 #include "Printer_Algorithm.h"
 #include "Random_Area_Coverage.h"
+#include "Random_Edge_Coverage.h"
 #include "Snake_Area_Coverage.h"
 #include "Takeoff.h"
 
@@ -76,7 +77,10 @@ gams::algorithms::Factory::operator= (const Factory & rhs)
 gams::algorithms::Base *
 gams::algorithms::Factory::create (const std::string & type,
   const Madara::Knowledge_Record & arg1,
-  const Madara::Knowledge_Record & arg2)
+  const Madara::Knowledge_Record & arg2,
+  const Madara::Knowledge_Record & arg3,
+  const Madara::Knowledge_Record & arg4,
+  const Madara::Knowledge_Record & arg5)
 {
   if (type == "debug" || type == "print" || type == "printer")
   {
@@ -87,6 +91,11 @@ gams::algorithms::Factory::create (const std::string & type,
   {
     if (knowledge_ && sensors_  && self_)
       return new Random_Area_Coverage (knowledge_, platform_, sensors_, self_);
+  }
+  if (type == "random edge coverage" || type == "rec")
+  {
+    if (knowledge_ && sensors_  && self_)
+      return new Random_Edge_Coverage (knowledge_, platform_, sensors_, self_);
   }
   else if (type == "snake" || type == "sac")
   {

@@ -121,4 +121,4 @@ namespace gams
   }
 }
 
-#endif // _GAMS_VARIABLES_SWARM_H_
+#endif // _GAMS_ALGORITHMS_RANDOM_AREA_COVERAGE_H_
