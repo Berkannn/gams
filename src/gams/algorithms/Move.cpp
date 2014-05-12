@@ -69,13 +69,15 @@ gams::algorithms::Move::Move (
 
 gams::algorithms::Move::Move (
   const std::string & type,
-  const Madara::Knowledge_Record & target,
+  const utility::Position & target,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
   : Base (knowledge, platform, sensors, self), type_ (type),
   mode_ (TARGET),
+  max_executions_ (0),
+  max_execution_time_ (-1),
   target_ (target),
   end_time_ (ACE_OS::gettimeofday ())
 {
@@ -92,6 +94,7 @@ gams::algorithms::Move::operator= (const Move & rhs)
   if (this != &rhs)
   {
     this->mode_ = rhs.mode_;
+    this->target_ = rhs.target_;
     this->platform_ = rhs.platform_;
     this->sensors_ = rhs.sensors_;
     this->self_ = rhs.self_;
@@ -113,14 +116,17 @@ gams::algorithms::Move::analyze (void)
 int
 gams::algorithms::Move::execute (void)
 {
-  if (max_executions_ == 0 || executions_ < max_executions_)
+  if (mode_ == EXECUTIONS)
   {
-    std::cerr << "Executing " << type_ << " movement...\n";
+
   }
-  else
+  else if (mode_ == TIMED)
   {
-    std::cerr << "Executed movement " << max_executions_ << "times.";
-    std::cerr << " Awaiting new commands...\n";
+
+  }
+  else if (mode_ == TARGET)
+  {
+
   }
 
   ++executions_;

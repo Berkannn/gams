@@ -61,6 +61,7 @@
 #include "gams/algorithms/Base_Algorithm.h"
 #include "ace/High_Res_Timer.h"
 #include "ace/OS_NS_sys_time.h"
+#include "gams/utility/Position.h"
 
 namespace gams
 {
@@ -99,7 +100,7 @@ namespace gams
        **/
       Move (
         const std::string & type,
-        const Madara::Knowledge_Record & target,
+        const utility::Position & target,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0,
         variables::Sensors * sensors = 0,
@@ -155,7 +156,7 @@ namespace gams
       unsigned int max_execution_time_;
 
       /// the target of the move
-      Madara::Knowledge_Record target_;
+      utility::Position target_;
 
       /// the end time
       ACE_Time_Value end_time_;  

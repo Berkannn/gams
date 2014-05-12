@@ -82,35 +82,40 @@ gams::algorithms::Factory::create (const std::string & type,
   const Madara::Knowledge_Record & arg4,
   const Madara::Knowledge_Record & arg5)
 {
+  gams::algorithms::Base * result = 0;
+
   if (type == "debug" || type == "print" || type == "printer")
   {
     if (knowledge_ && sensors_ && self_)
-      return new Printer_Algorithm (knowledge_, platform_, sensors_, self_);
+      result = new Printer_Algorithm (knowledge_, platform_, sensors_, self_);
   }
   if (type == "random area coverage" || type == "rac")
   {
     if (knowledge_ && sensors_  && self_)
-      return new Random_Area_Coverage (knowledge_, platform_, sensors_, self_);
+      result = new Random_Area_Coverage (
+        knowledge_, platform_, sensors_, self_);
   }
   if (type == "random edge coverage" || type == "rec")
   {
     if (knowledge_ && sensors_  && self_)
-      return new Random_Edge_Coverage (knowledge_, platform_, sensors_, self_);
+      result = new Random_Edge_Coverage (
+        knowledge_, platform_, sensors_, self_);
   }
   else if (type == "snake" || type == "sac")
   {
     if (knowledge_ && sensors_ && platform_ && self_)
-      return new Snake_Area_Coverage (knowledge_, platform_, sensors_, self_);
+      result = new Snake_Area_Coverage (
+        knowledge_, platform_, sensors_, self_);
   }
   else if (type == "takeoff")
   {
     if (knowledge_ && sensors_ && platform_ && self_)
-      return new Takeoff (knowledge_, platform_, sensors_, self_);
+      result = new Takeoff (knowledge_, platform_, sensors_, self_);
   }
   else if (type == "land")
   {
     if (knowledge_ && sensors_ && platform_ && self_)
-      return new Land (knowledge_, platform_, sensors_, self_);
+      result = new Land (knowledge_, platform_, sensors_, self_);
   }
   else if (type == "move")
   {
@@ -119,16 +124,21 @@ gams::algorithms::Factory::create (const std::string & type,
       // if an integer is passed as arg2, then it's the number of executions 
       if (arg2.is_integer_type ())
       {
-        return new Move (arg1.to_string (), arg2.to_integer (), -1,
+        result = new Move (arg1.to_string (), arg2.to_integer (), -1,
           knowledge_, platform_, sensors_, self_);
       }
       else if (arg2.type () == Madara::Knowledge_Record::UNCREATED)
       {
+        utility::Position target;
+        target.from_container (self_->device.dest);
+
+        result = new Move (arg1.to_string (), target,
+          knowledge_, platform_, sensors_, self_);
       }
     }
   }
 
-  return 0;
+  return result;
 }
 
 void
