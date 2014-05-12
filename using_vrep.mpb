@@ -1,15 +1,25 @@
 feature (vrep) {
   
   macros += _GAMS_VREP_
+  
+  includes += $(VREP_ROOT)/programming/remoteApi
+  includes += $(VREP_ROOT)/programming/include
+  
+  dynamicflags += NON_MATLAB_PARSING
+  dynamicflags += MAX_EXT_API_CONNECTIONS=255
 
   Header_Files {
     Platforms {
+      $(VREP_ROOT)/programming/remoteApi/extApi.h
+      $(VREP_ROOT)/programming/remoteApi/extApiPlatform.h
       src/gams/platforms/vrep
     }
   }
 
   Source_Files {
     Platforms {
+      $(VREP_ROOT)/programming/remoteApi/extApi.c
+      $(VREP_ROOT)/programming/remoteApi/extApiPlatform.c
       src/gams/platforms/vrep
     }
   }

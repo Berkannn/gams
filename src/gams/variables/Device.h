@@ -60,7 +60,7 @@
 #include "madara/knowledge_engine/containers/Integer.h"
 #include "madara/knowledge_engine/containers/Double.h"
 #include "madara/knowledge_engine/containers/String.h"
-#include "madara/knowledge_engine/containers/Double_Vector.h"
+#include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
@@ -106,16 +106,16 @@ namespace gams
       Madara::Knowledge_Engine::Containers::Double min_alt;
 
       /// the location, usually encoded in GPS, for this device
-      Madara::Knowledge_Engine::Containers::Double_Array location;
+      Madara::Knowledge_Engine::Containers::Native_Double_Array location;
       
       /// the source location
-      Madara::Knowledge_Engine::Containers::Double_Array source;
+      Madara::Knowledge_Engine::Containers::Native_Double_Array source;
       
       /// the destination location
-      Madara::Knowledge_Engine::Containers::Double_Array dest;
+      Madara::Knowledge_Engine::Containers::Native_Double_Array dest;
       
       /// the home location
-      Madara::Knowledge_Engine::Containers::Double_Array home;
+      Madara::Knowledge_Engine::Containers::Native_Double_Array home;
 
       /// the mobility indicator for this device (true if mobile)
       Madara::Knowledge_Engine::Containers::Integer is_mobile;

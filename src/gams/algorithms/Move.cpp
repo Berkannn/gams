@@ -59,7 +59,27 @@ gams::algorithms::Move::Move (
   max_execution_time_ (max_execution_time),
   end_time_ (ACE_OS::gettimeofday ())
 {
-  status_.init_vars (*knowledge, "sac");
+  if (max_executions > 0)
+    mode_ = EXECUTIONS;
+  else
+    mode_ = TIMED;
+
+  status_.init_vars (*knowledge, "move");
+}
+
+gams::algorithms::Move::Move (
+  const std::string & type,
+  const Madara::Knowledge_Record & target,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  platforms::Base * platform,
+  variables::Sensors * sensors,
+  variables::Self * self)
+  : Base (knowledge, platform, sensors, self), type_ (type),
+  mode_ (TARGET),
+  target_ (target),
+  end_time_ (ACE_OS::gettimeofday ())
+{
+  status_.init_vars (*knowledge, "move");
 }
 
 gams::algorithms::Move::~Move ()
@@ -71,6 +91,7 @@ gams::algorithms::Move::operator= (const Move & rhs)
 {
   if (this != &rhs)
   {
+    this->mode_ = rhs.mode_;
     this->platform_ = rhs.platform_;
     this->sensors_ = rhs.sensors_;
     this->self_ = rhs.self_;
@@ -92,7 +113,7 @@ gams::algorithms::Move::analyze (void)
 int
 gams::algorithms::Move::execute (void)
 {
-  if (executions_ < max_executions_)
+  if (max_executions_ == 0 || executions_ < max_executions_)
   {
     std::cerr << "Executing " << type_ << " movement...\n";
   }

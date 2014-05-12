@@ -69,8 +69,12 @@ namespace gams
     class GAMS_Export Move : public Base
     {
     public:
+
       /**
        * Constructor
+       * @param  type         the type of move
+       * @param  max_executions  number of loop executions to move
+       * @param  max_execution_time  wall clock time to execute move in seconds
        * @param  knowledge    the context containing variables and values
        * @param  platform     the underlying platform the algorithm will use
        * @param  sensors      map of sensor names to sensor information
@@ -78,8 +82,24 @@ namespace gams
        **/
       Move (
         const std::string & type,
-        unsigned int max_executions = -1,
+        unsigned int max_executions = 0,
         double max_execution_time = 5.0,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        platforms::Base * platform = 0,
+        variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
+      
+      /**
+       * Constructor
+       * @param  type         the type of move
+       * @param  knowledge    the context containing variables and values
+       * @param  platform     the underlying platform the algorithm will use
+       * @param  sensors      map of sensor names to sensor information
+       * @param  self         self-referencing variables
+       **/
+      Move (
+        const std::string & type,
+        const Madara::Knowledge_Record & target,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0,
         variables::Sensors * sensors = 0,
@@ -115,14 +135,27 @@ namespace gams
       virtual int plan (void);
       
     protected:
+      enum MOE
+      {
+        EXECUTIONS = 0,
+        TIMED = 1,
+        TARGET = 2
+      };
+
       /// type of movement being executed
       std::string type_;
+
+      /// mode of execution (EXECUTIONS, TIMED, TARGET)
+      int mode_;
 
       /// maximum number of consecutive executions allowed
       unsigned int max_executions_;
 
       /// maximum number of consecutive executions allowed
       unsigned int max_execution_time_;
+
+      /// the target of the move
+      Madara::Knowledge_Record target_;
 
       /// the end time
       ACE_Time_Value end_time_;  

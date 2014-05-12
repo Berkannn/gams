@@ -100,3 +100,24 @@ gams::utility::Position::from_container (
     z = source[2];
   }
 }
+
+void
+gams::utility::Position::to_container (
+  Madara::Knowledge_Engine::Containers::Native_Double_Array & target) const
+{
+  target.set (0, x);
+  target.set (1, y);
+  target.set (2, z);
+}
+
+void
+gams::utility::Position::from_container (
+  Madara::Knowledge_Engine::Containers::Native_Double_Array & source)
+{
+  if (source.size () >= 3)
+  {
+    x = source[0];
+    y = source[1];
+    z = source[2];
+  }
+}
