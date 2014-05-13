@@ -45,6 +45,11 @@
  **/
 #include "VREP_UAV.h"
 
+#include <iostream>
+using std::endl;
+using std::cout;
+using std::string;
+
 
 gams::platforms::VREP_UAV::VREP_UAV (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
@@ -54,10 +59,74 @@ gams::platforms::VREP_UAV::VREP_UAV (
   : Base (&knowledge, sensors), self_ (self), airborne_ (false)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
+
+  // get client id
+  const char* const IP_ADDRESS = "127.0.0.1";
+  int PORT = knowledge.get(".vrep_port").to_integer();
+  client_id_ = simxStart(IP_ADDRESS,PORT,true,true,2000,5);
+
+  // init quadrotor in env
+  string modelFile(getenv("VREP_ROOT"));
+  modelFile += "/models/robots/mobile/Quadricopter.ttm";
+  node_id_ = -1;
+  if(simxLoadModel(client_id_,modelFile.c_str(),0,&node_id_,
+    simx_opmode_oneshot_wait) != simx_error_noerror)
+  {
+    // fail out some how
+  }
+
+  //if(debug) cout << "newly created node id = " << node_id_ << endl;
+
+  //find the dummy base sub-object
+  simxInt handlesCount = 0,*handles = NULL;
+  simxInt parentsCount = 0,*parents = NULL;
+  simxGetObjectGroupData (client_id_, sim_object_dummy_type, 2, &handlesCount,
+    &handles, &parentsCount, &parents, NULL, NULL, NULL, NULL,
+    simx_opmode_oneshot_wait);
+
+  //if(debug) cout << "dummy objects obtained = " << handlesCount << endl;
+  //if(debug) cout << "parent objects obtained = " << parentsCount << endl;
+
+  simxInt nodeBase = -1;
+  for(simxInt i = 0;i < handlesCount;++i) {
+    if(parents[i] == node_id_) {
+      nodeBase = handles[i];
+      break;
+    }
+  }
+  //if(debug) cout << "node base handle = " << nodeBase << endl;
+
+  //find the target sub-object of the base sub-object
+  node_target_ = -1;
+  simxGetObjectChild(client_id_,nodeBase,0,&node_target_,simx_opmode_oneshot_wait);
+  //if(debug) cout << "node target handle = " << node_target << endl;
+
+  simxStartSimulation(client_id_, simx_opmode_oneshot_wait);
 }
 
 gams::platforms::VREP_UAV::~VREP_UAV ()
 {
+//  simxInt childId = 0;
+//  while(childId != -1)
+//  {
+//    simxInt retVal = simxGetObjectChild (client_id_,node_id_,0,&childId,
+//      simx_opmode_oneshot_wait);
+//    if (retVal != simx_error_noerror)
+//      cout << "error getting child of node: " << node_id_ << endl;
+//
+//    if(childId != -1)
+//    {
+//      retVal = simxRemoveObject(client_id_,childId,simx_opmode_oneshot_wait);
+//      if(retVal != simx_error_noerror)
+//        cout << "error removing child id " << childId << endl;
+//    }
+//  }
+//
+//  if (simxRemoveObject(client_id_,node_id_,simx_opmode_oneshot_wait)
+//    != simx_error_noerror)
+//  {
+//    cout << "error deleting node " << node_id_ << endl;
+//  }
 }
 
 void
@@ -116,6 +185,13 @@ gams::platforms::VREP_UAV::home (void)
   return 0;
 }
 
+void 
+gams::platforms::VREP_UAV::coord_to_vrep(const utility::Position & position, simxFloat (&converted)[3])
+{
+  // TODO: fill out conversion
+  return;
+}
+
 
 int
 gams::platforms::VREP_UAV::move (const utility::Position & position)
@@ -126,8 +202,38 @@ gams::platforms::VREP_UAV::move (const utility::Position & position)
 
   // move to the position
   position_ = position;
+  simxFloat destPos[3];
+  destPos[0] = position.x;
+  destPos[1] = position.y;
+  destPos[2] = position.z;
+  coord_to_vrep(position, destPos);
 
-  return 0;
+  //set current position of node target
+  simxFloat currPos[3];
+  simxGetObjectPosition (client_id_,node_target_,sim_handle_parent,currPos,
+    simx_opmode_oneshot_wait);
+
+  //move target closer to the waypoint and return 1
+  const float TARGET_INCR = 0.01; // TODO: tune this parameter
+  bool at_destination = true;
+  for(int i = 0;i < 3;++i) {
+    if(currPos[i] < destPos[i] - TARGET_INCR)
+    {
+      currPos[i] += TARGET_INCR;
+      at_destination = false;
+    }
+    else if(currPos[i] > destPos[i] + TARGET_INCR)
+    {
+      currPos[i] -= TARGET_INCR;
+      at_destination = false;
+    }
+    else
+      currPos[i] = destPos[i];
+  }
+  simxSetObjectPosition(client_id_,node_target_,sim_handle_parent, currPos,
+                        simx_opmode_oneshot_wait);
+
+  return (at_destination ? 0 : 1);
 }
       
 int
@@ -141,13 +247,15 @@ gams::platforms::VREP_UAV::analyze (void)
 {
   return 0;
 }
-   
+
 int
 gams::platforms::VREP_UAV::takeoff (void)
 {
   if (!airborne_)
   {
     airborne_ = true;
+
+    // TODO: vrep takeoff
   }
 
   return 0;
@@ -159,6 +267,8 @@ gams::platforms::VREP_UAV::land (void)
   if (airborne_)
   {
     airborne_ = false;
+
+    // TODO: vrep land
   }
 
   return 0;

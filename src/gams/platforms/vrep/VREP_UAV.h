@@ -60,6 +60,10 @@
 #include "gams/platforms/Base_Platform.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
+extern "C" {
+#include "extApi.h"
+}
+
 namespace gams
 {
   namespace platforms
@@ -141,6 +145,13 @@ namespace gams
 
     protected:
 
+      /**
+       * Converts lat/long coordinates to vrep coordinates
+       * @param position lat/long position to convert
+       * @returns vrep coordinates corresponding to lat/long coords
+       **/
+      void coord_to_vrep(const utility::Position & position, simxFloat (&converted)[3]);
+
       /// provides access to variables denoting self state
       variables::Self self_;
 
@@ -149,6 +160,10 @@ namespace gams
 
       /// flag for drone being airborne
       bool airborne_;
+
+      simxInt node_id_;
+      simxInt node_target_;
+      simxInt client_id_;
     };
   }
 }
