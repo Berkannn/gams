@@ -101,6 +101,17 @@ namespace gams
        * @param  algorithm   the name of the algorithm to run
        **/
       void init_algorithm (const std::string & algorithm);
+      
+      /**
+       * Adds an accent algorithm
+       * @param  algorithm   the name of the accent algorithm to add
+       **/
+      void add_accent (const std::string & algorithm);
+      
+      /**
+       * Clears all accent algorithms
+       **/
+      void clear_accents (void);
 
       /**
        * Defines the monitor function (the M of MAPE). This function should

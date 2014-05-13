@@ -131,6 +131,40 @@ gams::controller::Base::init_algorithm (
   }
 }
 
+void
+gams::controller::Base::add_accent (const std::string & algorithm)
+{
+  if (algorithm == "")
+  {
+    std::cerr << "Accent is empty. ";
+    std::cerr << "Please provide a supported accent algorithm.\n\n";
+  }
+  else
+  {
+    // create new accent pointer and algorithm factory
+    algorithms::Base * new_accent (0);
+    algorithms::Factory factory (&knowledge_, &sensors_,
+      platform_, &self_, &devices_);
+
+    new_accent = factory.create (algorithm);
+
+    if (new_accent)
+    {
+      accents_.push_back (new_accent);
+    }
+  }
+}
+
+void gams::controller::Base::clear_accents (void)
+{
+  for (unsigned int i = 0; i < accents_.size (); ++i)
+  {
+    delete accents_[i];
+  }
+
+  accents_.clear ();
+}
+
 int
 gams::controller::Base::monitor (void)
 {

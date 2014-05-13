@@ -105,6 +105,15 @@ void handle_arguments (int argc, char ** argv)
       }
       ++i;
     }
+    else if (arg1 == "-c" || arg1 == "--processes")
+    {
+      if (i + 1 < argc)
+      {
+        std::stringstream buffer (argv[i + 1]);
+        buffer >> settings.processes;
+      }
+      ++i;
+    }
     else if (arg1 == "-u" || arg1 == "--udp")
     {
       if (i + 1 < argc)
@@ -266,16 +275,33 @@ void handle_arguments (int argc, char ** argv)
 // perform main logic of program
 int main (int argc, char ** argv)
 {
+  settings.type = Madara::Transport::MULTICAST;
+
+  // handle all user arguments
+  handle_arguments (argc, argv);
+  
+  if (settings.hosts.size () == 0)
+  {
+    // setup default transport as multicast
+    settings.hosts.push_back (default_multicast);
+  }
+
   // create knowledge base and a control loop
-  engine::Knowledge_Base knowledge;
+  Madara::Knowledge_Engine::Knowledge_Base knowledge (host, settings);
   controller::Base loop (knowledge);
 
   // initialize variables and function stubs
-  loop.init_vars (0, 4);
+  loop.init_vars (settings.id);
   
   // initialize the platform and algorithm
-  loop.init_algorithm (algorithm);
   loop.init_platform (platform);
+  loop.init_algorithm (algorithm);
+
+  // add any accents
+  for (unsigned int i = 0; i < accents.size (); ++i)
+  {
+    loop.add_accent (accents[i]);
+  }
 
   // run a mape loop every 1s for 50s
   loop.run (period, max_wait);
