@@ -256,47 +256,43 @@ gams::controller::Base::system_analyze (void)
   else if (this->self_.device.command == "move" ||
     this->swarm_.command == "move")
   {
-    Madara::Knowledge_Record type;
-    Madara::Knowledge_Record extra;
+    Madara::Knowledge_Record arg1;
+    Madara::Knowledge_Record arg2;
+    utility::Position target;
     int num_args = 0;
     int command_level = 0;
 
     // check if proper number of arguments were given
     if (swarm_.command_args == 2)
     {
-      type = knowledge_.get ("swarm.command.0");
-      extra = knowledge_.get ("swarm.command.1");
+      arg1 = knowledge_.get ("swarm.command.0");
+      arg2 = knowledge_.get ("swarm.command.1");
       num_args = 2;
     }
     else if (this->self_.device.command_args == 2)
     {
-      type = knowledge_.get ("device.{.id}.command.0",
+      arg1 = knowledge_.get ("device.{.id}.command.0",
         Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
-      extra = knowledge_.get ("device.{.id}.command.1",
+      arg2 = knowledge_.get ("device.{.id}.command.1",
         Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
       num_args = 2;
       command_level = 1;
     }
     else if (swarm_.command_args == 1)
     {
-      type = knowledge_.get ("swarm.command.0");
+      arg1 = knowledge_.get ("swarm.command.0");
       num_args = 1;
     }
     else if (this->self_.device.command_args == 1)
     {
-      type = knowledge_.get ("device.{.id}.command.0",
+      arg1 = knowledge_.get ("device.{.id}.command.0",
         Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
       num_args = 1;
       command_level = 1;
     }
-    else if (swarm_.command_args == 0)
-    {
-      type = knowledge_.get ("swarm.command.0");
-    }
     else if (this->self_.device.command_args == 0)
     {
-      type = knowledge_.get ("device.{.id}.command.0",
-        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+      arg1 = "target";
       command_level = 1;
     }
     else
@@ -308,12 +304,10 @@ gams::controller::Base::system_analyze (void)
     // check if args were of the right type
     if (!error)
     {
-      if (!type.is_string_type ())
-      {
-        std::cerr << "ERROR: Move type (first arg) " <<
-          "needs to be a string.\n";
-        error = true;
-      }
+      delete algorithm_;
+      algorithms::Factory factory (&knowledge_, &sensors_,
+        platform_, &self_, &devices_);
+      algorithm_ = factory.create ("move", arg1, arg2);
     }
   }
   

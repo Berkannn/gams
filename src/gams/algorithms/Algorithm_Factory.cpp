@@ -127,6 +127,11 @@ gams::algorithms::Factory::create (const std::string & type,
         result = new Move (arg1.to_string (), arg2.to_integer (), -1,
           knowledge_, platform_, sensors_, self_);
       }
+      else if (arg2.type () == Madara::Knowledge_Record::DOUBLE)
+      {
+        result = new Move (arg1.to_string (), 0, arg2.to_double (),
+          knowledge_, platform_, sensors_, self_);
+      }
       else if (arg2.type () == Madara::Knowledge_Record::UNCREATED)
       {
         utility::Position target;

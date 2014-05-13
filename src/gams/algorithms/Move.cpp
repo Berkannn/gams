@@ -118,7 +118,6 @@ gams::algorithms::Move::execute (void)
 {
   if (mode_ == EXECUTIONS)
   {
-
   }
   else if (mode_ == TIMED)
   {
@@ -126,8 +125,9 @@ gams::algorithms::Move::execute (void)
   }
   else if (mode_ == TARGET)
   {
-
   }
+
+  std::cout << "We should be executing a move right now...\n";
 
   ++executions_;
 
