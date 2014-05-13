@@ -64,6 +64,8 @@ extern "C" {
 #include "extApi.h"
 }
 
+#ifdef _GAMS_VREP_
+
 namespace gams
 {
   namespace platforms
@@ -167,5 +169,7 @@ namespace gams
     };
   }
 }
+
+#endif
 
 #endif // _GAMS_PLATFORM_VREP_UAV_H_

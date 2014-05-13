@@ -45,75 +45,40 @@
  **/
 
 /**
- * @file test_vrep_controller.cpp
- * @author Anton Dukeman <anton.dukeman@gmail.com>
+ * @file test_control_loop.cpp
+ * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains a test driver for the VREP platform code.
+ * This file contains a test driver for the GAMS controller loop.
  **/
 
-#include "gams/platforms/vrep/VREP_UAV.h"
-#include "gams/utility/Position.h"
-
 #include "madara/knowledge_engine/Knowledge_Base.h"
-#include "madara/utility/Utility.h"
+#include "gams/controller/Base_Controller.h"
 
-#include "gams/variables/Sensor.h"
-#include "gams/variables/Platform.h"
-#include "gams/variables/Self.h"
-
-#include <iostream>
-using std::cout;
-using std::endl;
-
-extern "C" {
-#include "extApi.h"
-}
-
-void start_simulation(int port)
-{
-  // start simulation
-  const char* const IP_ADDRESS = "127.0.0.1";
-  int client_id = simxStart (IP_ADDRESS, port, true, true, 2000, 5);
-  simxStartSimulation(client_id, simx_opmode_oneshot_wait);
-}
+// create shortcuts to MADARA classes and namespaces
+namespace engine = Madara::Knowledge_Engine;
+namespace controller = gams::controller;
+typedef Madara::Knowledge_Record   Record;
+typedef Record::Integer Integer;
 
 // perform main logic of program
-int main (int argc, char* argv[])
+int main (int argc, char ** argv)
 {
-  int port = 19905;
-  if(argc >= 2)
-    port = atoi(argv[1]);
-  cout << "using port: " << port << endl;
-  Madara::Knowledge_Engine::Knowledge_Base knowledge;
-  knowledge.set(".vrep_port", Madara::Knowledge_Record::Integer(port));
-  gams::variables::Sensors sensors;
-  gams::variables::Platforms platform;
-  gams::variables::Self self;
+  // create knowledge base and a control loop
+  engine::Knowledge_Base knowledge;
+  controller::Base loop (knowledge);
 
-  cout << "creating uav" << endl;
-  gams::platforms::VREP_UAV uav(knowledge, &sensors, platform, self);
+  // initialize variables and function stubs
+  loop.init_vars (0, 4);
+  
+  // initialize the platform and algorithm
+  loop.init_algorithm ("debug");
+  loop.init_platform ("debug");
 
-  cout << "starting sim" << endl;
-  start_simulation(port + 1);
+  // run a mape loop every 1s for 50s
+  loop.run (1.0, 50.0);
 
-  gams::utility::Position pos(1.0,1.0,1.0);
-
-  cout << "move1" << endl;
-
-  while(uav.move(pos))
-    Madara::Utility::sleep (0.001);
-
-  pos.x = -2.0; pos.y = -2.0;
-  cout << "move2" << endl;
-
-  while(uav.move(pos))
-    Madara::Utility::sleep (0.001);
-
-  pos.x = 3.0; pos.y = 3.0;
-  cout << "move3" << endl;
-
-  while(uav.move(pos))
-    Madara::Utility::sleep (0.001);
+  // print all knowledge values
+  knowledge.print ();
 
   return 0;
 }

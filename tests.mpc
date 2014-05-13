@@ -43,26 +43,3 @@ project (Test_Controller) : using_gams, using_madara, using_ace {
     tests/test_controller.cpp
   }
 }
-
-
-project (Test_VRep_Controller) : using_gams, using_madara, using_ace, using_vrep {
-  exeout = $(GAMS_ROOT)/bin
-  exename = test_vrep_controller
-
-  requires += tests
-
-  Documentation_Files {
-  }
-
-  Build_Files {
-    using_gams.mpb
-    tests.mpc
-  }
-
-  Header_Files {
-  }
-
-  Source_Files {
-    tests/test_vrep_controller.cpp
-  }
-}

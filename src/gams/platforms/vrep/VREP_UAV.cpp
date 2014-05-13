@@ -50,6 +50,8 @@ using std::endl;
 using std::cout;
 using std::string;
 
+#ifdef _GAMS_VREP_
+
 
 gams::platforms::VREP_UAV::VREP_UAV (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
@@ -61,15 +63,15 @@ gams::platforms::VREP_UAV::VREP_UAV (
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 
   // get client id
-  const char* const IP_ADDRESS = "127.0.0.1";
   int PORT = knowledge.get(".vrep_port").to_integer();
-  client_id_ = simxStart(IP_ADDRESS,PORT,true,true,2000,5);
+  client_id_ = simxStart(knowledge.get(".vrep_host").to_string ().c_str (),
+    PORT, true, true, 2000, 5);
 
   // init quadrotor in env
   string modelFile(getenv("VREP_ROOT"));
   modelFile += "/models/robots/mobile/Quadricopter.ttm";
   node_id_ = -1;
-  if(simxLoadModel(client_id_,modelFile.c_str(),0,&node_id_,
+  if (simxLoadModel (client_id_,modelFile.c_str (), 0, &node_id_,
     simx_opmode_oneshot_wait) != simx_error_noerror)
   {
     // fail out some how
@@ -88,8 +90,10 @@ gams::platforms::VREP_UAV::VREP_UAV (
   //if(debug) cout << "parent objects obtained = " << parentsCount << endl;
 
   simxInt nodeBase = -1;
-  for(simxInt i = 0;i < handlesCount;++i) {
-    if(parents[i] == node_id_) {
+  for(simxInt i = 0; i < handlesCount; ++i)
+  {
+    if(parents[i] == node_id_)
+    {
       nodeBase = handles[i];
       break;
     }
@@ -98,10 +102,11 @@ gams::platforms::VREP_UAV::VREP_UAV (
 
   //find the target sub-object of the base sub-object
   node_target_ = -1;
-  simxGetObjectChild(client_id_,nodeBase,0,&node_target_,simx_opmode_oneshot_wait);
+  simxGetObjectChild (client_id_, nodeBase, 0,
+    &node_target_, simx_opmode_oneshot_wait);
   //if(debug) cout << "node target handle = " << node_target << endl;
 
-  simxStartSimulation(client_id_, simx_opmode_oneshot_wait);
+  simxStartSimulation (client_id_, simx_opmode_oneshot_wait);
 }
 
 gams::platforms::VREP_UAV::~VREP_UAV ()
@@ -206,17 +211,18 @@ gams::platforms::VREP_UAV::move (const utility::Position & position)
   destPos[0] = position.x;
   destPos[1] = position.y;
   destPos[2] = position.z;
-  coord_to_vrep(position, destPos);
+  coord_to_vrep (position, destPos);
 
   //set current position of node target
   simxFloat currPos[3];
-  simxGetObjectPosition (client_id_,node_target_,sim_handle_parent,currPos,
+  simxGetObjectPosition (client_id_, node_target_, sim_handle_parent, currPos,
     simx_opmode_oneshot_wait);
 
   //move target closer to the waypoint and return 1
   const float TARGET_INCR = 0.01; // TODO: tune this parameter
   bool at_destination = true;
-  for(int i = 0;i < 3;++i) {
+  for (int i = 0;i < 3;++i)
+  {
     if(currPos[i] < destPos[i] - TARGET_INCR)
     {
       currPos[i] += TARGET_INCR;
@@ -230,7 +236,7 @@ gams::platforms::VREP_UAV::move (const utility::Position & position)
     else
       currPos[i] = destPos[i];
   }
-  simxSetObjectPosition(client_id_,node_target_,sim_handle_parent, currPos,
+  simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, currPos,
                         simx_opmode_oneshot_wait);
 
   return (at_destination ? 0 : 1);
@@ -273,3 +279,5 @@ gams::platforms::VREP_UAV::land (void)
 
   return 0;
 }
+
+#endif

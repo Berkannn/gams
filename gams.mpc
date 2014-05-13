@@ -1,4 +1,4 @@
-project (gams) : using_madara, using_ace, using_dronerk, using_vrep {
+project (gams) : using_madara, using_ace, using_dronerk, vrep_lib {
   libout = lib
   sharedname = GAMS
   includes += src
@@ -20,6 +20,7 @@ project (gams) : using_madara, using_ace, using_dronerk, using_vrep {
     using_gams.mpb
     using_dronerk.mpb
     using_vrep.mpb
+    vrep_lib.mpb
   }
 
   Header_Files {
@@ -79,3 +80,23 @@ project (gams) : using_madara, using_ace, using_dronerk, using_vrep {
   }
 }
 
+
+project (gams_controller) : using_gams, using_madara, using_ace, using_vrep {
+  exeout = $(GAMS_ROOT)/bin
+  exename = gams_controller
+
+  Documentation_Files {
+  }
+  
+  Build_Files {
+    using_gams.mpb
+    tests.mpc
+  }
+
+  Header_Files {
+  }
+
+  Source_Files {
+    src/gams/programs/gams_controller.cpp
+  }
+}
