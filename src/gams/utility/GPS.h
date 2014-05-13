@@ -77,6 +77,7 @@ namespace gams
       * @param   long1  the longitude of the first coordinate
       * @param   lat2   the latitude of the second coordinate
       * @param   long2  the longitude of the second coordinate
+      * @return  distance in meters
       **/
     double get_distance (
       double lat1, double long1,
