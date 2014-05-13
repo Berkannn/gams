@@ -169,6 +169,9 @@ namespace gams
 
       /// algorithm to perform
       algorithms::Base * algorithm_;
+
+      /// accents on the primary algorithm
+      algorithms::Algorithms accents_;
     };
   }
 }

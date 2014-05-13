@@ -167,6 +167,8 @@ namespace gams
       /// number of executions
       unsigned int executions_;
     };
+
+    typedef  std::vector <Base *>   Algorithms;
   }
 }
 

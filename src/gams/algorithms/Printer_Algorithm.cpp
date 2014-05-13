@@ -97,6 +97,7 @@ gams::algorithms::Printer_Algorithm::analyze (void)
   status_.ok = 1;
 
   std::cerr << "  algorithm.status_.ok == " << *status_.ok << "\n";
+  std::cerr << "  algorithm.status_.paused == " << *status_.paused << "\n";
   std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << "\n";
   std::cerr << "  algorithm.status_.deadlocked == "
     << *status_.deadlocked << "\n";
@@ -130,6 +131,7 @@ gams::algorithms::Printer_Algorithm::execute (void)
   status_.waiting = 0;
 
   std::cerr << "  algorithm.status_.ok == " << *status_.ok << "\n";
+  std::cerr << "  algorithm.status_.paused == " << *status_.paused << "\n";
   std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << "\n";
   std::cerr << "  algorithm.status_.deadlocked == "
     << *status_.deadlocked << "\n";
@@ -171,6 +173,7 @@ gams::algorithms::Printer_Algorithm::plan (void)
     std::cerr << "  ERROR: algorithm.self_ is not set.\n";
   
   std::cerr << "  algorithm.status_.ok == " << *status_.ok << "\n";
+  std::cerr << "  algorithm.status_.paused == " << *status_.paused << "\n";
   std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << "\n";
   std::cerr << "  algorithm.status_.deadlocked == "
     << *status_.deadlocked << "\n";

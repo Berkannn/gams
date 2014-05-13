@@ -63,6 +63,7 @@ gams::variables::Algorithm::operator= (const Algorithm & rhs)
   {
     this->name = rhs.name;
     this->ok = rhs.ok;
+    this->paused = rhs.paused;
     this->waiting = rhs.waiting;
     this->deadlocked = rhs.deadlocked;
     this->failed = rhs.failed;
@@ -86,12 +87,14 @@ gams::variables::Algorithm::init_vars (
 
   // initialize the variable containers
   this->ok.set_name (prefix + ".ok", knowledge);
+  this->paused.set_name (prefix + ".paused", knowledge);
   this->waiting.set_name (prefix + ".waiting", knowledge);
   this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
   this->failed.set_name (prefix + ".failed", knowledge);
   this->unknown.set_name (prefix + ".unknown", knowledge);
 
   ok = 1;
+  paused = 0;
   waiting = 0;
   deadlocked = 0;
   failed = 0;
@@ -113,6 +116,7 @@ gams::variables::Algorithm::init_vars (
 
   // initialize the variable containers
   this->ok.set_name (prefix + ".ok", knowledge);
+  this->paused.set_name (prefix + ".paused", knowledge);
   this->waiting.set_name (prefix + ".waiting", knowledge);
   this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
   this->failed.set_name (prefix + ".failed", knowledge);

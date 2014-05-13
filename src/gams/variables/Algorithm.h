@@ -109,6 +109,9 @@ namespace gams
 
       /// status flag for ok
       Madara::Knowledge_Engine::Containers::Integer ok;
+      
+      /// status flag for ok
+      Madara::Knowledge_Engine::Containers::Integer paused;
 
       /// status flag for waiting
       Madara::Knowledge_Engine::Containers::Integer waiting;

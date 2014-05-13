@@ -61,7 +61,14 @@ gams::controller::Base::Base (
 
 gams::controller::Base::~Base ()
 {
+  delete algorithm_;
+  delete platform_;
 
+  for (algorithms::Algorithms::iterator i = accents_.begin ();
+       i != accents_.end (); ++i)
+  {
+    delete *i;
+  }
 }
 
 void
