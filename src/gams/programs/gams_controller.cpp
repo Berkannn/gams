@@ -70,8 +70,13 @@ std::string algorithm ("debug");
 std::vector <std::string> accents;
 
 // controller variables
-double period = 1.0;
-double max_wait = 50.0;
+double period (1.0);
+double max_wait (50.0);
+
+// madara commands from a file
+std::string madara_commands;
+
+Integer processes (-1);
 
 // handle command line arguments
 void handle_arguments (int argc, char ** argv)
@@ -110,24 +115,8 @@ void handle_arguments (int argc, char ** argv)
       if (i + 1 < argc)
       {
         std::stringstream buffer (argv[i + 1]);
-        buffer >> settings.processes;
+        buffer >> processes;
       }
-      ++i;
-    }
-    else if (arg1 == "-u" || arg1 == "--udp")
-    {
-      if (i + 1 < argc)
-      {
-        settings.hosts.push_back (argv[i + 1]);
-        settings.type = Madara::Transport::UDP;
-      }
-      ++i;
-    }
-    else if (arg1 == "-o" || arg1 == "--host")
-    {
-      if (i + 1 < argc)
-        host = argv[i + 1];
-
       ++i;
     }
     else if (arg1 == "-d" || arg1 == "--domain")
@@ -137,12 +126,16 @@ void handle_arguments (int argc, char ** argv)
 
       ++i;
     }
-    else if (arg1 == "-e" || arg1 == "--period")
+    else if (arg1 == "-e" || arg1 == "--rebroadcasts")
     {
       if (i + 1 < argc)
       {
+        int hops;
         std::stringstream buffer (argv[i + 1]);
-        buffer >> period;
+        buffer >> hops;
+
+        settings.set_rebroadcast_ttl (hops);
+        settings.enable_participant_ttl (hops);
       }
 
       ++i;
@@ -185,6 +178,31 @@ void handle_arguments (int argc, char ** argv)
       }
       ++i;
     }
+    else if (arg1 == "-mf" || arg1 == "--madara-file")
+    {
+      if (i + 1 < argc)
+      {
+        madara_commands = Madara::Utility::file_to_string (argv[i + 1]);
+      }
+      ++i;
+    }
+    else if (arg1 == "-o" || arg1 == "--host")
+    {
+      if (i + 1 < argc)
+        host = argv[i + 1];
+
+      ++i;
+    }
+    else if (arg1 == "-pd" || arg1 == "--period")
+    {
+      if (i + 1 < argc)
+      {
+        std::stringstream buffer (argv[i + 1]);
+        buffer >> period;
+      }
+
+      ++i;
+    }
     else if (arg1 == "-p" || arg1 == "--platform")
     {
       if (i + 1 < argc)
@@ -196,20 +214,6 @@ void handle_arguments (int argc, char ** argv)
     else if (arg1 == "-r" || arg1 == "--reduced")
     {
       settings.send_reduced_message_header = true;
-    }
-    else if (arg1 == "-e" || arg1 == "--rebroadcasts")
-    {
-      if (i + 1 < argc)
-      {
-        int hops;
-        std::stringstream buffer (argv[i + 1]);
-        buffer >> hops;
-
-        settings.set_rebroadcast_ttl (hops);
-        settings.enable_participant_ttl (hops);
-      }
-
-      ++i;
     }
     else if (arg1 == "-q" || arg1 == "--queue-length")
     {
@@ -229,6 +233,15 @@ void handle_arguments (int argc, char ** argv)
         buffer >> settings.slack_time;
       }
 
+      ++i;
+    }
+    else if (arg1 == "-u" || arg1 == "--udp")
+    {
+      if (i + 1 < argc)
+      {
+        settings.hosts.push_back (argv[i + 1]);
+        settings.type = Madara::Transport::UDP;
+      }
       ++i;
     }
     else if (arg1 == "-w" || arg1 == "--max-wait")
@@ -251,13 +264,15 @@ void handle_arguments (int argc, char ** argv)
 " [-aa|--accent type]      accent algorithm to start with\n" \
 " [-b|--broadcast ip:port] the broadcast ip to send and listen to\n" \
 " [-d|--domain domain]     the knowledge domain to send and listen to\n" \
-" [-e|--period period]     time, in seconds, between control loop executions\n" \
+" [-e|--rebroadcasts num]  number of hops for rebroadcasting messages\n" \
 " [-f|--logfile file]      log to a file\n" \
 " [-i|--id id]             the id of this agent (should be non-negative)\n" \
 " [-l|--level level]       the logger level (0+, higher is higher detail)\n" \
 " [-m|--multicast ip:port] the multicast ip to send and listen to\n" \
+" [-mf|--madara-file name] a file containing madara commands to execute\n" \
 " [-o|--host hostname]     the hostname of this process (def:localhost)\n" \
 " [-p|--platform type]     platform for loop (vrep, dronerk)\n" \
+" [-pd | --period period]  time, in seconds, between control loop executions\n" \
 " [-q|--queue-length length] length of transport queue in bytes\n" \
 " [-r|--reduced]           use the reduced message header\n" \
 " [-st|--slack-time time]  time in seconds to sleep between fragment sends\n" \
@@ -288,10 +303,14 @@ int main (int argc, char ** argv)
 
   // create knowledge base and a control loop
   Madara::Knowledge_Engine::Knowledge_Base knowledge (host, settings);
+
+  if (madara_commands != "")
+    knowledge.evaluate (madara_commands);
+
   controller::Base loop (knowledge);
 
   // initialize variables and function stubs
-  loop.init_vars (settings.id);
+  loop.init_vars (settings.id, processes);
   
   // initialize the platform and algorithm
   loop.init_platform (platform);
