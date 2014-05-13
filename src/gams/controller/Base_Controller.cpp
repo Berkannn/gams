@@ -179,6 +179,8 @@ gams::controller::Base::analyze (void)
   if (platform_)
     return_value |= platform_->analyze ();
 
+  return_value |= system_analyze ();
+
   if (algorithm_)
     return_value |= algorithm_->analyze ();
 
