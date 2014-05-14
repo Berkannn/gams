@@ -45,28 +45,27 @@
  **/
 #include "Random_Edge_Coverage.h"
 
-
 gams::algorithms::Random_Edge_Coverage::Random_Edge_Coverage (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : Base (knowledge, platform, sensors, self)
+  : Base (knowledge, platform, sensors, self), init_ (false)
 {
   status_.init_vars (*knowledge, "rac");
 
-  // get bounding box from madara
-  northwest_corner_.x = knowledge->get (".rac.bounding.nw.lat").to_double ();
-  northwest_corner_.y = knowledge->get (".rac.bounding.nw.long").to_double ();
-  northwest_corner_.z = 0;
-  southeast_corner_.x = knowledge->get (".rac.bounding.se.lat").to_double ();
-  southeast_corner_.y = knowledge->get (".rac.bounding.se.long").to_double ();
-  southeast_corner_.z = 0;
-
-  // generate random position
-  srand (time (NULL));
-  target_side_ = (Side) (rand () % 4);
-  generate_new_position ();
+  // get boudning polygon from madara
+  num_edges_ = knowledge->get (".rec.num_edges").to_integer ();
+  for (int i = 0; i < num_edges_; ++i)
+  {
+    utility::Position pos;
+    char expression[20];
+    sprintf(expression, ".rec.edge%d", i);
+    pos.x = knowledge->get (std::string (expression) + ".x").to_double ();
+    pos.y = knowledge->get (std::string (expression) + ".y").to_double ();
+    pos.z = 0;
+    vertices_.push_back(pos);
+  }
 }
 
 gams::algorithms::Random_Edge_Coverage::~Random_Edge_Coverage ()
@@ -111,12 +110,11 @@ int
 gams::algorithms::Random_Edge_Coverage::plan (void)
 {
   // generate new next position if necessary
-  if(current_position_.approximately_equal(next_position_, 0.25))
+  if (!init_ || current_position_.approximately_equal(next_position_, 0.25))
   {
-    target_side_ = (Side) ((target_side_ + (rand () % 3)) % 4);
-    generate_new_position ();
+    init_ = true;
+    generate_new_position();
   }
-  else
 
   return 0;
 }
@@ -124,33 +122,44 @@ gams::algorithms::Random_Edge_Coverage::plan (void)
 void
 gams::algorithms::Random_Edge_Coverage::generate_new_position ()
 {
-  if(target_side_ == EAST || target_side_ == WEST)
+  // select new edge
+  int target_edge = rand() % num_edges_;
+
+  // get endpoints
+  const utility::Position & pos_1 = vertices_[target_edge];
+  const utility::Position & pos_2 = vertices_[(target_edge + 1) % num_edges_];
+
+  // get random point on line
+  double delta_y = pos_2.y - pos_1.y;
+  double delta_x = pos_2.x - pos_1.x;
+  if (delta_y == 0) // east/west line
   {
-    double max = northwest_corner_.x, min = southeast_corner_.x;
-    next_position_.x = min + (max - min) * ((double) rand ()) / RAND_MAX;
+    next_position_.x = generate_random_number(pos_1.x, pos_2.x);
+    next_position_.y = pos_1.y;
   }
-  else
+  else if (delta_x == 0) // north/south line
   {
-    if(target_side_ == NORTH)
-      next_position_.x = northwest_corner_.x;
-    else // target_side_ == SOUTH
-      next_position_.x = southeast_corner_.x;
+    next_position_.y = generate_random_number(pos_1.y, pos_2.y);
+    next_position_.x = pos_1.x;
+  }
+  else // other arbitrary line
+  {
+    double slope = (pos_2.y - pos_1.y) / (pos_2.x - pos_1.x);
+    next_position_.x = generate_random_number(pos_1.x, pos_2.x);
+    next_position_.y = slope * (next_position_.x - pos_1.x) + pos_1.y;
   }
 
-  // generate longitude
-  utility::Position ret;
-  if(target_side_ == NORTH || target_side_ == SOUTH)
-  {
-    double min = northwest_corner_.y, max = southeast_corner_.y;
-    next_position_.y = min + (max - min) * ((double) rand ()) / RAND_MAX;
-  }
-  else
-  {
-    if(target_side_ == EAST)
-      next_position_.y = southeast_corner_.y;
-    else // target_side_ == WEST
-      next_position_.y = northwest_corner_.y;
-  }
+  // fill in altitude on waypoint
+  next_position_.z = current_position_.z;
+}
 
-  next_position_.z = 0.5;
+double
+gams::algorithms::Random_Edge_Coverage::generate_random_number(
+  const double & a, const double & b) const
+{
+  double min = a < b ? a : b;
+  double max = a > b ? a : b;
+  double range = max - min;
+  int random = rand();
+  return min + (((double)random) / RAND_MAX) * range;
 }

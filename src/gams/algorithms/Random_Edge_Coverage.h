@@ -60,6 +60,9 @@
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
 
+#include <vector>
+using std::vector;
+
 namespace gams
 {
   namespace algorithms
@@ -112,6 +115,9 @@ namespace gams
       /// generate random position on a side
       void generate_new_position ();
 
+      /// generate random number between two numbers
+      double generate_random_number (const double & a, const double & b) const;
+
       /// list of sensor names
       variables::Sensor_Names sensor_names_;
 
@@ -121,23 +127,14 @@ namespace gams
       /// next position
       utility::Position next_position_;
 
-      /// northwest/top left corner of coverage box
-      utility::Position northwest_corner_;
+      /// vector of vertices in coverage box
+      vector<utility::Position> vertices_;
 
-      /// southeast/bottom right corner of coverage box
-      utility::Position southeast_corner_;
+      /// number of edges
+      int num_edges_;
 
-      /// Side enum for sides of coverage box
-      enum Side
-      {
-        NORTH,
-        SOUTH,
-        EAST,
-        WEST
-      };
-
-      /// Side we are currently targeting
-      Side target_side_;
+      /// init flag
+      bool init_;
     };
   }
 }

@@ -81,7 +81,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
     simxFloat objCoord[3];
     objCoord[0] = knowledge.get (".initial_x").to_double ();
     objCoord[1] = knowledge.get (".initial_y").to_double ();
-    objCoord[2] = 0.5;
+    // TODO: remove when collision avoidance is added
+    objCoord[2] = knowledge.get (".id").to_integer () + 1;
     simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, objCoord,
       simx_opmode_oneshot_wait);
   }
@@ -108,6 +109,9 @@ gams::platforms::VREP_UAV::VREP_UAV (
   node_target_ = -1;
   simxGetObjectChild (client_id_, nodeBase, 0,
     &node_target_, simx_opmode_oneshot_wait);
+
+  // seed rng here to prevent identical seeds among agents
+  srand (time (NULL));
 
   // sync with other nodes
   int id = knowledge.get (".id").to_integer ();
@@ -238,6 +242,7 @@ gams::platforms::VREP_UAV::move (const utility::Position & position)
   currPos[2] = position_.z;
 
   //move target closer to the waypoint and return 1
+  // TODO: modify for straight line movement
   bool at_destination = true;
   const double TARGET_INCR = 0.5;
   for (int i = 0;i < 3;++i)
