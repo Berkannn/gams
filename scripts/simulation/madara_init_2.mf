@@ -1,0 +1,11 @@
+.rac.bounding.nw.lat="2.5";
+.rac.bounding.nw.long="-2.5";
+.rac.bounding.se.lat="-2.5";
+.rac.bounding.se.long="2.5";
+.vrep_port=19907;
+.vrep_host="127.0.0.1";
+.set_initial=1;
+.initial_x=-2.5;
+.initial_y=-2.5;
+.id=2;
+num_agents=3;

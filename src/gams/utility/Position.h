@@ -86,6 +86,28 @@ namespace gams
        * @param  rhs   values to copy
        **/
       void operator= (const Position & rhs);
+
+      /**
+       * Equality operator
+       * @param  rhs   value to compare
+       * @return true if x, y, z are equal in both objects, false otherwise
+       **/
+      bool operator== (const Position & rhs) const;
+
+      /**
+       * Approximate equality
+       * @param  rhs      value to compare
+       * @param  epsilon  approximation value
+       * @return true if position is within epsilon in each direction of this
+       **/
+      bool approximately_equal(const Position & rhs, const double & epsilon) const;
+
+      /**
+       * Get distance between two positions
+       * @param  rhs      second position
+       * @return euclidean distance between the two points
+       **/
+      double distance(const Position & rhs) const;
       
       /**
        * Helper function for converting the position to a string

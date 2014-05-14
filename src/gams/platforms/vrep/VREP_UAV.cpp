@@ -52,7 +52,6 @@ using std::string;
 
 #ifdef _GAMS_VREP_
 
-
 gams::platforms::VREP_UAV::VREP_UAV (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   variables::Sensors * sensors,
@@ -63,12 +62,11 @@ gams::platforms::VREP_UAV::VREP_UAV (
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 
   // get client id
-  int PORT = knowledge.get(".vrep_port").to_integer();
   client_id_ = simxStart(knowledge.get(".vrep_host").to_string ().c_str (),
-    PORT, true, true, 2000, 5);
+    knowledge.get(".vrep_port").to_integer(), true, true, 2000, 5);
 
   // init quadrotor in env
-  string modelFile(getenv("VREP_ROOT"));
+  string modelFile (getenv("VREP_ROOT"));
   modelFile += "/models/robots/mobile/Quadricopter.ttm";
   node_id_ = -1;
   if (simxLoadModel (client_id_,modelFile.c_str (), 0, &node_id_,
@@ -77,7 +75,16 @@ gams::platforms::VREP_UAV::VREP_UAV (
     // fail out some how
   }
 
-  //if(debug) cout << "newly created node id = " << node_id_ << endl;
+  // set initial position if necessary
+  if(knowledge.get (".set_initial").to_integer ())
+  {
+    simxFloat objCoord[3];
+    objCoord[0] = knowledge.get (".initial_x").to_double ();
+    objCoord[1] = knowledge.get (".initial_y").to_double ();
+    objCoord[2] = 0.5;
+    simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, objCoord,
+      simx_opmode_oneshot_wait);
+  }
 
   //find the dummy base sub-object
   simxInt handlesCount = 0,*handles = NULL;
@@ -86,9 +93,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
     &handles, &parentsCount, &parents, NULL, NULL, NULL, NULL,
     simx_opmode_oneshot_wait);
 
-  //if(debug) cout << "dummy objects obtained = " << handlesCount << endl;
-  //if(debug) cout << "parent objects obtained = " << parentsCount << endl;
-
+  // find node base
   simxInt nodeBase = -1;
   for(simxInt i = 0; i < handlesCount; ++i)
   {
@@ -98,15 +103,29 @@ gams::platforms::VREP_UAV::VREP_UAV (
       break;
     }
   }
-  //if(debug) cout << "node base handle = " << nodeBase << endl;
 
   //find the target sub-object of the base sub-object
   node_target_ = -1;
   simxGetObjectChild (client_id_, nodeBase, 0,
     &node_target_, simx_opmode_oneshot_wait);
-  //if(debug) cout << "node target handle = " << node_target << endl;
 
-  simxStartSimulation (client_id_, simx_opmode_oneshot_wait);
+  // sync with other nodes
+  int id = knowledge.get (".id").to_integer ();
+  int processes = knowledge.get ("num_agents").to_integer ();
+
+  // wait
+  std::stringstream buffer;
+  buffer << "(S" << id << ".init = 1)";
+  for (int i = 0; i < processes; ++i)
+    buffer << " && S" << i << ".init";
+  std::string expression = buffer.str ();
+  Madara::Knowledge_Engine::Compiled_Expression compiled;
+  compiled = knowledge.compile (expression);
+  knowledge.wait (compiled);
+
+  // start the simulation
+  if(id == 0)
+    simxStartSimulation (client_id_, simx_opmode_oneshot_wait);
 }
 
 gams::platforms::VREP_UAV::~VREP_UAV ()
@@ -206,7 +225,6 @@ gams::platforms::VREP_UAV::move (const utility::Position & position)
     takeoff ();
 
   // move to the position
-  position_ = position;
   simxFloat destPos[3];
   destPos[0] = position.x;
   destPos[1] = position.y;
@@ -215,12 +233,13 @@ gams::platforms::VREP_UAV::move (const utility::Position & position)
 
   //set current position of node target
   simxFloat currPos[3];
-  simxGetObjectPosition (client_id_, node_target_, sim_handle_parent, currPos,
-    simx_opmode_oneshot_wait);
+  currPos[0] = position_.x;
+  currPos[1] = position_.y;
+  currPos[2] = position_.z;
 
   //move target closer to the waypoint and return 1
-  const float TARGET_INCR = 0.01; // TODO: tune this parameter
   bool at_destination = true;
+  const double TARGET_INCR = 0.5;
   for (int i = 0;i < 3;++i)
   {
     if(currPos[i] < destPos[i] - TARGET_INCR)
@@ -239,12 +258,20 @@ gams::platforms::VREP_UAV::move (const utility::Position & position)
   simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, currPos,
                         simx_opmode_oneshot_wait);
 
-  return (at_destination ? 0 : 1);
+  return 0;
 }
       
 int
 gams::platforms::VREP_UAV::sense (void)
 {
+  // get position
+  simxFloat currPos[3];
+  simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, currPos,
+                        simx_opmode_oneshot_wait);
+  position_.x = currPos[0];
+  position_.y = currPos[1];
+  position_.z = currPos[2];
+
   return 0;
 }
       

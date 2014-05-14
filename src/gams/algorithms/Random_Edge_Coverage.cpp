@@ -54,6 +54,19 @@ gams::algorithms::Random_Edge_Coverage::Random_Edge_Coverage (
   : Base (knowledge, platform, sensors, self)
 {
   status_.init_vars (*knowledge, "rac");
+
+  // get bounding box from madara
+  northwest_corner_.x = knowledge->get (".rac.bounding.nw.lat").to_double ();
+  northwest_corner_.y = knowledge->get (".rac.bounding.nw.long").to_double ();
+  northwest_corner_.z = 0;
+  southeast_corner_.x = knowledge->get (".rac.bounding.se.lat").to_double ();
+  southeast_corner_.y = knowledge->get (".rac.bounding.se.long").to_double ();
+  southeast_corner_.z = 0;
+
+  // generate random position
+  srand (time (NULL));
+  target_side_ = (Side) (rand () % 4);
+  generate_new_position ();
 }
 
 gams::algorithms::Random_Edge_Coverage::~Random_Edge_Coverage ()
@@ -84,11 +97,12 @@ gams::algorithms::Random_Edge_Coverage::analyze (void)
 
   return 0;
 }
-      
+
 
 int
 gams::algorithms::Random_Edge_Coverage::execute (void)
 {
+  platform_->move(next_position_);
   return 0;
 }
 
@@ -96,5 +110,47 @@ gams::algorithms::Random_Edge_Coverage::execute (void)
 int
 gams::algorithms::Random_Edge_Coverage::plan (void)
 {
+  // generate new next position if necessary
+  if(current_position_.approximately_equal(next_position_, 0.25))
+  {
+    target_side_ = (Side) ((target_side_ + (rand () % 3)) % 4);
+    generate_new_position ();
+  }
+  else
+
   return 0;
+}
+
+void
+gams::algorithms::Random_Edge_Coverage::generate_new_position ()
+{
+  if(target_side_ == EAST || target_side_ == WEST)
+  {
+    double max = northwest_corner_.x, min = southeast_corner_.x;
+    next_position_.x = min + (max - min) * ((double) rand ()) / RAND_MAX;
+  }
+  else
+  {
+    if(target_side_ == NORTH)
+      next_position_.x = northwest_corner_.x;
+    else // target_side_ == SOUTH
+      next_position_.x = southeast_corner_.x;
+  }
+
+  // generate longitude
+  utility::Position ret;
+  if(target_side_ == NORTH || target_side_ == SOUTH)
+  {
+    double min = northwest_corner_.y, max = southeast_corner_.y;
+    next_position_.y = min + (max - min) * ((double) rand ()) / RAND_MAX;
+  }
+  else
+  {
+    if(target_side_ == EAST)
+      next_position_.y = southeast_corner_.y;
+    else // target_side_ == WEST
+      next_position_.y = northwest_corner_.y;
+  }
+
+  next_position_.z = 0.5;
 }

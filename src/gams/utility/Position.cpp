@@ -43,6 +43,7 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+#include <cmath>
 #include <sstream>
 #include "Position.h"
 
@@ -65,6 +66,30 @@ gams::utility::Position::operator= (const Position & rhs)
     this->y = rhs.y;
     this->z = rhs.z;
   }
+}
+
+bool
+gams::utility::Position::operator== (const Position & rhs) const
+{
+  return this->x == rhs.x && this->y == rhs.y && this->z == rhs.z;
+}
+
+bool
+gams::utility::Position::approximately_equal(const Position & rhs,
+  const double & epsilon) const
+{
+  return abs (this->x - rhs.x) < epsilon &&
+         abs (this->y - rhs.y) < epsilon &&
+         abs (this->z - rhs.z) < epsilon;
+}
+
+double
+gams::utility::Position::distance(const Position & rhs) const
+{
+  double sum = pow (this->x - rhs.x, 2.0);
+  sum += pow (this->y - rhs.y, 2.0);
+  sum += pow (this->z - rhs.z, 2.0);
+  return pow (sum, 0.5);
 }
 
 std::string
