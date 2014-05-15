@@ -303,15 +303,17 @@ int main (int argc, char ** argv)
 
   // create knowledge base and a control loop
   Madara::Knowledge_Engine::Knowledge_Base knowledge (host, settings);
-
-  if (madara_commands != "")
-    knowledge.evaluate (madara_commands);
-
   controller::Base loop (knowledge);
 
   // initialize variables and function stubs
   loop.init_vars (settings.id, processes);
   
+  // read madara initialization
+  if (madara_commands != "")
+    knowledge.evaluate (madara_commands,
+      Madara::Knowledge_Engine::Eval_Settings(false, true));
+
+
   // initialize the platform and algorithm
   loop.init_platform (platform);
   loop.init_algorithm (algorithm);
