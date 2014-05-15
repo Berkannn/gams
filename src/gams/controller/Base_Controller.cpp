@@ -192,6 +192,7 @@ gams::controller::Base::system_analyze (void)
 {
   int return_value (0);
   bool error (false);
+  bool is_swarm_command (false);
 
   /**
    * note that certain device variables like command are kept local only.
@@ -215,28 +216,43 @@ gams::controller::Base::system_analyze (void)
   {
     Madara::Knowledge_Record type;
     Madara::Knowledge_Record area;
+    
+    if (self_.device.command == "cover")
+    {
+      self_.device.command_args.resize ();
 
-    // check if proper number of arguments were given
-    if (swarm_.command_args == 2)
-    {
-      type = knowledge_.get ("swarm.command.0");
-      area = knowledge_.get ("swarm.command.1");
-    }
-    else if (this->self_.device.command_args == 2)
-    {
-      type = knowledge_.get ("device.{.id}.command.0",
-        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
-      area = knowledge_.get ("device.{.id}.command.1",
-        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
+      if (this->self_.device.command_args.size () == 2)
+      {
+        type = self_.device.command_args[0];
+        area = self_.device.command_args[1];
+      }
+      else
+      {
+        error = true;
+      }
     }
     else
     {
-      std::cerr << "ERROR: Area coverage requested with improper args.\n";
-      error = true;
+      is_swarm_command = true;
+      swarm_.command_args.resize ();
+
+      // check if proper number of arguments were given
+      if (swarm_.command_args.size () == 2)
+      {
+        type = swarm_.command_args[0];
+        area = swarm_.command_args[1];
+      }
+      else
+      {
+        error = true;
+      }
     }
 
-    // check if args were of the right type
-    if (!error)
+    if (error)
+    {
+      std::cerr << "ERROR: Area coverage requested with improper args.\n";
+    }
+    else
     {
       if (!type.is_string_type ())
       {
@@ -273,49 +289,59 @@ gams::controller::Base::system_analyze (void)
     Madara::Knowledge_Record arg2;
     utility::Position target;
     int num_args = 0;
-    int command_level = 0;
+    
+    if (self_.device.command == "move")
+    {
+      self_.device.command_args.resize ();
 
-    // check if proper number of arguments were given
-    if (swarm_.command_args == 2)
-    {
-      arg1 = knowledge_.get ("swarm.command.0");
-      arg2 = knowledge_.get ("swarm.command.1");
-      num_args = 2;
-    }
-    else if (this->self_.device.command_args == 2)
-    {
-      arg1 = knowledge_.get ("device.{.id}.command.0",
-        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
-      arg2 = knowledge_.get ("device.{.id}.command.1",
-        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
-      num_args = 2;
-      command_level = 1;
-    }
-    else if (swarm_.command_args == 1)
-    {
-      arg1 = knowledge_.get ("swarm.command.0");
-      num_args = 1;
-    }
-    else if (this->self_.device.command_args == 1)
-    {
-      arg1 = knowledge_.get ("device.{.id}.command.0",
-        Madara::Knowledge_Engine::Knowledge_Reference_Settings (true));
-      num_args = 1;
-      command_level = 1;
-    }
-    else if (this->self_.device.command_args == 0)
-    {
-      arg1 = "target";
-      command_level = 1;
+      if (this->self_.device.command_args.size () == 2)
+      {
+        arg1 = self_.device.command_args[0];
+        arg2 = self_.device.command_args[1];
+        num_args = 2;
+      }
+      else if (this->self_.device.command_args.size () == 1)
+      {
+        arg1 = self_.device.command_args[0];
+        num_args = 1;
+      }
+      else if (this->self_.device.command_args.size () == 0)
+      {
+        arg1 = "target";
+      }
+      else
+      {
+        error = true;
+      }
     }
     else
     {
-      std::cerr << "ERROR: Move requested with improper args.\n";
-      error = true;
+      is_swarm_command = true;
+      swarm_.command_args.resize ();
+
+      // check if proper number of arguments were given
+      if (swarm_.command_args.size () == 2)
+      {
+        arg1 = swarm_.command_args[0];
+        arg2 = swarm_.command_args[1];
+        num_args = 2;
+      }
+      else if (swarm_.command_args.size () == 1)
+      {
+        arg1 = swarm_.command_args[0];
+        num_args = 1;
+      }
+      else
+      {
+        error = true;
+      }
     }
 
-    // check if args were of the right type
-    if (!error)
+    if (error)
+    {
+      std::cerr << "ERROR: Move requested with improper args.\n";
+    }
+    else
     {
       delete algorithm_;
       algorithms::Factory factory (&knowledge_, &sensors_,
@@ -326,8 +352,8 @@ gams::controller::Base::system_analyze (void)
   
   self_.device.command = "";
   swarm_.command = "";
-  self_.device.command_args = 0;
-  swarm_.command_args = 0;
+  self_.device.command_args.resize (0);
+  swarm_.command_args.resize (0);
 
   return return_value;
 }

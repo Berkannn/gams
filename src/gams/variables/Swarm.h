@@ -60,6 +60,7 @@
 #include "madara/knowledge_engine/containers/Integer.h"
 #include "madara/knowledge_engine/containers/String.h"
 #include "madara/knowledge_engine/containers/Double.h"
+#include "madara/knowledge_engine/containers/Vector.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
@@ -107,7 +108,7 @@ namespace gams
       Madara::Knowledge_Engine::Containers::String command;
       
       /// number of arguments for command
-      Madara::Knowledge_Engine::Containers::Integer command_args;
+      Madara::Knowledge_Engine::Containers::Vector command_args;
       
       /// minimum altitude for swarm to use
       Madara::Knowledge_Engine::Containers::Double min_alt;

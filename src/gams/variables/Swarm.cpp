@@ -64,6 +64,7 @@ gams::variables::Swarm::operator= (const Swarm & rhs)
     this->command = rhs.command;
     this->command_args = rhs.command_args;
     this->min_alt = rhs.min_alt;
+    this->size = rhs.size;
   }
 }
 
