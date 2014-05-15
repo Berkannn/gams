@@ -7,12 +7,14 @@ num_agents=3;
 .initial_x=2.5;
 .initial_y=2.5;
 
-.rec.num_edges=4;
-.rec.edge0.x=10;
-.rec.edge0.y=0;
-.rec.edge1.x=0;
-.rec.edge1.y=10;
-.rec.edge2.x=-10;
-.rec.edge2.y=0;
-.rec.edge3.x=0;
-.rec.edge3.y=-10;
+device.0.command="cover";
+device.0.command.size=2;
+device.0.command.0="urec";
+device.0.command.1="region.0";
+
+region.0.type=0;
+region.0.size=4;
+region.0.1="10,0,0";
+region.0.2="0,10,0";
+region.0.3="-10,0,0";
+region.0.4="0,-10,0";

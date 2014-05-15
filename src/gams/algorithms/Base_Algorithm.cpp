@@ -113,14 +113,16 @@ gams::algorithms::Base::parse_region ()
   sprintf (expression, "region.%d.type", region);
   switch (knowledge_->get (expression).to_integer ())
   {
-    case 0: // rectangle
+    case 0: // arbitrary convex polygon
     {
-      for (int i = 1; i < 5; ++i) // get the four vertices
+      sprintf (expression, "region.%d.size", region);
+      const int num_vertices = knowledge_->get (expression).to_integer ();
+      for (int i = 1; i <= num_vertices; ++i) // get the vertices
       {
         sprintf (expression, "region.%d.%d", region, i);
         double lat, lon, alt;
-        sscanf (knowledge_->get (expression).to_string ().c_str (), "%f,%f,%f",
-          &lat, &lon, &alt);
+        sscanf (knowledge_->get (expression).to_string ().c_str (),
+          "%lf,%lf,%lf", &lat, &lon, &alt);
         utility::Position pos;
         pos.x = lat;
         pos.y = lon;
