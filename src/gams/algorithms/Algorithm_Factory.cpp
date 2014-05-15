@@ -48,7 +48,7 @@
 #include "Move.h"
 #include "Printer_Algorithm.h"
 #include "Random_Area_Coverage.h"
-#include "Random_Edge_Coverage.h"
+#include "Uniform_Random_Edge_Coverage.h"
 #include "Snake_Area_Coverage.h"
 #include "Takeoff.h"
 
@@ -95,10 +95,10 @@ gams::algorithms::Factory::create (const std::string & type,
       result = new Random_Area_Coverage (
         knowledge_, platform_, sensors_, self_);
   }
-  if (type == "random edge coverage" || type == "rec")
+  if (type == "uniform random edge coverage" || type == "urec")
   {
     if (knowledge_ && sensors_  && self_)
-      result = new Random_Edge_Coverage (
+      result = new Uniform_Random_Edge_Coverage (
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "snake" || type == "sac")
