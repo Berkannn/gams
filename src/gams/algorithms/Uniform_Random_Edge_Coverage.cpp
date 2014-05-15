@@ -52,20 +52,11 @@ gams::algorithms::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
   variables::Self * self)
   : Base (knowledge, platform, sensors, self), init_ (false)
 {
-  status_.init_vars (*knowledge, "rac");
+  status_.init_vars (*knowledge, "urec");
 
-  // get boudning polygon from madara
-  num_edges_ = knowledge->get (".rec.num_edges").to_integer ();
-  for (int i = 0; i < num_edges_; ++i)
-  {
-    utility::Position pos;
-    char expression[20];
-    sprintf(expression, ".rec.edge%d", i);
-    pos.x = knowledge->get (std::string (expression) + ".x").to_double ();
-    pos.y = knowledge->get (std::string (expression) + ".y").to_double ();
-    pos.z = 0;
-    vertices_.push_back(pos);
-  }
+  // get region information
+  vertices_ = parse_region ();
+  num_edges_ = vertices_.size ();
 }
 
 gams::algorithms::Uniform_Random_Edge_Coverage::~Uniform_Random_Edge_Coverage ()

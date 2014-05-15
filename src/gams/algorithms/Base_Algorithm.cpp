@@ -98,3 +98,38 @@ gams::algorithms::Base::set_devices (variables::Devices * devices)
 {
   devices_ = devices;
 }
+
+std::vector<gams::utility::Position>
+gams::algorithms::Base::parse_region ()
+{
+  // get region from knowledge base
+  std::string reg = knowledge_->get ("device.{.id}.command.1").to_string ();
+  int region;
+  sscanf(reg.c_str(), "%*s.%d", &region);
+
+  // parse vertices
+  std::vector<gams::utility::Position> vertices;
+  char expression[50];
+  sprintf (expression, "region.%d.type", region);
+  switch (knowledge_->get (expression).to_integer ())
+  {
+    case 0: // rectangle
+    {
+      for (int i = 1; i < 5; ++i) // get the four vertices
+      {
+        sprintf (expression, "region.%d.%d", region, i);
+        double lat, lon, alt;
+        sscanf (knowledge_->get (expression).to_string ().c_str (), "%f,%f,%f",
+          &lat, &lon, &alt);
+        utility::Position pos;
+        pos.x = lat;
+        pos.y = lon;
+        pos.z = alt;
+        vertices.push_back (pos);
+      }
+      break;
+    }
+  }
+
+  return vertices;
+}
