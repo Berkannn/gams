@@ -251,6 +251,15 @@ gams::controller::Base::system_analyze (void)
         error = true;
       }
     }
+
+    // check if args were of the right type
+    if (!error)
+    {
+      delete algorithm_;
+      algorithms::Factory factory (&knowledge_, &sensors_,
+        platform_, &self_, &devices_);
+      algorithm_ = factory.create ("cover", type, area);
+    }
   }
   
   else if (this->self_.device.command == "move" ||
