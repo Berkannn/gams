@@ -252,6 +252,8 @@ gams::controller::Base::system_analyze (void)
           ". Area should be a string.\n";
         error = true;
       }
+
+      knowledge_.print ();
     }
 
     // check if args were of the right type
