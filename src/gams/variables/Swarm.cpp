@@ -83,7 +83,7 @@ gams::variables::Swarm::init_vars (
   // initialize the variable containers
   min_alt.set_name ("swarm.min_alt", knowledge);
   command.set_name (prefix, knowledge);
-  command_args.set_name (prefix + ".size", knowledge);
+  command_args.set_name (prefix, knowledge);
   size.set_name ("swarm.size", knowledge);
 
   // keep certain varaible changes as local only
@@ -111,7 +111,7 @@ gams::variables::Swarm::init_vars (
   // initialize the variable containers
   min_alt.set_name ("swarm.min_alt", knowledge);
   command.set_name (prefix, knowledge);
-  command_args.set_name (prefix + ".size", knowledge);
+  command_args.set_name (prefix, knowledge);
   size.set_name ("swarm.size", knowledge);
 
   // keep certain varaible changes as local only

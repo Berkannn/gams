@@ -111,7 +111,7 @@ gams::variables::Device::init_vars (
   home.set_name (device_name + ".home", knowledge);
   source.set_name (device_name + ".source", knowledge);
   dest.set_name (device_name + ".dest", knowledge);
-  command_args.set_name (device_name + ".command.size", knowledge);
+  command_args.set_name (device_name + ".command", knowledge);
   
   // keep certain varaible changes as local only
   command.set_settings (keep_local);
@@ -153,7 +153,7 @@ gams::variables::Device::init_vars (
   home.set_name (device_name + ".home", knowledge);
   source.set_name (device_name + ".source", knowledge);
   dest.set_name (device_name + ".dest", knowledge);
-  command_args.set_name (device_name + ".command.size", knowledge);
+  command_args.set_name (device_name + ".command", knowledge);
 
   // keep certain varaible changes as local only
   command.set_settings (keep_local);
