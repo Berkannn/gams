@@ -258,7 +258,7 @@ gams::controller::Base::system_analyze (void)
       delete algorithm_;
       algorithms::Factory factory (&knowledge_, &sensors_,
         platform_, &self_, &devices_);
-      algorithm_ = factory.create ("cover", type, area);
+      algorithm_ = factory.create (type.to_string (), area);
     }
   }
   
