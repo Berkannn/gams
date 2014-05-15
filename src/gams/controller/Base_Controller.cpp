@@ -78,7 +78,7 @@ gams::controller::Base::init_vars (
 {
   // initialize the devices, swarm, and self variables
   variables::init_vars (devices_, knowledge_, processes);
-  swarm_.init_vars (knowledge_);
+  swarm_.init_vars (knowledge_, processes);
   self_.init_vars (knowledge_, id);
 }
 

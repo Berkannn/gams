@@ -70,8 +70,10 @@ gams::variables::Swarm::operator= (const Swarm & rhs)
 
 void
 gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  Madara::Knowledge_Record::Integer swarm_size)
 {
+  Madara::Knowledge_Engine::Knowledge_Update_Settings defaults;
   Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
 
   // swarm commands are prefixed with "swarm.movement_command"
@@ -81,16 +83,25 @@ gams::variables::Swarm::init_vars (
   min_alt.set_name ("swarm.min_alt", knowledge);
   command.set_name (prefix, knowledge);
   command_args.set_name (prefix + ".size", knowledge);
+  size.set_name ("swarm.size", knowledge);
 
   // keep certain varaible changes as local only
   command.set_settings (keep_local);
   command_args.set_settings (keep_local);
+
+  // update swarm size
+  size = swarm_size;
+
+  // use default settings
+  size.set_settings (defaults);
 }
 
 void
 gams::variables::Swarm::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
+  Madara::Knowledge_Engine::Variables & knowledge,
+  Madara::Knowledge_Record::Integer swarm_size)
 {
+  Madara::Knowledge_Engine::Knowledge_Update_Settings defaults;
   Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
 
   // swarm commands are prefixed with "swarm.movement_command"
@@ -100,14 +111,23 @@ gams::variables::Swarm::init_vars (
   min_alt.set_name ("swarm.min_alt", knowledge);
   command.set_name (prefix, knowledge);
   command_args.set_name (prefix + ".size", knowledge);
+  size.set_name ("swarm.size", knowledge);
 
   // keep certain varaible changes as local only
   command.set_settings (keep_local);
   command_args.set_settings (keep_local);
+  size.set_settings (keep_local);
+
+  // update swarm size
+  size = swarm_size;
+
+  // use default settings
+  size.set_settings (defaults);
 }
 
 void gams::variables::init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  Madara::Knowledge_Record::Integer swarm_size)
 {
-  variables.init_vars (knowledge);
+  variables.init_vars (knowledge, swarm_size);
 }

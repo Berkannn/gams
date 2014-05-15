@@ -89,15 +89,19 @@ namespace gams
        * Initializes variable containers
        * @param   id         node identifier
        * @param   processes  processes
+       * @param   swarm_size size of the swarm
        **/
-      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        Madara::Knowledge_Record::Integer swarm_size = 1);
       
       /**
        * Initializes variable containers
        * @param   knowledge  the variable context
        * @param   processes  processes
+       * @param   swarm_size size of the swarm
        **/
-      void init_vars (Madara::Knowledge_Engine::Variables & knowledge);
+      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
+        Madara::Knowledge_Record::Integer swarm_size = 1);
 
       /// the current command given to the swarm
       Madara::Knowledge_Engine::Containers::String command;
@@ -107,15 +111,21 @@ namespace gams
       
       /// minimum altitude for swarm to use
       Madara::Knowledge_Engine::Containers::Double min_alt;
+
+      /// the number of agents participating in the swarm
+      Madara::Knowledge_Engine::Containers::Integer size;
+      
     };
     
     /**
       * Initializes a self containers
       * @param   variables  the variables to initialize
       * @param   knowledge  the knowledge base that houses the variables
+      * @param   swarm_size size of the swarm
       **/
     GAMS_Export void init_vars (Swarm & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        Madara::Knowledge_Record::Integer swarm_size = 1);
   }
 }
 
