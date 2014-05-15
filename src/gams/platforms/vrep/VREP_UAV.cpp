@@ -110,14 +110,11 @@ gams::platforms::VREP_UAV::VREP_UAV (
   simxGetObjectChild (client_id_, nodeBase, 0,
     &node_target_, simx_opmode_oneshot_wait);
 
-  // seed rng here to prevent identical seeds among agents
-  srand (time (NULL));
-
   // sync with other nodes
   int id = knowledge.get (".id").to_integer ();
   int processes = knowledge.get ("num_agents").to_integer ();
 
-  // wait
+  // wait for all processes to get up
   std::stringstream buffer;
   buffer << "(S" << id << ".init = 1)";
   for (int i = 0; i < processes; ++i)

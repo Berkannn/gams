@@ -43,9 +43,9 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Random_Edge_Coverage.h"
+#include "Uniform_Random_Edge_Coverage.h"
 
-gams::algorithms::Random_Edge_Coverage::Random_Edge_Coverage (
+gams::algorithms::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
@@ -68,12 +68,13 @@ gams::algorithms::Random_Edge_Coverage::Random_Edge_Coverage (
   }
 }
 
-gams::algorithms::Random_Edge_Coverage::~Random_Edge_Coverage ()
+gams::algorithms::Uniform_Random_Edge_Coverage::~Uniform_Random_Edge_Coverage ()
 {
 }
 
 void
-gams::algorithms::Random_Edge_Coverage::operator= (const Random_Edge_Coverage & rhs)
+gams::algorithms::Uniform_Random_Edge_Coverage::operator= (
+  const Uniform_Random_Edge_Coverage & rhs)
 {
   if (this != &rhs)
   {
@@ -86,7 +87,7 @@ gams::algorithms::Random_Edge_Coverage::operator= (const Random_Edge_Coverage & 
 
 
 int
-gams::algorithms::Random_Edge_Coverage::analyze (void)
+gams::algorithms::Uniform_Random_Edge_Coverage::analyze (void)
 {
   this->platform_->get_sensors (sensor_names_);
 
@@ -99,7 +100,7 @@ gams::algorithms::Random_Edge_Coverage::analyze (void)
 
 
 int
-gams::algorithms::Random_Edge_Coverage::execute (void)
+gams::algorithms::Uniform_Random_Edge_Coverage::execute (void)
 {
   platform_->move(next_position_);
   return 0;
@@ -107,7 +108,7 @@ gams::algorithms::Random_Edge_Coverage::execute (void)
 
 
 int
-gams::algorithms::Random_Edge_Coverage::plan (void)
+gams::algorithms::Uniform_Random_Edge_Coverage::plan (void)
 {
   // generate new next position if necessary
   if (!init_ || current_position_.approximately_equal(next_position_, 0.25))
@@ -120,7 +121,7 @@ gams::algorithms::Random_Edge_Coverage::plan (void)
 }
 
 void
-gams::algorithms::Random_Edge_Coverage::generate_new_position ()
+gams::algorithms::Uniform_Random_Edge_Coverage::generate_new_position ()
 {
   // select new edge
   int target_edge = rand() % num_edges_;
@@ -134,32 +135,25 @@ gams::algorithms::Random_Edge_Coverage::generate_new_position ()
   double delta_x = pos_2.x - pos_1.x;
   if (delta_y == 0) // east/west line
   {
-    next_position_.x = generate_random_number(pos_1.x, pos_2.x);
+    const double & min = pos_1.x < pos_2.x ? pos_1.x : pos_2.x;
+    const double & max = pos_1.x > pos_2.x ? pos_1.x : pos_2.x;
+    next_position_.x = Madara::Utility::rand_double(min, max);
     next_position_.y = pos_1.y;
   }
   else if (delta_x == 0) // north/south line
   {
-    next_position_.y = generate_random_number(pos_1.y, pos_2.y);
+    const double & min = pos_1.y < pos_2.y ? pos_1.y : pos_2.y;
+    const double & max = pos_1.y > pos_2.y ? pos_1.y : pos_2.y;
+    next_position_.y = Madara::Utility::rand_double(min, max);
     next_position_.x = pos_1.x;
   }
   else // other arbitrary line
   {
-    double slope = (pos_2.y - pos_1.y) / (pos_2.x - pos_1.x);
-    next_position_.x = generate_random_number(pos_1.x, pos_2.x);
+    const double slope = (pos_2.y - pos_1.y) / (pos_2.x - pos_1.x);
+    next_position_.x = Madara::Utility::rand_double(pos_1.x, pos_2.x);
     next_position_.y = slope * (next_position_.x - pos_1.x) + pos_1.y;
   }
 
   // fill in altitude on waypoint
   next_position_.z = current_position_.z;
-}
-
-double
-gams::algorithms::Random_Edge_Coverage::generate_random_number(
-  const double & a, const double & b) const
-{
-  double min = a < b ? a : b;
-  double max = a > b ? a : b;
-  double range = max - min;
-  int random = rand();
-  return min + (((double)random) / RAND_MAX) * range;
 }

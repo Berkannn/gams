@@ -45,14 +45,14 @@
  **/
 
 /**
- * @file Random_Edge_Coverage.h
+ * @file Uniform_Random_Edge_Coverage.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
  * This file contains the definition of the random area coverage class
  **/
 
-#ifndef   _GAMS_ALGORITHMS_RANDOM_EDGE_COVERAGE_H_
-#define   _GAMS_ALGORITHMS_RANDOM_EDGE_COVERAGE_H_
+#ifndef   _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
+#define   _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
 
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
@@ -67,7 +67,7 @@ namespace gams
 {
   namespace algorithms
   {
-    class GAMS_Export Random_Edge_Coverage : public Base
+    class GAMS_Export Uniform_Random_Edge_Coverage : public Base
     {
     public:
       /**
@@ -77,7 +77,7 @@ namespace gams
        * @param  sensors      map of sensor names to sensor information
        * @param  self         self-referencing variables
        **/
-      Random_Edge_Coverage (
+      Uniform_Random_Edge_Coverage (
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0, variables::Sensors * sensors = 0,
         variables::Self * self = 0);
@@ -85,13 +85,13 @@ namespace gams
       /**
        * Destructor
        **/
-      ~Random_Edge_Coverage ();
+      ~Uniform_Random_Edge_Coverage ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Random_Edge_Coverage & rhs);
+      void operator= (const Uniform_Random_Edge_Coverage & rhs);
       
       /**
        * Analyzes environment, platform, or other information
@@ -115,9 +115,6 @@ namespace gams
       /// generate random position on a side
       void generate_new_position ();
 
-      /// generate random number between two numbers
-      double generate_random_number (const double & a, const double & b) const;
-
       /// list of sensor names
       variables::Sensor_Names sensor_names_;
 
@@ -139,4 +136,4 @@ namespace gams
   }
 }
 
-#endif // _GAMS_ALGORITHMS_RANDOM_EDGE_COVERAGE_H_
+#endif // _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
