@@ -240,14 +240,16 @@ gams::controller::Base::system_analyze (void)
     {
       if (!type.is_string_type ())
       {
-        std::cerr << "ERROR: Area coverage type (first arg) " <<
-          "needs to be a string.\n";
+        std::cerr << "ERROR: Area coverage type (first arg) == "
+          << type <<
+          ". Type should be a string.\n";
         error = true;
       }
       if (!area.is_string_type ())
       {
-        std::cerr << "ERROR: Area coverage area (second arg) " <<
-          "needs to be a string.\n";
+        std::cerr << "ERROR: Area coverage area (second arg) == "
+          << area <<
+          ". Area should be a string.\n";
         error = true;
       }
     }
