@@ -58,7 +58,10 @@
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
+#include "gams/utility/Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
+
+#include <vector>
 
 namespace gams
 {
@@ -145,6 +148,8 @@ namespace gams
       virtual void set_devices (variables::Devices * devices);
       
     protected:
+      /// get vertices from region madara variables
+      std::vector<gams::utility::Position> parse_region ();
 
       /// provides access to the knowledge base
       Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
