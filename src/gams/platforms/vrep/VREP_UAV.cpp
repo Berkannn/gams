@@ -57,7 +57,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
-  : Base (&knowledge, sensors), self_ (self), airborne_ (false)
+  : Base (&knowledge, sensors, self), airborne_ (false)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 
@@ -159,9 +159,11 @@ gams::platforms::VREP_UAV::operator= (const VREP_UAV & rhs)
 {
   if (this != &rhs)
   {
-    this->sensors_ = rhs.sensors_;
-    this->status_ = rhs.status_;
-    this->self_ = rhs.self_;
+    platforms::Base * dest = dynamic_cast <platforms::Base *> (this);
+    const platforms::Base * source =
+      dynamic_cast <const platforms::Base *> (&rhs);
+
+    *dest = *source;
   }
 }
 
@@ -219,7 +221,8 @@ gams::platforms::VREP_UAV::coord_to_vrep(const utility::Position & position, sim
 
 
 int
-gams::platforms::VREP_UAV::move (const utility::Position & position)
+gams::platforms::VREP_UAV::move (const utility::Position & position,
+  const double & epsilon)
 {
   // check if not airborne and takeoff if appropriate
   if (!airborne_)

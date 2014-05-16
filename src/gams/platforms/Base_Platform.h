@@ -54,6 +54,7 @@
 #ifndef   _GAMS_PLATFORM_BASE_H_
 #define   _GAMS_PLATFORM_BASE_H_
 
+#include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
 #include "gams/utility/Position.h"
@@ -88,8 +89,9 @@ namespace gams
        * @param  knowledge  context containing variables and values
        * @param  sensors  map of sensor names to sensor information
        **/
-      Base (Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        variables::Sensors * sensors = 0);
+      Base (Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+        variables::Sensors * sensors,
+        variables::Self & self);
 
       /**
        * Destructor
@@ -105,9 +107,11 @@ namespace gams
       /**
        * Moves the platform to a position
        * @param   position  the coordinate to move to
-       * @return 1 if moving, 2 if arrived, 0 if error
+       * @param   epsilon   approximation value
+       * @return 1 if moving toward position, 0 if arrived, negative if error
        **/
-      virtual int move (const utility::Position & position) = 0;
+      virtual int move (const utility::Position & position,
+        const double & epsilon = 0.1);
       
       /**
        * Instructs the device to take off
@@ -150,6 +154,16 @@ namespace gams
        * @param  position  after the call, filled with the current position
        **/
       virtual void get_position (utility::Position & position) = 0;
+      
+      /**
+       * Pauses movement, keeps source and dest at current values
+       **/
+      virtual void pause_move (void);
+      
+      /**
+       * Stops movement, resetting source and dest to current location
+       **/
+      virtual void stop_move (void);
 
       /**
        * Sets the map of sensor names to sensor information
@@ -167,6 +181,7 @@ namespace gams
        * returns the name of the platform
        **/
       const std::string & get_name (void);
+      
 
     protected:
 
@@ -178,6 +193,9 @@ namespace gams
 
       /// provides access to status information for this platform
       variables::Platform status_;
+
+      /// provides access to self state
+      variables::Self self_;
     };
   }
 }

@@ -48,8 +48,10 @@
 
 gams::platforms::Base::Base (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  variables::Sensors * sensors)
-  : knowledge_ (knowledge), sensors_ (sensors)
+  variables::Sensors * sensors,
+  variables::Self & self)
+  : knowledge_ (knowledge), sensors_ (sensors),
+    self_ (self)
 {
 }
 
@@ -65,6 +67,7 @@ gams::platforms::Base::operator= (const Base & rhs)
     this->knowledge_ = rhs.knowledge_;
     this->sensors_ = rhs.sensors_;
     this->status_ = rhs.status_;
+    this->self_ = rhs.self_;
   }
 }
 
@@ -80,4 +83,63 @@ gams::platforms::Base::set_knowledge (
 {
   knowledge_ = rhs;
 }
+
+
+ int
+ gams::platforms::Base::move (const utility::Position & target,
+   const double & epsilon)
+ {
+   int result = 0;
+
+   utility::Position current;
+   current.from_container (self_.device.location);
+
+   /**
+    * if we are not paused, we are not already at the target,
+    * and we are either not moving or the target is different
+    * from the existing move location, then set status to
+    * moving and return 1 (moving to the new location)
+    **/
+   if (!*status_.paused_moving && target != current &&
+      (!*status_.moving || target != self_.device.dest))
+   {
+     self_.device.source = self_.device.location;
+     target.to_container (self_.device.dest);
+
+     result = 1;
+     status_.moving = 1;
+   }
+   /**
+    * otherwise, if we are approximately at the target location,
+    * change status and paused to 0 and return 0 (not moving)
+    **/
+   else if (target.approximately_equal (current, epsilon))
+   {
+     status_.moving = 0;
+     status_.paused_moving = 0;
+     result = 0;
+   }
+
+   return result;
+ }
+ 
+
+void
+gams::platforms::Base::pause_move (void)
+{
+  if (*status_.moving)
+    status_.moving = 0;
+
+  status_.paused_moving = 1;
+}
       
+void  gams::platforms::Base::stop_move (void)
+{
+  if (*status_.moving)
+    status_.moving = 0;
+  status_.paused_moving = 0;
+
+  // set source and dest to current position
+  self_.device.source = self_.device.location;
+  self_.device.dest = self_.device.location;
+}

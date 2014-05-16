@@ -51,7 +51,7 @@ gams::platforms::Drone_RK::Drone_RK (
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
-  : Base (&knowledge, sensors), self_ (self), airborne_ (false)
+  : Base (&knowledge, sensors, self), airborne_ (false)
 {
   platforms["drone_rk"].init_vars (knowledge, "drone_rk");
 }
@@ -65,8 +65,11 @@ gams::platforms::Drone_RK::operator= (const Drone_RK & rhs)
 {
   if (this != &rhs)
   {
-    this->sensors_ = rhs.sensors_;
-    this->status_ = rhs.status_;
+    platforms::Base * dest = static_cast <platforms::Base *> (this);
+    const platforms::Base * source =
+      static_cast <const platforms::Base *> (&rhs);
+
+    *dest = *source;
   }
 }
 

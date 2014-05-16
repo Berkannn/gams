@@ -141,9 +141,6 @@ namespace gams
 
     protected:
 
-      /// provides access to variables denoting self state
-      variables::Self self_;
-
       /// current position
       utility::Position position_;
 

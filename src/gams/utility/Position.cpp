@@ -75,6 +75,42 @@ gams::utility::Position::operator== (const Position & rhs) const
 }
 
 bool
+gams::utility::Position::operator== (
+  const Madara::Knowledge_Engine::Containers::Double_Array & rhs) const
+{
+  return rhs.size () == 3 && 
+    this->x == rhs[0] && this->y == rhs[1] && this->z == rhs[2];
+}
+
+bool
+gams::utility::Position::operator== (
+  const Madara::Knowledge_Engine::Containers::Native_Double_Array & rhs) const
+{
+  return rhs.size () == 3 && 
+    this->x == rhs[0] && this->y == rhs[1] && this->z == rhs[2];
+}
+
+bool
+gams::utility::Position::operator!= (const Position & rhs) const
+{
+  return !(*this == rhs);
+}
+
+bool
+gams::utility::Position::operator!= (
+  const Madara::Knowledge_Engine::Containers::Double_Array & rhs) const
+{
+  return !(*this == rhs);
+}
+
+bool
+gams::utility::Position::operator!= (
+  const Madara::Knowledge_Engine::Containers::Native_Double_Array & rhs) const
+{
+  return !(*this == rhs);
+}
+
+bool
 gams::utility::Position::approximately_equal(const Position & rhs,
   const double & epsilon) const
 {

@@ -106,9 +106,11 @@ namespace gams
       /**
        * Moves the platform to a position
        * @param   position  the coordinate to move to
+       * @param   epsilon   approximation value
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual int move (const utility::Position & position);
+      virtual int move (const utility::Position & position,
+        const double & epsilon = 0.1);
       
       /**
        * Polls the sensor environment for useful information

@@ -51,7 +51,7 @@ gams::platforms::Printer_Platform::Printer_Platform (
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
-  : Base (&knowledge, sensors), self_ (&self)
+  : Base (&knowledge, sensors, self)
 {
   platforms["printer"].init_vars (knowledge, "printer");
   status_ = platforms["printer"];
@@ -66,9 +66,11 @@ gams::platforms::Printer_Platform::operator= (const Printer_Platform & rhs)
 {
   if (this != &rhs)
   {
-    this->sensors_ = rhs.sensors_;
-    this->status_ = rhs.status_;
-    this->self_ = rhs.self_;
+    platforms::Base * dest = dynamic_cast <platforms::Base *> (this);
+    const platforms::Base * source =
+      dynamic_cast <const platforms::Base *> (&rhs);
+
+    *dest = *source;
   }
 }
 
@@ -96,7 +98,8 @@ gams::platforms::Printer_Platform::get_sensors (variables::Sensor_Names & sensor
 
 
 int
-gams::platforms::Printer_Platform::move (const utility::Position & position)
+gams::platforms::Printer_Platform::move (const utility::Position & position,
+  const double & epsilon)
 {
   std::cerr << "  platform.move (" << position.to_string (", ") << ")\n";
 

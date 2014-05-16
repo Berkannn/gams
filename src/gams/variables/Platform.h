@@ -119,8 +119,11 @@ namespace gams
       /// status flag for failed
       Madara::Knowledge_Engine::Containers::Integer failed;
 
-      /// status flag for unknown
+      /// status flag for moving to a location
       Madara::Knowledge_Engine::Containers::Integer moving;
+      
+      /// status flag for paused while moving to a location
+      Madara::Knowledge_Engine::Containers::Integer paused_moving;
 
       /// status flag for reduced sensing available
       Madara::Knowledge_Engine::Containers::Integer reduced_sensing;
