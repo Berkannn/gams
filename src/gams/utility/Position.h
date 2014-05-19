@@ -100,14 +100,45 @@ namespace gams
        * @param  epsilon  approximation value
        * @return true if position is within epsilon in each direction of this
        **/
-      bool approximately_equal(const Position & rhs, const double & epsilon) const;
+      bool approximately_equal (const Position & rhs, const double & epsilon) const;
 
       /**
        * Get distance between two positions
        * @param  rhs      second position
        * @return euclidean distance between the two points
        **/
-      double distance(const Position & rhs) const;
+      double distance (const Position & rhs) const;
+
+      /**
+       * Get the 2D distance between two positions
+       * @param  rhs      second position
+       * @return euclidean distance between the two points with just x and y
+       **/
+      double distance_2d (const Position & rhs) const;
+
+      /**
+       * Get slope between two points
+       * @param p     other point
+       * @param slope location to store slope between two points
+       * @return      true if slope exists
+       **/
+      bool slope_2d (const Position & p, double & slope) const;
+
+      /**
+       * Determine if three points form a line
+       * @param p_2   first point for check
+       * @param p_3   second point for check
+       * @return      true if the three points form a line
+       **/
+      bool is_line_2d (const Position & p_2, const Position & p_3) const;
+
+      /**
+       * Deterime if a third point is inline and between another two points
+       * @param end     second endpoint
+       * @param check   point to check
+       * @return true if check is inline and between *this and end
+       **/
+      bool is_between_2d (const Position & end, const Position & check) const;
       
       /**
        * Helper function for converting the position to a string

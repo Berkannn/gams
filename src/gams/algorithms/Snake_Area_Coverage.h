@@ -60,6 +60,8 @@
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
 
+#include <vector>
+
 namespace gams
 {
   namespace algorithms
@@ -110,7 +112,14 @@ namespace gams
       virtual int plan (void);
       
     protected:
+      /// current position
+      utility::Position current_position_;
 
+      /// vector of vertices in coverage box
+      std::vector<utility::Position> waypoints_;
+
+      /// current waypoint
+      int cur_waypoint_;
     };
   }
 }

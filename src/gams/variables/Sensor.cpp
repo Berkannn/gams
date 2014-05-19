@@ -45,6 +45,8 @@
  **/
 #include "Sensor.h"
 
+#include <float.h>
+
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
 
@@ -100,6 +102,18 @@ gams::variables::Sensor::init_vars (
   // initialize the variable containers
   range.set_name (prefix + ".range", knowledge);
   covered.set_name (prefix + ".covered", knowledge);
+}
+
+double gams::variables::get_min_sensor_range (
+  const gams::variables::Sensors & s)
+{
+  double min_range = DBL_MAX;
+  for (gams::variables::Sensors::const_iterator it = s.begin();
+       it != s.end(); ++it)
+  {
+    min_range = min_range > *(it->second.range) ? *(it->second.range) : min_range;
+  }
+  return min_range;
 }
 
 void gams::variables::init_vars (Sensor & variables,

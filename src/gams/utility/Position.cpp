@@ -75,7 +75,7 @@ gams::utility::Position::operator== (const Position & rhs) const
 }
 
 bool
-gams::utility::Position::approximately_equal(const Position & rhs,
+gams::utility::Position::approximately_equal (const Position & rhs,
   const double & epsilon) const
 {
   return abs (this->x - rhs.x) < epsilon &&
@@ -84,12 +84,96 @@ gams::utility::Position::approximately_equal(const Position & rhs,
 }
 
 double
-gams::utility::Position::distance(const Position & rhs) const
+gams::utility::Position::distance (const Position & rhs) const
 {
   double sum = pow (this->x - rhs.x, 2.0);
   sum += pow (this->y - rhs.y, 2.0);
   sum += pow (this->z - rhs.z, 2.0);
   return pow (sum, 0.5);
+}
+
+double
+gams::utility::Position::distance_2d (const Position & rhs) const
+{
+  double sum = pow (this->x - rhs.x, 2.0);
+  sum += pow (this->y - rhs.y, 2.0);
+  return pow (sum, 0.5);
+}
+
+bool
+gams::utility::Position::slope_2d (const Position & p, double & slope) const
+{
+  // check change in x
+  double del_x = this->x - p.x;
+  if(del_x == 0)
+    return false;
+
+  // calculate slope
+  slope = (this->y - p.y) / del_x;
+  return true;
+}
+
+bool
+gams::utility::Position::is_line_2d (const Position & p_2, const Position & p_3)
+  const
+{
+  bool ret = false;
+
+  // get delta x
+  double del_x_2 = this->x - p_2.x;
+  double del_x_3 = this->x - p_3.x;
+
+  // first check for vertical line to prevent div0
+  if (del_x_2 == 0)
+  {
+    ret = (del_x_3 == 0);
+  }
+  else // check if slopes are equal
+  {
+    double m_2 = (this->y - p_2.y) / del_x_2;
+    double m_3 = (this->y - p_3.y) / del_x_3;
+    ret = (m_2 == m_3);
+  }
+
+  return ret;
+}
+
+bool
+gams::utility::Position::is_between_2d (const Position & end,
+  const Position & check) const
+{
+  // check slopes
+  double slope_1, slope_2;
+  cout << "Position::is_between_2d" << endl;
+  if (this->slope_2d(end, slope_1))
+  {
+    cout << "\tslope_1: " << slope_1 << endl;
+    // if slopes are different
+    if (!this->slope_2d(check, slope_2) || (abs(slope_1 - slope_2) > 0.0001))
+    {
+      cout << "\tfailed slope_2" << endl;
+      return false;
+    }
+    cout << "\tslope_2: " << slope_2 << endl;
+  }
+  else // vertical line
+  {
+    cout << "\tvertical line 1" << endl;
+    if (this->slope_2d(check, slope_2))
+    {
+      cout << "\tfailed slope_2" << endl;
+      return false;
+    }
+    cout << "\tvertical line 2" << endl;
+  }
+
+  // slopes are the same, so just check if x or y is within bounding box
+  cout << "\t\tcheck.y: " << check.y << endl;
+  cout << "\t\tthis->y: " << this->y << endl;
+  cout << "\t\tend.y: " << end.y << endl;
+  bool in_bounding_box = (check.y >= this->y && check.y <= end.y) ||
+    (check.y <= this->y && check.y >= end.y);
+  return in_bounding_box;
 }
 
 std::string
