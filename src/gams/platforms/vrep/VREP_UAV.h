@@ -138,12 +138,18 @@ namespace gams
        * Fills a list of sensor names with sensors available on the platform
        **/
       virtual void get_sensors (variables::Sensor_Names & sensors);
-      
+
       /**
        * Obtains the current position
        * @param  position  after the call, filled with the current position
        **/
       virtual void get_position (utility::Position & position);
+
+      /**
+       * Get the position accuracy
+       * @return position accuracy
+       **/
+      virtual double get_position_accuracy () const;
 
     protected:
 

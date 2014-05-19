@@ -102,7 +102,8 @@ int
 gams::algorithms::Uniform_Random_Edge_Coverage::plan (void)
 {
   // generate new next position if necessary
-  if (!init_ || current_position_.approximately_equal(next_position_, 0.25))
+  if (!init_ || current_position_.approximately_equal(next_position_,
+    platform_->get_position_accuracy ()))
   {
     init_ = true;
     generate_new_position();

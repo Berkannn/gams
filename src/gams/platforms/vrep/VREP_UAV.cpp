@@ -193,6 +193,12 @@ gams::platforms::VREP_UAV::get_position (utility::Position & position)
   position = position_;
 }
 
+double
+gams::platforms::VREP_UAV::get_position_accuracy () const
+{
+  return 0.25;
+}
+
 int
 gams::platforms::VREP_UAV::home (void)
 {
