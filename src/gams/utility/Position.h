@@ -125,14 +125,6 @@ namespace gams
       bool slope_2d (const Position & p, double & slope) const;
 
       /**
-       * Determine if three points form a line
-       * @param p_2   first point for check
-       * @param p_3   second point for check
-       * @return      true if the three points form a line
-       **/
-      bool is_line_2d (const Position & p_2, const Position & p_3) const;
-
-      /**
        * Deterime if a third point is inline and between another two points
        * @param end     second endpoint
        * @param check   point to check

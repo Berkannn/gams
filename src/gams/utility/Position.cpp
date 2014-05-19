@@ -114,65 +114,35 @@ gams::utility::Position::slope_2d (const Position & p, double & slope) const
 }
 
 bool
-gams::utility::Position::is_line_2d (const Position & p_2, const Position & p_3)
-  const
-{
-  bool ret = false;
-
-  // get delta x
-  double del_x_2 = this->x - p_2.x;
-  double del_x_3 = this->x - p_3.x;
-
-  // first check for vertical line to prevent div0
-  if (del_x_2 == 0)
-  {
-    ret = (del_x_3 == 0);
-  }
-  else // check if slopes are equal
-  {
-    double m_2 = (this->y - p_2.y) / del_x_2;
-    double m_3 = (this->y - p_3.y) / del_x_3;
-    ret = (m_2 == m_3);
-  }
-
-  return ret;
-}
-
-bool
 gams::utility::Position::is_between_2d (const Position & end,
   const Position & check) const
 {
+  // TODO: tune approximate difference parameters
   // check slopes
   double slope_1, slope_2;
-  cout << "Position::is_between_2d" << endl;
-  if (this->slope_2d(end, slope_1))
+  if (this->slope_2d(end, slope_1)) // if not vertical line
   {
-    cout << "\tslope_1: " << slope_1 << endl;
-    // if slopes are different
+    // if vertical line or slopes are different
     if (!this->slope_2d(check, slope_2) || (abs(slope_1 - slope_2) > 0.0001))
-    {
-      cout << "\tfailed slope_2" << endl;
       return false;
+    if (slope_1 == 0 || slope_2 == 0) // ensure y are the same
+    {
+      if (abs(check.y - end.y) > 0.0001)
+        return false;
+      return abs(check.x - end.x) < 0.0001;
     }
-    cout << "\tslope_2: " << slope_2 << endl;
   }
   else // vertical line
   {
-    cout << "\tvertical line 1" << endl;
-    if (this->slope_2d(check, slope_2))
-    {
-      cout << "\tfailed slope_2" << endl;
+    // if not vertical line or x are not the same
+    if (this->slope_2d(check, slope_2) || (abs (check.x - this->x) > 0.0001))
       return false;
-    }
-    cout << "\tvertical line 2" << endl;
   }
 
   // slopes are the same, so just check if x or y is within bounding box
-  cout << "\t\tcheck.y: " << check.y << endl;
-  cout << "\t\tthis->y: " << this->y << endl;
-  cout << "\t\tend.y: " << end.y << endl;
-  bool in_bounding_box = (check.y >= this->y && check.y <= end.y) ||
-    (check.y <= this->y && check.y >= end.y);
+  //    use y
+  const bool in_bounding_box = (end.y >= check.y && check.y >= this->y) ||
+    (end.y <= check.y && check.y <= this->y);
   return in_bounding_box;
 }
 

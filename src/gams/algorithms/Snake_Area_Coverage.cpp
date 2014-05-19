@@ -59,8 +59,6 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
   // get region information
   std::vector<utility::Position> vertices = parse_region ();
   const int num_edges = vertices.size ();
-  for(int i = 0; i < num_edges; ++i)
-    cout << "vertex_" << i << ": " << vertices[i].to_string() << endl;
 
   // find longest edge
   int longest_edge = 0;
@@ -74,7 +72,6 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
       longest_edge = i;
     }
   }
-  cout << "longest edge: " << longest_edge << endl;
 
   // starting points are vertices of longest edge
   waypoints_.push_back (vertices[longest_edge]);
@@ -82,62 +79,98 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
 
   // determine shift direction
   const double shift = 1.0; // TODO: update for sensor range
-  double m_0;
   const utility::Position & p_0 = vertices[longest_edge];
   const utility::Position & p_1 = vertices[(longest_edge + 1) % num_edges];
-  if (p_0.slope_2d (p_1, m_0))
-  {
-    // we have a non-vertical line, so find new line
-    const double delta_b = -1 * shift * pow (pow (m_0, 2) + 1, 0.5);
 
-    // loop until snaked through entire polygon
+  /**
+   * Assuming the bounding area is convex, only one of these loops will 
+   * actually do work, the other will fail out the first time through the 
+   * while loop due to not finding an intercept.
+   *
+   * The working loop will find all the snaking waypoints
+   **/
+  for (int dir = 0; dir < 2; ++dir)
+  {
+    // loop until no more intercepts are found
     int intercept_idx = -1; // arbitrary non-zero value so we enter loop
     unsigned int loop = 0; // loop counter
     while(intercept_idx != 0)
     {
-      ++loop;
-      cout << "loop: " << loop << endl;
-
-      // find intercept
       intercept_idx = 0;
+      ++loop;
+
+      /**
+       * Check each edge for intercepts
+       * Since we are assuming this is a convex polygon, it can have at most
+       * two intercepts
+       */
       utility::Position intercepts[2];
       for(int i = 1; i < num_edges && intercept_idx < 2; ++i)
       {
         // check current vertex for intercept
         int cur_vertex = (longest_edge + i) % num_edges;
-        cout << "checking edge: " << cur_vertex << endl;
-        const utility::Position & p_n_0 = vertices[cur_vertex];
-        const utility::Position & p_n_1 = vertices[(cur_vertex + 1) % num_edges];
-        cout << "\tp_n_0: " << p_n_0.to_string() << endl;
-        cout << "\tp_n_1: " << p_n_1.to_string() << endl;
 
-        // non-vertical line
-        double m_n;
-        if (p_n_0.slope_2d(p_n_1, m_n))
+        // beginning and end vertex of intersecing line segment
+        const utility::Position & p_n_0 = vertices[cur_vertex];
+        const utility::Position & p_n_1 = 
+          vertices[(cur_vertex + 1) % num_edges];
+ 
+        double m_0, m_n;
+        utility::Position check;
+        check.z = 1.5; // TODO: remove magic number
+        bool check_intercept = true;
+        // if longest_edge is not vertical
+        if (p_0.slope_2d (p_1, m_0))
         {
-          cout << "\tnot a vertical line" << endl;
-          const double y_w = (m_n * p_0.y - m_n * m_0 * p_0.x +
-            m_n * loop * delta_b - m_0 * p_n_0.y - m_0 * m_n * p_n_0.x) /
-            (m_n - m_0);
-          const double x_w = (y_w - p_0.y + m_0 * p_0.x - loop * delta_b) / 
-            m_0;
-          cout << "\t\tx_w: " << x_w << endl;
-          cout << "\t\ty_w: " << y_w << endl;
-          utility::Position check;
-          check.x = x_w;
-          check.y = y_w;
-          if (p_n_0.is_between_2d(p_n_1, check))
+          // we have a non-vertical line, so find new intercept
+          const double delta_b = pow (-1, dir) * shift *
+            pow (pow (m_0, 2) + 1, 0.5);
+ 
+          // calculate potential waypoint
+          if (p_n_0.slope_2d(p_n_1, m_n)) // potential edge not a vertical line
           {
-            cout << "\t\tfound intercept" << endl;
-            check.z = 1.5;
-            intercepts[intercept_idx++] = check;
+            if(m_n != m_0) // parallel lines can't intersect
+            {
+              // find intercept of a line parallel to longest_edge and edge
+              //    we are checking
+              const double y_w = (m_n * p_0.y - m_n * m_0 * p_0.x +
+                m_n * loop * delta_b - m_0 * p_n_0.y + m_0 * m_n * p_n_0.x) /
+                (m_n - m_0);
+              const double x_w = (y_w - p_n_0.y + m_n * p_n_0.x) / m_n;
+              check.x = x_w;
+              check.y = y_w;
+            }
+            else // edges are parallel
+              check_intercept = false;
+          }
+          else // edge to check is vertical, perform slopeless waypoint calculation
+          {
+            check.x = p_n_0.x; // vertical line has same x coord throughout
+            check.y = m_0 * check.x + p_0.y - m_0 * p_0.x + loop * delta_b;
+          }
+        } // end if edge to check is not vertical
+        else // longest_edge is vertical line, so just shift the x coord
+        {
+          /**
+           * if potential edge is not a vertical line, then find intercept
+           * if potential edge is vertical, then it cannot intercept
+           **/
+          if (p_n_0.slope_2d(p_n_1, m_n))
+          {
+            // longest edge is vertical, so just shift the x coord
+            check.x = p_0.x + pow(-1, dir) * loop * shift;
+            check.y = m_n * (check.x - p_n_0.x) + p_n_0.y;
           }
           else
-            cout << "\t\tnot an intercept" << endl;
-        }
-      }
+            check_intercept = false;
+        } // end else longest_edge is vertical line
 
-      // found intercepts, now which one do we go to first?
+        // check if it's actually an intercept
+        if (check_intercept && p_n_0.is_between_2d(p_n_1, check))
+          intercepts[intercept_idx++] = check;
+      } // end foreach edge
+
+      // found intercepts => go to closest one first
       if (intercept_idx > 1)
       {
         const utility::Position & prev = waypoints_[waypoints_.size () - 1];
@@ -156,14 +189,8 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
       {
         waypoints_.push_back (intercepts[0]);
       }
-    }
-  }
-  else // we have a vertical line, so just shift the x coord
-  {
-  }
-
-  for(int i = 0; i < waypoints_.size(); ++i)
-    cout << "waypoint_" << i << ": " << waypoints_[i].to_string() << endl;
+    } // end while still finding intercepts
+  } // end for +/- delta_b
 }
 
 gams::algorithms::Snake_Area_Coverage::~Snake_Area_Coverage ()
@@ -211,8 +238,6 @@ gams::algorithms::Snake_Area_Coverage::plan (void)
     platform_->get_position_accuracy ()))
   {
     cur_waypoint_ = (cur_waypoint_ + 1) % waypoints_.size();
-    cout << "current waypoint: (" << cur_waypoint_ << ") " << 
-      waypoints_[cur_waypoint_].to_string () << endl;
   }
 
   return 0;

@@ -103,34 +103,39 @@ std::vector<gams::utility::Position>
 gams::algorithms::Base::parse_region ()
 {
   // get region from knowledge base
-  std::string reg = knowledge_->get ("device.{.id}.command.1").to_string ();
-  int region;
-  sscanf(reg.c_str(), "%*s.%d", &region);
+  //std::string region = knowledge_->get ("device.{.id}.command.1").to_string ();
+  int id = knowledge_->get (".id").to_integer ();
+  char expr[50];
+  sprintf(expr, "device.%d.command.1", id);
+  std::string region = knowledge_->get (expr).to_string ();
+  
+  cout << "region: " << region << endl;
 
   // parse vertices
   std::vector<gams::utility::Position> vertices;
   char expression[50];
-  sprintf (expression, "region.%d.type", region);
-  switch (knowledge_->get (expression).to_integer ())
+  sprintf (expression, "%s.type", region.c_str ());
+  int region_type = knowledge_->get (expression).to_integer ();
+  switch (region_type)
   {
     case 0: // arbitrary convex polygon
     {
-      sprintf (expression, "region.%d.size", region);
+      cout << "arbitrary convex polygon" << endl;
+      sprintf (expression, "%s.size", region.c_str ());
       const int num_vertices = knowledge_->get (expression).to_integer ();
+      cout << "vertices: " << num_vertices << endl;
       for (int i = 1; i <= num_vertices; ++i) // get the vertices
       {
-        sprintf (expression, "region.%d.%d", region, i);
-        double lat, lon, alt;
-        sscanf (knowledge_->get (expression).to_string ().c_str (),
-          "%lf,%lf,%lf", &lat, &lon, &alt);
+        sprintf (expression, "%s.%d", region.c_str (), i);
         utility::Position pos;
-        pos.x = lat;
-        pos.y = lon;
-        pos.z = alt;
+        sscanf (knowledge_->get (expression).to_string ().c_str (),
+          "%lf,%lf,%lf", &pos.x, &pos.y, &pos.z);
         vertices.push_back (pos);
       }
       break;
     }
+    default:
+      std::cerr << "invalid region type: " << region_type << endl;
   }
 
   return vertices;
