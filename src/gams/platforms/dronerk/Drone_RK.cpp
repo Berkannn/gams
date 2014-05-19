@@ -102,6 +102,12 @@ gams::platforms::Drone_RK::get_position (utility::Position & position)
   position = position_;
 }
 
+double
+gams::platforms::Drone_RK::get_position_accuracy () const
+{
+  return 1.0;
+}
+
 int
 gams::platforms::Drone_RK::home (void)
 {

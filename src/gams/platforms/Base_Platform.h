@@ -166,6 +166,12 @@ namespace gams
       virtual void stop_move (void);
 
       /**
+       * Get the position accuracy
+       * @return position accuracy
+       **/
+      virtual double get_position_accuracy () const = 0;
+
+      /**
        * Sets the map of sensor names to sensor information
        * @param  sensors      map of sensor names to sensor information
        **/

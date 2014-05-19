@@ -110,7 +110,7 @@ namespace gams
       /// name of the sensor
       std::string name;
     };
-    
+
     /**
       * Initializes a self containers
       * @param   variables  the variables to initialize
@@ -123,6 +123,13 @@ namespace gams
 
     /// a map of sensor names to the sensor information
     typedef  std::map <std::string, Sensor>   Sensors;
+
+    /**
+     * Get shortest range of sensors
+     * @param s   vector of Sensor
+     * @return the minimum range of all the sensors
+     **/
+    GAMS_Export double get_min_sensor_range(const Sensors & s);
 
     /// a list of sensor names
     typedef  std::vector <std::string>        Sensor_Names;

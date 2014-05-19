@@ -141,6 +141,12 @@ namespace gams
        **/
       virtual void get_position (utility::Position & position);
 
+      /**
+       * Get the location aproximation value of what is considered close enough
+       * @return location approximation radius
+       **/
+      virtual double get_position_accuracy () const;
+
     protected:
 
       /// provides access to variables denoting self state

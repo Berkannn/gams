@@ -309,6 +309,12 @@ gams::platforms::Printer_Platform::get_position (utility::Position & position)
   position = position_;
 }
 
+double
+gams::platforms::Printer_Platform::get_position_accuracy () const
+{
+  return 0.0;
+}
+
 int
 gams::platforms::Printer_Platform::sense (void)
 {

@@ -147,7 +147,30 @@ namespace gams
        * @param  rhs      second position
        * @return euclidean distance between the two points
        **/
-      double distance(const Position & rhs) const;
+      double distance (const Position & rhs) const;
+
+      /**
+       * Get the 2D distance between two positions
+       * @param  rhs      second position
+       * @return euclidean distance between the two points with just x and y
+       **/
+      double distance_2d (const Position & rhs) const;
+
+      /**
+       * Get slope between two points
+       * @param p     other point
+       * @param slope location to store slope between two points
+       * @return      true if slope exists
+       **/
+      bool slope_2d (const Position & p, double & slope) const;
+
+      /**
+       * Deterime if a third point is inline and between another two points
+       * @param end     second endpoint
+       * @param check   point to check
+       * @return true if check is inline and between *this and end
+       **/
+      bool is_between_2d (const Position & end, const Position & check) const;
       
       /**
        * Helper function for converting the position to a string
