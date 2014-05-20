@@ -4,4 +4,5 @@ workspace {
 
   gams.mpc
   tests.mpc
+  simulation.mpc
 }
