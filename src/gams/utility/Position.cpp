@@ -114,9 +114,9 @@ bool
 gams::utility::Position::approximately_equal (const Position & rhs,
   const double & epsilon) const
 {
-  return abs (this->x - rhs.x) < epsilon &&
-         abs (this->y - rhs.y) < epsilon &&
-         abs (this->z - rhs.z) < epsilon;
+  return (fabs (this->x - rhs.x) < epsilon) &&
+         (fabs (this->y - rhs.y) < epsilon) &&
+         (fabs (this->z - rhs.z) < epsilon);
 }
 
 double

@@ -157,19 +157,55 @@ namespace gams
 
       /**
        * Converts lat/long coordinates to vrep coordinates
-       * @param position lat/long position to convert
-       * @returns vrep coordinates corresponding to lat/long coords
+       * @param position    lat/long position to convert
+       * @param converted   x/y coords in vrep reference frame
        **/
-      void coord_to_vrep(const utility::Position & position, simxFloat (&converted)[3]);
+      void gps_to_vrep (const utility::Position & position,
+        utility::Position & converted);
 
-      /// current position
+      /**
+       * Converts lat/long coordinates to vrep coordinates
+       * @param position    lat/long position to convert
+       * @param converted   x/y coords in vrep reference frame
+       **/
+      void vrep_to_gps (const utility::Position & position,
+        utility::Position & converted);
+
+      /**
+       * Get position from float array
+       * @param pos position to convert
+       * @param arr array to store it in
+       **/
+      inline void position_to_array (const utility::Position & pos,
+        simxFloat (&arr)[3]);
+
+      /**
+       * Get float array from position
+       * @param arr array to convert
+       * @param pos position to store it in
+       **/
+      inline void array_to_position (const simxFloat (&arr)[3], 
+        utility::Position & pos);
+
+      /// current position in gps coords
       utility::Position position_;
+
+      /// gps coordinates corresponding to (x_max, y_max) in vrep
+      utility::Position ne_position_;
+
+      /// gps coordinates corresponding to (0, 0) in vrep
+      utility::Position sw_position_;
 
       /// flag for drone being airborne
       bool airborne_;
 
+      /// object id for quadrotor
       simxInt node_id_;
+
+      /// object id for quadrotor target
       simxInt node_target_;
+
+      /// client id for remote API connection
       simxInt client_id_;
     };
   }

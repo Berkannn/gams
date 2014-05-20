@@ -43,14 +43,18 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+
+#ifdef _GAMS_VREP_
+
 #include "VREP_UAV.h"
+
+#define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
 
 #include <iostream>
 using std::endl;
 using std::cout;
 using std::string;
-
-#ifdef _GAMS_VREP_
+#include <cmath>
 
 gams::platforms::VREP_UAV::VREP_UAV (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
@@ -65,6 +69,12 @@ gams::platforms::VREP_UAV::VREP_UAV (
   client_id_ = simxStart(knowledge.get(".vrep_host").to_string ().c_str (),
     knowledge.get(".vrep_port").to_integer(), true, true, 2000, 5);
 
+  // get vrep environment data
+  //string ne = knowledge.get (".vrep_ne_position").to_string ();
+  //sscanf(ne, "%lf,%lf", &ne_position_.x, &ne_position_.y);
+  string sw = knowledge.get (".vrep_sw_position").to_string ();
+  sscanf(sw.c_str (), "%lf,%lf", &sw_position_.x, &sw_position_.y);
+
   // init quadrotor in env
   string modelFile (getenv("VREP_ROOT"));
   modelFile += "/models/robots/mobile/Quadricopter.ttm";
@@ -76,14 +86,27 @@ gams::platforms::VREP_UAV::VREP_UAV (
   }
 
   // set initial position if necessary
-  if(knowledge.get (".set_initial").to_integer ())
+  if (knowledge.get (".set_initial").to_integer ())
   {
-    simxFloat objCoord[3];
-    objCoord[0] = knowledge.get (".initial_x").to_double ();
-    objCoord[1] = knowledge.get (".initial_y").to_double ();
+    utility::Position obj_coord;
+    obj_coord.x = knowledge.get (".initial_x").to_double ();
+    obj_coord.y = knowledge.get (".initial_y").to_double ();
     // TODO: remove when collision avoidance is added
-    objCoord[2] = knowledge.get (".id").to_integer () + 1;
-    simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, objCoord,
+    obj_coord.z = knowledge.get (".id").to_integer () + 1;
+
+    // do we need to convert from gps first?
+    if (knowledge.get (".set_initial.to_gps").to_integer ())
+    {
+      utility::Position gps = obj_coord;
+      gps_to_vrep (gps, obj_coord);
+    }
+
+    // send set object position command
+    simxFloat pos[3];
+    pos[0] = obj_coord.x;
+    pos[1] = obj_coord.y;
+    pos[2] = obj_coord.z;
+    simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,
       simx_opmode_oneshot_wait);
   }
 
@@ -131,27 +154,27 @@ gams::platforms::VREP_UAV::VREP_UAV (
 
 gams::platforms::VREP_UAV::~VREP_UAV ()
 {
-//  simxInt childId = 0;
-//  while(childId != -1)
-//  {
-//    simxInt retVal = simxGetObjectChild (client_id_,node_id_,0,&childId,
-//      simx_opmode_oneshot_wait);
-//    if (retVal != simx_error_noerror)
-//      cout << "error getting child of node: " << node_id_ << endl;
-//
-//    if(childId != -1)
-//    {
-//      retVal = simxRemoveObject(client_id_,childId,simx_opmode_oneshot_wait);
-//      if(retVal != simx_error_noerror)
-//        cout << "error removing child id " << childId << endl;
-//    }
-//  }
-//
-//  if (simxRemoveObject(client_id_,node_id_,simx_opmode_oneshot_wait)
-//    != simx_error_noerror)
-//  {
-//    cout << "error deleting node " << node_id_ << endl;
-//  }
+  simxInt childId = 0;
+  while (childId != -1)
+  {
+    simxInt retVal = simxGetObjectChild (client_id_, node_id_, 0, &childId,
+      simx_opmode_oneshot_wait);
+    if (retVal != simx_error_noerror)
+      cout << "error getting child of node: " << node_id_ << endl;
+
+    if(childId != -1)
+    {
+      retVal = simxRemoveObject (client_id_, childId, simx_opmode_oneshot_wait);
+      if(retVal != simx_error_noerror)
+        cout << "error removing child id " << childId << endl;
+    }
+  }
+
+  if (simxRemoveObject (client_id_, node_id_, simx_opmode_oneshot_wait)
+    != simx_error_noerror)
+  {
+    cout << "error deleting node " << node_id_ << endl;
+  }
 }
 
 void
@@ -165,6 +188,114 @@ gams::platforms::VREP_UAV::operator= (const VREP_UAV & rhs)
 
     *dest = *source;
   }
+}
+
+int
+gams::platforms::VREP_UAV::home (void)
+{
+  // check if home has been set
+  if (self_.device.home.size () == 3)
+  {
+    // read the home position
+    utility::Position position;
+    position.from_container (self_.device.home);
+
+    // move to home
+    move (position);
+  }
+
+  return 0;
+}
+
+int
+gams::platforms::VREP_UAV::land (void)
+{
+  if (airborne_)
+  {
+    airborne_ = false;
+
+    // TODO: vrep land
+  }
+
+  return 0;
+}
+
+int
+gams::platforms::VREP_UAV::move (const utility::Position & position,
+  const double & /*epsilon*/)
+{
+  // check if not airborne and takeoff if appropriate
+  if (!airborne_)
+    takeoff ();
+
+  // convert form gps reference frame to vrep reference frame
+  utility::Position dest;
+  gps_to_vrep (position, dest);
+  simxFloat destPos[3];
+  position_to_array (dest, destPos);
+
+  //set current position of node target
+  simxFloat curr_pos[3];
+  utility::Position vrep_pos;
+  gps_to_vrep (position_, vrep_pos);
+  position_to_array (vrep_pos, curr_pos);
+
+
+  // move quadrotor target closer to the desired position
+  // TODO: modify for straight line movement
+  // TODO: modify for meters instead of radians/degrees
+  // TODO: tune TARGET_INCR 
+  const double TARGET_INCR = 0.5;
+  for (int i = 0; i < 3; ++i)
+  {
+    if(curr_pos[i] < destPos[i] - TARGET_INCR)
+      curr_pos[i] += TARGET_INCR;
+    else if(curr_pos[i] > destPos[i] + TARGET_INCR)
+      curr_pos[i] -= TARGET_INCR;
+    else
+      curr_pos[i] = destPos[i];
+  }
+
+  // send movement command
+  simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, curr_pos,
+                        simx_opmode_oneshot_wait);
+
+  return 0;
+}
+
+int
+gams::platforms::VREP_UAV::sense (void)
+{
+  // get position
+  simxFloat curr_pos[3];
+  simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_pos,
+                        simx_opmode_oneshot_wait);
+  utility::Position gps;
+  array_to_position (curr_pos, gps);
+
+  // convert to gps
+  vrep_to_gps (gps, position_);
+
+  return 0;
+}
+
+int
+gams::platforms::VREP_UAV::takeoff (void)
+{
+  if (!airborne_)
+  {
+    airborne_ = true;
+
+    // TODO: vrep takeoff
+  }
+
+  return 0;
+}
+
+int
+gams::platforms::VREP_UAV::analyze (void)
+{
+  return 0;
 }
 
 void
@@ -198,124 +329,67 @@ gams::platforms::VREP_UAV::get_position (utility::Position & position)
 double
 gams::platforms::VREP_UAV::get_position_accuracy () const
 {
-  return 0.25;
-}
-
-int
-gams::platforms::VREP_UAV::home (void)
-{
-  // check if home has been set
-  if (self_.device.home.size () == 3)
-  {
-    // read the home position
-    utility::Position position;
-    position.from_container (self_.device.home);
-
-    // move to home
-    move (position);
-  }
-
-  return 0;
+  return 0.0000001;
 }
 
 void 
-gams::platforms::VREP_UAV::coord_to_vrep(const utility::Position & position, simxFloat (&converted)[3])
+gams::platforms::VREP_UAV::gps_to_vrep (const utility::Position & position,
+  utility::Position & converted)
 {
-  // TODO: fill out conversion
-  return;
+  // assume the Earth is a perfect sphere
+  const double EARTH_RADIUS = 6371000.0;
+  const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
+
+  // convert the latitude/x coordinates
+  converted.x = (position.x - sw_position_.x) / 360.0 * EARTH_CIRCUMFERENCE;
+  
+  // assume the meters/degree longitude is constant throughout environment
+  // convert the longitude/y coordinates
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (position.y));
+  double circumference = 2 * r_prime * M_PI;
+  converted.y = (position.y - sw_position_.y) / 360.0 * circumference;
+
+  // do nothing to altitude
+  converted.z = position.z;
 }
 
-
-int
-gams::platforms::VREP_UAV::move (const utility::Position & position,
-  const double & epsilon)
+void 
+gams::platforms::VREP_UAV::vrep_to_gps (const utility::Position & position,
+  utility::Position & converted)
 {
-  // check if not airborne and takeoff if appropriate
-  if (!airborne_)
-    takeoff ();
+  // assume the Earth is a perfect sphere
+  const double EARTH_RADIUS = 6371000.0;
+  const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
 
-  // move to the position
-  simxFloat destPos[3];
-  destPos[0] = position.x;
-  destPos[1] = position.y;
-  destPos[2] = position.z;
-  coord_to_vrep (position, destPos);
+  // convert the latitude/x coordinates
+  converted.x = (360.0 * position.x / EARTH_CIRCUMFERENCE) + sw_position_.x;
+  
+  // assume the meters/degree longitude is constant throughout environment
+  // convert the longitude/y coordinates
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.y));
+  double circumference = 2 * r_prime * M_PI;
+  converted.y = (360.0 * position.y / circumference) + sw_position_.y;
 
-  //set current position of node target
-  simxFloat currPos[3];
-  currPos[0] = position_.x;
-  currPos[1] = position_.y;
-  currPos[2] = position_.z;
-
-  //move target closer to the waypoint and return 1
-  // TODO: modify for straight line movement
-  bool at_destination = true;
-  const double TARGET_INCR = 0.5;
-  for (int i = 0;i < 3;++i)
-  {
-    if(currPos[i] < destPos[i] - TARGET_INCR)
-    {
-      currPos[i] += TARGET_INCR;
-      at_destination = false;
-    }
-    else if(currPos[i] > destPos[i] + TARGET_INCR)
-    {
-      currPos[i] -= TARGET_INCR;
-      at_destination = false;
-    }
-    else
-      currPos[i] = destPos[i];
-  }
-  simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, currPos,
-                        simx_opmode_oneshot_wait);
-
-  return 0;
-}
-      
-int
-gams::platforms::VREP_UAV::sense (void)
-{
-  // get position
-  simxFloat currPos[3];
-  simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, currPos,
-                        simx_opmode_oneshot_wait);
-  position_.x = currPos[0];
-  position_.y = currPos[1];
-  position_.z = currPos[2];
-
-  return 0;
-}
-      
-int
-gams::platforms::VREP_UAV::analyze (void)
-{
-  return 0;
+  // do nothing to altitude
+  converted.z = position.z;
 }
 
-int
-gams::platforms::VREP_UAV::takeoff (void)
+inline void
+gams::platforms::VREP_UAV::position_to_array(const utility::Position & pos,
+  simxFloat (&arr)[3])
 {
-  if (!airborne_)
-  {
-    airborne_ = true;
-
-    // TODO: vrep takeoff
-  }
-
-  return 0;
-}
-      
-int
-gams::platforms::VREP_UAV::land (void)
-{
-  if (airborne_)
-  {
-    airborne_ = false;
-
-    // TODO: vrep land
-  }
-
-  return 0;
+  arr[0] = pos.x;
+  arr[1] = pos.y;
+  arr[2] = pos.z;
 }
 
-#endif
+inline void
+gams::platforms::VREP_UAV::array_to_position(const simxFloat (&arr)[3],
+  utility::Position & pos)
+{
+  pos.x = arr[0];
+  pos.y = arr[1];
+  pos.z = arr[2];
+}
+
+#endif // _GAMS_VREP_

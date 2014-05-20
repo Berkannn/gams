@@ -2,14 +2,17 @@
 num_agents=1;
 .vrep_port=19905;
 .vrep_host="127.0.0.1";
+.vrep_sw_position="40.442775,-79.940967";
+.vrep_ne_position="40.443412,-79.93954";
 
 .set_initial=1;
+.set_initial.to_gps=0;
 .initial_x=2.5;
 .initial_y=2.5;
 
 device.0.command="cover";
 device.0.command.size=2;
-device.0.command.0="sac";
+device.0.command.0="urec";
 device.0.command.1="region.0";
 
 region.0.type=0;
@@ -25,8 +28,14 @@ region.0.type=0;
 //region.0.3="-5,0,1.5";
 //region.0.4="0,-5,1.5";
 
+//region.0.size=4;
+//region.0.1="5,5,1.5";
+//region.0.2="-5,5,1.5";
+//region.0.3="-5,-5,1.5";
+//region.0.4="5,-5,1.5";
+
 region.0.size=4;
-region.0.1="5,5,1.5";
-region.0.2="-5,5,1.5";
-region.0.3="-5,-5,1.5";
-region.0.4="5,-5,1.5";
+region.0.1="40.443273,-79.939551";
+region.0.2="40.442816,-79.939773";
+region.0.3="40.443085,-79.940913";
+region.0.4="40.443485,-79.940742";
