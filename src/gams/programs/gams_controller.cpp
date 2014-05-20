@@ -180,11 +180,12 @@ void handle_arguments (int argc, char ** argv)
     }
     else if (arg1 == "-mf" || arg1 == "--madara-file")
     {
-      if (i + 1 < argc)
+      madara_commands = "";
+      for (;i + 1 < argc && argv[i + 1][0] != '-'; ++i)
       {
-        madara_commands = Madara::Utility::file_to_string (argv[i + 1]);
+        madara_commands += Madara::Utility::file_to_string (argv[i + 1]);
+        madara_commands += ";";
       }
-      ++i;
     }
     else if (arg1 == "-o" || arg1 == "--host")
     {
