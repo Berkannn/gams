@@ -223,40 +223,60 @@ int
 gams::platforms::VREP_UAV::move (const utility::Position & position,
   const double & /*epsilon*/)
 {
+  // function local constants
+  const double TARGET_INCR = 0.5;
+
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
     takeoff ();
 
   // convert form gps reference frame to vrep reference frame
-  utility::Position dest;
-  gps_to_vrep (position, dest);
-  simxFloat destPos[3];
-  position_to_array (dest, destPos);
+  utility::Position dest_pos;
+  gps_to_vrep (position, dest_pos);
+  simxFloat dest_arr[3];
+  position_to_array (dest_pos, dest_arr);
 
   //set current position of node target
-  simxFloat curr_pos[3];
+  simxFloat curr_arr[3];
   utility::Position vrep_pos;
   gps_to_vrep (position_, vrep_pos);
-  position_to_array (vrep_pos, curr_pos);
+  position_to_array (vrep_pos, curr_arr);
 
+  // ensure altitude is good
+  // TODO: this is ugly, fix it
+  dest_arr[2] = curr_arr[2];
+
+  // get distance to target
+  double distance_to_target = pow (
+    pow (curr_arr[0] - dest_arr[0], 2) +
+    pow (curr_arr[1] - dest_arr[1], 2) +
+    pow (curr_arr[2] - dest_arr[2], 2), 0.5);
 
   // move quadrotor target closer to the desired position
   // TODO: modify for straight line movement
   // TODO: modify for meters instead of radians/degrees
   // TODO: tune TARGET_INCR 
-  const double TARGET_INCR = 0.5;
-  for (int i = 0; i < 3; ++i)
+  if(distance_to_target < TARGET_INCR) // we can get to target in one step
   {
-    if(curr_pos[i] < destPos[i] - TARGET_INCR)
-      curr_pos[i] += TARGET_INCR;
-    else if(curr_pos[i] > destPos[i] + TARGET_INCR)
-      curr_pos[i] -= TARGET_INCR;
-    else
-      curr_pos[i] = destPos[i];
+    curr_arr[0] = dest_arr[0];
+    curr_arr[1] = dest_arr[1];
+    curr_arr[2] = dest_arr[2];
+  }
+  else // we cannot reach target in this step
+  {
+    // how far do we have to go in each dimension
+    double x_dist = fabs (curr_arr[0] - dest_arr[0]);
+    double y_dist = fabs (curr_arr[1] - dest_arr[1]);
+    double z_dist = fabs (curr_arr[2] - dest_arr[2]);
+
+    // update target position
+    curr_arr[0] += x_dist * TARGET_INCR / distance_to_target;
+    curr_arr[1] += y_dist * TARGET_INCR / distance_to_target;
+    curr_arr[2] += z_dist * TARGET_INCR / distance_to_target;
   }
 
   // send movement command
-  simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, curr_pos,
+  simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, curr_arr,
                         simx_opmode_oneshot_wait);
 
   return 0;
