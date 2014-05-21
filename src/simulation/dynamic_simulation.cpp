@@ -99,7 +99,7 @@ double ne_lat = 40.44355;
 double ne_long = -79.939626;
 
 // Agent information
-int num_agents = 0;
+unsigned int num_agents = 0;
 
 // place plants or not
 bool plants = false;
@@ -154,7 +154,7 @@ void handle_arguments (int argc, char** argv)
     else if (arg1 == "-n" || arg1 == "--num_agents")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
-        sscanf(argv[i + 1], "%d", &num_agents);
+        sscanf(argv[i + 1], "%u", &num_agents);
       else
         print_usage (argv[0]);
       ++i;
