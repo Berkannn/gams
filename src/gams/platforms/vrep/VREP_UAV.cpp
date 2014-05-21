@@ -68,6 +68,11 @@ gams::platforms::VREP_UAV::VREP_UAV (
   // get client id
   client_id_ = simxStart(knowledge.get(".vrep_host").to_string ().c_str (),
     knowledge.get(".vrep_port").to_integer(), true, true, 2000, 5);
+  if (client_id_ == -1)
+  {
+    cerr << "couldn't connect to vrep" << endl;
+    exit (-1);
+  }
 
   // get vrep environment data
   //string ne = knowledge.get (".vrep_ne_position").to_string ();
@@ -135,21 +140,15 @@ gams::platforms::VREP_UAV::VREP_UAV (
 
   // sync with other nodes
   int id = knowledge.get (".id").to_integer ();
-  int processes = knowledge.get ("num_agents").to_integer ();
 
   // wait for all processes to get up
   std::stringstream buffer;
   buffer << "(S" << id << ".init = 1)";
-  for (int i = 0; i < processes; ++i)
-    buffer << " && S" << i << ".init";
+  buffer << " && begin_sim";
   std::string expression = buffer.str ();
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
-  knowledge.wait (compiled);
-
-  // start the simulation
-  if(id == 0)
-    simxStartSimulation (client_id_, simx_opmode_oneshot_wait);
+  knowledge.wait(compiled);
 }
 
 gams::platforms::VREP_UAV::~VREP_UAV ()
