@@ -61,7 +61,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
-  : Base (&knowledge, sensors, self), airborne_ (false)
+  : Base (&knowledge, sensors, self), airborne_ (false),
+    gps_ (knowledge.get (".using_gps").to_integer () == 1)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 
@@ -100,7 +101,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
     obj_coord.z = knowledge.get (".id").to_integer () + 1;
 
     // do we need to convert from gps first?
-    if (knowledge.get (".set_initial.to_gps").to_integer ())
+    if (gps_)
     {
       utility::Position gps = obj_coord;
       gps_to_vrep (gps, obj_coord);
@@ -231,20 +232,30 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
     takeoff ();
 
   // convert form gps reference frame to vrep reference frame
-  utility::Position dest_pos;
-  gps_to_vrep (position, dest_pos);
   simxFloat dest_arr[3];
-  position_to_array (dest_pos, dest_arr);
+  if (gps_)
+  {
+    utility::Position dest_pos;
+    gps_to_vrep (position, dest_pos);
+    position_to_array (dest_pos, dest_arr);
+  }
+  else
+  {
+    position_to_array (position, dest_arr);
+  }
 
   //set current position of node target
   simxFloat curr_arr[3];
-  utility::Position vrep_pos;
-  gps_to_vrep (position_, vrep_pos);
-  position_to_array (vrep_pos, curr_arr);
-
-  // ensure altitude is good
-  // TODO: this is ugly, fix it
-  dest_arr[2] = curr_arr[2];
+  if (gps_)
+  {
+    utility::Position vrep_pos;
+    gps_to_vrep (position_, vrep_pos);
+    position_to_array (vrep_pos, curr_arr);
+  }
+  else
+  {
+    position_to_array (position_, curr_arr);
+  }
 
   // get distance to target
   double distance_to_target = pow (
@@ -253,7 +264,6 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
     pow (curr_arr[2] - dest_arr[2], 2), 0.5);
 
   // move quadrotor target closer to the desired position
-  // TODO: modify for straight line movement
   // TODO: modify for meters instead of radians/degrees
   // TODO: tune TARGET_INCR 
   if(distance_to_target < TARGET_INCR) // we can get to target in one step
@@ -265,14 +275,18 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
   else // we cannot reach target in this step
   {
     // how far do we have to go in each dimension
-    double x_dist = fabs (curr_arr[0] - dest_arr[0]);
-    double y_dist = fabs (curr_arr[1] - dest_arr[1]);
-    double z_dist = fabs (curr_arr[2] - dest_arr[2]);
+    double dist[3];
+    for (int i = 0; i < 3; ++i)
+      dist[i] = fabs (curr_arr[i] - dest_arr[i]);
 
     // update target position
-    curr_arr[0] += x_dist * TARGET_INCR / distance_to_target;
-    curr_arr[1] += y_dist * TARGET_INCR / distance_to_target;
-    curr_arr[2] += z_dist * TARGET_INCR / distance_to_target;
+    for (int i = 0; i < 3; ++i)
+    {
+      if(curr_arr[i] < dest_arr[i])
+        curr_arr[i] += dist[i] * TARGET_INCR / distance_to_target;
+      else
+        curr_arr[i] -= dist[i] * TARGET_INCR / distance_to_target;
+    }
   }
 
   // send movement command
@@ -286,14 +300,21 @@ int
 gams::platforms::VREP_UAV::sense (void)
 {
   // get position
-  simxFloat curr_pos[3];
-  simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_pos,
+  simxFloat curr_arr[3];
+  simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
                         simx_opmode_oneshot_wait);
-  utility::Position gps;
-  array_to_position (curr_pos, gps);
 
   // convert to gps
-  vrep_to_gps (gps, position_);
+  if (gps_)
+  {
+    utility::Position vrep_pos;
+    array_to_position (curr_arr, vrep_pos);
+    vrep_to_gps (vrep_pos, position_);
+  }
+  else // using vrep
+  {
+    array_to_position (curr_arr, position_);
+  }
 
   return 0;
 }
@@ -348,7 +369,10 @@ gams::platforms::VREP_UAV::get_position (utility::Position & position)
 double
 gams::platforms::VREP_UAV::get_position_accuracy () const
 {
-  return 0.0000001;
+  if (gps_)
+    return 0.00001;
+  else // vrep
+    return 0.25;
 }
 
 void 

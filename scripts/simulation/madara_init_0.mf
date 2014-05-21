@@ -2,9 +2,8 @@
 .vrep_port=19906;
 
 .set_initial=1;
-.set_initial.to_gps=0;
-.initial_x=50;
-.initial_y=50;
+.initial_x=20;
+.initial_y=20;
 
 device.0.command="cover";
 device.0.command.size=2;

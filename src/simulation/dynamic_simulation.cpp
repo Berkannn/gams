@@ -104,6 +104,9 @@ int num_agents = 0;
 // place plants or not
 bool plants = false;
 
+// use gps coords
+bool gps = false;
+
 /**
  * Print out program usage
  **/
@@ -114,6 +117,8 @@ void print_usage (string prog_name)
   cerr << "   Creates VREP simulation environment of specific size and" << endl;
   cerr << "   launches simulated gams agents" << endl;
   cerr << endl;
+  cerr << "   [-g | --gps]" << endl;
+  cerr << "       use gps coords (instead of vrep)" << endl;
   cerr << "   [-l | --log_level <number>]" << endl;
   cerr << "       MADARA log level, 1-10" << endl;
   cerr << "   [-n | --num_agents <number>]" << endl;
@@ -137,7 +142,11 @@ void handle_arguments (int argc, char** argv)
   {
     std::string arg1 (argv[i]);
 
-    if (arg1 == "-l" || arg1 == "--log_level")
+    if (arg1 == "-g" || arg1 == "--gps")
+    {
+      gps = true;
+    }
+    else if (arg1 == "-l" || arg1 == "--log_level")
     {
       sscanf (argv[i + 1], "%d", &MADARA_debug_level);
       ++i;
@@ -197,18 +206,26 @@ void handle_arguments (int argc, char** argv)
  **/
 void get_dimensions (double &max_x, double &max_y)
 {
-  // assume the Earth is a perfect sphere
-  const double EARTH_RADIUS = 6371000.0;
-  const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
-
-  // get y/lat first
-  max_y = (ne_lat - sw_lat) / 360.0 * EARTH_CIRCUMFERENCE;
+  if (gps)
+  {
+    // assume the Earth is a perfect sphere
+    const double EARTH_RADIUS = 6371000.0;
+    const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
   
-  // assume the meters/degree longitude is constant throughout environment
-  // convert the longitude/x coordinates
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_lat));
-  double circumference = 2 * r_prime * M_PI;
-  max_x = (ne_long - sw_long) / 360.0 * circumference;
+    // get y/lat first
+    max_y = (ne_lat - sw_lat) / 360.0 * EARTH_CIRCUMFERENCE;
+    
+    // assume the meters/degree longitude is constant throughout environment
+    // convert the longitude/x coordinates
+    double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_lat));
+    double circumference = 2 * r_prime * M_PI;
+    max_x = (ne_long - sw_long) / 360.0 * circumference;
+  }
+  else // vrep
+  {
+    max_y = ne_lat - sw_lat;
+    max_x = ne_long - sw_long;
+  }
 }
 
 /**
@@ -221,6 +238,7 @@ void create_environment (int client_id)
   // find environment parameters
   double max_x, max_y;
   get_dimensions (max_x, max_y);
+  cout << "creating environment of size " << max_x << " x " << max_y << "...";
   int num_x = max_x / 20 + 2;
   int num_y = max_y / 20 + 2;
 
@@ -249,10 +267,12 @@ void create_environment (int client_id)
     simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
       simx_opmode_oneshot_wait);
   }
+  cout << "done" << endl;
 
   // load plants as position markers
   if(plants)
   {
+    cout << "placing plants as markers...";
     model_file = getenv("VREP_ROOT");
     model_file += "/models/furniture/plants/indoorPlant.ttm";
     for (int i = 0; i < (num_x * num_y); ++i)
@@ -276,6 +296,7 @@ void create_environment (int client_id)
       simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
         simx_opmode_oneshot_wait);
     }
+    cout << "done" << endl;
   }
 }
 
@@ -293,13 +314,19 @@ void start_simulator (const int & client_id,
   std::string expression = buffer.str ();
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
+  cout << "waiting for " << num_agents << " agent(s) to come online...";
   knowledge.wait(compiled);
+  cout << "done" << endl;
 
   // start the simulation
+  cout << "starting simulation...";
   simxStartSimulation (client_id, simx_opmode_oneshot_wait);
+  cout << "done" << endl;
 
   // inform simulated control loops to begin
+  cout << "informing agents to continue...";
   knowledge.set ("begin_sim", Madara::Knowledge_Record::Integer(1));
+  cout << "done" << endl;
 }
 
 /**
@@ -321,6 +348,7 @@ int main (int argc, char ** argv)
   Madara::Knowledge_Engine::Knowledge_Base knowledge (host, settings);
 
   // connect to vrep
+  cout << "connecting to vrep...";
   int client_id = 
     simxStart (vrep_host.c_str(), vrep_port, true, true, 2000, 5);
   if (client_id == -1)
@@ -328,6 +356,7 @@ int main (int argc, char ** argv)
     cerr << "failure connecting to vrep" << endl;
     exit(-1);
   }
+  cout << "done" << endl;
 
   // actual work
   create_environment (client_id);
@@ -335,7 +364,9 @@ int main (int argc, char ** argv)
     start_simulator (client_id, knowledge);
 
   // close connection to vrep
+  cout << "closing vrep connection...";
   simxFinish(client_id);
+  cout << "done" << endl;
 
   // exit
   return 0;

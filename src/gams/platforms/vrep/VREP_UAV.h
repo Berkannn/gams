@@ -207,6 +207,9 @@ namespace gams
 
       /// client id for remote API connection
       simxInt client_id_;
+
+      /// are we using gps or vrep coordinate frame
+      bool gps_;
     };
   }
 }
