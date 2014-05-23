@@ -139,10 +139,13 @@ gams::platforms::VREP_UAV::VREP_UAV (
   simxGetObjectChild (client_id_, nodeBase, 0,
     &node_target_, simx_opmode_oneshot_wait);
 
-  // sync with other nodes
-  int id = knowledge.get (".id").to_integer ();
+  // init madara variables
+  int id = self.id.to_integer ();
+  char name[50];
+  sprintf (name, "device.%d.location", id);
+  madara_position_.set_name (string (name), knowledge, 3);
 
-  // wait for all processes to get up
+  // sync with other nodes; wait for all processes to get up
   std::stringstream buffer;
   buffer << "(S" << id << ".init = 1)";
   buffer << " && begin_sim";
@@ -315,6 +318,11 @@ gams::platforms::VREP_UAV::sense (void)
   {
     array_to_position (curr_arr, position_);
   }
+
+  // set position in madara
+  madara_position_.set (0, position_.x);
+  madara_position_.set (1, position_.y);
+  madara_position_.set (2, position_.z);
 
   return 0;
 }
