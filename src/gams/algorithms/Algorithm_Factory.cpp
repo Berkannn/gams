@@ -50,6 +50,7 @@
 #include "Random_Area_Coverage.h"
 #include "Uniform_Random_Edge_Coverage.h"
 #include "Snake_Area_Coverage.h"
+#include "Formation_Flying.h"
 #include "Takeoff.h"
 
 
@@ -105,6 +106,13 @@ gams::algorithms::Factory::create (const std::string & type,
   {
     if (knowledge_ && sensors_ && platform_ && self_)
       result = new Snake_Area_Coverage (
+        knowledge_, platform_, sensors_, self_);
+  }
+  else if (type == "formation")
+  {
+    if (knowledge_ && sensors_ && platform_ && self_)
+      result = new Formation_Flying (
+        arg1 /* target */, arg2 /* offset */, arg3 /* destination */,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "takeoff")

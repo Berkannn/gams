@@ -5,7 +5,8 @@
 .initial_x=15;
 .initial_y=15;
 
-device.2.command="cover";
-device.2.command.size=2;
-device.2.command.0="urec";
-device.2.command.1="region.0";
+device.2.command="formation";
+device.2.command.size=3;
+device.2.command.0=0;
+device.2.command.1="2,2,2";
+device.2.command.2="0,0,0";

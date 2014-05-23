@@ -315,7 +315,7 @@ void start_simulator (const int & client_id,
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
   cout << "waiting for " << num_agents << " agent(s) to come online...";
-  knowledge.wait(compiled);
+  knowledge.wait (compiled);
   cout << "done" << endl;
 
   // start the simulation
