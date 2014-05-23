@@ -80,12 +80,6 @@ gams::algorithms::Uniform_Random_Edge_Coverage::operator= (
 int
 gams::algorithms::Uniform_Random_Edge_Coverage::analyze (void)
 {
-  this->platform_->get_sensors (sensor_names_);
-
-  platform_->get_position (current_position_);
-
-  current_position_.to_container (self_->device.location);
-
   return 0;
 }
 
@@ -102,7 +96,9 @@ int
 gams::algorithms::Uniform_Random_Edge_Coverage::plan (void)
 {
   // generate new next position if necessary
-  if (!init_ || current_position_.approximately_equal(next_position_,
+  utility::Position current;
+  current.from_container (self_->device.location);
+  if (!init_ || current.approximately_equal(next_position_,
     platform_->get_position_accuracy ()))
   {
     init_ = true;
@@ -147,5 +143,5 @@ gams::algorithms::Uniform_Random_Edge_Coverage::generate_new_position ()
   }
 
   // fill in altitude on waypoint
-  next_position_.z = current_position_.z;
+  next_position_.z = self_->device.location[2];
 }

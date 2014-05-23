@@ -115,12 +115,6 @@ namespace gams
       /// generate random position on a side
       void generate_new_position ();
 
-      /// list of sensor names
-      variables::Sensor_Names sensor_names_;
-
-      /// current position
-      utility::Position current_position_;
-
       /// next position
       utility::Position next_position_;
 

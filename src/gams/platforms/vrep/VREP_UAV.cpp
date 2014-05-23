@@ -88,17 +88,18 @@ gams::platforms::VREP_UAV::VREP_UAV (
   if (simxLoadModel (client_id_,modelFile.c_str (), 0, &node_id_,
     simx_opmode_oneshot_wait) != simx_error_noerror)
   {
-    // fail out some how
+    cerr << "error loading VREP_UAV model in vrep" << endl;
+    exit (-1);
   }
 
   // set initial position if necessary
+  int id = self.id.to_integer ();
   if (knowledge.get (".set_initial").to_integer ())
   {
     utility::Position obj_coord;
     obj_coord.x = knowledge.get (".initial_x").to_double ();
     obj_coord.y = knowledge.get (".initial_y").to_double ();
-    // TODO: remove when collision avoidance is added
-    obj_coord.z = knowledge.get (".id").to_integer () + 1;
+    obj_coord.z = id + 1; // TODO: remove when collision avoidance is added
 
     // do we need to convert from gps first?
     if (gps_)
@@ -138,12 +139,6 @@ gams::platforms::VREP_UAV::VREP_UAV (
   node_target_ = -1;
   simxGetObjectChild (client_id_, nodeBase, 0,
     &node_target_, simx_opmode_oneshot_wait);
-
-  // init madara variables
-  int id = self.id.to_integer ();
-  char name[50];
-  sprintf (name, "device.%d.location", id);
-  madara_position_.set_name (string (name), knowledge, 3);
 
   // sync with other nodes; wait for all processes to get up
   std::stringstream buffer;
@@ -228,7 +223,7 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
   const double & /*epsilon*/)
 {
   // function local constants
-  const double TARGET_INCR = 0.5;
+  const double TARGET_INCR = 1;
 
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
@@ -320,9 +315,7 @@ gams::platforms::VREP_UAV::sense (void)
   }
 
   // set position in madara
-  madara_position_.set (0, position_.x);
-  madara_position_.set (1, position_.y);
-  madara_position_.set (2, position_.z);
+  position_.to_container (self_.device.location);
 
   return 0;
 }

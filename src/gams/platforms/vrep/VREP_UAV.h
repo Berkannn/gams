@@ -190,9 +190,6 @@ namespace gams
       /// current position
       utility::Position position_;
 
-      /// current position as madara variable
-      Madara::Knowledge_Engine::Containers::Double_Array madara_position_;
-
       /// gps coordinates corresponding to (x_max, y_max) in vrep
       utility::Position ne_position_;
 
