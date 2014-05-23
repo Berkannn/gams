@@ -60,9 +60,6 @@
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
 
-#include <vector>
-using std::vector;
-
 namespace gams
 {
   namespace algorithms
@@ -81,6 +78,7 @@ namespace gams
         const Madara::Knowledge_Record & target,
         const Madara::Knowledge_Record & offset,
         const Madara::Knowledge_Record & destination,
+        const Madara::Knowledge_Record & members,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0, variables::Sensors * sensors = 0,
         variables::Self * self = 0);
@@ -147,6 +145,9 @@ namespace gams
 
       /// are we in formation?
       Madara::Knowledge_Engine::Containers::Integer in_formation_;
+
+      /// formation wait string
+      Madara::Knowledge_Engine::Compiled_Expression compiled_formation_;
     };
   }
 }

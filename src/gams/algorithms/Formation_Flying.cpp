@@ -55,17 +55,20 @@
 #include <cmath>
 #include <string>
 using std::string;
+using std::stringstream;
+#include <set>
+using std::set;
 
 gams::algorithms::Formation_Flying::Formation_Flying (
   const Madara::Knowledge_Record & head_id,
   const Madara::Knowledge_Record & offset,
   const Madara::Knowledge_Record & destination,
+  const Madara::Knowledge_Record & members,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : Base (knowledge, platform, sensors, self), need_to_move_ (false),
-    in_formation_ (false)
+  : Base (knowledge, platform, sensors, self), need_to_move_ (false)
 {
   status_.init_vars (*knowledge, "formation");
 
@@ -73,22 +76,59 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   head_ = (head_id.to_integer () == self->id.to_integer ());
 
   // set madara containers
-  char name[50]; // largish magic number
-  sprintf (name, "formation.%d", head_id.to_integer ());
-  in_formation_.set_name (string(name), *knowledge);
-  sprintf (name, "device.%d.location", head_id.to_integer ());
-  head_location_.set_name (string(name), *knowledge, 3);
+  stringstream in_formation_str;
+  in_formation_str << "formation." << head_id.to_integer ();
+  in_formation_str << "." << self->id.to_integer () << ".ready";
+  in_formation_.set_name (in_formation_str.str (), *knowledge);
+
+  stringstream head_location_str;
+  head_location_str << "device." << head_id.to_integer () << ".location";
+  head_location_.set_name (head_location_str.str (), *knowledge);
 
   // parse offset
-  if (head_)
-    num_agents_ = offset.to_integer ();
-  else
+  if (!head_)
     sscanf (offset.to_string ().c_str (), "%lf,%lf,%lf", &rho_, &phi_, &z_);
 
   // parse destination
-  sscanf (destination.to_string (). c_str(), "%lf,%lf",
-    &destination_.x, &destination_.y);
-  destination_.z = 1.5;
+  sscanf (destination.to_string (). c_str(), "%lf,%lf,%lf",
+    &destination_.x, &destination_.y, &destination_.z);
+
+  // construct wait for in formation string
+  if (head_)
+  {
+    // parse members
+    char* mem_string = new char[members.to_string ().length () + 1];
+    const char* idx = mem_string;
+    strcpy (mem_string, members.to_string ().c_str ());
+    int num_members, member;
+    sscanf (idx, "%d,%*s", &num_members);
+    idx = strchr (idx, ',') + 1;
+    set<int> members;
+    for (int i = 0; i < num_members - 1; ++i)
+    {
+      sscanf (idx, "%d,%*s", &member);
+      if (member != self->id.to_integer ())
+        members.insert (member);
+      idx = strchr (idx, ',') + 1;
+    }
+    sscanf (idx, "%d", &member);
+    if (member != self->id.to_integer ())
+      members.insert (member);
+    delete [] mem_string;
+  
+    // construct actual string
+    std::stringstream formation_expr;
+    set<int>::iterator it = members.begin ();
+    formation_expr << "formation." << self->id.to_integer ();
+    formation_expr << "." << *it << ".ready ";
+    ++it;
+    for (; it != members.end (); ++it)
+    {
+      formation_expr << " && formation." << head_id.to_integer ();
+      formation_expr << "." << *it << ".ready ";
+    }
+    compiled_formation_ = knowledge_->compile (formation_expr.str ());
+  }
 }
 
 gams::algorithms::Formation_Flying::~Formation_Flying ()
@@ -108,16 +148,29 @@ gams::algorithms::Formation_Flying::operator= (
   }
 }
 
-
 int
 gams::algorithms::Formation_Flying::analyze (void)
 {
-  //this->platform_->get_sensors (sensor_names_);
+  // split logic by role
+  if (head_)
+  {
+    if (in_formation_ == 0)
+      in_formation_ = knowledge_->evaluate (compiled_formation_).to_integer ();
+  }
+  else // follower
+  {
+    if (in_formation_ == 0)
+    {
+      utility::Position location;
+      location.from_container (self_->device.location);
 
-  //platform_->get_position (current_position_);
-
-  //current_position_.to_container (self_->device.location);
-
+      if (location.approximately_equal (next_position_,
+        platform_->get_position_accuracy ()))
+      {
+        in_formation_ = 1;
+      }
+    }
+  }
   return 0;
 }
 
@@ -135,29 +188,28 @@ gams::algorithms::Formation_Flying::plan (void)
   need_to_move_ = false;
   if (head_)
   {
-    if (in_formation_ == 0)
+    if (in_formation_ == 1)
     {
-      // analyze for members in formation
-    }
-    else
-    {
-      // move towards destination
+      next_position_ = destination_;
+      need_to_move_ = true;
     }
   }
   else
   {
-    if (in_formation_ == 0)
-    {
-      // get into position
-      next_position_.x = head_location_[0] + rho_ * sin (phi_); // latitude
-      next_position_.y = head_location_[1] + rho_ * cos (phi_); // longitude
-      next_position_.z = head_location_[2] + z_;
-      need_to_move_ = true;
-    }
-    else
-    {
-      // move towards destination
-    }
+    // get head location
+    // TODO: use madara containers
+    double x, y, z;
+    string head_loc = knowledge_->get ("device.0.location").to_string ();
+    sscanf (head_loc.c_str (), "%lf, %lf, %lf", &x, &y, &z);
+
+    // get into position
+    next_position_.x = x + rho_ * sin (phi_); // latitude
+    next_position_.y = y + rho_ * cos (phi_); // longitude
+    next_position_.z = z + z_;
+//    next_position_.x = head_location_[0] + rho_ * sin (phi_); // latitude
+//    next_position_.y = head_location_[1] + rho_ * cos (phi_); // longitude
+//    next_position_.z = head_location_[2] + z_;
+    need_to_move_ = true;
   }
   return 0;
 }

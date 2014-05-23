@@ -356,16 +356,18 @@ gams::controller::Base::system_analyze (void)
     Madara::Knowledge_Record target_id;
     Madara::Knowledge_Record cylindrical_offset;
     Madara::Knowledge_Record destination;
+    Madara::Knowledge_Record members;
 
     if (self_.device.command == "formation")
     {
       self_.device.command_args.resize ();
 
-      if (this->self_.device.command_args.size () == 3)
+      if (this->self_.device.command_args.size () == 4)
       {
         target_id = self_.device.command_args[0];
         cylindrical_offset = self_.device.command_args[1];
         destination = self_.device.command_args[2];
+        members = self_.device.command_args[3];
       }
       else
       {
@@ -385,7 +387,8 @@ gams::controller::Base::system_analyze (void)
       delete algorithm_;
       algorithms::Factory factory (&knowledge_, &sensors_,
         platform_, &self_, &devices_);
-      algorithm_ = factory.create ("formation", target_id, cylindrical_offset, destination);
+      algorithm_ = factory.create ("formation", target_id, cylindrical_offset,
+        destination, members);
     }
   }
   
@@ -440,6 +443,8 @@ gams::controller::Base::run (double period, double max_runtime)
 
     while (current < max_wait)
     {
+
+      knowledge_.print();
       // return value should be last return value of mape loop
       return_value = 0;
       return_value |= monitor ();
@@ -457,8 +462,6 @@ gams::controller::Base::run (double period, double max_runtime)
       }
 
       next_epoch = next_epoch + poll_frequency;
-
-      knowledge_.print();
     }
   }
 

@@ -6,7 +6,8 @@
 .initial_y=25;
 
 device.1.command="formation";
-device.1.command.size=3;
+device.1.command.size=4;
 device.1.command.0=0;
 device.1.command.1="1,1,1";
-device.1.command.2="0,0,0";
+device.1.command.2="10,10,2";
+device.1.command.3="3,0,1,2";

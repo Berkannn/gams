@@ -113,6 +113,7 @@ gams::algorithms::Factory::create (const std::string & type,
     if (knowledge_ && sensors_ && platform_ && self_)
       result = new Formation_Flying (
         arg1 /* target */, arg2 /* offset */, arg3 /* destination */,
+        arg4 /* members */,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "takeoff")
