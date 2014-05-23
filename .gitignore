@@ -3,3 +3,9 @@
 Makefile
 *algorithm*.txt
 *.csv
+.depend.*
+GNUmakefile*
+lib*
+
+gams_controller
+dynamic_simulation
