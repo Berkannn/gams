@@ -68,12 +68,14 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : Base (knowledge, platform, sensors, self), need_to_move_ (false)
+  : Base (knowledge, platform, sensors, self), need_to_move_ (false),
+    phi_dir_(DBL_MAX)
 {
   status_.init_vars (*knowledge, "formation");
 
   // get head information
-  head_ = (head_id.to_integer () == self->id.to_integer ());
+  head_id_ = head_id.to_integer ();
+  head_ = (head_id_ == self->id.to_integer ());
 
   // set madara containers
   stringstream in_formation_str;
@@ -151,6 +153,7 @@ gams::algorithms::Formation_Flying::operator= (
 int
 gams::algorithms::Formation_Flying::analyze (void)
 {
+
   // split logic by role
   if (head_)
   {
@@ -161,6 +164,12 @@ gams::algorithms::Formation_Flying::analyze (void)
   {
     if (in_formation_ == 0)
     {
+      // calculate offset
+      utility::Position start;
+      get_head_coords (start.x, start.y, start.z);
+      double temp;
+      start.direction_to (destination_, phi_dir_, temp);
+ 
       utility::Position location;
       location.from_container (self_->device.location);
 
@@ -199,12 +208,12 @@ gams::algorithms::Formation_Flying::plan (void)
     // get head location
     // TODO: use madara containers
     double x, y, z;
-    string head_loc = knowledge_->get ("device.0.location").to_string ();
-    sscanf (head_loc.c_str (), "%lf, %lf, %lf", &x, &y, &z);
+    get_head_coords(x, y, z);
 
     // get into position
-    next_position_.x = x + rho_ * sin (phi_); // latitude
-    next_position_.y = y + rho_ * cos (phi_); // longitude
+    double angle = phi_ + phi_dir_;
+    next_position_.x = x + rho_ * cos (angle); // latitude
+    next_position_.y = y + rho_ * sin (angle); // longitude
     next_position_.z = z + z_;
 //    next_position_.x = head_location_[0] + rho_ * sin (phi_); // latitude
 //    next_position_.y = head_location_[1] + rho_ * cos (phi_); // longitude
@@ -212,4 +221,14 @@ gams::algorithms::Formation_Flying::plan (void)
     need_to_move_ = true;
   }
   return 0;
+}
+
+void
+gams::algorithms::Formation_Flying::get_head_coords (double& x, double& y,
+  double& z)
+{
+  stringstream loc;
+  loc << "device." << head_id_ << ".location";
+  string location = knowledge_->get (loc.str ()).to_string ();
+  sscanf (location.c_str (), "%lf, %lf, %lf", &x, &y, &z);
 }

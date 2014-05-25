@@ -143,6 +143,14 @@ namespace gams
         const Position & rhs, const double & epsilon) const;
 
       /**
+       * Get spherical direction to position
+       * @param rhs     other position
+       * @param phi     direction in x/y plane
+       * @param theta   direction in z plane
+       **/
+      void direction_to (const Position& rhs, double& phi, double& theta) const;
+
+      /**
        * Get distance between two positions
        * @param  rhs      second position
        * @return euclidean distance between the two points
