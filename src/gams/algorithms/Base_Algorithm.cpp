@@ -43,8 +43,9 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Base_Algorithm.h"
 
+#include "Base_Algorithm.h"
+#include "gams/utility/Region.h"
 
 gams::algorithms::Base::Base (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -99,7 +100,7 @@ gams::algorithms::Base::set_devices (variables::Devices * devices)
   devices_ = devices;
 }
 
-std::vector<gams::utility::Position>
+gams::utility::Region
 gams::algorithms::Base::parse_region ()
 {
   // get region from knowledge base
@@ -134,5 +135,5 @@ gams::algorithms::Base::parse_region ()
       std::cerr << "invalid region type: " << region_type << endl;
   }
 
-  return vertices;
+  return gams::utility::Region (vertices);
 }

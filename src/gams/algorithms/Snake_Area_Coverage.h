@@ -59,6 +59,7 @@
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
+#include "gams/utility/Position.h"
 
 #include <vector>
 
@@ -115,7 +116,7 @@ namespace gams
       /// current position
       utility::Position current_position_;
 
-      /// vector of vertices in coverage box
+      /// waypoints
       std::vector<utility::Position> waypoints_;
 
       /// current waypoint

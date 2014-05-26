@@ -59,9 +59,7 @@
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
-
-#include <vector>
-using std::vector;
+#include "gams/utility/Region.h"
 
 namespace gams
 {
@@ -118,11 +116,8 @@ namespace gams
       /// next position
       utility::Position next_position_;
 
-      /// vector of vertices in coverage box
-      vector<utility::Position> vertices_;
-
-      /// number of edges
-      int num_edges_;
+      /// coverage region
+      const utility::Region region_;
 
       /// init flag
       bool init_;

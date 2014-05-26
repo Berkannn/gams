@@ -50,13 +50,10 @@ gams::algorithms::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : Base (knowledge, platform, sensors, self), init_ (false)
+  : Base (knowledge, platform, sensors, self), region_ (parse_region ()),
+    init_ (false)
 {
   status_.init_vars (*knowledge, "urec");
-
-  // get region information
-  vertices_ = parse_region ();
-  num_edges_ = vertices_.size ();
 }
 
 gams::algorithms::Uniform_Random_Edge_Coverage::~Uniform_Random_Edge_Coverage ()
@@ -112,11 +109,13 @@ void
 gams::algorithms::Uniform_Random_Edge_Coverage::generate_new_position ()
 {
   // select new edge
-  int target_edge = rand() % num_edges_;
+  int num_edges = region_.points.size();
+  int target_edge = rand() % num_edges;
 
   // get endpoints
-  const utility::Position & pos_1 = vertices_[target_edge];
-  const utility::Position & pos_2 = vertices_[(target_edge + 1) % num_edges_];
+  const utility::Position & pos_1 = region_.points[target_edge];
+  const utility::Position & pos_2 = 
+    region_.points[(target_edge + 1) % num_edges];
 
   // get random point on line
   double delta_y = pos_2.y - pos_1.y;

@@ -57,15 +57,16 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
   status_.init_vars (*knowledge, "sac");
 
   // get region information
-  std::vector<utility::Position> vertices = parse_region ();
-  const int num_edges = vertices.size ();
+  utility::Region region = parse_region ();
+  const int num_edges = region.points.size ();
 
   // find longest edge
   int longest_edge = 0;
-  double max_dist = vertices[0].distance (vertices[1]);
+  double max_dist = region.points[0].distance (region.points[1]);
   for(int i = 1; i < num_edges; ++i)
   {
-    double dist = vertices[i].distance (vertices[(i + 1) % num_edges]);
+    double dist = region.points[i].distance (
+      region.points[(i + 1) % num_edges]);
     if(dist > max_dist)
     {
       max_dist = dist;
@@ -74,13 +75,13 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
   }
 
   // starting points are vertices of longest edge
-  waypoints_.push_back (vertices[longest_edge]);
-  waypoints_.push_back (vertices[(longest_edge + 1) % num_edges]);
+  waypoints_.push_back (region.points[longest_edge]);
+  waypoints_.push_back (region.points[(longest_edge + 1) % num_edges]);
 
   // determine shift direction
   const double shift = 1.0; // TODO: update for sensor range
-  const utility::Position & p_0 = vertices[longest_edge];
-  const utility::Position & p_1 = vertices[(longest_edge + 1) % num_edges];
+  const utility::Position & p_0 = region.points[longest_edge];
+  const utility::Position & p_1 = region.points[(longest_edge + 1) % num_edges];
 
   /**
    * Assuming the bounding area is convex, only one of these loops will 
@@ -111,9 +112,9 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
         int cur_vertex = (longest_edge + i) % num_edges;
 
         // beginning and end vertex of intersecing line segment
-        const utility::Position & p_n_0 = vertices[cur_vertex];
+        const utility::Position & p_n_0 = region.points[cur_vertex];
         const utility::Position & p_n_1 = 
-          vertices[(cur_vertex + 1) % num_edges];
+          region.points[(cur_vertex + 1) % num_edges];
  
         double m_0, m_n;
         utility::Position check;

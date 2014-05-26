@@ -62,7 +62,8 @@ gams::algorithms::Uniform_Random_Area_Coverage::~Uniform_Random_Area_Coverage ()
 }
 
 void
-gams::algorithms::Uniform_Random_Area_Coverage::operator= (const Uniform_Random_Area_Coverage & rhs)
+gams::algorithms::Uniform_Random_Area_Coverage::operator= (
+  const Uniform_Random_Area_Coverage & rhs)
 {
   if (this != &rhs)
   {
