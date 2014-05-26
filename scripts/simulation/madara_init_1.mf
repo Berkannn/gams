@@ -5,9 +5,14 @@
 .initial_x=25;
 .initial_y=25;
 
-device.1.command="formation";
-device.1.command.size=4;
-device.1.command.0=0;
-device.1.command.1="1,1,1";
-device.1.command.2="10,10,2";
-device.1.command.3="3,0,1,2";
+//device.1.command="formation";
+//device.1.command.size=4;
+//device.1.command.0=0;
+//device.1.command.1="2,-2.5,1";
+//device.1.command.2="10,10,2";
+//device.1.command.3="3,0,1,2";
+
+device.1.command="cover";
+device.1.command.size=2;
+device.1.command.0="urac";
+device.1.command.1="region.0";

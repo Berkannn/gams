@@ -44,81 +44,79 @@
  *      distribution.
  **/
 
-/**
- * @file Random_Area_Coverage.h
- * @author James Edmondson <jedmondson@gmail.com>
- *
- * This file contains the definition of the random area coverage class
- **/
+#include "Uniform_Random_Area_Coverage.h"
 
-#ifndef   _GAMS_ALGORITHMS_RANDOM_AREA_COVERAGE_H_
-#define   _GAMS_ALGORITHMS_RANDOM_AREA_COVERAGE_H_
-
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
-#include "gams/variables/Self.h"
-#include "gams/algorithms/Base_Algorithm.h"
-
-namespace gams
+gams::algorithms::Uniform_Random_Area_Coverage::Uniform_Random_Area_Coverage (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  platforms::Base * platform,
+  variables::Sensors * sensors,
+  variables::Self * self)
+  : Base (knowledge, platform, sensors, self), region_ (parse_region ()),
+    init_ (false)
 {
-  namespace algorithms
+  status_.init_vars (*knowledge, "urac");
+}
+
+gams::algorithms::Uniform_Random_Area_Coverage::~Uniform_Random_Area_Coverage ()
+{
+}
+
+void
+gams::algorithms::Uniform_Random_Area_Coverage::operator= (const Uniform_Random_Area_Coverage & rhs)
+{
+  if (this != &rhs)
   {
-    class GAMS_Export Random_Area_Coverage : public Base
-    {
-    public:
-      /**
-       * Constructor
-       * @param  knowledge    the context containing variables and values
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  self         self-referencing variables
-       **/
-      Random_Area_Coverage (
-        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0);
-
-      /**
-       * Destructor
-       **/
-      ~Random_Area_Coverage ();
-
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Random_Area_Coverage & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void);
-
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void);
-      
-    protected:
-      /// list of sensor names
-      variables::Sensor_Names sensor_names_;
-
-      /// current position
-      utility::Position current_position_;
-
-      /// next position
-      utility::Position next_position_;
-    };
+    this->platform_ = rhs.platform_;
+    this->sensors_ = rhs.sensors_;
+    this->self_ = rhs.self_;
+    this->status_ = rhs.status_;
   }
 }
 
-#endif // _GAMS_ALGORITHMS_RANDOM_AREA_COVERAGE_H_
+int
+gams::algorithms::Uniform_Random_Area_Coverage::analyze (void)
+{
+  return 0;
+}
+
+int
+gams::algorithms::Uniform_Random_Area_Coverage::execute (void)
+{
+  platform_->move(next_position_);
+  return 0;
+}
+
+int
+gams::algorithms::Uniform_Random_Area_Coverage::plan (void)
+{
+  // generate new next position if necessary
+  utility::Position current;
+  current.from_container (self_->device.location);
+  if (!init_ || current.approximately_equal(next_position_,
+    platform_->get_position_accuracy ()))
+  {
+    init_ = true;
+    generate_new_position();
+  }
+
+  return 0;
+}
+
+void
+gams::algorithms::Uniform_Random_Area_Coverage::generate_new_position ()
+{
+  do
+  {
+    next_position_.x = Madara::Utility::rand_double (region_.min_x_,
+      region_.max_x_);
+    next_position_.y = Madara::Utility::rand_double (region_.min_y_,
+      region_.max_y_);
+    next_position_.z = Madara::Utility::rand_double (region_.min_z_,
+      region_.max_z_);
+  }
+  while (!region_.is_in_region (next_position_));
+
+  utility::Position current;
+  current.from_container (self_->device.location);
+  next_position_.z = current.z;
+}

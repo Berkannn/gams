@@ -51,8 +51,8 @@
  * This file contains a utility class for working with position
  **/
 
-#ifndef   _GAMS_UTILITY_GPS_H_
-#define   _GAMS_UTILITY_GPS_H_
+#ifndef _GAMS_UTILITY_POSITION_H_
+#define _GAMS_UTILITY_POSITION_H_
 
 #include <vector>
 
@@ -187,6 +187,12 @@ namespace gams
       std::string to_string (const std::string & delimiter = ",") const;
 
       /**
+       * Helper function for creating a Position from a string
+       * @param delimiter characters to insert between position components
+       **/
+      static Position from_string (const std::string & delimiter = ",");
+
+      /**
        * Helper function for copying values to a MADARA double array
        * @param target     target container to copy values to
        **/
@@ -227,4 +233,4 @@ namespace gams
   }
 }
 
-#endif // _GAMS_UTILITY_GPS_H_
+#endif // _GAMS_UTILITY_POSITION_H_

@@ -61,7 +61,7 @@ gams::variables::Search_Area::operator= (const Search_Area & rhs)
 {
   if (this != &rhs)
   {
-    this->region = rhs.region;
+    //this->region = rhs.region;
     this->name = rhs.name;
   }
 }
@@ -83,7 +83,7 @@ gams::variables::Search_Area::init_vars (
   Madara::Knowledge_Record region_id = knowledge.get (prefix);
   
   // initialize the variable containers
-  region.init_vars (knowledge, region_id.to_string ());
+  //region.init_vars (knowledge, region_id.to_string ());
 }
 
 void
@@ -102,7 +102,7 @@ gams::variables::Search_Area::init_vars (
   Madara::Knowledge_Record region_id = knowledge.get (prefix);
   
   // initialize the variable containers
-  region.init_vars (knowledge, region_id.to_string ());
+  //region.init_vars (knowledge, region_id.to_string ());
 }
 
 void gams::variables::init_vars (Search_Area & variables,

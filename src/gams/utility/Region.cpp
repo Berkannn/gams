@@ -44,11 +44,17 @@
  *      distribution.
  **/
 #include <sstream>
+#include <string>
 #include "Region.h"
 
-gams::utility::Region::Region (const std::vector <double> & init_points)
+gams::utility::Region::Region ()
+{
+}
+
+gams::utility::Region::Region (const std::vector <Position> & init_points)
 : points (init_points)
 {
+  calculate_bounding_box ();
 }
 
 gams::utility::Region::~Region ()
@@ -64,6 +70,60 @@ gams::utility::Region::operator= (const Region & rhs)
   }
 }
 
+bool
+gams::utility::Region::is_in_region (const Position & p) const
+{
+  // check if in bounding box
+  if (p.x < min_x_ || p.x > max_x_ ||
+      p.y < min_y_ || p.y > max_y_ ||
+      p.z < min_z_ || p.z > max_z_)
+  {
+    return false;
+  }
+
+  // check if point in polygon code from 
+  // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+  unsigned int i, j;
+  bool ret = false;
+  for (i = 0, j = points.size(); i < points.size(); j = i++)
+  {
+    if ( ((points[i].y > p.y) != (points[j].y > p.y)) &&
+         (p.x < (points[j].x - points[i].x) * (p.y - points[i].y) / 
+                (points[j].y - points[i].y) + 
+                 points[i].x) )
+    {
+      ret = !ret;
+    }
+  }
+
+  return ret;
+}
+
+gams::utility::Region
+gams::utility::Region::get_bounding_box () const
+{
+  Region ret;
+
+  Position p;
+  p.x = min_x_; p.y = min_y_; p.z = 0;
+  ret.points.push_back (p);
+  p.x = min_x_; p.y = max_y_; p.z = 0;
+  ret.points.push_back (p);
+  p.x = max_x_; p.y = max_y_; p.z = 0;
+  ret.points.push_back (p);
+  p.x = max_x_; p.y = min_y_; p.z = 0;
+  ret.points.push_back (p);
+
+  ret.min_x_ = this->min_x_;
+  ret.max_x_ = this->max_x_;
+  ret.min_y_ = this->min_y_;
+  ret.max_y_ = this->max_y_;
+  ret.min_z_ = this->min_z_;
+  ret.max_z_ = this->max_z_;
+
+  return ret;
+}
+
 std::string
 gams::utility::Region::to_string (const std::string & delimiter) const
 {
@@ -71,11 +131,11 @@ gams::utility::Region::to_string (const std::string & delimiter) const
 
   if (points.size () > 0)
   {
-    buffer << points[0];
+    buffer << points[0].to_string ();
     for (unsigned int i = 1; i < points.size (); ++i)
     {
       buffer << delimiter;
-      buffer << points[i];
+      buffer << points[i].to_string ();
     }
   }
 
@@ -84,21 +144,35 @@ gams::utility::Region::to_string (const std::string & delimiter) const
 
 void
 gams::utility::Region::to_container (
-  Madara::Knowledge_Engine::Containers::Double_Array & target) const
+  Madara::Knowledge_Engine::Containers::String_Array & target) const
 {
   for (unsigned int i = 0; i < points.size (); ++i)
-  {
-    target.set (i, points[i]);
-  }
+    target.set (i, points[i].to_string ());
 }
 
 void
 gams::utility::Region::from_container (
-  Madara::Knowledge_Engine::Containers::Double_Array & target)
+  Madara::Knowledge_Engine::Containers::String_Array & target)
 {
   points.resize (target.size ());
   for (unsigned int i = 0; i < target.size (); ++i)
+    points[i] = Position::from_string (target[i]);
+  calculate_bounding_box ();
+}
+
+void
+gams::utility::Region::calculate_bounding_box ()
+{
+  min_x_ = min_y_ = min_z_ = DBL_MAX;
+  max_x_ = max_y_ = max_z_ = -DBL_MAX;
+  for (unsigned int i = 0; i < points.size(); ++i)
   {
-    points[i] = target[i];
+    min_x_ = (min_x_ > points[i].x) ? points[i].x : min_x_;
+    min_y_ = (min_y_ > points[i].y) ? points[i].y : min_y_;
+    min_z_ = (min_z_ > points[i].z) ? points[i].z : min_z_;
+
+    max_x_ = (max_x_ < points[i].x) ? points[i].x : max_x_;
+    max_y_ = (max_y_ < points[i].y) ? points[i].y : max_y_;
+    max_z_ = (max_z_ < points[i].z) ? points[i].z : max_z_;
   }
 }

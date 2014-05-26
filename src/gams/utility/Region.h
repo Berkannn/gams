@@ -51,13 +51,14 @@
  * This file contains a utility class for working with position
  **/
 
-#ifndef   _GAMS_UTILITY_GPS_H_
-#define   _GAMS_UTILITY_GPS_H_
+#ifndef  _GAMS_UTILITY_REGION_H_
+#define  _GAMS_UTILITY_REGION_H_
 
 #include <vector>
 
 #include "gams/GAMS_Export.h"
-#include "madara/knowledge_engine/containers/Double_Vector.h"
+#include "madara/knowledge_engine/containers/String_Vector.h"
+#include "gams/utility/Position.h"
 
 namespace gams
 {
@@ -70,7 +71,7 @@ namespace gams
        * Constructor
        * @param  init_points  the vertices of the region
        **/
-      Region (const std::vector <double> & init_points);
+      Region (const std::vector <Position> & init_points);
 
       /**
        * Destructor
@@ -84,29 +85,58 @@ namespace gams
       void operator= (const Region & rhs);
       
       /**
+       * Determine if position is in region
+       * @param   p   point to check if in region
+       * @return  true if point is in region or on border, false otherwise
+       **/
+      bool is_in_region (const Position & p) const;
+
+      /**
+       * Get bounding box
+       * @return Region object corresponding to bounding box
+       **/
+      Region get_bounding_box () const;
+
+      /**
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
        **/
-      std::string to_string (const std::string & delimiter = ",") const;
+      std::string to_string (const std::string & delimiter = ":") const;
 
       /**
        * Helper function for copying values to a MADARA double array
        * @param target     target container to copy values to
        **/
       void to_container (
-        Madara::Knowledge_Engine::Containers::Double_Array & target) const;
+        Madara::Knowledge_Engine::Containers::String_Array & target) const;
       
       /**
        * Helper function for copying values from a MADARA double array
        * @param target     target container to copy values from
        **/
       void from_container (
-        Madara::Knowledge_Engine::Containers::Double_Array & target);
+        Madara::Knowledge_Engine::Containers::String_Array & target);
 
       /// the vertices of the region
-      std::vector <double> points;
-    };
-  }
-}
+      std::vector <Position> points;
 
-#endif // _GAMS_UTILITY_GPS_H_
+      /// bounding box
+      double min_x_, max_x_;
+      double min_y_, max_y_;
+      double min_z_, max_z_;
+
+    protected:
+      /**
+       * Default constructor should only be called by the class
+       **/
+      Region ();
+
+      /**
+       * populate bounding box values
+       **/
+      void calculate_bounding_box ();
+    }; // class Region
+  } // namespace utility
+} // namespace gams
+
+#endif // _GAMS_UTILITY_REGION_H_

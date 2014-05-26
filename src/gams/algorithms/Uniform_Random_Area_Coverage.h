@@ -43,58 +43,87 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Random_Area_Coverage.h"
 
+/**
+ * @file Uniform_Random_Area_Coverage.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the random area coverage class
+ **/
 
-gams::algorithms::Random_Area_Coverage::Random_Area_Coverage (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
-  variables::Sensors * sensors,
-  variables::Self * self)
-  : Base (knowledge, platform, sensors, self)
+#ifndef   _GAMS_ALGORITHMS_UNIFORM_RANDOM_AREA_COVERAGE_H_
+#define   _GAMS_ALGORITHMS_UNIFORM_RANDOM_AREA_COVERAGE_H_
+
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
+#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/utility/Region.h"
+using gams::utility::Region;
+
+namespace gams
 {
-  status_.init_vars (*knowledge, "rac");
-}
-
-gams::algorithms::Random_Area_Coverage::~Random_Area_Coverage ()
-{
-}
-
-void
-gams::algorithms::Random_Area_Coverage::operator= (const Random_Area_Coverage & rhs)
-{
-  if (this != &rhs)
+  namespace algorithms
   {
-    this->platform_ = rhs.platform_;
-    this->sensors_ = rhs.sensors_;
-    this->self_ = rhs.self_;
-    this->status_ = rhs.status_;
+    class GAMS_Export Uniform_Random_Area_Coverage : public Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  knowledge    the context containing variables and values
+       * @param  platform     the underlying platform the algorithm will use
+       * @param  sensors      map of sensor names to sensor information
+       * @param  self         self-referencing variables
+       **/
+      Uniform_Random_Area_Coverage (
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
+
+      /**
+       * Destructor
+       **/
+      ~Uniform_Random_Area_Coverage ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Uniform_Random_Area_Coverage & rhs);
+      
+      /**
+       * Analyzes environment, platform, or other information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+      
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int execute (void);
+
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int plan (void);
+      
+    protected:
+      /// generate new next position
+      void generate_new_position ();
+
+      /// next position
+      utility::Position next_position_;
+
+      /// vector of vertices in coverage box
+      Region region_;
+
+      /// init flag
+      bool init_;
+    };
   }
 }
 
-
-int
-gams::algorithms::Random_Area_Coverage::analyze (void)
-{
-  this->platform_->get_sensors (sensor_names_);
-
-  platform_->get_position (current_position_);
-
-  current_position_.to_container (self_->device.location);
-
-  return 0;
-}
-      
-
-int
-gams::algorithms::Random_Area_Coverage::execute (void)
-{
-  return 0;
-}
-
-
-int
-gams::algorithms::Random_Area_Coverage::plan (void)
-{
-  return 0;
-}
+#endif // _GAMS_ALGORITHMS_UNIFORM_RANDOM_AREA_COVERAGE_H_

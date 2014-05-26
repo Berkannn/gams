@@ -208,6 +208,14 @@ gams::utility::Position::to_string (const std::string & delimiter) const
   return buffer.str ();
 }
 
+gams::utility::Position
+gams::utility::Position::from_string (const std::string & s)
+{
+  Position temp;
+  sscanf (s.c_str (), "%lf%*s%lf%*s%lf", &temp.x, &temp.y, &temp.z);
+  return temp;
+}
+
 void
 gams::utility::Position::to_container (
   Madara::Knowledge_Engine::Containers::Double_Array & target) const

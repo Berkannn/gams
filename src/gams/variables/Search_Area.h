@@ -100,7 +100,7 @@ namespace gams
       const std::string & area_name = "0");
 
       /// region that the named search area points to
-      Region region;
+      //Region region;
 
       /// name of the search area
       std::string name;
