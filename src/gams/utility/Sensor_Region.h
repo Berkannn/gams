@@ -45,93 +45,100 @@
  **/
 
 /**
- * @file Region.h
- * @author James Edmondson <jedmondson@gmail.com>
+ * @file Sensor_Region.h
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file contains a utility class for working with position
+ * Tracks sensors data over points in a region
  **/
 
-#ifndef  _GAMS_UTILITY_REGION_H_
-#define  _GAMS_UTILITY_REGION_H_
+#ifndef  _GAMS_UTILITY_SENSOR_REGION_H_
+#define  _GAMS_UTILITY_SENSOR_REGION_H_
 
-#include <vector>
-
+#include "gams/utility/Region.h"
 #include "gams/GAMS_Export.h"
-#include "madara/knowledge_engine/containers/String_Vector.h"
 #include "gams/utility/Position.h"
+
+#include "madara/knowledge_engine/containers/Vector_N.h"
+using Madara::Knowledge_Engine::Containers::Array_N;
+
+#include <string>
 
 namespace gams
 {
   namespace utility
   {
-    class GAMS_Export Region
+    class GAMS_Export Sensor_Region : Region
     {
     public:
       /**
        * Constructor
        * @param  init_points  the vertices of the region
        **/
-      Region (const std::vector <Position> & init_points = 
-        std::vector<Position> ());
+      Sensor_Region (std::string name,
+        Madara::Knowledge_Engine::Knowledge_Base& knowledge,
+        const double& delta, 
+        const std::vector <Position> & init_points = std::vector<Position> ());
 
       /**
        * Destructor
        **/
-      ~Region ();
+      ~Sensor_Region ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Region & rhs);
+      void operator= (const Sensor_Region& rhs);
+
+      /**
+       * Get sensor value from array
+       * @param loc location to get sensor value for
+       * @return value of sensor at specified location
+       **/
+      double operator[] (const Array_N::Index& loc) const;
+
+      /**
+       * Get sensor value from array
+       * @param lat latitude of requested location
+       * @param lon longitude of requested location
+       * @return value of sensor at requested location
+       **/
+      double get (const double& x, const double& y) const;
+
+      /**
+       * Set sensor value at location
+       * @param loc location to set value at
+       * @param val value to set for location
+       **/
+      void set (const Array_N::Index& loc, const double& val);
+
+      /**
+       * Set sensor value at location
+       * @param lat  latitude of location to set value at
+       * @param lon  longitude of location to set value at
+       * @param val  value to set for location
+       **/
+      void set (const double& x, const double& y, const double& val);
       
-      /**
-       * Determine if position is in region
-       * @param   p   point to check if in region
-       * @return  true if point is in region or on border, false otherwise
-       **/
-      bool is_in_region (const Position & p) const;
-
-      /**
-       * Get bounding box
-       * @return Region object corresponding to bounding box
-       **/
-      Region get_bounding_box () const;
-
       /**
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
        **/
-      std::string to_string (const std::string & delimiter = ":") const;
-
-      /**
-       * Helper function for copying values to a MADARA double array
-       * @param target     target container to copy values to
-       **/
-      void to_container (
-        Madara::Knowledge_Engine::Containers::String_Array & target) const;
-      
-      /**
-       * Helper function for copying values from a MADARA double array
-       * @param target     target container to copy values from
-       **/
-      void from_container (
-        Madara::Knowledge_Engine::Containers::String_Array & target);
-
-      /// the vertices of the region
-      std::vector <Position> points;
-
-      /// bounding box
-      double min_x_, max_x_;
-      double min_y_, max_y_;
-      double min_z_, max_z_;
+      std::string to_string (const std::string& delimiter = ":") const;
 
     protected:
       /**
-       * populate bounding box values
+       * discretize the region
        **/
-      void calculate_bounding_box ();
-    }; // class Region
+      Array_N::Index get_array_indices (const double& x, const double& y)
+        const;
+
+      /// discretization constant
+      const double delta_;
+
+      /// sensor value of point
+      Array_N sensor_values_;
+    }; // class Sensor_Region
   } // namespace utility
 } // namespace gams
 
