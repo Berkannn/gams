@@ -83,6 +83,11 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   in_formation_str << "." << self->id.to_integer () << ".ready";
   in_formation_.set_name (in_formation_str.str (), *knowledge);
 
+  stringstream formation_ready_str;
+  formation_ready_str << "formation." << head_id.to_integer ();
+  formation_ready_str << ".flying";
+  formation_ready_.set_name (formation_ready_str.str (), *knowledge);
+
   stringstream head_location_str;
   head_location_str << "device." << head_id.to_integer () << ".location";
   head_location_.set_name (head_location_str.str (), *knowledge);
@@ -158,7 +163,11 @@ gams::algorithms::Formation_Flying::analyze (void)
   if (head_)
   {
     if (in_formation_ == 0)
+    {
       in_formation_ = knowledge_->evaluate (compiled_formation_).to_integer ();
+      if (in_formation_ == 1)
+        formation_ready_ = 1;
+    }
   }
   else // follower
   {
@@ -205,20 +214,31 @@ gams::algorithms::Formation_Flying::plan (void)
   }
   else
   {
-    // get head location
-    // TODO: use madara containers
-    double x, y, z;
-    get_head_coords(x, y, z);
-
-    // get into position
-    double angle = phi_ + phi_dir_;
-    next_position_.x = x + rho_ * cos (angle); // latitude
-    next_position_.y = y + rho_ * sin (angle); // longitude
-    next_position_.z = z + z_;
-//    next_position_.x = head_location_[0] + rho_ * sin (phi_); // latitude
-//    next_position_.y = head_location_[1] + rho_ * cos (phi_); // longitude
-//    next_position_.z = head_location_[2] + z_;
-    need_to_move_ = true;
+    if (in_formation_ == 0)
+    {
+      // get head location
+      // TODO: use madara containers
+      double x, y, z;
+      get_head_coords(x, y, z);
+  
+      // get into position
+      double angle = phi_ + phi_dir_;
+      next_position_.x = x + rho_ * cos (angle); // latitude
+      next_position_.y = y + rho_ * sin (angle); // longitude
+      next_position_.z = z + z_;
+  //    next_position_.x = head_location_[0] + rho_ * sin (phi_); // latitude
+  //    next_position_.y = head_location_[1] + rho_ * cos (phi_); // longitude
+  //    next_position_.z = head_location_[2] + z_;
+      need_to_move_ = true;
+    }
+    else if (formation_ready_ == 1)
+    {
+      double angle = phi_ + phi_dir_;
+      next_position_.x = destination_.x + rho_ * cos (angle); // latitude
+      next_position_.y = destination_.y + rho_ * sin (angle); // longitude
+      next_position_.z = destination_.z + z_;
+      need_to_move_ = true;
+    }
   }
   return 0;
 }

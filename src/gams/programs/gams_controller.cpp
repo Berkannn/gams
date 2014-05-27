@@ -237,7 +237,7 @@ void handle_arguments (int argc, char ** argv)
       for (;i + 1 < argc && argv[i + 1][0] != '-'; ++i)
       {
         madara_commands += Madara::Utility::file_to_string (argv[i + 1]);
-        madara_commands += ";";
+        madara_commands += ";\r\n";
         files = true;
       }
 

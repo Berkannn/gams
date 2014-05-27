@@ -152,8 +152,11 @@ namespace gams
       /// am i the head?
       bool head_;
 
-      /// are we in formation?
+      /// am i in formation?
       Madara::Knowledge_Engine::Containers::Integer in_formation_;
+
+      /// are we in formation?
+      Madara::Knowledge_Engine::Containers::Integer formation_ready_;
 
       /// formation wait string
       Madara::Knowledge_Engine::Compiled_Expression compiled_formation_;

@@ -1,0 +1,13 @@
+.id=4;
+.vrep_port=19910;
+
+.set_initial=1;
+.initial_x=18;
+.initial_y=18;
+
+device.4.command="formation";
+device.4.command.size=4;
+device.4.command.0=0;
+device.4.command.1="2,1.57,0";
+device.4.command.2="10,10,2";
+device.4.command.3="6,0,1,2,3,4,5";
