@@ -113,9 +113,6 @@ namespace gams
       virtual int plan (void);
       
     protected:
-      /// get coords of head
-      void get_head_coords (double& x, double& y, double& z);
-
       /// list of sensor names
       variables::Sensor_Names sensor_names_;
 
@@ -144,7 +141,7 @@ namespace gams
       unsigned int num_agents_;
 
       /// head location
-      Madara::Knowledge_Engine::Containers::Double_Array head_location_;
+      Madara::Knowledge_Engine::Containers::Native_Double_Array head_location_;
 
       /// head id
       int head_id_;
