@@ -223,7 +223,7 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
   const double & /*epsilon*/)
 {
   // function local constants
-  const double TARGET_INCR = 1;
+  const double TARGET_INCR = 0.5;
 
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
@@ -426,8 +426,9 @@ inline void
 gams::platforms::VREP_UAV::position_to_array(const utility::Position & pos,
   simxFloat (&arr)[3])
 {
-  arr[0] = pos.x;
-  arr[1] = pos.y;
+  // have to swap x and y for vrep
+  arr[0] = pos.y;
+  arr[1] = pos.x;
   arr[2] = pos.z;
 }
 
@@ -435,8 +436,9 @@ inline void
 gams::platforms::VREP_UAV::array_to_position(const simxFloat (&arr)[3],
   utility::Position & pos)
 {
-  pos.x = arr[0];
-  pos.y = arr[1];
+  // have to swap x and y for vrep
+  pos.x = arr[1];
+  pos.y = arr[0];
   pos.z = arr[2];
 }
 

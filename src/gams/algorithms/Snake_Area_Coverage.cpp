@@ -75,8 +75,12 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
   }
 
   // starting points are vertices of longest edge
-  waypoints_.push_back (region.points[longest_edge]);
-  waypoints_.push_back (region.points[(longest_edge + 1) % num_edges]);
+  utility::Position temp = region.points[longest_edge];
+  temp.z = 1.5;
+  waypoints_.push_back (temp);
+  temp = region.points[(longest_edge + 1) % num_edges];
+  temp.z = 1.5;
+  waypoints_.push_back (temp);
 
   // determine shift direction
   const double shift = 1.0; // TODO: update for sensor range
@@ -211,7 +215,6 @@ gams::algorithms::Snake_Area_Coverage::operator= (
   }
 }
 
-
 int
 gams::algorithms::Snake_Area_Coverage::analyze (void)
 {
@@ -221,7 +224,6 @@ gams::algorithms::Snake_Area_Coverage::analyze (void)
 
   return 0;
 }
-      
 
 int
 gams::algorithms::Snake_Area_Coverage::execute (void)
@@ -229,7 +231,6 @@ gams::algorithms::Snake_Area_Coverage::execute (void)
   platform_->move (waypoints_[cur_waypoint_]);
   return 0;
 }
-
 
 int
 gams::algorithms::Snake_Area_Coverage::plan (void)
