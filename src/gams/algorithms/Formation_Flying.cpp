@@ -52,6 +52,8 @@
  **/
 
 #include "Formation_Flying.h"
+#include "gams/utility/GPS.h"
+
 #include <cmath>
 #include <string>
 using std::string;

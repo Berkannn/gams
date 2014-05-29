@@ -128,7 +128,7 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
         if (p_0.slope_2d (p_1, m_0))
         {
           // we have a non-vertical line, so find new intercept
-          const double delta_b = pow (-1, dir) * shift *
+          const double delta_b = pow (-1.0, dir) * shift *
             pow (pow (m_0, 2) + 1, 0.5);
  
           // calculate potential waypoint
@@ -163,7 +163,7 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
           if (p_n_0.slope_2d(p_n_1, m_n))
           {
             // longest edge is vertical, so just shift the x coord
-            check.x = p_0.x + pow(-1, dir) * loop * shift;
+            check.x = p_0.x + pow(-1.0, dir) * loop * shift;
             check.y = m_n * (check.x - p_n_0.x) + p_n_0.y;
           }
           else

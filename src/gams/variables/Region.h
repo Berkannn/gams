@@ -100,7 +100,7 @@ namespace gams
       void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
         const std::string & region_name = "0");
 
-      /// the type of region (0 for Rectangle)
+      /// the type of region (0 for arbitary convex polygon)
       Madara::Knowledge_Engine::Containers::Integer type;
 
       /// the top left coordinate

@@ -47,6 +47,7 @@
 #ifdef _GAMS_VREP_
 
 #include "VREP_UAV.h"
+#include "gams/utility/GPS.h"
 
 #define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
 
@@ -254,10 +255,10 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
   }
 
   // get distance to target
-  double distance_to_target = pow (
-    pow (curr_arr[0] - dest_arr[0], 2) +
-    pow (curr_arr[1] - dest_arr[1], 2) +
-    pow (curr_arr[2] - dest_arr[2], 2), 0.5);
+  double distance_to_target = gams::utility::get_distance (
+    curr_arr[0], curr_arr[1],
+    dest_arr[0], dest_arr[1]);
+
 
   // move quadrotor target closer to the desired position
   // TODO: modify for meters instead of radians/degrees
