@@ -79,6 +79,7 @@ namespace gams
         const Madara::Knowledge_Record & offset,
         const Madara::Knowledge_Record & destination,
         const Madara::Knowledge_Record & members,
+        const Madara::Knowledge_Record & modifier,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0, variables::Sensors * sensors = 0,
         variables::Self * self = 0);
@@ -157,6 +158,13 @@ namespace gams
 
       /// formation wait string
       Madara::Knowledge_Engine::Compiled_Expression compiled_formation_;
+
+      /// modifier enum
+      enum
+      {
+        NONE,
+        ROTATE
+      } modifier_;
     };
   }
 }

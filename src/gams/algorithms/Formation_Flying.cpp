@@ -64,12 +64,13 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   const Madara::Knowledge_Record & offset,
   const Madara::Knowledge_Record & destination,
   const Madara::Knowledge_Record & members,
+  const Madara::Knowledge_Record & modifier,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
   : Base (knowledge, platform, sensors, self), need_to_move_ (false),
-    phi_dir_(DBL_MAX)
+    phi_dir_(DBL_MAX), modifier_ (NONE)
 {
   status_.init_vars (*knowledge, "formation");
 
@@ -99,6 +100,13 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   // parse destination
   sscanf (destination.to_string (). c_str(), "%lf,%lf,%lf",
     &destination_.x, &destination_.y, &destination_.z);
+
+  // parse modifier
+  string mod = modifier.to_string ();
+  if (mod == "rotate")
+  {
+    modifier_ = ROTATE;
+  }
 
   // construct wait for in formation string
   if (head_)
@@ -136,6 +144,15 @@ gams::algorithms::Formation_Flying::Formation_Flying (
     }
     compiled_formation_ = knowledge_->compile (formation_expr.str ());
   }
+
+  // update speed if necessary
+  if (modifier_ == ROTATE)
+  {
+    if (!head_)
+      platform->set_move_speed (platform->get_move_speed () * 1.25);
+    else // head_
+      platform->set_move_speed (platform->get_move_speed () * 0.2);
+  }
 }
 
 gams::algorithms::Formation_Flying::~Formation_Flying ()
@@ -158,12 +175,20 @@ gams::algorithms::Formation_Flying::operator= (
 int
 gams::algorithms::Formation_Flying::analyze (void)
 {
-
   // split logic by role
   if (head_)
   {
     if (in_formation_ == 0)
     {
+      utility::Position start;
+      start.from_container (self_->device.location);
+      double temp;
+      start.direction_to (destination_, phi_dir_, temp);
+
+      cout << "start:   " << start.to_string () << endl;
+      cout << "dest:    " << destination_.to_string () << endl;
+      cout << "phi_dir: " << phi_dir_ << endl;
+
       in_formation_ = knowledge_->evaluate (compiled_formation_).to_integer ();
       if (in_formation_ == 1)
         formation_ready_ = 1;
@@ -178,7 +203,11 @@ gams::algorithms::Formation_Flying::analyze (void)
       start.from_container (head_location_);
       double temp; // dummy variable
       start.direction_to (destination_, phi_dir_, temp);
- 
+
+      cout << "start:   " << start.to_string () << endl;
+      cout << "dest:    " << destination_.to_string () << endl;
+      cout << "phi_dir: " << phi_dir_ << endl;
+  
       utility::Position location;
       location.from_container (self_->device.location);
 
@@ -203,6 +232,9 @@ gams::algorithms::Formation_Flying::execute (void)
 int
 gams::algorithms::Formation_Flying::plan (void)
 {
+  // increment executions
+  ++executions_;
+
   need_to_move_ = false;
   if (head_)
   {
@@ -214,22 +246,38 @@ gams::algorithms::Formation_Flying::plan (void)
   }
   else
   {
-    if (in_formation_ == 0)
+    switch (modifier_)
     {
-      // get into position
-      double angle = phi_ + phi_dir_;
-      next_position_.x = head_location_[0] + rho_ * sin (angle); // latitude
-      next_position_.y = head_location_[1] + rho_ * cos (angle); // longitude
-      next_position_.z = head_location_[2] + z_;
-      need_to_move_ = true;
-    }
-    else if (formation_ready_ == 1)
-    {
-      double angle = phi_ + phi_dir_;
-      next_position_.x = destination_.x + rho_ * sin (angle); // latitude
-      next_position_.y = destination_.y + rho_ * cos (angle); // longitude
-      next_position_.z = destination_.z + z_;
-      need_to_move_ = true;
+      case ROTATE:
+      {
+        double angle = phi_ + phi_dir_ + executions_ * M_PI / 20;
+        next_position_.x = head_location_[0] + rho_ * cos (angle); // latitude
+        next_position_.y = head_location_[1] + rho_ * sin (angle); // longitude
+        next_position_.z = head_location_[2] + z_;
+        need_to_move_ = true;
+
+        break;
+      }
+      default:
+      {
+        double angle = phi_ + phi_dir_;
+        knowledge_->set (".angle", angle);
+        if (in_formation_ == 0)
+        {
+          // get into position
+          next_position_.x = head_location_[0] + rho_ * cos (angle); // latitude
+          next_position_.y = head_location_[1] + rho_ * sin (angle); // longitude
+          next_position_.z = head_location_[2] + z_;
+          need_to_move_ = true;
+        }
+        else if (formation_ready_ == 1)
+        {
+          next_position_.x = destination_.x + rho_ * cos (angle); // latitude
+          next_position_.y = destination_.y + rho_ * sin (angle); // longitude
+          next_position_.z = destination_.z + z_;
+          need_to_move_ = true;
+        }
+      }
     }
   }
   return 0;

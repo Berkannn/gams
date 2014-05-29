@@ -154,6 +154,17 @@ namespace gams
        * @param  position  after the call, filled with the current position
        **/
       virtual void get_position (utility::Position & position) = 0;
+
+      /**
+       * Get move speed
+       **/
+      virtual double get_move_speed () = 0;
+
+      /**
+       * Set move speed
+       * @param speed new speed in meters/loop execution
+       **/
+      virtual void set_move_speed (const double& speed) = 0;
       
       /**
        * Pauses movement, keeps source and dest at current values

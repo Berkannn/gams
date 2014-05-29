@@ -62,7 +62,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   variables::Platforms & platforms,
   variables::Self & self)
   : Base (&knowledge, sensors, self), airborne_ (false),
-    gps_ (knowledge.get (".using_gps").to_integer () == 1)
+    gps_ (knowledge.get (".using_gps").to_integer () == 1),
+    move_speed_ (1)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 
@@ -97,8 +98,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   if (knowledge.get (".set_initial").to_integer ())
   {
     utility::Position obj_coord;
-    obj_coord.x = knowledge.get (".initial_x").to_double ();
-    obj_coord.y = knowledge.get (".initial_y").to_double ();
+    obj_coord.x = knowledge.get (".initial_y").to_double ();
+    obj_coord.y = knowledge.get (".initial_x").to_double ();
     obj_coord.z = id + 1; // TODO: remove when collision avoidance is added
 
     // do we need to convert from gps first?
@@ -222,9 +223,6 @@ int
 gams::platforms::VREP_UAV::move (const utility::Position & position,
   const double & /*epsilon*/)
 {
-  // function local constants
-  const double TARGET_INCR = 0.5;
-
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
     takeoff ();
@@ -263,8 +261,7 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
 
   // move quadrotor target closer to the desired position
   // TODO: modify for meters instead of radians/degrees
-  // TODO: tune TARGET_INCR 
-  if(distance_to_target < TARGET_INCR) // we can get to target in one step
+  if(distance_to_target < move_speed_) // we can get to target in one step
   {
     curr_arr[0] = dest_arr[0];
     curr_arr[1] = dest_arr[1];
@@ -281,9 +278,9 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
     for (int i = 0; i < 3; ++i)
     {
       if(curr_arr[i] < dest_arr[i])
-        curr_arr[i] += dist[i] * TARGET_INCR / distance_to_target;
+        curr_arr[i] += dist[i] * move_speed_ / distance_to_target;
       else
-        curr_arr[i] -= dist[i] * TARGET_INCR / distance_to_target;
+        curr_arr[i] -= dist[i] * move_speed_ / distance_to_target;
     }
   }
 
@@ -368,12 +365,24 @@ gams::platforms::VREP_UAV::get_position (utility::Position & position)
 }
 
 double
+gams::platforms::VREP_UAV::get_move_speed ()
+{
+  return move_speed_;
+}
+
+void
+gams::platforms::VREP_UAV::set_move_speed (const double& speed)
+{
+  move_speed_ = speed;
+}
+
+double
 gams::platforms::VREP_UAV::get_position_accuracy () const
 {
   if (gps_)
     return 0.00001;
   else // vrep
-    return 0.25;
+    return 0.5;
 }
 
 void 

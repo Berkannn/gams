@@ -147,6 +147,18 @@ namespace gams
        **/
       virtual double get_position_accuracy () const;
 
+      /**
+       * Get move speed
+       **/
+      virtual double get_move_speed ();
+
+      /**
+       * Set move speed
+       * @param speed new speed in meters/loop execution
+       **/
+      virtual void set_move_speed (const double& speed);
+      
+
     protected:
 
       /// provides access to variables denoting self state

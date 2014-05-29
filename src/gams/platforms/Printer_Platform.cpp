@@ -99,7 +99,7 @@ gams::platforms::Printer_Platform::get_sensors (variables::Sensor_Names & sensor
 
 int
 gams::platforms::Printer_Platform::move (const utility::Position & position,
-  const double & epsilon)
+  const double & /*epsilon*/)
 {
   std::cerr << "  platform.move (" << position.to_string (", ") << ")\n";
 
@@ -313,6 +313,17 @@ double
 gams::platforms::Printer_Platform::get_position_accuracy () const
 {
   return 0.0;
+}
+
+double
+gams::platforms::Printer_Platform::get_move_speed ()
+{
+  return 0.0;
+}
+
+void
+gams::platforms::Printer_Platform::set_move_speed (const double& /*speed*/)
+{
 }
 
 int

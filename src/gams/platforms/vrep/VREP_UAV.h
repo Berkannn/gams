@@ -148,6 +148,17 @@ namespace gams
       virtual void get_position (utility::Position & position);
 
       /**
+       * Get move speed
+       **/
+      virtual double get_move_speed ();
+
+      /**
+       * Set move speed
+       * @param speed new speed in meters/loop execution
+       **/
+      virtual void set_move_speed (const double& speed);
+
+      /**
        * Get the position accuracy
        * @return position accuracy
        **/
@@ -210,6 +221,9 @@ namespace gams
 
       /// are we using gps or vrep coordinate frame
       bool gps_;
+
+      /// movement speed
+      double move_speed_;
     };
   }
 }
