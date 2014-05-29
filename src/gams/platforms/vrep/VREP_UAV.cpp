@@ -255,10 +255,9 @@ gams::platforms::VREP_UAV::move (const utility::Position & position,
   }
 
   // get distance to target
-  double distance_to_target = gams::utility::get_distance (
-    curr_arr[0], curr_arr[1],
-    dest_arr[0], dest_arr[1]);
-
+  double sum = pow (curr_arr[0] - dest_arr[0], 2.0);
+  sum += pow (curr_arr[1] - dest_arr[1], 2.0);
+  double distance_to_target = pow (sum, 0.5);
 
   // move quadrotor target closer to the desired position
   // TODO: modify for meters instead of radians/degrees

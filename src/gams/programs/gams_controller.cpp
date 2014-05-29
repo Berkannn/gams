@@ -74,7 +74,7 @@ double period (1.0);
 double loop_time (50.0);
 
 // madara commands from a file
-std::string madara_commands;
+std::string madara_commands = "";
 
 // number of agents in the swarm
 Integer num_agents (-1);
@@ -232,14 +232,15 @@ void handle_arguments (int argc, char ** argv)
     }
     else if (arg1 == "-mf" || arg1 == "--madara-file")
     {
-      madara_commands = "";
       bool files = false;
-      for (;i + 1 < argc && argv[i + 1][0] != '-'; ++i)
+      ++i;
+      for (;i < argc && argv[i][0] != '-'; ++i)
       {
-        madara_commands += Madara::Utility::file_to_string (argv[i + 1]);
+        madara_commands += Madara::Utility::file_to_string (argv[i]);
         madara_commands += ";\r\n";
         files = true;
       }
+      --i;
 
       if (!files)
         print_usage (argv[0]);
