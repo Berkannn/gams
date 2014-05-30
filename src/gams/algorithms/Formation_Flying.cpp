@@ -51,13 +51,15 @@
  * Declaration of Formation_Flying class
  **/
 
-#include "Formation_Flying.h"
+#include "gams/algorithms/Formation_Flying.h"
 #include <cmath>
 #include <string>
 using std::string;
 using std::stringstream;
 #include <set>
 using std::set;
+
+#include "gams/utility/Position.h"
 
 gams::algorithms::Formation_Flying::Formation_Flying (
   const Madara::Knowledge_Record & head_id,
@@ -99,7 +101,7 @@ gams::algorithms::Formation_Flying::Formation_Flying (
 
   // parse destination
   sscanf (destination.to_string (). c_str(), "%lf,%lf,%lf",
-    &destination_.x, &destination_.y, &destination_.z);
+    &destination_.lat, &destination_.lon, &destination_.alt);
 
   // parse modifier
   string mod = modifier.to_string ();
@@ -180,15 +182,6 @@ gams::algorithms::Formation_Flying::analyze (void)
   {
     if (in_formation_ == 0)
     {
-      utility::Position start;
-      start.from_container (self_->device.location);
-      double temp;
-      start.direction_to (destination_, phi_dir_, temp);
-
-      cout << "start:   " << start.to_string () << endl;
-      cout << "dest:    " << destination_.to_string () << endl;
-      cout << "phi_dir: " << phi_dir_ << endl;
-
       in_formation_ = knowledge_->evaluate (compiled_formation_).to_integer ();
       if (in_formation_ == 1)
         formation_ready_ = 1;
@@ -199,16 +192,15 @@ gams::algorithms::Formation_Flying::analyze (void)
     if (in_formation_ == 0)
     {
       // calculate offset
-      utility::Position start;
+      utility::GPS_Position start;
       start.from_container (head_location_);
-      double temp; // dummy variable
-      start.direction_to (destination_, phi_dir_, temp);
+      start.direction_to (destination_, phi_dir_);
 
       cout << "start:   " << start.to_string () << endl;
       cout << "dest:    " << destination_.to_string () << endl;
       cout << "phi_dir: " << phi_dir_ << endl;
   
-      utility::Position location;
+      utility::GPS_Position location;
       location.from_container (self_->device.location);
 
       if (location.approximately_equal (next_position_,
@@ -251,9 +243,12 @@ gams::algorithms::Formation_Flying::plan (void)
       case ROTATE:
       {
         double angle = phi_ + phi_dir_ + executions_ * M_PI / 20;
-        next_position_.x = head_location_[0] + rho_ * cos (angle); // latitude
-        next_position_.y = head_location_[1] + rho_ * sin (angle); // longitude
-        next_position_.z = head_location_[2] + z_;
+        utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
+
+        utility::GPS_Position reference;
+        reference.from_container (head_location_);
+        next_position_ = offset.to_gps_position (reference);
+        
         need_to_move_ = true;
 
         break;
@@ -261,20 +256,18 @@ gams::algorithms::Formation_Flying::plan (void)
       default:
       {
         double angle = phi_ + phi_dir_;
-        knowledge_->set (".angle", angle);
         if (in_formation_ == 0)
         {
-          // get into position
-          next_position_.x = head_location_[0] + rho_ * cos (angle); // latitude
-          next_position_.y = head_location_[1] + rho_ * sin (angle); // longitude
-          next_position_.z = head_location_[2] + z_;
+          utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
+          utility::GPS_Position reference;
+          reference.from_container (head_location_);
+          next_position_ = offset.to_gps_position (reference);
           need_to_move_ = true;
         }
         else if (formation_ready_ == 1)
         {
-          next_position_.x = destination_.x + rho_ * cos (angle); // latitude
-          next_position_.y = destination_.y + rho_ * sin (angle); // longitude
-          next_position_.z = destination_.z + z_;
+          utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
+          next_position_ = offset.to_gps_position (destination_);
           need_to_move_ = true;
         }
       }

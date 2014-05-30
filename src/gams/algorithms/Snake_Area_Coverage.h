@@ -113,11 +113,8 @@ namespace gams
       virtual int plan (void);
       
     protected:
-      /// current position
-      utility::Position current_position_;
-
       /// waypoints
-      std::vector<utility::Position> waypoints_;
+      std::vector<utility::GPS_Position> waypoints_;
 
       /// current waypoint
       int cur_waypoint_;

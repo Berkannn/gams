@@ -77,10 +77,10 @@ gams::platforms::VREP_UAV::VREP_UAV (
   }
 
   // get vrep environment data
-  //string ne = knowledge.get (".vrep_ne_position").to_string ();
-  //sscanf(ne, "%lf,%lf", &ne_position_.x, &ne_position_.y);
   string sw = knowledge.get (".vrep_sw_position").to_string ();
-  sscanf(sw.c_str (), "%lf,%lf", &sw_position_.x, &sw_position_.y);
+  sscanf(sw.c_str (), "%lf,%lf", &sw_position_.lat, &sw_position_.lon);
+
+  cout << "sw_position: " << sw_position_.to_string () << endl;
 
   // init quadrotor in env
   string modelFile (getenv("VREP_ROOT"));
@@ -98,22 +98,29 @@ gams::platforms::VREP_UAV::VREP_UAV (
   if (knowledge.get (".set_initial").to_integer ())
   {
     utility::Position obj_coord;
-    obj_coord.x = knowledge.get (".initial_y").to_double ();
-    obj_coord.y = knowledge.get (".initial_x").to_double ();
+    obj_coord.x = knowledge.get (".initial_lat").to_double ();
+    obj_coord.y = knowledge.get (".initial_lon").to_double ();
     obj_coord.z = id + 1; // TODO: remove when collision avoidance is added
 
     // do we need to convert from gps first?
-    if (gps_)
+    simxFloat pos[3];
+    if (knowledge.get (".init_using_gps").to_integer () == 1)
     {
-      utility::Position gps = obj_coord;
-      gps_to_vrep (gps, obj_coord);
+      utility::GPS_Position gps (obj_coord.x, obj_coord.y, obj_coord.z);
+      utility::Position vrep_coord;
+      gps_to_vrep (gps, vrep_coord);
+      pos[0] = vrep_coord.x;
+      pos[1] = vrep_coord.y;
+      pos[2] = vrep_coord.z;
+    }
+    else
+    {
+      pos[0] = obj_coord.x;
+      pos[1] = obj_coord.y;
+      pos[2] = obj_coord.z;
     }
 
     // send set object position command
-    simxFloat pos[3];
-    pos[0] = obj_coord.x;
-    pos[1] = obj_coord.y;
-    pos[2] = obj_coord.z;
     simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,
       simx_opmode_oneshot_wait);
   }
@@ -196,7 +203,7 @@ gams::platforms::VREP_UAV::home (void)
   if (self_.device.home.size () == 3)
   {
     // read the home position
-    utility::Position position;
+    utility::GPS_Position position;
     position.from_container (self_.device.home);
 
     // move to home
@@ -219,39 +226,29 @@ gams::platforms::VREP_UAV::land (void)
   return 0;
 }
 
+// TODO: handle epsilon
 int
-gams::platforms::VREP_UAV::move (const utility::Position & position,
+gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
   const double & /*epsilon*/)
 {
+  cout << "VREP_UAV::move (position = " << position.to_string () << ")" << endl;
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
     takeoff ();
 
   // convert form gps reference frame to vrep reference frame
   simxFloat dest_arr[3];
-  if (gps_)
-  {
-    utility::Position dest_pos;
-    gps_to_vrep (position, dest_pos);
-    position_to_array (dest_pos, dest_arr);
-  }
-  else
-  {
-    position_to_array (position, dest_arr);
-  }
+  utility::Position dest_pos;
+  gps_to_vrep (position, dest_pos);
+  position_to_array (dest_pos, dest_arr);
+  cout << "\tdest_vrep_pos = " << dest_pos.to_string () << endl;
 
   //set current position of node target
   simxFloat curr_arr[3];
-  if (gps_)
-  {
-    utility::Position vrep_pos;
-    gps_to_vrep (position_, vrep_pos);
-    position_to_array (vrep_pos, curr_arr);
-  }
-  else
-  {
-    position_to_array (position_, curr_arr);
-  }
+  utility::Position vrep_pos;
+  gps_to_vrep (position_, vrep_pos);
+  position_to_array (vrep_pos, curr_arr);
+  cout << "\tcurr_vrep_pos = " << vrep_pos.to_string () << endl;
 
   // get distance to target
   double distance_to_target = pow (
@@ -299,20 +296,16 @@ gams::platforms::VREP_UAV::sense (void)
   simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
                         simx_opmode_oneshot_wait);
 
-  // convert to gps
-  if (gps_)
-  {
-    utility::Position vrep_pos;
-    array_to_position (curr_arr, vrep_pos);
-    vrep_to_gps (vrep_pos, position_);
-  }
-  else // using vrep
-  {
-    array_to_position (curr_arr, position_);
-  }
+  utility::Position vrep_pos;
+  array_to_position (curr_arr, vrep_pos);
+  vrep_to_gps (vrep_pos, position_);
 
   // set position in madara
   position_.to_container (self_.device.location);
+
+  cout << "VREP_UAV::sense ()" << endl;
+  cout << "\tgps_pos =  " << position_.to_string () << endl;
+  cout << "\tvrep_pos = " << vrep_pos.to_string () << endl;
 
   return 0;
 }
@@ -359,7 +352,7 @@ gams::platforms::VREP_UAV::get_sensors (variables::Sensor_Names & sensors)
 }
 
 void
-gams::platforms::VREP_UAV::get_position (utility::Position & position)
+gams::platforms::VREP_UAV::get_position (utility::GPS_Position & position)
 {
   position = position_;
 }
@@ -379,38 +372,33 @@ gams::platforms::VREP_UAV::set_move_speed (const double& speed)
 double
 gams::platforms::VREP_UAV::get_position_accuracy () const
 {
-  if (gps_)
-    return 0.00001;
-  else // vrep
-    return 0.5;
+  return 1.0;
 }
 
 void 
-gams::platforms::VREP_UAV::gps_to_vrep (const utility::Position & position,
-  utility::Position & converted)
+gams::platforms::VREP_UAV::gps_to_vrep (const utility::GPS_Position & position,
+  utility::Position & converted) const
 {
   // assume the Earth is a perfect sphere
   const double EARTH_RADIUS = 6371000.0;
   const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
 
   // convert the latitude/x coordinates
-  // VREP uses y for latitude
-  converted.y = (position.x - sw_position_.x) / 360.0 * EARTH_CIRCUMFERENCE;
+  converted.y = (position.lat - sw_position_.lat) / 360.0 * EARTH_CIRCUMFERENCE;
   
   // assume the meters/degree longitude is constant throughout environment
   // convert the longitude/y coordinates
-  // VREP uses x for longitude
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.x));
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.lat));
   double circumference = 2 * r_prime * M_PI;
-  converted.x = (position.y - sw_position_.y) / 360.0 * circumference;
+  converted.x = (position.lon - sw_position_.lon) / 360.0 * circumference;
 
   // do nothing to altitude
-  converted.z = position.z;
+  converted.z = position.alt;
 }
 
 void 
 gams::platforms::VREP_UAV::vrep_to_gps (const utility::Position & position,
-  utility::Position & converted)
+  utility::GPS_Position & converted) const
 {
   // assume the Earth is a perfect sphere
   const double EARTH_RADIUS = 6371000.0;
@@ -418,22 +406,22 @@ gams::platforms::VREP_UAV::vrep_to_gps (const utility::Position & position,
 
   // convert the latitude/x coordinates
   // VREP uses y for latitude
-  converted.x = (360.0 * position.y / EARTH_CIRCUMFERENCE) + sw_position_.x;
+  converted.lat = (360.0 * position.y / EARTH_CIRCUMFERENCE) + sw_position_.lat;
   
   // assume the meters/degree longitude is constant throughout environment
   // convert the longitude/y coordinates
   // VREP uses x for longitude
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.x));
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.lat));
   double circumference = 2 * r_prime * M_PI;
-  converted.y = (360.0 * position.x / circumference) + sw_position_.y;
+  converted.lon = (360.0 * position.x / circumference) + sw_position_.lon;
 
   // do nothing to altitude
-  converted.z = position.z;
+  converted.alt = position.z;
 }
 
 inline void
 gams::platforms::VREP_UAV::position_to_array(const utility::Position & pos,
-  simxFloat (&arr)[3])
+  simxFloat (&arr)[3]) const
 {
   // have to swap x and y for vrep
   arr[0] = pos.y;
@@ -443,7 +431,7 @@ gams::platforms::VREP_UAV::position_to_array(const utility::Position & pos,
 
 inline void
 gams::platforms::VREP_UAV::array_to_position(const simxFloat (&arr)[3],
-  utility::Position & pos)
+  utility::Position & pos) const
 {
   // have to swap x and y for vrep
   pos.x = arr[1];

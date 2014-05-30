@@ -59,6 +59,7 @@
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
+#include "gams/utility/GPS_Position.h"
 #include "gams/utility/Region.h"
 
 namespace gams
@@ -114,7 +115,7 @@ namespace gams
       void generate_new_position ();
 
       /// next position
-      utility::Position next_position_;
+      utility::GPS_Position next_position_;
 
       /// coverage region
       const utility::Region region_;

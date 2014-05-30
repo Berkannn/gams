@@ -85,43 +85,43 @@ gams::platforms::Base::set_knowledge (
 }
 
 
- int
- gams::platforms::Base::move (const utility::Position & target,
-   const double & epsilon)
- {
-   int result = 0;
+int
+gams::platforms::Base::move (const utility::GPS_Position & target,
+  const double & epsilon)
+{
+  int result = 0;
 
-   utility::Position current;
-   current.from_container (self_.device.location);
+  utility::GPS_Position current;
+  current.from_container (self_.device.location);
 
-   /**
-    * if we are not paused, we are not already at the target,
-    * and we are either not moving or the target is different
-    * from the existing move location, then set status to
-    * moving and return 1 (moving to the new location)
-    **/
-   if (!*status_.paused_moving && target != current &&
-      (!*status_.moving || target != self_.device.dest))
-   {
-     self_.device.source = self_.device.location;
-     target.to_container (self_.device.dest);
+  /**
+   * if we are not paused, we are not already at the target,
+   * and we are either not moving or the target is different
+   * from the existing move location, then set status to
+   * moving and return 1 (moving to the new location)
+   **/
+  if (!*status_.paused_moving && target != current &&
+     (!*status_.moving || target != self_.device.dest))
+  {
+    self_.device.source = self_.device.location;
+    target.to_container (self_.device.dest);
 
-     result = 1;
-     status_.moving = 1;
-   }
-   /**
-    * otherwise, if we are approximately at the target location,
-    * change status and paused to 0 and return 0 (not moving)
-    **/
-   else if (target.approximately_equal (current, epsilon))
-   {
-     status_.moving = 0;
-     status_.paused_moving = 0;
-     result = 0;
-   }
+    result = 1;
+    status_.moving = 1;
+  }
+  /**
+   * otherwise, if we are approximately at the target location,
+   * change status and paused to 0 and return 0 (not moving)
+   **/
+  else if (target.approximately_equal (current, epsilon))
+  {
+    status_.moving = 0;
+    status_.paused_moving = 0;
+    result = 0;
+  }
 
-   return result;
- }
+  return result;
+}
  
 
 void

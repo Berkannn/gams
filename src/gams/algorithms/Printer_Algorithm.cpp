@@ -140,7 +140,7 @@ gams::algorithms::Printer_Algorithm::execute (void)
 
   if (platform_)
   {
-    utility::Position next (1, 2, 3);
+    utility::GPS_Position next (1, 2, 3);
     platform_->move (next);
   }
   else

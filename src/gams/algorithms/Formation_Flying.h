@@ -59,6 +59,7 @@
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
+#include "gams/utility/GPS_Position.h"
 
 namespace gams
 {
@@ -118,13 +119,13 @@ namespace gams
       variables::Sensor_Names sensor_names_;
 
       /// next position
-      utility::Position next_position_;
+      utility::GPS_Position next_position_;
 
       /// do we need to move?
       bool need_to_move_;
 
       /// destination
-      utility::Position destination_;
+      utility::GPS_Position destination_;
 
       /// planar distance formation offsets
       double rho_;
