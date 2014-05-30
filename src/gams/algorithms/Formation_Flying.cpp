@@ -242,7 +242,7 @@ gams::algorithms::Formation_Flying::plan (void)
     {
       case ROTATE:
       {
-        double angle = phi_ + phi_dir_ + executions_ * M_PI / 20;
+        double angle = -phi_ + phi_dir_ + executions_ * M_PI / 20;
         utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
 
         utility::GPS_Position reference;
@@ -253,23 +253,34 @@ gams::algorithms::Formation_Flying::plan (void)
 
         break;
       }
-      default:
+      default: // case NONE
       {
-        double angle = phi_ + phi_dir_;
+        double angle = -phi_ + phi_dir_;
+        utility::GPS_Position ref_location;
+        ref_location.from_container (head_location_);
+        utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
         if (in_formation_ == 0)
         {
-          utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
-          utility::GPS_Position reference;
-          reference.from_container (head_location_);
-          next_position_ = offset.to_gps_position (reference);
-          need_to_move_ = true;
+          next_position_ = offset.to_gps_position (ref_location);
         }
-        else if (formation_ready_ == 1)
+        else // we are moving or already at destination
         {
-          utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
-          next_position_ = offset.to_gps_position (destination_);
-          need_to_move_ = true;
+          double dist = ref_location.distance_to (destination_);
+          // TODO: tune the movement parameter
+          if (dist > platform_->get_move_speed () * 3)
+          {
+            // predict where the reference device will be
+            dist = platform_->get_move_speed () * 1.5;
+            utility::Position direction (dist * cos (phi_dir_), dist * sin (phi_dir_));
+            utility::GPS_Position predicted = direction.to_gps_position (ref_location);
+            next_position_ = offset.to_gps_position (predicted);
+          }
+          else // close enough, just go to final location
+          {
+            next_position_ = offset.to_gps_position (destination_);
+          }
         }
+        need_to_move_ = true;
       }
     }
   }

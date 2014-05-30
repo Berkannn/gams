@@ -127,22 +127,11 @@ void
 gams::utility::GPS_Position::direction_to (const GPS_Position& rhs, 
   double& phi) const
 {
-  // assume the Earth is a perfect sphere
-  const double EARTH_RADIUS = 6371000.0;
-  const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
-
-  // convert the latitude/x coordinates
-  // VREP uses y for latitude
-  double delta_lat = (rhs.lat - this->lat) / 360.0 * EARTH_CIRCUMFERENCE;
-  
-  // assume the meters/degree longitude is constant throughout environment
-  // convert the longitude/y coordinates
-  // VREP uses x for longitude
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (rhs.lat));
-  double circumference = 2 * r_prime * M_PI;
-  double delta_lon = (rhs.lon - this->lon) / 360.0 * circumference;
-
-  phi = atan2 (delta_lat, delta_lon);
+  // Convert to cartesian and use those
+  Position p1 = this->to_position (*this);
+  Position p2 = rhs.to_position (*this);
+  double temp;
+  p1.direction_to (p2, phi, temp);
 }
 
 double
