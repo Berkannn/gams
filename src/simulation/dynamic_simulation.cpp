@@ -93,9 +93,6 @@ double sim_time = 50.0;
 string vrep_host = "127.0.0.1";
 int vrep_port = 19905;
 
-// string executable
-string executable = "./gams_controller";
-
 // SW corner of simulation
 double sw_lat = 40.442824;
 double sw_long = -79.940967;
@@ -113,6 +110,9 @@ bool plants = false;
 // use gps coords
 bool gps = false;
 
+// madara init
+string madara_commands = "";
+
 /**
  * Print out program usage
  **/
@@ -127,6 +127,8 @@ void print_usage (string prog_name)
   cerr << "       use gps coords (instead of vrep)" << endl;
   cerr << "   [-l | --log_level <number>]" << endl;
   cerr << "       MADARA log level, 1-10" << endl;
+  cerr << "   [-mf| --madara_file <file(s)>]" << endl;
+  cerr << "       madara variable initialization files" << endl;
   cerr << "   [-n | --num_agents <number>]" << endl;
   cerr << "       number of agents that will be launched" << endl;
   cerr << "   [--north_east <coords>]" << endl;
@@ -154,8 +156,25 @@ void handle_arguments (int argc, char** argv)
     }
     else if (arg1 == "-l" || arg1 == "--log_level")
     {
-      sscanf (argv[i + 1], "%d", &MADARA_debug_level);
+      if (i + 1 < argc && argv[i + 1][0] != '-')
+        sscanf (argv[i + 1], "%d", &MADARA_debug_level);
+      else
+        print_usage (argv[0]);
       ++i;
+    }
+    else if (arg1 == "-mf" || arg1 == "--madara_file")
+    {
+      madara_commands = "";
+      bool files = false;
+      for (;i + 1 < argc && argv[i + 1][0] != '-'; ++i)
+      {
+        madara_commands += Madara::Utility::file_to_string (argv[i + 1]);
+        madara_commands += ";\r\n";
+        files = true;
+      }
+
+      if (!files)
+        print_usage (argv[0]);
     }
     else if (arg1 == "-n" || arg1 == "--num_agents")
     {
@@ -210,28 +229,30 @@ void handle_arguments (int argc, char** argv)
  * Get dimensions of environment using SW corner and NE corner
  * VREP uses y coord for N/S and x for E/W
  **/
-void get_dimensions (double &max_x, double &max_y)
+void get_dimensions (double &max_x, double &max_y,
+  Madara::Knowledge_Engine::Knowledge_Base& knowledge)
 {
-  if (gps)
+  // check knowledge base
+  string sw_position = knowledge.get (".vrep_sw_position").to_string ();
+  string ne_position = knowledge.get (".vrep_ne_position").to_string ();
+  if (sw_position != "0")
   {
-    // assume the Earth is a perfect sphere
-    const double EARTH_RADIUS = 6371000.0;
-    const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
+    sscanf (sw_position.c_str (), "%lf,%lf", &sw_lat, &sw_long);
+    sscanf (ne_position.c_str (), "%lf,%lf", &ne_lat, &ne_long);
+  }
   
-    // get y/lat first
-    max_y = (ne_lat - sw_lat) / 360.0 * EARTH_CIRCUMFERENCE;
-    
-    // assume the meters/degree longitude is constant throughout environment
-    // convert the longitude/x coordinates
-    double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_lat));
-    double circumference = 2 * r_prime * M_PI;
-    max_x = (ne_long - sw_long) / 360.0 * circumference;
-  }
-  else // vrep
-  {
-    max_y = ne_lat - sw_lat;
-    max_x = ne_long - sw_long;
-  }
+  // assume the Earth is a perfect sphere
+  const double EARTH_RADIUS = 6371000.0;
+  const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
+
+  // get y/lat first
+  max_y = (ne_lat - sw_lat) / 360.0 * EARTH_CIRCUMFERENCE;
+  
+  // assume the meters/degree longitude is constant throughout environment
+  // convert the longitude/x coordinates
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_lat));
+  double circumference = 2 * r_prime * M_PI;
+  max_x = (ne_long - sw_long) / 360.0 * circumference;
 }
 
 /**
@@ -239,11 +260,12 @@ void get_dimensions (double &max_x, double &max_y)
  * Add floors and plants as visible markers
  * @param client_id id for vrep connection
  **/
-void create_environment (int client_id)
+void create_environment (int client_id,
+  Madara::Knowledge_Engine::Knowledge_Base& knowledge)
 {
   // find environment parameters
   double max_x, max_y;
-  get_dimensions (max_x, max_y);
+  get_dimensions (max_x, max_y, knowledge);
   cout << "creating environment of size " << max_x << " x " << max_y << "...";
   int num_x = max_x / 20 + 2;
   int num_y = max_y / 20 + 2;
@@ -352,6 +374,9 @@ int main (int argc, char ** argv)
     settings.hosts.push_back (default_multicast);
   }
   Madara::Knowledge_Engine::Knowledge_Base knowledge (host, settings);
+  if (madara_commands != "")
+    knowledge.evaluate (madara_commands,
+      Madara::Knowledge_Engine::Eval_Settings(false, true));
 
   // connect to vrep
   cout << "connecting to vrep...";
@@ -365,7 +390,7 @@ int main (int argc, char ** argv)
   cout << "done" << endl;
 
   // actual work
-  create_environment (client_id);
+  create_environment (client_id, knowledge);
   if(num_agents > 0)
     start_simulator (client_id, knowledge);
 

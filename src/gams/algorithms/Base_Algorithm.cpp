@@ -100,6 +100,7 @@ gams::algorithms::Base::set_devices (variables::Devices * devices)
   devices_ = devices;
 }
 
+// TODO: move this to Region.cpp
 gams::utility::Region
 gams::algorithms::Base::parse_region ()
 {
@@ -111,7 +112,7 @@ gams::algorithms::Base::parse_region ()
   std::string region = knowledge_->get (expr).to_string ();
   
   // parse vertices
-  std::vector<gams::utility::Position> vertices;
+  std::vector<gams::utility::GPS_Position> vertices;
   char expression[50];
   sprintf (expression, "%s.type", region.c_str ());
   int region_type = knowledge_->get (expression).to_integer ();
@@ -124,9 +125,9 @@ gams::algorithms::Base::parse_region ()
       for (int i = 1; i <= num_vertices; ++i) // get the vertices
       {
         sprintf (expression, "%s.%d", region.c_str (), i);
-        utility::Position pos;
+        utility::GPS_Position pos;
         sscanf (knowledge_->get (expression).to_string ().c_str (),
-          "%lf,%lf,%lf", &pos.x, &pos.y, &pos.z);
+          "%lf,%lf,%lf", &pos.lat, &pos.lon, &pos.alt);
         vertices.push_back (pos);
       }
       break;

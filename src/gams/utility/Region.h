@@ -71,8 +71,8 @@ namespace gams
        * Constructor
        * @param  init_points  the vertices of the region
        **/
-      Region (const std::vector <Position> & init_points = 
-        std::vector<Position> ());
+      Region (const std::vector <GPS_Position> & init_points = 
+        std::vector<GPS_Position> ());
 
       /**
        * Destructor
@@ -86,11 +86,19 @@ namespace gams
       void operator= (const Region & rhs);
       
       /**
-       * Determine if position is in region
+       * Determine if GPS_Position is in region
        * @param   p   point to check if in region
        * @return  true if point is in region or on border, false otherwise
        **/
-      bool is_in_region (const Position & p) const;
+      bool is_in_region (const GPS_Position & p) const;
+
+      /**
+       * Determine if GPS_Position is in region
+       * @param   p     point to check if in region
+       * @param   ref   gps reference for point p
+       * @return  true if point is in region or on border, false otherwise
+       **/
+      bool is_in_region (const Position & p, const GPS_Position& ref) const;
 
       /**
        * Get bounding box
@@ -119,12 +127,12 @@ namespace gams
         Madara::Knowledge_Engine::Containers::String_Array & target);
 
       /// the vertices of the region
-      std::vector <Position> points;
+      std::vector <GPS_Position> points;
 
       /// bounding box
-      double min_x_, max_x_;
-      double min_y_, max_y_;
-      double min_z_, max_z_;
+      double min_lat_, max_lat_;
+      double min_lon_, max_lon_;
+      double min_alt_, max_alt_;
 
     protected:
       /**

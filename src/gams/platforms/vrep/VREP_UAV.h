@@ -58,11 +58,13 @@
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
 #include "gams/platforms/Base_Platform.h"
+#include "gams/utility/GPS_Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 extern "C" {
 #include "extApi.h"
 }
+
 
 #ifdef _GAMS_VREP_
 
@@ -115,7 +117,7 @@ namespace gams
        * @param   epsilon   approximation value
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual int move (const utility::Position & position,
+      virtual int move (const utility::GPS_Position & position,
         const double & epsilon = 0.1);
       
       /**
@@ -145,7 +147,7 @@ namespace gams
        * Obtains the current position
        * @param  position  after the call, filled with the current position
        **/
-      virtual void get_position (utility::Position & position);
+      virtual void get_position (utility::GPS_Position & position);
 
       /**
        * Get move speed
@@ -171,8 +173,8 @@ namespace gams
        * @param position    lat/long position to convert
        * @param converted   x/y coords in vrep reference frame
        **/
-      void gps_to_vrep (const utility::Position & position,
-        utility::Position & converted);
+      void gps_to_vrep (const utility::GPS_Position & position,
+        utility::Position & converted) const;
 
       /**
        * Converts lat/long coordinates to vrep coordinates
@@ -180,7 +182,7 @@ namespace gams
        * @param converted   x/y coords in vrep reference frame
        **/
       void vrep_to_gps (const utility::Position & position,
-        utility::Position & converted);
+        utility::GPS_Position & converted) const;
 
       /**
        * Get position from float array
@@ -188,7 +190,7 @@ namespace gams
        * @param arr array to store it in
        **/
       inline void position_to_array (const utility::Position & pos,
-        simxFloat (&arr)[3]);
+        simxFloat (&arr)[3]) const;
 
       /**
        * Get float array from position
@@ -196,16 +198,16 @@ namespace gams
        * @param pos position to store it in
        **/
       inline void array_to_position (const simxFloat (&arr)[3], 
-        utility::Position & pos);
+        utility::Position & pos) const;
 
       /// current position
-      utility::Position position_;
+      utility::GPS_Position position_;
 
       /// gps coordinates corresponding to (x_max, y_max) in vrep
-      utility::Position ne_position_;
+      utility::GPS_Position ne_position_;
 
       /// gps coordinates corresponding to (0, 0) in vrep
-      utility::Position sw_position_;
+      utility::GPS_Position sw_position_;
 
       /// flag for drone being airborne
       bool airborne_;

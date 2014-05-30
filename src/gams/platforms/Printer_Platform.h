@@ -58,6 +58,7 @@
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
 #include "gams/platforms/Base_Platform.h"
+#include "gams/utility/GPS_Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
@@ -139,7 +140,7 @@ namespace gams
        * Obtains the current position
        * @param  position  after the call, filled with the current position
        **/
-      virtual void get_position (utility::Position & position);
+      virtual void get_position (utility::GPS_Position & position);
 
       /**
        * Get the location aproximation value of what is considered close enough
@@ -165,7 +166,7 @@ namespace gams
       variables::Self * self_;
 
       /// current position
-      utility::Position position_;
+      utility::GPS_Position position_;
     };
   }
 }

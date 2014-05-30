@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names Â“Carnegie Mellon University,Â” "SEIÂ” and/or Â“Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN Â“AS-ISÂ” BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -45,14 +45,14 @@
  **/
 
 /**
- * @file Position.h
- * @author James Edmondson <jedmondson@gmail.com>
+ * @file GPS_Position.h
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file contains a utility class for working with position
+ * This file contains a utility class for working with gps coordinates
  **/
 
-#ifndef _GAMS_UTILITY_POSITION_H_
-#define _GAMS_UTILITY_POSITION_H_
+#ifndef _GAMS_UTILITY_GPS_POSITION_H_
+#define _GAMS_UTILITY_GPS_POSITION_H_
 
 #include <vector>
 
@@ -60,49 +60,49 @@
 #include "madara/knowledge_engine/containers/Double_Vector.h"
 #include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 
-#include "gams/utility/GPS_Position.h"
+#include "gams/utility/Position.h"
 
 namespace gams
 {
   namespace utility
   {
     // forward declaration
-    class GAMS_Export GPS_Position;
+    class GAMS_Export Position;
 
-    class GAMS_Export Position
+    class GAMS_Export GPS_Position
     {
     public:
       /**
        * Constructor
-       * @param  init_x    the x axis coordinate (e.g. latitude)
-       * @param  init_y    the y axis coordinate (e.g. longitude)
-       * @param  init_z    the z axis coordinate (e.g. altitude)
+       * @param  init_lat   the initial latitude
+       * @param  init_lon   the initial longitude
+       * @param  init_alt   the initial altitude
        **/
-      Position (
-        double init_x = 0.0, double init_y = 0.0, double init_z = 0.0);
+      GPS_Position (
+        double init_lat = 0.0, double init_lon = 0.0, double init_alt = 0.0);
 
       /**
        * Destructor
        **/
-      ~Position ();
+      ~GPS_Position ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Position & rhs);
+      void operator= (const GPS_Position & rhs);
 
       /**
        * Equality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if all members are equal in both objects, false otherwise
        **/
-      bool operator== (const Position & rhs) const;
+      bool operator== (const GPS_Position & rhs) const;
       
       /**
        * Equality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if all members are equal in both objects, false otherwise
        **/
       bool operator== (const
         Madara::Knowledge_Engine::Containers::Double_Array & rhs) const;
@@ -110,7 +110,7 @@ namespace gams
       /**
        * Equality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if all members are equal in both objects, false otherwise
        **/
       bool operator== (const
         Madara::Knowledge_Engine::Containers::Native_Double_Array & rhs) const;
@@ -118,14 +118,14 @@ namespace gams
       /**
        * Inequality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if any members are not equal in both objects, false otherwise
        **/
-      bool operator!= (const Position & rhs) const;
+      bool operator!= (const GPS_Position & rhs) const;
       
       /**
        * Inequality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if any members are not equal in both objects, false otherwise
        **/
       bool operator!= (const
         Madara::Knowledge_Engine::Containers::Double_Array & rhs) const;
@@ -133,7 +133,7 @@ namespace gams
       /**
        * Inequality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if any members are not equal in both objects, false otherwise
        **/
       bool operator!= (const
         Madara::Knowledge_Engine::Containers::Native_Double_Array & rhs) const;
@@ -142,40 +142,32 @@ namespace gams
        * Approximate equality
        * @param  rhs      value to compare
        * @param  epsilon  approximation value
-       * @return true if position is within epsilon in each direction of this
+       * @return true if position is within distance epsilon of *this
        **/
       bool approximately_equal(
-        const Position & rhs, const double & epsilon) const;
+        const GPS_Position & rhs, const double & epsilon) const;
 
       /**
        * Get spherical direction to position
        * @param rhs     other position
-       * @param phi     direction in x/y plane
-       * @param theta   direction in z plane
+       * @param phi     direction to rhs
        **/
-      void direction_to (const Position& rhs, double& phi, double& theta) const;
+      void direction_to (const GPS_Position& rhs, double& phi) const;
 
       /**
        * Get distance between two positions
        * @param  rhs      second position
-       * @return euclidean distance between the two points
+       * @return euclidean distance between the two points in meters
        **/
-      double distance (const Position & rhs) const;
+      double distance_to (const GPS_Position & rhs) const;
 
       /**
-       * Get the 2D distance between two positions
-       * @param  rhs      second position
-       * @return euclidean distance between the two points with just x and y
-       **/
-      double distance_2d (const Position & rhs) const;
-
-      /**
-       * Get slope between two points
-       * @param p     other point
+       * get slope of two points using lat/long
+       * @param rhs other GPS_Position to use
        * @param slope location to store slope between two points
        * @return      true if slope exists
        **/
-      bool slope_2d (const Position & p, double & slope) const;
+      bool slope_2d (const GPS_Position & p, double & slope) const;
 
       /**
        * Deterime if a third point is inline and between another two points
@@ -183,8 +175,9 @@ namespace gams
        * @param check   point to check
        * @return true if check is inline and between *this and end
        **/
-      bool is_between_2d (const Position & end, const Position & check) const;
-      
+      bool is_between_2d (const GPS_Position & end, const GPS_Position & check)
+        const;
+
       /**
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
@@ -192,17 +185,17 @@ namespace gams
       std::string to_string (const std::string & delimiter = ",") const;
 
       /**
-       * Convert this to a GPS_Position
-       * @param ref   origin GPS_Position
-       * @return GPS_Position corresponding to *this
+       * Convert to position using reference location
+       * @param ref   Reference location
+       * @return Position object relative to ref
        **/
-      GPS_Position to_gps_position (const GPS_Position& ref) const;
+      Position to_position (const GPS_Position& ref) const;
 
       /**
-       * Helper function for creating a Position from a string
+       * Helper function for creating a GPS_Position from a string
        * @param delimiter characters to insert between position components
        **/
-      static Position from_string (const std::string & delimiter = ",");
+      static GPS_Position from_string (const std::string & delimiter = ",");
 
       /**
        * Helper function for copying values to a MADARA double array
@@ -233,16 +226,16 @@ namespace gams
       void from_container (
         Madara::Knowledge_Engine::Containers::Native_Double_Array & source);
 
-      /// the x coordinate (e.g. latitude)
-      double x;
+      /// latitude
+      double lat;
 
-      /// the y coordinate (e.g. longitude)
-      double y;
+      /// longitude
+      double lon;
 
-      /// the z coordinate (e.g. altitude)
-      double z;
-    };
-  }
-}
+      /// altitude
+      double alt;
+    }; // class GPS_Position
+  } // namespace utility
+} // namespace gams
 
-#endif // _GAMS_UTILITY_POSITION_H_
+#endif // _GAMS_UTILITY_GPS_POSITION_H_

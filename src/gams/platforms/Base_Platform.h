@@ -106,11 +106,11 @@ namespace gams
 
       /**
        * Moves the platform to a position
-       * @param   position  the coordinate to move to
+       * @param   position  the coordinates to move to
        * @param   epsilon   approximation value
        * @return 1 if moving toward position, 0 if arrived, negative if error
        **/
-      virtual int move (const utility::Position & position,
+      virtual int move (const utility::GPS_Position & position,
         const double & epsilon = 0.1);
       
       /**
@@ -153,7 +153,7 @@ namespace gams
        * Obtains the current position
        * @param  position  after the call, filled with the current position
        **/
-      virtual void get_position (utility::Position & position) = 0;
+      virtual void get_position (utility::GPS_Position & position) = 0;
 
       /**
        * Get move speed
@@ -177,7 +177,7 @@ namespace gams
       virtual void stop_move (void);
 
       /**
-       * Get the position accuracy
+       * Get the position accuracy in meters
        * @return position accuracy
        **/
       virtual double get_position_accuracy () const = 0;

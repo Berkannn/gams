@@ -93,7 +93,7 @@ int
 gams::algorithms::Uniform_Random_Edge_Coverage::plan (void)
 {
   // generate new next position if necessary
-  utility::Position current;
+  utility::GPS_Position current;
   current.from_container (self_->device.location);
   if (!init_ || current.approximately_equal(next_position_,
     platform_->get_position_accuracy ()))
@@ -113,34 +113,36 @@ gams::algorithms::Uniform_Random_Edge_Coverage::generate_new_position ()
   int target_edge = rand() % num_edges;
 
   // get endpoints
-  const utility::Position & pos_1 = region_.points[target_edge];
-  const utility::Position & pos_2 = 
+  const utility::GPS_Position & pos_1 = region_.points[target_edge];
+  const utility::GPS_Position & pos_2 = 
     region_.points[(target_edge + 1) % num_edges];
 
   // get random point on line
-  double delta_y = pos_2.y - pos_1.y;
-  double delta_x = pos_2.x - pos_1.x;
-  if (delta_y == 0) // east/west line
+  double delta_lat = pos_2.lat - pos_1.lat;
+  double delta_lon = pos_2.lon - pos_1.lon;
+  if (delta_lon == 0) // north/south line
   {
-    const double & min = pos_1.x < pos_2.x ? pos_1.x : pos_2.x;
-    const double & max = pos_1.x > pos_2.x ? pos_1.x : pos_2.x;
-    next_position_.x = Madara::Utility::rand_double(min, max);
-    next_position_.y = pos_1.y;
+    const double & min = pos_1.lat < pos_2.lat ? pos_1.lat : pos_2.lat;
+    const double & max = pos_1.lat > pos_2.lat ? pos_1.lat : pos_2.lat;
+    next_position_.lat = Madara::Utility::rand_double(min, max);
+    next_position_.lon = pos_1.lon;
   }
-  else if (delta_x == 0) // north/south line
+  else if (delta_lat == 0) // east/west line
   {
-    const double & min = pos_1.y < pos_2.y ? pos_1.y : pos_2.y;
-    const double & max = pos_1.y > pos_2.y ? pos_1.y : pos_2.y;
-    next_position_.y = Madara::Utility::rand_double(min, max);
-    next_position_.x = pos_1.x;
+    const double & min = pos_1.lon < pos_2.lon ? pos_1.lon : pos_2.lon;
+    const double & max = pos_1.lon > pos_2.lon ? pos_1.lon : pos_2.lon;
+    next_position_.lon = Madara::Utility::rand_double(min, max);
+    next_position_.lat = pos_1.lat;
   }
   else // other arbitrary line
   {
-    const double slope = (pos_2.y - pos_1.y) / (pos_2.x - pos_1.x);
-    next_position_.x = Madara::Utility::rand_double(pos_1.x, pos_2.x);
-    next_position_.y = slope * (next_position_.x - pos_1.x) + pos_1.y;
+    const double slope = (pos_2.lon - pos_1.lon) / (pos_2.lat - pos_1.lat);
+    next_position_.lat = Madara::Utility::rand_double(pos_1.lat, pos_2.lat);
+    next_position_.lon = slope * (next_position_.lat - pos_1.lat) + pos_1.lon;
   }
 
   // fill in altitude on waypoint
-  next_position_.z = self_->device.location[2];
+  next_position_.alt = self_->device.location[2];
+
+  cout << "next_position: " << next_position_.to_string () << endl;
 }

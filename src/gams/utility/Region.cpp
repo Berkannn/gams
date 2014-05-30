@@ -47,7 +47,7 @@
 #include <string>
 #include "Region.h"
 
-gams::utility::Region::Region (const std::vector <Position> & init_points)
+gams::utility::Region::Region (const std::vector <GPS_Position> & init_points)
 : points (init_points)
 {
   calculate_bounding_box ();
@@ -67,12 +67,12 @@ gams::utility::Region::operator= (const Region & rhs)
 }
 
 bool
-gams::utility::Region::is_in_region (const Position & p) const
+gams::utility::Region::is_in_region (const GPS_Position & p) const
 {
   // check if in bounding box
-  if (p.x < min_x_ || p.x > max_x_ ||
-      p.y < min_y_ || p.y > max_y_ ||
-      p.z < min_z_ || p.z > max_z_)
+  if (p.lat < min_lat_ || p.lat > max_lat_ ||
+      p.lon < min_lon_ || p.lon > max_lon_ ||
+      p.alt < min_alt_ || p.alt > max_alt_)
   {
     return false;
   }
@@ -83,10 +83,10 @@ gams::utility::Region::is_in_region (const Position & p) const
   bool ret = false;
   for (i = 0, j = points.size(); i < points.size(); j = i++)
   {
-    if ( ((points[i].y > p.y) != (points[j].y > p.y)) &&
-         (p.x < (points[j].x - points[i].x) * (p.y - points[i].y) / 
-                (points[j].y - points[i].y) + 
-                 points[i].x) )
+    if ( ((points[i].lon > p.lon) != (points[j].lon > p.lon)) &&
+         (p.lat < (points[j].lat - points[i].lat) * (p.lon - points[i].lon) / 
+                (points[j].lon - points[i].lon) + 
+                 points[i].lat) )
     {
       ret = !ret;
     }
@@ -95,27 +95,35 @@ gams::utility::Region::is_in_region (const Position & p) const
   return ret;
 }
 
+bool
+gams::utility::Region::is_in_region (const Position & p,
+  const GPS_Position& ref) const
+{
+  // convert to GPS_Position and then just use other is_in_region
+  return is_in_region (p.to_gps_position (ref));
+}
+
 gams::utility::Region
 gams::utility::Region::get_bounding_box () const
 {
   Region ret;
 
-  Position p;
-  p.x = min_x_; p.y = min_y_; p.z = 0;
+  GPS_Position p;
+  p.lat = min_lat_; p.lon = min_lon_; p.alt = 0;
   ret.points.push_back (p);
-  p.x = min_x_; p.y = max_y_; p.z = 0;
+  p.lat = min_lat_; p.lon = max_lon_; p.alt = 0;
   ret.points.push_back (p);
-  p.x = max_x_; p.y = max_y_; p.z = 0;
+  p.lat = max_lat_; p.lon = max_lon_; p.alt = 0;
   ret.points.push_back (p);
-  p.x = max_x_; p.y = min_y_; p.z = 0;
+  p.lat = max_lat_; p.lon = min_lon_; p.alt = 0;
   ret.points.push_back (p);
 
-  ret.min_x_ = this->min_x_;
-  ret.max_x_ = this->max_x_;
-  ret.min_y_ = this->min_y_;
-  ret.max_y_ = this->max_y_;
-  ret.min_z_ = this->min_z_;
-  ret.max_z_ = this->max_z_;
+  ret.min_lat_ = this->min_lat_;
+  ret.max_lat_ = this->max_lat_;
+  ret.min_lon_ = this->min_lon_;
+  ret.max_lon_ = this->max_lon_;
+  ret.min_alt_ = this->min_alt_;
+  ret.max_alt_ = this->max_alt_;
 
   return ret;
 }
@@ -152,23 +160,23 @@ gams::utility::Region::from_container (
 {
   points.resize (target.size ());
   for (unsigned int i = 0; i < target.size (); ++i)
-    points[i] = Position::from_string (target[i]);
+    points[i] = GPS_Position::from_string (target[i]);
   calculate_bounding_box ();
 }
 
 void
 gams::utility::Region::calculate_bounding_box ()
 {
-  min_x_ = min_y_ = min_z_ = DBL_MAX;
-  max_x_ = max_y_ = max_z_ = -DBL_MAX;
+  min_lat_ = min_lon_ = min_alt_ = DBL_MAX;
+  max_lat_ = max_lon_ = max_alt_ = -DBL_MAX;
   for (unsigned int i = 0; i < points.size(); ++i)
   {
-    min_x_ = (min_x_ > points[i].x) ? points[i].x : min_x_;
-    min_y_ = (min_y_ > points[i].y) ? points[i].y : min_y_;
-    min_z_ = (min_z_ > points[i].z) ? points[i].z : min_z_;
+    min_lat_ = (min_lat_ > points[i].lat) ? points[i].lat : min_lat_;
+    min_lon_ = (min_lon_ > points[i].lon) ? points[i].lon : min_lon_;
+    min_alt_ = (min_alt_ > points[i].alt) ? points[i].alt : min_alt_;
 
-    max_x_ = (max_x_ < points[i].x) ? points[i].x : max_x_;
-    max_y_ = (max_y_ < points[i].y) ? points[i].y : max_y_;
-    max_z_ = (max_z_ < points[i].z) ? points[i].z : max_z_;
+    max_lat_ = (max_lat_ < points[i].lat) ? points[i].lat : max_lat_;
+    max_lon_ = (max_lon_ < points[i].lon) ? points[i].lon : max_lon_;
+    max_alt_ = (max_alt_ < points[i].alt) ? points[i].alt : max_alt_;
   }
 }

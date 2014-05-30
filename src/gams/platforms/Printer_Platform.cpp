@@ -267,7 +267,7 @@ gams::platforms::Printer_Platform::takeoff (void)
 }
 
 void
-gams::platforms::Printer_Platform::get_position (utility::Position & position)
+gams::platforms::Printer_Platform::get_position (utility::GPS_Position & position)
 {
   std::cerr << "  platform.get_position returns " <<
     position_.to_string (", ") << "\n";

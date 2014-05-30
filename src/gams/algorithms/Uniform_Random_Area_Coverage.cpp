@@ -91,7 +91,7 @@ int
 gams::algorithms::Uniform_Random_Area_Coverage::plan (void)
 {
   // generate new next position if necessary
-  utility::Position current;
+  utility::GPS_Position current;
   current.from_container (self_->device.location);
   if (!init_ || current.approximately_equal(next_position_,
     platform_->get_position_accuracy ()))
@@ -108,16 +108,16 @@ gams::algorithms::Uniform_Random_Area_Coverage::generate_new_position ()
 {
   do
   {
-    next_position_.x = Madara::Utility::rand_double (region_.min_x_,
-      region_.max_x_);
-    next_position_.y = Madara::Utility::rand_double (region_.min_y_,
-      region_.max_y_);
-    next_position_.z = Madara::Utility::rand_double (region_.min_z_,
-      region_.max_z_);
+    next_position_.lat = Madara::Utility::rand_double (region_.min_lat_,
+      region_.max_lat_);
+    next_position_.lon = Madara::Utility::rand_double (region_.min_lon_,
+      region_.max_lon_);
+    next_position_.alt = Madara::Utility::rand_double (region_.min_alt_,
+      region_.max_alt_);
   }
   while (!region_.is_in_region (next_position_));
 
-  utility::Position current;
+  utility::GPS_Position current;
   current.from_container (self_->device.location);
-  next_position_.z = current.z;
+  next_position_.alt = current.alt;
 }

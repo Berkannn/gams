@@ -47,6 +47,8 @@
 
 #include <cmath>
 
+#include "gams/utility/GPS_Position.h"
+
 gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
@@ -62,10 +64,10 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
 
   // find longest edge
   int longest_edge = 0;
-  double max_dist = region.points[0].distance (region.points[1]);
+  double max_dist = region.points[0].distance_to (region.points[1]);
   for(int i = 1; i < num_edges; ++i)
   {
-    double dist = region.points[i].distance (
+    double dist = region.points[i].distance_to (
       region.points[(i + 1) % num_edges]);
     if(dist > max_dist)
     {
@@ -75,17 +77,17 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
   }
 
   // starting points are vertices of longest edge
-  utility::Position temp = region.points[longest_edge];
-  temp.z = 1.5;
+  utility::GPS_Position temp = region.points[longest_edge];
+  temp.alt = 1.5;
   waypoints_.push_back (temp);
   temp = region.points[(longest_edge + 1) % num_edges];
-  temp.z = 1.5;
+  temp.alt = 1.5;
   waypoints_.push_back (temp);
 
   // determine shift direction
   const double shift = 1.0; // TODO: update for sensor range
-  const utility::Position & p_0 = region.points[longest_edge];
-  const utility::Position & p_1 = region.points[(longest_edge + 1) % num_edges];
+  const utility::GPS_Position & p_0 = region.points[longest_edge];
+  const utility::GPS_Position & p_1 = region.points[(longest_edge + 1) % num_edges];
 
   /**
    * Assuming the bounding area is convex, only one of these loops will 
@@ -109,20 +111,20 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
        * Since we are assuming this is a convex polygon, it can have at most
        * two intercepts
        */
-      utility::Position intercepts[2];
+      utility::GPS_Position intercepts[2];
       for(int i = 1; i < num_edges && intercept_idx < 2; ++i)
       {
         // check current vertex for intercept
         int cur_vertex = (longest_edge + i) % num_edges;
 
         // beginning and end vertex of intersecing line segment
-        const utility::Position & p_n_0 = region.points[cur_vertex];
-        const utility::Position & p_n_1 = 
+        const utility::GPS_Position & p_n_0 = region.points[cur_vertex];
+        const utility::GPS_Position & p_n_1 = 
           region.points[(cur_vertex + 1) % num_edges];
  
         double m_0, m_n;
-        utility::Position check;
-        check.z = 1.5; // TODO: remove magic number
+        utility::GPS_Position check;
+        check.alt = 1.5; // TODO: remove magic number
         bool check_intercept = true;
         // if longest_edge is not vertical
         if (p_0.slope_2d (p_1, m_0))
@@ -138,20 +140,20 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
             {
               // find intercept of a line parallel to longest_edge and edge
               //    we are checking
-              const double y_w = (m_n * p_0.y - m_n * m_0 * p_0.x +
-                m_n * loop * delta_b - m_0 * p_n_0.y + m_0 * m_n * p_n_0.x) /
+              const double lon_w = (m_n * p_0.lon - m_n * m_0 * p_0.lat +
+                m_n * loop * delta_b - m_0 * p_n_0.lon + m_0 * m_n * p_n_0.lat) /
                 (m_n - m_0);
-              const double x_w = (y_w - p_n_0.y + m_n * p_n_0.x) / m_n;
-              check.x = x_w;
-              check.y = y_w;
+              const double lat_w = (lon_w - p_n_0.lon + m_n * p_n_0.lat) / m_n;
+              check.lat = lat_w;
+              check.lon = lon_w;
             }
             else // edges are parallel
               check_intercept = false;
           }
           else // edge to check is vertical, perform slopeless waypoint calculation
           {
-            check.x = p_n_0.x; // vertical line has same x coord throughout
-            check.y = m_0 * check.x + p_0.y - m_0 * p_0.x + loop * delta_b;
+            check.lat = p_n_0.lat; // vertical line has same x coord throughout
+            check.lon = m_0 * check.lat + p_0.lon - m_0 * p_0.lat + loop * delta_b;
           }
         } // end if edge to check is not vertical
         else // longest_edge is vertical line, so just shift the x coord
@@ -163,8 +165,8 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
           if (p_n_0.slope_2d(p_n_1, m_n))
           {
             // longest edge is vertical, so just shift the x coord
-            check.x = p_0.x + pow(-1.0, dir) * loop * shift;
-            check.y = m_n * (check.x - p_n_0.x) + p_n_0.y;
+            check.lat = p_0.lat + pow(-1.0, (double)dir) * loop * shift;
+            check.lon = m_n * (check.lat - p_n_0.lat) + p_n_0.lon;
           }
           else
             check_intercept = false;
@@ -178,8 +180,8 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
       // found intercepts => go to closest one first
       if (intercept_idx > 1)
       {
-        const utility::Position & prev = waypoints_[waypoints_.size () - 1];
-        if (prev.distance_2d (intercepts[0]) > prev.distance_2d (intercepts[1]))
+        const utility::GPS_Position & prev = waypoints_[waypoints_.size () - 1];
+        if (prev.distance_to (intercepts[0]) > prev.distance_to (intercepts[1]))
         {
           waypoints_.push_back (intercepts[1]);
           waypoints_.push_back (intercepts[0]);
@@ -218,10 +220,6 @@ gams::algorithms::Snake_Area_Coverage::operator= (
 int
 gams::algorithms::Snake_Area_Coverage::analyze (void)
 {
-  platform_->get_position (current_position_);
-
-  current_position_.to_container (self_->device.location);
-
   return 0;
 }
 
@@ -235,8 +233,11 @@ gams::algorithms::Snake_Area_Coverage::execute (void)
 int
 gams::algorithms::Snake_Area_Coverage::plan (void)
 {
+  utility::GPS_Position current;
+  platform_->get_position (current);
+
   // generate new next position if necessary
-  if (current_position_.approximately_equal(waypoints_[cur_waypoint_], 
+  if (current.approximately_equal(waypoints_[cur_waypoint_], 
     platform_->get_position_accuracy ()))
   {
     cur_waypoint_ = (cur_waypoint_ + 1) % waypoints_.size();
