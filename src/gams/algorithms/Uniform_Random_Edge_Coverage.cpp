@@ -46,14 +46,16 @@
 #include "Uniform_Random_Edge_Coverage.h"
 
 gams::algorithms::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
+  const Madara::Knowledge_Record& region_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
-  variables::Self * self)
-  : Base (knowledge, platform, sensors, self), region_ (parse_region ()),
-    init_ (false)
+  variables::Self * self) :
+  Base (knowledge, platform, sensors, self),
+  region_ (utility::parse_region (*knowledge, region_id.to_string ()))
 {
   status_.init_vars (*knowledge, "urec");
+  generate_new_position ();
 }
 
 gams::algorithms::Uniform_Random_Edge_Coverage::~Uniform_Random_Edge_Coverage ()
@@ -95,10 +97,9 @@ gams::algorithms::Uniform_Random_Edge_Coverage::plan (void)
   // generate new next position if necessary
   utility::GPS_Position current;
   current.from_container (self_->device.location);
-  if (!init_ || current.approximately_equal(next_position_,
+  if (current.approximately_equal(next_position_,
     platform_->get_position_accuracy ()))
   {
-    init_ = true;
     generate_new_position();
   }
 

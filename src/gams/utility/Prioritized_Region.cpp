@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names Â“Carnegie Mellon University,Â” "SEIÂ” and/or Â“Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN Â“AS-ISÂ” BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -45,82 +45,48 @@
  **/
 
 /**
- * @file Snake_Area_Coverage.h
- * @author James Edmondson <jedmondson@gmail.com>
+ * @file Prioritized_Region.cpp
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file contains the definition of the snake area coverage class
+ * Prioritized region associates a priority with a region
  **/
 
-#ifndef   _GAMS_ALGORITHMS_SNAKE_H_
-#define   _GAMS_ALGORITHMS_SNAKE_H_
+#include "gams/utility/Prioritized_Region.h"
 
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
-#include "gams/variables/Self.h"
-#include "gams/algorithms/Base_Algorithm.h"
-#include "gams/utility/Position.h"
-
-#include <vector>
-
-namespace gams
+gams::utility::Prioritized_Region::Prioritized_Region (
+  const vector <GPS_Position>& init_points, const unsigned int p) :
+  Region (init_points), priority (p)
 {
-  namespace algorithms
+}
+
+gams::utility::Prioritized_Region::Prioritized_Region (const Region& region,
+  const unsigned int p) :
+  Region (region), priority (p)
+{
+}
+
+void
+gams::utility::Prioritized_Region::operator= (const Prioritized_Region& rhs)
+{
+  if (this != &rhs)
   {
-    class GAMS_Export Snake_Area_Coverage : public Base
-    {
-    public:
-      /**
-       * Constructor
-       * @param  knowledge    the context containing variables and values
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  self         self-referencing variables
-       **/
-      Snake_Area_Coverage (
-        const Madara::Knowledge_Record& region_id,
-        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0,
-        variables::Sensors * sensors = 0,
-        variables::Self * self = 0);
-
-      /**
-       * Destructor
-       **/
-      ~Snake_Area_Coverage ();
-
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Snake_Area_Coverage & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void);
-
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void);
-      
-    protected:
-      /// waypoints
-      std::vector<utility::GPS_Position> waypoints_;
-
-      /// current waypoint
-      int cur_waypoint_;
-    };
+    this->Region::operator= (rhs);
+    this->priority = rhs.priority;
   }
 }
 
-#endif // _GAMS_ALGORITHMS_SNAKE_H_
+gams::utility::Prioritized_Region
+gams::utility::parse_prioritized_region (
+  Madara::Knowledge_Engine::Knowledge_Base& knowledge,
+  const string& prioritized_region_id)
+{
+  // start with just the region
+  Prioritized_Region ret (parse_region (knowledge, prioritized_region_id));
+
+  // get priority
+  char expr[50];
+  sprintf (expr, "%s.priority", prioritized_region_id.c_str ());
+  ret.priority = knowledge.get (expr).to_integer ();
+
+  return ret;
+}

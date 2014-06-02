@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names Â“Carnegie Mellon University,Â” "SEIÂ” and/or Â“Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN Â“AS-ISÂ” BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -45,83 +45,63 @@
  **/
 
 /**
- * @file Uniform_Random_Edge_Coverage.h
- * @author James Edmondson <jedmondson@gmail.com>
+ * @file Prioritized_Region.h
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file contains the definition of the random area coverage class
+ * Prioritized region associates a priority with a region
  **/
 
-#ifndef   _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
-#define   _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
+#ifndef  _GAMS_UTILITY_PRIORITIZED_REGION_H_
+#define  _GAMS_UTILITY_PRIORITIZED_REGION_H_
 
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
-#include "gams/variables/Self.h"
-#include "gams/algorithms/Base_Algorithm.h"
-#include "gams/utility/GPS_Position.h"
+#include <vector>
+using std::vector;
+
 #include "gams/utility/Region.h"
+#include "gams/utility/GPS_Position.h"
 
 namespace gams
 {
-  namespace algorithms
+  namespace utility
   {
-    class GAMS_Export Uniform_Random_Edge_Coverage : public Base
+    class GAMS_Export Prioritized_Region : public Region
     {
     public:
       /**
        * Constructor
-       * @param  knowledge    the context containing variables and values
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  self         self-referencing variables
+       * @param points    vector of points representing boundary polygon of region
+       * @param priority  associated priority
        **/
-      Uniform_Random_Edge_Coverage (
-        const Madara::Knowledge_Record& region_id,
-        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0);
+      Prioritized_Region (const vector <GPS_Position>& init_points =
+        vector<GPS_Position> (), const unsigned int p = 1);
 
       /**
-       * Destructor
+       * Constructor
+       * @param region    associated region
+       * @param priority  associated priority
        **/
-      ~Uniform_Random_Edge_Coverage ();
+      Prioritized_Region (const Region& region, const unsigned int p = 1);
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Uniform_Random_Edge_Coverage & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void);
+      void operator= (const Prioritized_Region& rhs);
 
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void);
-      
-    protected:
-      /// generate random position on a side
-      void generate_new_position ();
+      /// priority
+      unsigned int priority;
+    }; // class Prioritized_Region
 
-      /// next position
-      utility::GPS_Position next_position_;
+    /**
+     * Create prioritized region from knowledge base information
+     * @param knowledge   knowledge base to draw from
+     * @param region_id   identifier for region
+     * @return Prioritized_Region object created from knowledge base
+     **/
+    Prioritized_Region parse_prioritized_region (
+      Madara::Knowledge_Engine::Knowledge_Base& knowledge,
+      const string& prioritized_region_id);
+  } // namespace utility
+} // namespace gams
 
-      /// coverage region
-      const utility::Region region_;
-    };
-  }
-}
-
-#endif // _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
+#endif // _GAMS_UTILITY_PRIORITIZED_REGION_H_

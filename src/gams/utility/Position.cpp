@@ -117,9 +117,7 @@ bool
 gams::utility::Position::approximately_equal (const Position & rhs,
   const double & epsilon) const
 {
-  return (fabs (this->x - rhs.x) < epsilon) &&
-         (fabs (this->y - rhs.y) < epsilon) &&
-         (fabs (this->z - rhs.z) < epsilon);
+  return this->distance (rhs) <= epsilon;
 }
 
 void
@@ -132,7 +130,7 @@ gams::utility::Position::direction_to (const Position& rhs,
   double dist = pow (pow (x_dist, 2) + pow (y_dist, 2) + pow (z_dist, 2), 0.5);
 
   theta = acos (z_dist / dist);
-  phi = atan2 (y_dist, x_dist); // x is latitude for this application
+  phi = atan2 (y_dist, x_dist);
 }
 
 double

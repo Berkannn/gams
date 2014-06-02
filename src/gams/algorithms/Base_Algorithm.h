@@ -148,9 +148,6 @@ namespace gams
       virtual void set_devices (variables::Devices * devices);
       
     protected:
-      /// get vertices from region madara variables
-      gams::utility::Region parse_region ();
-
       /// provides access to the knowledge base
       Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
 

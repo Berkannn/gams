@@ -81,8 +81,6 @@ gams::platforms::VREP_UAV::VREP_UAV (
   string sw = knowledge.get (".vrep_sw_position").to_string ();
   sscanf(sw.c_str (), "%lf,%lf", &sw_position_.lat, &sw_position_.lon);
 
-  cout << "sw_position: " << sw_position_.to_string () << endl;
-
   // init quadrotor in env
   string modelFile (getenv("VREP_ROOT"));
   modelFile += "/models/robots/mobile/Quadricopter.ttm";
@@ -167,20 +165,20 @@ gams::platforms::VREP_UAV::~VREP_UAV ()
     simxInt retVal = simxGetObjectChild (client_id_, node_id_, 0, &childId,
       simx_opmode_oneshot_wait);
     if (retVal != simx_error_noerror)
-      cout << "error getting child of node: " << node_id_ << endl;
+      cerr << "error getting child of node: " << node_id_ << endl;
 
     if(childId != -1)
     {
       retVal = simxRemoveObject (client_id_, childId, simx_opmode_oneshot_wait);
       if(retVal != simx_error_noerror)
-        cout << "error removing child id " << childId << endl;
+        cerr << "error removing child id " << childId << endl;
     }
   }
 
   if (simxRemoveObject (client_id_, node_id_, simx_opmode_oneshot_wait)
     != simx_error_noerror)
   {
-    cout << "error deleting node " << node_id_ << endl;
+    cerr << "error deleting node " << node_id_ << endl;
   }
 }
 
@@ -232,7 +230,6 @@ int
 gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
   const double & /*epsilon*/)
 {
-  cout << "VREP_UAV::move (position = " << position.to_string () << ")" << endl;
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
     takeoff ();
@@ -242,14 +239,12 @@ gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
   utility::Position dest_pos;
   gps_to_vrep (position, dest_pos);
   position_to_array (dest_pos, dest_arr);
-  cout << "\tdest_vrep_pos = " << dest_pos.to_string () << endl;
 
   //set current position of node target
   simxFloat curr_arr[3];
   utility::Position vrep_pos;
   gps_to_vrep (position_, vrep_pos);
   position_to_array (vrep_pos, curr_arr);
-  cout << "\tcurr_vrep_pos = " << vrep_pos.to_string () << endl;
 
   // get distance to target
   double sum = pow (curr_arr[0] - dest_arr[0], 2.0);
@@ -302,10 +297,6 @@ gams::platforms::VREP_UAV::sense (void)
 
   // set position in madara
   position_.to_container (self_.device.location);
-
-  cout << "VREP_UAV::sense ()" << endl;
-  cout << "\tgps_pos =  " << position_.to_string () << endl;
-  cout << "\tvrep_pos = " << vrep_pos.to_string () << endl;
 
   return 0;
 }
