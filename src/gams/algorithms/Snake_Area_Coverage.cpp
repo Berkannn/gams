@@ -48,18 +48,20 @@
 #include <cmath>
 
 #include "gams/utility/GPS_Position.h"
+#include "gams/utility/Region.h"
 
 gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
+  const Madara::Knowledge_Record& region_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
-  variables::Self * self)
-  : Base (knowledge, platform, sensors, self)
+  variables::Self * self) :
+  Base (knowledge, platform, sensors, self)
 {
   status_.init_vars (*knowledge, "sac");
 
   // get region information
-  utility::Region region = parse_region ();
+  utility::Region region = utility::parse_region (*knowledge, region_id.to_integer ());
   const int num_edges = region.points.size ();
 
   // find longest edge

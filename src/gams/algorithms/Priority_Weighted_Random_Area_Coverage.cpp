@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names Â“Carnegie Mellon University,Â” "SEIÂ” and/or Â“Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN Â“AS-ISÂ” BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -44,54 +44,73 @@
  *      distribution.
  **/
 
-#include "Uniform_Random_Area_Coverage.h"
+/**
+ * @file Priority_Weighted_Random_Area_Coverage.cpp
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
+ *
+ * Prioritized Random Area Coverage prioritizes certain regions of a search area
+ * based on specified priorities
+ **/
 
-gams::algorithms::Uniform_Random_Area_Coverage::Uniform_Random_Area_Coverage (
-  const Madara::Knowledge_Record& region_id,
+#include "gams/algorithms/Priority_Weighted_Random_Area_Coverage.h"
+
+#include <iostream>
+using std::cout;
+using std::endl;
+
+gams::algorithms::Priority_Weighted_Random_Area_Coverage::
+Priority_Weighted_Random_Area_Coverage (
+  const Madara::Knowledge_Record& search_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
-  variables::Sensors * sensors,
+  platforms::Base * platform, variables::Sensors * sensors,
   variables::Self * self) :
   Base (knowledge, platform, sensors, self),
-  region_ (utility::parse_region (*knowledge, region_id.to_integer ()))
+  total_priority_ (0.0),
+  search_area_ (utility::parse_search_area (*knowledge, search_id.to_integer ()))
 {
-  status_.init_vars (*knowledge, "urac");
-}
+  // calculate total priority
+  const vector<utility::Prioritized_Region>& regions =
+    search_area_.get_regions ();
+  for (unsigned int i = 0; i < regions.size (); ++i)
+  {
+    total_priority_ += regions[i].get_area () * regions[i].priority;
+    priority_total_by_region_.push_back (total_priority_);
+  }
 
-gams::algorithms::Uniform_Random_Area_Coverage::~Uniform_Random_Area_Coverage ()
-{
+  // generate first position to move
+  generate_new_position ();
 }
 
 void
-gams::algorithms::Uniform_Random_Area_Coverage::operator= (
-  const Uniform_Random_Area_Coverage & rhs)
+gams::algorithms::Priority_Weighted_Random_Area_Coverage::operator= (
+  const Priority_Weighted_Random_Area_Coverage & rhs)
 {
   if (this != &rhs)
   {
-    this->platform_ = rhs.platform_;
-    this->sensors_ = rhs.sensors_;
-    this->self_ = rhs.self_;
-    this->status_ = rhs.status_;
+    this->next_position_ = rhs.next_position_;
+    this->search_area_ = rhs.search_area_;
+    this->priority_total_by_region_ = rhs.priority_total_by_region_;
+    this->total_priority_ = rhs.total_priority_;
   }
 }
 
 int
-gams::algorithms::Uniform_Random_Area_Coverage::analyze (void)
+gams::algorithms::Priority_Weighted_Random_Area_Coverage::analyze ()
 {
   return 0;
 }
 
 int
-gams::algorithms::Uniform_Random_Area_Coverage::execute (void)
+gams::algorithms::Priority_Weighted_Random_Area_Coverage::execute ()
 {
   platform_->move(next_position_);
   return 0;
 }
 
 int
-gams::algorithms::Uniform_Random_Area_Coverage::plan (void)
+gams::algorithms::Priority_Weighted_Random_Area_Coverage::plan ()
 {
-  // generate new next position if necessary
+  // find new target if necessary
   utility::GPS_Position current;
   current.from_container (self_->device.location);
   if (current.approximately_equal(next_position_,
@@ -104,19 +123,32 @@ gams::algorithms::Uniform_Random_Area_Coverage::plan (void)
 }
 
 void
-gams::algorithms::Uniform_Random_Area_Coverage::generate_new_position ()
+gams::algorithms::Priority_Weighted_Random_Area_Coverage::
+  generate_new_position ()
 {
-  // average selection time is area(bounding_box) / area(region)
+  // select region
+  double selected_rand = Madara::Utility::rand_double (0.0, total_priority_);
+  const utility::Prioritized_Region* selected_region;
+  for (unsigned int i = 0; i < search_area_.get_regions ().size (); ++i)
+  {
+    if (priority_total_by_region_[i] > selected_rand)
+    {
+      selected_region = &((search_area_.get_regions ())[i]);
+      break;
+    }
+  }
+
+  // select point in region
   do
   {
-    next_position_.lat = Madara::Utility::rand_double (region_.min_lat_,
-      region_.max_lat_);
-    next_position_.lon = Madara::Utility::rand_double (region_.min_lon_,
-      region_.max_lon_);
-    next_position_.alt = Madara::Utility::rand_double (region_.min_alt_,
-      region_.max_alt_);
+    next_position_.lat = Madara::Utility::rand_double (selected_region->min_lat_,
+      selected_region->max_lat_);
+    next_position_.lon = Madara::Utility::rand_double (selected_region->min_lon_,
+      selected_region->max_lon_);
+    next_position_.alt = Madara::Utility::rand_double (selected_region->min_alt_,
+      selected_region->max_alt_);
   }
-  while (!region_.is_in_region (next_position_));
+  while (!selected_region->is_in_region (next_position_));
 
   // found an acceptable position, so set it as next
   utility::GPS_Position current;

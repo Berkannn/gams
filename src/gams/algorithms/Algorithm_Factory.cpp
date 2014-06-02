@@ -43,16 +43,20 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Algorithm_Factory.h"
-#include "Land.h"
-#include "Move.h"
-#include "Printer_Algorithm.h"
-#include "Uniform_Random_Area_Coverage.h"
-#include "Uniform_Random_Edge_Coverage.h"
-#include "Snake_Area_Coverage.h"
-#include "Formation_Flying.h"
-#include "Takeoff.h"
+#include "gams/algorithms/Algorithm_Factory.h"
+#include "gams/algorithms/Land.h"
+#include "gams/algorithms/Move.h"
+#include "gams/algorithms/Printer_Algorithm.h"
+#include "gams/algorithms/Uniform_Random_Area_Coverage.h"
+#include "gams/algorithms/Uniform_Random_Edge_Coverage.h"
+#include "gams/algorithms/Priority_Weighted_Random_Area_Coverage.h"
+#include "gams/algorithms/Snake_Area_Coverage.h"
+#include "gams/algorithms/Formation_Flying.h"
+#include "gams/algorithms/Takeoff.h"
 
+#include <iostream>
+using std::cout;
+using std::endl;
 
 gams::algorithms::Factory::Factory (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -90,22 +94,33 @@ gams::algorithms::Factory::create (const std::string & type,
     if (knowledge_ && sensors_ && self_)
       result = new Printer_Algorithm (knowledge_, platform_, sensors_, self_);
   }
-  if (type == "uniform random area coverage" || type == "urac")
+  else if (type == "uniform random area coverage" || type == "urac")
   {
     if (knowledge_ && sensors_  && self_)
       result = new Uniform_Random_Area_Coverage (
+        arg1 /* region id */,
         knowledge_, platform_, sensors_, self_);
   }
-  if (type == "uniform random edge coverage" || type == "urec")
+  else if (type == "uniform random edge coverage" || type == "urec")
   {
     if (knowledge_ && sensors_  && self_)
       result = new Uniform_Random_Edge_Coverage (
+        arg1 /* region id*/,
+        knowledge_, platform_, sensors_, self_);
+  }
+  else if (type == "priority weighted random area coverage" || type == "pwrac")
+  {
+    cout << "Factory::create(): creating priority weighted random area coverage" << endl;
+    if (knowledge_ && sensors_  && self_)
+      result = new Priority_Weighted_Random_Area_Coverage (
+        arg1 /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "snake" || type == "sac")
   {
     if (knowledge_ && sensors_ && platform_ && self_)
       result = new Snake_Area_Coverage (
+        arg1 /* region id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "formation")

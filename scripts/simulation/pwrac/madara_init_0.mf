@@ -1,0 +1,11 @@
+.id=0;
+.vrep_port=19906;
+
+.set_initial=1;
+.initial_x=0;
+.initial_y=0;
+
+device.0.command="cover";
+device.0.command.size=2;
+device.0.command.0="pwrac";
+device.0.command.1="search_area.0";

@@ -141,7 +141,7 @@ namespace gams
       /**
        * Approximate equality
        * @param  rhs      value to compare
-       * @param  epsilon  approximation value
+       * @param  epsilon  approximation value in meters
        * @return true if position is within distance epsilon of *this
        **/
       bool approximately_equal(

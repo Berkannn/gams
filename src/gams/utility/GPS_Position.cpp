@@ -118,8 +118,6 @@ bool
 gams::utility::GPS_Position::approximately_equal (const GPS_Position & rhs,
   const double & epsilon) const
 {
-  cout << "GPS_Position::approximately_equal (*this = " << to_string () <<
-    ", rhs = " << rhs.to_string () << ", epsilon = " << epsilon << ")" << endl;
   return this->distance_to(rhs) <= epsilon;
 }
 
@@ -154,9 +152,6 @@ gams::utility::GPS_Position::distance_to (const GPS_Position & rhs) const
 
   double sum = pow (delta_lat, 2.0) + pow (delta_lon, 2.0);
   double dist = pow (sum, 0.5);
-
-  cout << "GPS_Position::distance_to (*this = " << to_string () << ", rhs = " <<
-    rhs.to_string () << ") = " << dist << endl;
 
   return dist;
 }

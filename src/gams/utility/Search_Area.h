@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names Â“Carnegie Mellon University,Â” "SEIÂ” and/or Â“Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN Â“AS-ISÂ” BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -45,80 +45,74 @@
  **/
 
 /**
- * @file Region.h
- * @author James Edmondson <jedmondson@gmail.com>
+ * @file Search_Area.h
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file contains a utility class for working with position
+ * Search Area is a collection of regions, possibly with priority
  **/
 
-#ifndef  _GAMS_UTILITY_REGION_H_
-#define  _GAMS_UTILITY_REGION_H_
+#ifndef  _GAMS_UTILITY_SEARCH_AREA_H_
+#define  _GAMS_UTILITY_SEARCH_AREA_H_
 
 #include <vector>
 #include <string>
 using std::string;
 
-#include "gams/GAMS_Export.h"
-#include "madara/knowledge_engine/containers/String_Vector.h"
-#include "gams/utility/Position.h"
+#include "gams/utility/Prioritized_Region.h"
 
 namespace gams
 {
   namespace utility
   {
-    class GAMS_Export Region
+    class GAMS_Export Search_Area
     {
     public:
       /**
-       * Constructor
-       * @param  init_points  the vertices of the region
+       * Default constructor
        **/
-      Region (const std::vector <GPS_Position> & init_points = 
-        std::vector<GPS_Position> ());
+      Search_Area ();
+
+      /**
+       * Constructor
+       * @param  region   the initial region of the search area
+       **/
+      Search_Area (const Prioritized_Region& region);
 
       /**
        * Destructor
        **/
-      ~Region ();
+      ~Search_Area ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Region & rhs);
+      void operator= (const Search_Area & rhs);
+
+      /**
+       * Add prioritized region to search area
+       * @param r   prioritized region to add
+       **/
+      inline void add_prioritized_region (const Prioritized_Region& r);
+
+      /**
+       * Get region data
+       * @return const reference to regions
+       **/
+      const vector<Prioritized_Region>& get_regions () const;
       
       /**
        * Determine if GPS_Position is in region
        * @param   p   point to check if in region
-       * @return  true if point is in region or on border, false otherwise
+       * @return  true if point is in one of the regions or on border, false otherwise
        **/
-      bool is_in_region (const GPS_Position & p) const;
+      bool is_in_search_area (const GPS_Position & p) const;
 
       /**
-       * Determine if GPS_Position is in region
-       * @param   p     point to check if in region
-       * @param   ref   gps reference for point p
-       * @return  true if point is in region or on border, false otherwise
+       * Create string representation of Search_Area
+       * @return string representation of this object
        **/
-      bool is_in_region (const Position & p, const GPS_Position& ref) const;
-
-      /**
-       * Get bounding box
-       * @return Region object corresponding to bounding box
-       **/
-      Region get_bounding_box () const;
-
-      /**
-       * Get area of the region
-       * @return area of this region
-       **/
-      double get_area () const;
-
-      /**
-       * Helper function for converting the position to a string
-       * @param delimiter characters to insert between position components
-       **/
-      string to_string (const string & delimiter = ":") const;
+      string to_string () const;
 
       /**
        * Helper function for copying values to a MADARA double array
@@ -134,30 +128,29 @@ namespace gams
       void from_container (
         Madara::Knowledge_Engine::Containers::String_Array & target);
 
-      /// the vertices of the region
-      std::vector <GPS_Position> points;
-
-      /// bounding box
-      double min_lat_, max_lat_;
-      double min_lon_, max_lon_;
-      double min_alt_, max_alt_;
-
     protected:
       /**
        * populate bounding box values
        **/
       void calculate_bounding_box ();
-    }; // class Region
+
+      /// collection of prioritized regions
+      vector<Prioritized_Region> regions_;
+
+      /// full region
+      Region union_;
+    }; // class Search_Area
 
     /**
-     * Create region from knowledge base information
+     * Create Search Area from knowledge base information
      * @param knowledge   knowledge base to draw from
      * @param region_id   identifier for region
      * @return Region object created from knowledge base
      **/
-    Region parse_region (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const unsigned int region_id);
+    Search_Area parse_search_area (
+      Madara::Knowledge_Engine::Knowledge_Base& knowledge,
+      const unsigned int search_area_id);
   } // namespace utility
 } // namespace gams
 
-#endif // _GAMS_UTILITY_REGION_H_
+#endif // _GAMS_UTILITY_SEARCH_AREA_H_

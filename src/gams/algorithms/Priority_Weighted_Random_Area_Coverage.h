@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names Â“Carnegie Mellon University,Â” "SEIÂ” and/or Â“Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN Â“AS-ISÂ” BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -45,29 +45,25 @@
  **/
 
 /**
- * @file Snake_Area_Coverage.h
- * @author James Edmondson <jedmondson@gmail.com>
+ * @file Priority_Weighted_Random_Area_Coverage.h
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file contains the definition of the snake area coverage class
+ * Prioritized Random Area Coverage prioritizes certain regions of a search area
+ * based on specified priorities
  **/
 
-#ifndef   _GAMS_ALGORITHMS_SNAKE_H_
-#define   _GAMS_ALGORITHMS_SNAKE_H_
+#ifndef _GAMS_ALGORITHMS_PRIORITY_WEIGHTED_RANDOM_AREA_COVERAGE_H_
+#define _GAMS_ALGORITHMS_PRIORITY_WEIGHTED_RANDOM_AREA_COVERAGE_H_
 
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
-#include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
-#include "gams/utility/Position.h"
-
-#include <vector>
+#include "gams/utility/Search_Area.h"
+#include "gams/utility/GPS_Position.h"
 
 namespace gams
 {
   namespace algorithms
   {
-    class GAMS_Export Snake_Area_Coverage : public Base
+    class GAMS_Export Priority_Weighted_Random_Area_Coverage : public Base
     {
     public:
       /**
@@ -77,23 +73,17 @@ namespace gams
        * @param  sensors      map of sensor names to sensor information
        * @param  self         self-referencing variables
        **/
-      Snake_Area_Coverage (
-        const Madara::Knowledge_Record& region_id,
+      Priority_Weighted_Random_Area_Coverage (
+        const Madara::Knowledge_Record& search_id, 
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0,
-        variables::Sensors * sensors = 0,
+        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
         variables::Self * self = 0);
-
-      /**
-       * Destructor
-       **/
-      ~Snake_Area_Coverage ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Snake_Area_Coverage & rhs);
+      void operator= (const Priority_Weighted_Random_Area_Coverage & rhs);
       
       /**
        * Analyzes environment, platform, or other information
@@ -112,15 +102,24 @@ namespace gams
        * @return bitmask status of the platform. @see Status.
        **/
       virtual int plan (void);
-      
+
     protected:
-      /// waypoints
-      std::vector<utility::GPS_Position> waypoints_;
+      /// generate new next position
+      void generate_new_position ();
 
-      /// current waypoint
-      int cur_waypoint_;
+      /// next position
+      utility::GPS_Position next_position_;
+
+      /// Search Area to cover
+      utility::Search_Area search_area_;
+
+      /// priority total by region
+      vector<double> priority_total_by_region_;
+
+      /// total priority
+      double total_priority_;
     };
-  }
-}
+  } // namespace algorithms
+} // namespace gams
 
-#endif // _GAMS_ALGORITHMS_SNAKE_H_
+#endif  // _GAMS_ALGORITHMS_PRIORITY_WEIGHTED_RANDOM_AREA_COVERAGE_H_

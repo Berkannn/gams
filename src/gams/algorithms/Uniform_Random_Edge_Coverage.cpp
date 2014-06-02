@@ -46,12 +46,14 @@
 #include "Uniform_Random_Edge_Coverage.h"
 
 gams::algorithms::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
+  const Madara::Knowledge_Record& region_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
-  variables::Self * self)
-  : Base (knowledge, platform, sensors, self), region_ (parse_region ()),
-    init_ (false)
+  variables::Self * self) :
+  Base (knowledge, platform, sensors, self),
+  region_ (utility::parse_region (*knowledge, region_id.to_integer ())),
+  init_ (false)
 {
   status_.init_vars (*knowledge, "urec");
 }

@@ -43,9 +43,20 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+
+/**
+ * @file Region.cpp
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains a utility class for working with regions
+ **/
+
 #include <sstream>
 #include <string>
 #include "Region.h"
+#include <vector>
+using std::vector;
+#include <cmath>
 
 gams::utility::Region::Region (const std::vector <GPS_Position> & init_points)
 : points (init_points)
@@ -81,7 +92,7 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
   // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
   unsigned int i, j;
   bool ret = false;
-  for (i = 0, j = points.size(); i < points.size(); j = i++)
+  for (i = 0, j = points.size() - 1; i < points.size(); j = i++)
   {
     if ( ((points[i].lon > p.lon) != (points[j].lon > p.lon)) &&
          (p.lat < (points[j].lat - points[i].lat) * (p.lon - points[i].lon) / 
@@ -91,6 +102,17 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
       ret = !ret;
     }
   }
+
+  // check if this is a vertex point
+  if (!ret)
+  {
+    for (unsigned int i = 0; i < points.size() && !ret; ++i)
+      ret = (points[i] == p);
+  }
+
+  // TODO: add check for border point
+
+  cout << "Region::is_in_region(): " << ret << endl;
 
   return ret;
 }
@@ -126,6 +148,34 @@ gams::utility::Region::get_bounding_box () const
   ret.max_alt_ = this->max_alt_;
 
   return ret;
+}
+
+double
+gams::utility::Region::get_area () const
+{
+  if (points.size() < 3)
+    return 0; // degenerate polygon
+
+  // see http://geomalgorithms.com/a01-_area.html
+  // Convert all units to cartesian
+  vector<Position> cart_points;
+  for (unsigned int i = 0; i < points.size(); ++i)
+  {
+    Position p = points[i].to_position (points[0]);
+    cart_points.push_back (p);
+  }
+
+  // perform calculations with cartesian points
+  double area = 0.0;
+  unsigned int i, j, k;
+  unsigned int num_points = cart_points.size ();
+  for (i = 1, j = 2, k = 0; i < num_points; ++i, ++j, ++k)
+  {
+    area += cart_points[i].x *
+      (cart_points[j % num_points].y - cart_points[k].y);
+  }
+  area += cart_points[0].x * (cart_points[1].y - cart_points[num_points - 1].y);
+  return fabs(area / 2);
 }
 
 std::string
@@ -179,4 +229,37 @@ gams::utility::Region::calculate_bounding_box ()
     max_lon_ = (max_lon_ < points[i].lon) ? points[i].lon : max_lon_;
     max_alt_ = (max_alt_ < points[i].alt) ? points[i].alt : max_alt_;
   }
+}
+
+gams::utility::Region
+gams::utility::parse_region (
+  Madara::Knowledge_Engine::Knowledge_Base& knowledge,
+  const unsigned int region_id)
+{
+  // parse vertices
+  std::vector<gams::utility::GPS_Position> vertices;
+  char expression[50];
+  sprintf (expression, "region.%u.type", region_id);
+  int region_type = knowledge.get (expression).to_integer ();
+  switch (region_type)
+  {
+    case 0: // arbitrary convex polygon
+    {
+      sprintf (expression, "region.%u.size", region_id);
+      const int num_vertices = knowledge.get (expression).to_integer ();
+      for (int i = 1; i <= num_vertices; ++i) // get the vertices
+      {
+        sprintf (expression, "region.%u.%d", region_id, i);
+        utility::GPS_Position pos;
+        sscanf (knowledge.get (expression).to_string ().c_str (),
+          "%lf,%lf,%lf", &pos.lat, &pos.lon, &pos.alt);
+        vertices.push_back (pos);
+      }
+      break;
+    }
+    default:
+      std::cerr << "invalid region type: " << region_type << endl;
+  }
+
+  return gams::utility::Region (vertices);
 }
