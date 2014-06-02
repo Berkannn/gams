@@ -63,6 +63,7 @@ gams::utility::Search_Area::Search_Area ()
 gams::utility::Search_Area::Search_Area (const Prioritized_Region& region)
 {
   regions_.push_back (region);
+  calculate_bounding_box ();
 }
 
 gams::utility::Search_Area::~Search_Area ()
@@ -76,6 +77,12 @@ gams::utility::Search_Area::operator= (const Search_Area & rhs)
   {
     this->regions_ = rhs.regions_;
     this->union_ = rhs.union_;
+    this->min_lat_ = rhs.min_lat_;
+    this->max_lat_ = rhs.max_lat_;
+    this->min_lon_ = rhs.min_lon_;
+    this->max_lon_ = rhs.max_lon_;
+    this->min_alt_ = rhs.min_alt_;
+    this->max_alt_ = rhs.max_alt_;
   }
 }
 
@@ -83,6 +90,15 @@ inline void
 gams::utility::Search_Area::add_prioritized_region (const Prioritized_Region& r)
 {
   regions_.push_back (r);
+
+  // add bounding box
+  min_lat_ = (min_lat_ > r.min_lat_) ? r.min_lat_ : min_lat_;
+  min_lon_ = (min_lon_ > r.min_lon_) ? r.min_lon_ : min_lon_;
+  min_alt_ = (min_alt_ > r.min_alt_) ? r.min_alt_ : min_alt_;
+
+  max_lat_ = (max_lat_ < r.max_lat_) ? r.max_lat_ : max_lat_;
+  max_lon_ = (max_lon_ < r.max_lon_) ? r.max_lon_ : max_lon_;
+  max_alt_ = (max_alt_ < r.max_alt_) ? r.max_alt_ : max_alt_;
 }
 
 const vector<gams::utility::Prioritized_Region>&
@@ -111,39 +127,20 @@ gams::utility::Search_Area::to_string () const
 }
 
 void
-gams::utility::Search_Area::to_container (
-  Madara::Knowledge_Engine::Containers::String_Array & target) const
-{
-#warning gams::utility::Search_Area::to_container NYI
-}
-
-void
-gams::utility::Search_Area::from_container (
-  Madara::Knowledge_Engine::Containers::String_Array & target)
-{
-#warning gams::utility::Search_Area::from_container NYI
-//  regions_.resize (target.size ());
-//  for (unsigned int i = 0; i < target.size (); ++i)
-//    points[i] = GPS_Position::from_string (target[i]);
-//  calculate_bounding_box ();
-}
-
-void
 gams::utility::Search_Area::calculate_bounding_box ()
 {
-#warning gams::utility::Search_Area::calculate_bounding_box NYI
-//  min_lat_ = min_lon_ = min_alt_ = DBL_MAX;
-//  max_lat_ = max_lon_ = max_alt_ = -DBL_MAX;
-//  for (unsigned int i = 0; i < .size(); ++i)
-//  {
-//    min_lat_ = (min_lat_ > points[i].lat) ? points[i].lat : min_lat_;
-//    min_lon_ = (min_lon_ > points[i].lon) ? points[i].lon : min_lon_;
-//    min_alt_ = (min_alt_ > points[i].alt) ? points[i].alt : min_alt_;
-//
-//    max_lat_ = (max_lat_ < points[i].lat) ? points[i].lat : max_lat_;
-//    max_lon_ = (max_lon_ < points[i].lon) ? points[i].lon : max_lon_;
-//    max_alt_ = (max_alt_ < points[i].alt) ? points[i].alt : max_alt_;
-//  }
+  min_lat_ = min_lon_ = min_alt_ = DBL_MAX;
+  max_lat_ = max_lon_ = max_alt_ = -DBL_MAX;
+  for (unsigned int i = 0; i < regions_.size (); ++i)
+  {
+    min_lat_ = (min_lat_ > regions_[i].min_lat_) ? regions_[i].min_lat_ : min_lat_;
+    min_lon_ = (min_lon_ > regions_[i].min_lon_) ? regions_[i].min_lon_ : min_lon_;
+    min_alt_ = (min_alt_ > regions_[i].min_alt_) ? regions_[i].min_alt_ : min_alt_;
+
+    max_lat_ = (max_lat_ < regions_[i].max_lat_) ? regions_[i].max_lat_ : max_lat_;
+    max_lon_ = (max_lon_ < regions_[i].max_lon_) ? regions_[i].max_lon_ : max_lon_;
+    max_alt_ = (max_alt_ < regions_[i].max_alt_) ? regions_[i].max_alt_ : max_alt_;
+  }
 }
 
 gams::utility::Search_Area

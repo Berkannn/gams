@@ -114,20 +114,6 @@ namespace gams
        **/
       string to_string () const;
 
-      /**
-       * Helper function for copying values to a MADARA double array
-       * @param target     target container to copy values to
-       **/
-      void to_container (
-        Madara::Knowledge_Engine::Containers::String_Array & target) const;
-      
-      /**
-       * Helper function for copying values from a MADARA double array
-       * @param target     target container to copy values from
-       **/
-      void from_container (
-        Madara::Knowledge_Engine::Containers::String_Array & target);
-
     protected:
       /**
        * populate bounding box values
@@ -139,6 +125,11 @@ namespace gams
 
       /// full region
       Region union_;
+
+      /// bounding box
+      double min_lat_, max_lat_;
+      double min_lon_, max_lon_;
+      double min_alt_, max_alt_;
     }; // class Search_Area
 
     /**

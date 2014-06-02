@@ -68,11 +68,6 @@ gams::platforms::Factory::~Factory ()
 {
 }
 
-void
-gams::platforms::Factory::operator= (const Factory & rhs)
-{
-}
-
 gams::platforms::Base *
 gams::platforms::Factory::create (const std::string & type)
 {

@@ -81,12 +81,6 @@ namespace gams
       ~Factory ();
 
       /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Factory & rhs);
-
-      /**
        * Creates a platform
        * @param  type   type of platform to create
        * @return  the new platform

@@ -67,7 +67,7 @@ namespace gams
   namespace utility
   {
     // forward declaration
-    class GAMS_Export GPS_Position;
+    class GPS_Position;
 
     class GAMS_Export Position
     {

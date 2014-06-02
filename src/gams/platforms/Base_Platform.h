@@ -96,7 +96,7 @@ namespace gams
       /**
        * Destructor
        **/
-      ~Base ();
+      virtual ~Base ();
 
       /**
        * Assignment operator

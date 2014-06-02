@@ -65,8 +65,8 @@ Priority_Weighted_Random_Area_Coverage (
   platforms::Base * platform, variables::Sensors * sensors,
   variables::Self * self) :
   Base (knowledge, platform, sensors, self),
-  total_priority_ (0.0),
-  search_area_ (utility::parse_search_area (*knowledge, search_id.to_string ()))
+  search_area_ (utility::parse_search_area (*knowledge, search_id.to_string ())),
+  total_priority_ (0.0)
 {
   // calculate total priority
   const vector<utility::Prioritized_Region>& regions =

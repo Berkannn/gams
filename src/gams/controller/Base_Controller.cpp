@@ -192,7 +192,6 @@ gams::controller::Base::system_analyze (void)
 {
   int return_value (0);
   bool error (false);
-  bool is_swarm_command (false);
 
   /**
    * note that certain device variables like command are kept local only.
@@ -233,7 +232,6 @@ gams::controller::Base::system_analyze (void)
     }
     else
     {
-      is_swarm_command = true;
       swarm_.command_args.resize ();
 
       // check if proper number of arguments were given
@@ -288,7 +286,6 @@ gams::controller::Base::system_analyze (void)
     Madara::Knowledge_Record arg1;
     Madara::Knowledge_Record arg2;
     utility::Position target;
-    int num_args = 0;
     
     if (self_.device.command == "move")
     {
@@ -298,12 +295,10 @@ gams::controller::Base::system_analyze (void)
       {
         arg1 = self_.device.command_args[0];
         arg2 = self_.device.command_args[1];
-        num_args = 2;
       }
       else if (this->self_.device.command_args.size () == 1)
       {
         arg1 = self_.device.command_args[0];
-        num_args = 1;
       }
       else if (this->self_.device.command_args.size () == 0)
       {
@@ -316,7 +311,6 @@ gams::controller::Base::system_analyze (void)
     }
     else
     {
-      is_swarm_command = true;
       swarm_.command_args.resize ();
 
       // check if proper number of arguments were given
@@ -324,12 +318,10 @@ gams::controller::Base::system_analyze (void)
       {
         arg1 = swarm_.command_args[0];
         arg2 = swarm_.command_args[1];
-        num_args = 2;
       }
       else if (swarm_.command_args.size () == 1)
       {
         arg1 = swarm_.command_args[0];
-        num_args = 1;
       }
       else
       {

@@ -67,12 +67,12 @@ gams::variables::Grid::operator= (const Grid & rhs)
 
 void
 gams::variables::Grid::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+  Madara::Knowledge_Engine::Knowledge_Base & /*knowledge*/)
 {
 }
 
 void
 gams::variables::Grid::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge)
+  Madara::Knowledge_Engine::Variables & /*knowledge*/)
 {
 }

@@ -74,11 +74,6 @@ gams::algorithms::Factory::~Factory ()
 {
 }
 
-void
-gams::algorithms::Factory::operator= (const Factory & rhs)
-{
-}
-
 gams::algorithms::Base *
 gams::algorithms::Factory::create (const std::string & type,
   const Madara::Knowledge_Record & arg1,
