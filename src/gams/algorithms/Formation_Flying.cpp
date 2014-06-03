@@ -60,6 +60,7 @@ using std::stringstream;
 using std::set;
 
 #include "gams/utility/Position.h"
+#include "gams/utility/GPS.h"
 
 gams::algorithms::Formation_Flying::Formation_Flying (
   const Madara::Knowledge_Record & head_id,
