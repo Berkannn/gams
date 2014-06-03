@@ -55,12 +55,18 @@
 #define   _GAMS_VARIABLES_SENSOR_H_
 
 #include <vector>
+using std::vector;
 #include <map>
+#include <string>
+using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Double.h"
 #include "madara/knowledge_engine/containers/Map.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
+
+#include "gams/utility/GPS_Position.h"
+#include "gams/utility/Position.h"
 
 namespace gams
 {
@@ -72,7 +78,9 @@ namespace gams
       /**
        * Constructor
        **/
-      Sensor ();
+      Sensor (const string& name, Madara::Knowledge_Engine::Knowledge_Base* knowledge,
+        const double& range = -1.0,
+        const utility::GPS_Position& origin = utility::GPS_Position (DBL_MAX));
 
       /**
        * Destructor
@@ -86,53 +94,93 @@ namespace gams
       void operator= (const Sensor & rhs);
 
       /**
-       * Initializes variable containers
-       * @param  knowledge    the knowledge base that houses the variables
-       * @param  sensor_name  name of the sensor
+       * Get name
+       * @return name of sensor
        **/
-      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const std::string & sensor_name);
-      
-      /**
-       * Initializes variable containers
-       * @param   knowledge    the variable context
-       * @param   sensor_name  name of the sensor
-       **/
-      void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
-        const std::string & sensor_name);
+      inline string get_name () const { return name_; }
 
-      /// the current command given to the swarm
-      Madara::Knowledge_Engine::Containers::Double range;
+      /**
+       * Get range
+       * @return sensor range
+       **/
+      inline double get_range () const { return range_.to_double (); }
+
+      /**
+       * Get origin
+       * @return GPS origin
+       **/
+      utility::GPS_Position get_origin();
+
+      /**
+       * Get value at gps location
+       * @param pos   position to get
+       * @return sensor value at pos
+       **/
+      double get_value (const utility::GPS_Position& pos);
+
+      /**
+       * Get value at index position
+       * @param pos position to get
+       * @return sensor value at position
+       **/
+      double get_value (const utility::Position& pos);
+
+      /**
+       * Set value at a point
+       * @param pos     position to set
+       * @param val     value to set at position
+       * @param bcast   true to transport values, false to delay
+       **/
+      void set_value (const utility::GPS_Position& pos, const double& val,
+        const bool bcast = true);
+
+      /**
+       * Get current location on sensor map
+       * @param gps current GPS location
+       * @return current location in cartesian location on sensor map
+       **/
+      utility::Position get_index_from_gps (
+        const utility::GPS_Position& pos);
+
+      /**
+       * Get GPS position from index position
+       * @param index position
+       * @return GPS_Position of index position
+       **/
+      utility::GPS_Position get_gps_from_index (const utility::Position& idx);
+      
+    protected:
+      /// initialize madara containers
+      void init_vars ();
+
+      /**
+       * convert index position to string index
+       * @param pos   gps position
+       * @return string index into map
+       **/
+      string index_pos_to_index (const utility::Position& pos) const;
+
+      /// the range of the sensor, determines discretization
+      Madara::Knowledge_Engine::Containers::Double range_;
 
       /// the map area that has been covered by the sensor
-      Madara::Knowledge_Engine::Containers::Map covered;
+      Madara::Knowledge_Engine::Containers::Map covered_;
+
+      /// origin for index calculations
+      Madara::Knowledge_Engine::Containers::Double_Array origin_;
+
+      /// knowledge base
+      Madara::Knowledge_Engine::Knowledge_Base* knowledge_;
 
       /// name of the sensor
-      std::string name;
+      string name_;
     };
 
-    /**
-      * Initializes a self containers
-      * @param   variables  the variables to initialize
-      * @param   knowledge  the knowledge base that houses the variables
-      * @param   sensor_name  name of the sensor
-      **/
-    GAMS_Export void init_vars (Sensor & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-      const std::string & sensor_name = "0");
-
     /// a map of sensor names to the sensor information
-    typedef  std::map <std::string, Sensor>   Sensors;
-
-    /**
-     * Get shortest range of sensors
-     * @param s   vector of Sensor
-     * @return the minimum range of all the sensors
-     **/
-    GAMS_Export double get_min_sensor_range(const Sensors & s);
+    typedef  std::map <string, Sensor>   Sensors;
 
     /// a list of sensor names
-    typedef  std::vector <std::string>        Sensor_Names;
+    typedef  vector <string>        Sensor_Names;
   }
 }
 

@@ -64,3 +64,25 @@ project (Test_Utility) : using_gams, using_madara, using_ace {
     src/tests/test_utility.cpp
   }
 }
+
+project (Test_Variables) : using_gams, using_madara, using_ace {
+  exeout = $(GAMS_ROOT)/bin
+  exename = test_variables
+
+  requires += tests
+
+  Documentation_Files {
+  }
+  
+  Build_Files {
+    using_gams.mpb
+    tests.mpc
+  }
+
+  Header_Files {
+  }
+
+  Source_Files {
+    src/tests/test_variables.cpp
+  }
+}

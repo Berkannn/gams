@@ -46,12 +46,25 @@
 #include "Sensor.h"
 
 #include <float.h>
+#include <sstream>
+using std::stringstream;
+#include <iostream>
+using std::cout;
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
 
-gams::variables::Sensor::Sensor ()
+gams::variables::Sensor::Sensor (const string& name,
+  Madara::Knowledge_Engine::Knowledge_Base* knowledge,
+  const double& range, const utility::GPS_Position& origin) :
+  knowledge_ (knowledge), name_ (name)
 {
+  init_vars ();
+
+  if (range != -1.0)
+    range_ = range;
+  if (origin.lat != DBL_MAX)
+    origin.to_container (origin_);
 }
 
 gams::variables::Sensor::~Sensor ()
@@ -63,62 +76,85 @@ gams::variables::Sensor::operator= (const Sensor & rhs)
 {
   if (this != &rhs)
   {
-    this->range = rhs.range;
-    this->name = rhs.name;
-    this->covered = rhs.covered;
+    this->range_ = rhs.range_;
+    this->covered_ = rhs.covered_;
+    this->origin_ = rhs.origin_;
+    this->knowledge_ = rhs.knowledge_;
+    this->name_ = rhs.name_;
   }
 }
 
-
-void
-gams::variables::Sensor::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & sensor_name)
+gams::utility::GPS_Position
+gams::variables::Sensor::get_origin ()
 {
-  name = sensor_name;
+  utility::GPS_Position origin;
+  origin.from_container (origin_);
+  return origin;
+}
 
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("sensor");
-  prefix += ".";
-  prefix += name;
+double
+gams::variables::Sensor::get_value (const utility::GPS_Position& pos)
+{
+  return get_value (get_index_from_gps (pos));
+}
 
-  // initialize the variable containers
-  range.set_name (prefix + ".range", knowledge);
-  covered.set_name (prefix + ".covered", knowledge);
+double
+gams::variables::Sensor::get_value (const utility::Position& pos)
+{
+  return covered_[index_pos_to_index (pos)].to_double ();
 }
 
 void
-gams::variables::Sensor::init_vars (
-  Madara::Knowledge_Engine::Variables & knowledge,
-  const std::string & sensor_name)
+gams::variables::Sensor::set_value (const utility::GPS_Position& pos,
+  const double& val, const bool bcast)
 {
-  name = sensor_name;
+  string idx = index_pos_to_index (get_index_from_gps (pos));
+  covered_.set (idx, val,
+    Madara::Knowledge_Engine::Knowledge_Update_Settings (bcast));
+}
 
-  // swarm commands are prefixed with "swarm.movement_command"
+gams::utility::Position
+gams::variables::Sensor::get_index_from_gps (const utility::GPS_Position& pos)
+{
+  utility::GPS_Position origin;
+  origin.from_container (origin_);
+  utility::Position idx = pos.to_position (origin);
+  double range = range_.to_double ();
+  idx.x = idx.x / range;
+  idx.y = idx.y / range;
+
+  return idx;
+}
+
+gams::utility::GPS_Position
+gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
+{
+  double range = range_.to_double ();
+  utility::Position meters ((int(idx.x)) * range, (int(idx.y)) * range, (int(idx.z)) * range);
+  utility::GPS_Position origin;
+  origin.from_container (origin_);
+  return meters.to_gps_position (origin);
+}
+
+void
+gams::variables::Sensor::init_vars ()
+{
+  // sensor information is prefixed by sensor.<name_>
   std::string prefix ("sensor");
   prefix += ".";
-  prefix += name;
+  prefix += name_;
 
   // initialize the variable containers
-  range.set_name (prefix + ".range", knowledge);
-  covered.set_name (prefix + ".covered", knowledge);
+  range_.set_name (prefix + ".range", *knowledge_);
+  covered_.set_name (prefix + ".covered", *knowledge_);
+  origin_.set_name (prefix + ".origin", *knowledge_, 3);
 }
 
-double gams::variables::get_min_sensor_range (
-  const gams::variables::Sensors & s)
+string
+gams::variables::Sensor::index_pos_to_index (const utility::Position& pos) const
 {
-  double min_range = DBL_MAX;
-  for (gams::variables::Sensors::const_iterator it = s.begin();
-       it != s.end(); ++it)
-  {
-    min_range = min_range > *(it->second.range) ? *(it->second.range) : min_range;
-  }
-  return min_range;
-}
+  stringstream buffer;
+  buffer << (int)(pos.x) << "," << (int)(pos.y);
 
-void gams::variables::init_vars (Sensor & variables,
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & sensor_name)
-{
-  variables.init_vars (knowledge, sensor_name);
+  return buffer.str ();
 }
