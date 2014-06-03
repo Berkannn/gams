@@ -148,13 +148,19 @@ gams::platforms::VREP_UAV::VREP_UAV (
     &node_target_, simx_opmode_oneshot_wait);
 
   // sync with other nodes; wait for all processes to get up
-  std::stringstream buffer;
-  buffer << "(S" << id << ".init = 1)";
+  std::stringstream buffer, init_string;
+  init_string << "S";
+  init_string << id;
+  init_string << ".init";
+
+  buffer << "(" << init_string.str () << " = 1)";
   buffer << " && begin_sim";
   std::string expression = buffer.str ();
+  Madara::Knowledge_Engine::Wait_Settings wait_settings;
+  wait_settings.send_list [init_string.str ()] = true;
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
-  knowledge.wait(compiled);
+  knowledge.wait (compiled, wait_settings);
 }
 
 gams::platforms::VREP_UAV::~VREP_UAV ()
