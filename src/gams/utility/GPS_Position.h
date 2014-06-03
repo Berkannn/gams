@@ -61,6 +61,7 @@
 #include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 
 #include "gams/utility/Position.h"
+#include "gams/utility/GPS.h"
 
 namespace gams
 {
