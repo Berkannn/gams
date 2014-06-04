@@ -154,7 +154,7 @@ string
 gams::variables::Sensor::index_pos_to_index (const utility::Position& pos) const
 {
   stringstream buffer;
-  buffer << (int)(pos.x) << "," << (int)(pos.y);
+  buffer << (int)(pos.x) << "x" << (int)(pos.y);
 
   return buffer.str ();
 }

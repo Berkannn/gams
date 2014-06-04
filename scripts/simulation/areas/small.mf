@@ -34,3 +34,7 @@ region.2.1="40.443237,-79.940570";
 region.2.2="40.443287,-79.940570";
 region.2.3="40.443287,-79.940500";
 region.2.4="40.443237,-79.940500";
+
+sensor.covered.origin[2]=0.0;
+sensor.covered.origin[0]=40.44;
+sensor.covered.origin[1]=-79.95;

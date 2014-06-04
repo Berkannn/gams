@@ -112,8 +112,6 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
 
   // TODO: add check for border point
 
-  cout << "Region::is_in_region(): " << ret << endl;
-
   return ret;
 }
 

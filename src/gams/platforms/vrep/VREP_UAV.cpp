@@ -56,16 +56,36 @@ using std::cout;
 using std::string;
 #include <cmath>
 
+#include "gams/variables/Sensor.h"
+
+#include "madara/knowledge_engine/containers/Double_Vector.h"
+
 gams::platforms::VREP_UAV::VREP_UAV (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   variables::Sensors * sensors,
   variables::Platforms & platforms,
   variables::Self & self)
   : Base (&knowledge, sensors, self), airborne_ (false),
-    gps_ (knowledge.get (".using_gps").to_integer () == 1),
     move_speed_ (1)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
+
+  // grab coverage sensor
+  variables::Sensors::iterator it = sensors->find ("coverage");
+  if (it == sensors->end ()) // create coverage sensor
+  {
+    // get origin
+    utility::GPS_Position origin;
+    Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
+    origin_container.set_name ("sensor.coverage.origin", knowledge, 3);
+    origin.from_container (origin_container);
+
+    // establish sensor
+    variables::Sensor* coverage_sensor =
+      new variables::Sensor ("coverage", &knowledge, 1.0, origin);
+    (*sensors)["coverage"] = coverage_sensor;
+  }
+  sensors_["coverage"] = (*sensors)["coverage"];
 
   // get client id
   client_id_ = simxStart(knowledge.get(".vrep_host").to_string ().c_str (),
@@ -282,6 +302,8 @@ gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
 int
 gams::platforms::VREP_UAV::sense (void)
 {
+  static unsigned int executions = 0;
+  
   // get position
   simxFloat curr_arr[3];
   simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
@@ -294,6 +316,10 @@ gams::platforms::VREP_UAV::sense (void)
   // set position in madara
   position_.to_container (self_.device.location);
 
+  // set position on coverage map
+  sensors_["coverage"]->set_value (position_, executions);
+
+  ++executions;
   return 0;
 }
 

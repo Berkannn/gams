@@ -177,7 +177,7 @@ namespace gams
     };
 
     /// a map of sensor names to the sensor information
-    typedef  std::map <string, Sensor>   Sensors;
+    typedef  std::map <string, Sensor*>   Sensors;
 
     /// a list of sensor names
     typedef  vector <string>        Sensor_Names;

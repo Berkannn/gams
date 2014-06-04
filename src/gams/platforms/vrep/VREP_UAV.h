@@ -221,15 +221,15 @@ namespace gams
       /// client id for remote API connection
       simxInt client_id_;
 
-      /// are we using gps or vrep coordinate frame
-      bool gps_;
+      /// sensors
+      variables::Sensors sensors_;
 
       /// movement speed
       double move_speed_;
-    };
-  }
-}
+    }; // class VREP_UAV
+  } // namespace platform
+} // namespace gams
 
-#endif
+#endif // _GAMS_VREP_
 
 #endif // _GAMS_PLATFORM_VREP_UAV_H_
