@@ -81,8 +81,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   sscanf(sw.c_str (), "%lf,%lf", &sw_position_.lat, &sw_position_.lon);
 
   // init quadrotor in env
-  string modelFile (getenv("VREP_ROOT"));
-  modelFile += "/models/robots/mobile/Quadricopter.ttm";
+  string modelFile (getenv("GAMS_ROOT"));
+  modelFile += "/resources/vrep/Quadricopter_NoCamera.ttm";
   node_id_ = -1;
   if (simxLoadModel (client_id_,modelFile.c_str (), 0, &node_id_,
     simx_opmode_oneshot_wait) != simx_error_noerror)
