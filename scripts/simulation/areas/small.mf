@@ -5,6 +5,11 @@
 .sw_position="40.443077,-79.940570";
 .ne_position="40.443387,-79.940098";
 
+.paint.regions="region.0";
+
+search_area.1.size=1;
+search_area.1.0="region.0";
+
 region.0.type=0;
 region.0.size=4;
 region.0.1="40.443237,-79.940570";
@@ -17,7 +22,6 @@ search_area.size=1;
 search_area.0.size=2;
 search_area.0.0="region.1";
 search_area.0.1="region.2";
-
 
 region.1.type=0;
 region.1.size=4;
@@ -35,6 +39,6 @@ region.2.2="40.443287,-79.940570";
 region.2.3="40.443287,-79.940500";
 region.2.4="40.443237,-79.940500";
 
-sensor.covered.origin[2]=0.0;
-sensor.covered.origin[0]=40.44;
-sensor.covered.origin[1]=-79.95;
+sensor.coverage.origin[2]=0.0;
+sensor.coverage.origin[0]=40.44;
+sensor.coverage.origin[1]=-79.95;

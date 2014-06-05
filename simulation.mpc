@@ -1,4 +1,4 @@
-project (dynamic_simulation) : using_madara, using_ace, using_vrep {
+project (dynamic_simulation) : using_madara, using_ace, using_gams, using_vrep {
   exeout = $(GAMS_ROOT)/bin
   exename = dynamic_simulation
 
@@ -13,12 +13,17 @@ project (dynamic_simulation) : using_madara, using_ace, using_vrep {
     using_ace.mpb
     using_madara.mpb
     using_vrep.mpb
+    using_gams.mpb
   }
 
   Source_Files {
 
     Simulation {
       src/simulation
+    }
+
+    Utility {
+      src/gams/utility
     }
   }
 }

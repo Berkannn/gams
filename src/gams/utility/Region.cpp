@@ -82,8 +82,7 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
 {
   // check if in bounding box
   if (p.lat < min_lat_ || p.lat > max_lat_ ||
-      p.lon < min_lon_ || p.lon > max_lon_ ||
-      p.alt < min_alt_ || p.alt > max_alt_)
+      p.lon < min_lon_ || p.lon > max_lon_)
   {
     return false;
   }

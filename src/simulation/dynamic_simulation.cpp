@@ -52,6 +52,7 @@
  **/
 
 #include "madara/knowledge_engine/Knowledge_Base.h"
+#include "gams/utility/Region.h"
 
 extern "C" {
 #include "extApi.h"
@@ -303,27 +304,67 @@ void create_environment (int client_id,
     cout << "placing plants as markers...";
     model_file = getenv ("VREP_ROOT");
     model_file += "/models/furniture/plants/indoorPlant.ttm";
-    for (int i = 0; i < (num_x * num_y); ++i)
+
+    // read regions to paint
+    size_t num_regions = 1;
+
+    // paint each vertex
+    for (size_t i = 0; i < num_regions; ++i)
     {
-      // find where it should go
-      simxFloat pos[3];
-      pos[0] = (i / num_y) * floor_side;
-      pos[1] = (i % num_y) * floor_side;
-      pos[2] = 0;
-  
-      // load object
-      int node_id;
-      if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
-        simx_opmode_oneshot_wait) != simx_error_noerror)
+      string region = "region.0";
+      gams::utility::Region reg =
+        gams::utility::parse_region (knowledge, region);
+      for (size_t j = 0; j < reg.points.size (); ++j)
       {
-        cerr << "failure loading plant model" << endl;
-        exit (0);
+        string sw_position = knowledge.get (".vrep_sw_position").to_string ();
+        gams::utility::GPS_Position origin;
+        sscanf (sw_position.c_str (), "%lf,%lf", &origin.lat, &origin.lon);
+
+        gams::utility::GPS_Position gps_pos = reg.points[j];
+        gams::utility::Position gpos = gps_pos.to_position (origin);
+
+        // find where it should go
+        simxFloat pos[3];
+        pos[0] = gpos.y;
+        pos[1] = gpos.x;
+        pos[2] = 0;
+    
+        // load object
+        int node_id;
+        if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
+          simx_opmode_oneshot_wait) != simx_error_noerror)
+        {
+          cerr << "failure loading plant model" << endl;
+          exit (0);
+        }
+    
+        // move object
+        simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
+          simx_opmode_oneshot_wait);
       }
-  
-      // move object
-      simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
-        simx_opmode_oneshot_wait);
     }
+    
+//    for (int i = 0; i < (num_x * num_y); ++i)
+//    {
+//      // find where it should go
+//      simxFloat pos[3];
+//      pos[0] = (i / num_y) * floor_side;
+//      pos[1] = (i % num_y) * floor_side;
+//      pos[2] = 0;
+//  
+//      // load object
+//      int node_id;
+//      if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
+//        simx_opmode_oneshot_wait) != simx_error_noerror)
+//      {
+//        cerr << "failure loading plant model" << endl;
+//        exit (0);
+//      }
+//  
+//      // move object
+//      simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
+//        simx_opmode_oneshot_wait);
+//    }
     cout << "done" << endl;
   }
 }

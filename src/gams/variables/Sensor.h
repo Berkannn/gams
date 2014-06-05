@@ -94,6 +94,18 @@ namespace gams
       void operator= (const Sensor & rhs);
 
       /**
+       * Set range
+       * @param range new range
+       **/
+      void set_range (const double& range);
+
+      /**
+       * Set origin
+       * @param origin  new origin
+       **/
+      void set_origin (const utility::GPS_Position& origin);
+
+      /**
        * Get name
        * @return name of sensor
        **/

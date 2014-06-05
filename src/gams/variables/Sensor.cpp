@@ -84,6 +84,18 @@ gams::variables::Sensor::operator= (const Sensor & rhs)
   }
 }
 
+void
+gams::variables::Sensor::set_range (const double& range)
+{
+  range_ = range;
+}
+
+void
+gams::variables::Sensor::set_origin (const utility::GPS_Position& origin)
+{
+  origin.to_container (origin_);
+}
+
 gams::utility::GPS_Position
 gams::variables::Sensor::get_origin ()
 {
@@ -120,8 +132,8 @@ gams::variables::Sensor::get_index_from_gps (const utility::GPS_Position& pos)
   origin.from_container (origin_);
   utility::Position idx = pos.to_position (origin);
   double range = range_.to_double ();
-  idx.x = idx.x / range;
-  idx.y = idx.y / range;
+  idx.x = (int)((idx.x + range / 2) / range);
+  idx.y = (int)((idx.y + range / 2) / range);
 
   return idx;
 }
@@ -130,10 +142,11 @@ gams::utility::GPS_Position
 gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
 {
   double range = range_.to_double ();
-  utility::Position meters ((int(idx.x)) * range, (int(idx.y)) * range, (int(idx.z)) * range);
+  utility::Position meters (int(idx.x) * range, int(idx.y) * range, int(idx.z));
   utility::GPS_Position origin;
   origin.from_container (origin_);
-  return meters.to_gps_position (origin);
+  utility::GPS_Position ret = meters.to_gps_position (origin);
+  return ret;
 }
 
 void

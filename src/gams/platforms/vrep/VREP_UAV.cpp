@@ -116,8 +116,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   if (knowledge.get (".set_initial").to_integer ())
   {
     utility::Position obj_coord;
-    obj_coord.x = knowledge.get (".initial_lat").to_double ();
-    obj_coord.y = knowledge.get (".initial_lon").to_double ();
+    obj_coord.x = knowledge.get (".initial_x").to_double ();
+    obj_coord.y = knowledge.get (".initial_y").to_double ();
     obj_coord.z = id + 1; // TODO: remove when collision avoidance is added
 
     // do we need to convert from gps first?

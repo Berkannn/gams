@@ -179,7 +179,7 @@ std::string
 gams::utility::GPS_Position::to_string (const std::string & delimiter) const
 {
   std::stringstream buffer;
-  buffer << std::setprecision(17);
+  buffer << std::setprecision(8);
   buffer << lat;
   buffer << delimiter;
   buffer << lon;

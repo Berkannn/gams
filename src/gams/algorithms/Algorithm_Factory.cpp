@@ -50,6 +50,7 @@
 #include "gams/algorithms/Uniform_Random_Area_Coverage.h"
 #include "gams/algorithms/Uniform_Random_Edge_Coverage.h"
 #include "gams/algorithms/Priority_Weighted_Random_Area_Coverage.h"
+#include "gams/algorithms/Local_Pheremone_Area_Coverage.h"
 #include "gams/algorithms/Snake_Area_Coverage.h"
 #include "gams/algorithms/Formation_Flying.h"
 #include "gams/algorithms/Takeoff.h"
@@ -105,7 +106,6 @@ gams::algorithms::Factory::create (const std::string & type,
   }
   else if (type == "priority weighted random area coverage" || type == "pwrac")
   {
-    cout << "Factory::create(): creating priority weighted random area coverage" << endl;
     if (knowledge_ && sensors_  && self_)
       result = new Priority_Weighted_Random_Area_Coverage (
         arg1 /* search area id*/,
@@ -116,6 +116,13 @@ gams::algorithms::Factory::create (const std::string & type,
     if (knowledge_ && sensors_ && platform_ && self_)
       result = new Snake_Area_Coverage (
         arg1 /* region id*/,
+        knowledge_, platform_, sensors_, self_);
+  }
+  else if (type == "local pheremone")
+  {
+    if (knowledge_ && sensors_  && self_)
+      result = new Local_Pheremone_Area_Coverage (
+        arg1 /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "formation")

@@ -1,7 +1,7 @@
 #!/bin/bash
 TIME=3600
 MADARA_DEBUG=0
-PERIOD=1
+PERIOD=0.75
 AREA=small
 NUM=4
 SIM=pheremone
@@ -13,4 +13,4 @@ xterm -hold -e "$GAMS_ROOT/gams_controller -i 2 -n $NUM -p vrep -lt $TIME -pd $P
 xterm -hold -e "$GAMS_ROOT/gams_controller -i 3 -n $NUM -p vrep -lt $TIME -pd $PERIOD -mf $GAMS_ROOT/scripts/simulation/$SIM/madara_init_3.mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf $GAMS_ROOT/scripts/simulation/madara_init_common.mf -l $MADARA_DEBUG" &
 
 # launch simulation controller
-$GAMS_ROOT/dynamic_simulation -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf
+$GAMS_ROOT/dynamic_simulation -p -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf
