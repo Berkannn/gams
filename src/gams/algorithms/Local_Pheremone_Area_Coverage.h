@@ -47,9 +47,6 @@
 /**
  * @file Local_Pheremone_Area_Coverage.h
  * @author Anton Dukeman <anton.dukeman@gmail.com>
- *
- * Prioritized Random Area Coverage prioritizes certain regions of a search area
- * based on specified priorities
  **/
 
 #ifndef _GAMS_ALGORITHMS_PHEREMONE_AREA_COVERAGE_H_

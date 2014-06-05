@@ -48,8 +48,9 @@
  * @file Local_Pheremone_Area_Coverage.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * Prioritized Random Area Coverage prioritizes certain regions of a search area
- * based on specified priorities
+ * Agents mark a sensor with their time when they enter a discretized cell of a 
+ * region. At each time step, they select the neighboring cell with the lowest 
+ * pheremone reading as their next destination.
  **/
 
 #include "gams/algorithms/Local_Pheremone_Area_Coverage.h"
