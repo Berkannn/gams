@@ -89,6 +89,7 @@ gams::variables::Swarm::init_vars (
   // keep certain varaible changes as local only
   command.set_settings (keep_local);
   command_args.set_settings (keep_local);
+  size.set_settings (keep_local);
 
   // update swarm size
   size = swarm_size;

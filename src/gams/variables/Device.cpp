@@ -99,7 +99,7 @@ gams::variables::Device::init_vars (
 
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
-  location.set_name (device_name + ".location", knowledge, 3);
+  location.set_name (device_name + ".location", knowledge);
   is_mobile.set_name (device_name + ".mobile", knowledge);
   battery_remaining.set_name (device_name + ".battery", knowledge);
   bridge_id.set_name (device_name + ".bridge_id", knowledge);
