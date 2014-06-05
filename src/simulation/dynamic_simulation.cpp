@@ -28,7 +28,7 @@
  *      University for the operation of the Software Engineering Institute, a
  *      federally funded research and development center. Any opinions,
  *      findings and conclusions or recommendations expressed in this material
- *      are those of the author(s) and do not necessarily reflect the views of
+ *      are those of the author (s) and do not necessarily reflect the views of
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
@@ -127,7 +127,7 @@ void print_usage (string prog_name)
   cerr << "       use gps coords (instead of vrep)" << endl;
   cerr << "   [-l | --log_level <number>]" << endl;
   cerr << "       MADARA log level, 1-10" << endl;
-  cerr << "   [-mf| --madara_file <file(s)>]" << endl;
+  cerr << "   [-mf| --madara_file <file (s)>]" << endl;
   cerr << "       madara variable initialization files" << endl;
   cerr << "   [-n | --num_agents <number>]" << endl;
   cerr << "       number of agents that will be launched" << endl;
@@ -140,7 +140,7 @@ void print_usage (string prog_name)
   cerr << "   [-v | --vrep <ip_address> <port>]" << endl;
   cerr << "       vrep connection information" << endl;
 
-  exit(0);
+  exit (0);
 }
 
 // handle command line arguments
@@ -179,7 +179,7 @@ void handle_arguments (int argc, char** argv)
     else if (arg1 == "-n" || arg1 == "--num_agents")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
-        sscanf(argv[i + 1], "%u", &num_agents);
+        sscanf (argv[i + 1], "%u", &num_agents);
       else
         print_usage (argv[0]);
       ++i;
@@ -214,7 +214,7 @@ void handle_arguments (int argc, char** argv)
 
       if (i + 1 < argc && argv[i + 1][0] != '-')
       {
-          sscanf(argv[i + 1], "%d", &vrep_port);
+          sscanf (argv[i + 1], "%d", &vrep_port);
           ++i;
       }
     }
@@ -271,7 +271,7 @@ void create_environment (int client_id,
   int num_y = max_y / 20 + 2;
 
   // load floor models
-  string model_file (getenv("VREP_ROOT"));
+  string model_file (getenv ("VREP_ROOT"));
   const int floor_side = 20;
   model_file += "/models/infrastructure/floors/20mX20m floor.ttm";
   for (int i = 0; i < (num_x * num_y); ++i)
@@ -288,7 +288,7 @@ void create_environment (int client_id,
       simx_opmode_oneshot_wait) != simx_error_noerror)
     {
       cerr << "failure loading floor model" << endl;
-      exit(0);
+      exit (0);
     }
 
     // move object
@@ -298,10 +298,10 @@ void create_environment (int client_id,
   cout << "done" << endl;
 
   // load plants as position markers
-  if(plants)
+  if (plants)
   {
     cout << "placing plants as markers...";
-    model_file = getenv("VREP_ROOT");
+    model_file = getenv ("VREP_ROOT");
     model_file += "/models/furniture/plants/indoorPlant.ttm";
     for (int i = 0; i < (num_x * num_y); ++i)
     {
@@ -317,7 +317,7 @@ void create_environment (int client_id,
         simx_opmode_oneshot_wait) != simx_error_noerror)
       {
         cerr << "failure loading plant model" << endl;
-        exit(0);
+        exit (0);
       }
   
       // move object
@@ -342,7 +342,7 @@ void start_simulator (const int & client_id,
   std::string expression = buffer.str ();
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
-  cout << "waiting for " << num_agents << " agent(s) to come online...";
+  cout << "waiting for " << num_agents << " agent (s) to come online...";
   knowledge.wait (compiled);
   cout << "done" << endl;
 
@@ -353,7 +353,7 @@ void start_simulator (const int & client_id,
 
   // inform simulated control loops to begin
   cout << "informing agents to continue...";
-  knowledge.set ("begin_sim", Madara::Knowledge_Record::Integer(1));
+  knowledge.set ("begin_sim", Madara::Knowledge_Record::Integer (1));
   cout << "done" << endl;
 }
 
@@ -376,27 +376,27 @@ int main (int argc, char ** argv)
   Madara::Knowledge_Engine::Knowledge_Base knowledge (host, settings);
   if (madara_commands != "")
     knowledge.evaluate (madara_commands,
-      Madara::Knowledge_Engine::Eval_Settings(false, true));
+      Madara::Knowledge_Engine::Eval_Settings (false, true));
 
   // connect to vrep
   cout << "connecting to vrep...";
   int client_id = 
-    simxStart (vrep_host.c_str(), vrep_port, true, true, 2000, 5);
+    simxStart (vrep_host.c_str (), vrep_port, true, true, 2000, 5);
   if (client_id == -1)
   {
     cerr << "failure connecting to vrep" << endl;
-    exit(-1);
+    exit (-1);
   }
   cout << "done" << endl;
 
   // actual work
   create_environment (client_id, knowledge);
-  if(num_agents > 0)
+  if (num_agents > 0)
     start_simulator (client_id, knowledge);
 
   // close connection to vrep
   cout << "closing vrep connection...";
-  simxFinish(client_id);
+  simxFinish (client_id);
   cout << "done" << endl;
 
   // exit

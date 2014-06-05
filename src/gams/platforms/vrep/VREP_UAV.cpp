@@ -101,8 +101,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   sscanf(sw.c_str (), "%lf,%lf", &sw_position_.lat, &sw_position_.lon);
 
   // init quadrotor in env
-  string modelFile (getenv("VREP_ROOT"));
-  modelFile += "/models/robots/mobile/Quadricopter.ttm";
+  string modelFile (getenv("GAMS_ROOT"));
+  modelFile += "/resources/vrep/Quadricopter_NoCamera.ttm";
   node_id_ = -1;
   if (simxLoadModel (client_id_,modelFile.c_str (), 0, &node_id_,
     simx_opmode_oneshot_wait) != simx_error_noerror)
@@ -167,13 +167,19 @@ gams::platforms::VREP_UAV::VREP_UAV (
     &node_target_, simx_opmode_oneshot_wait);
 
   // sync with other nodes; wait for all processes to get up
-  std::stringstream buffer;
-  buffer << "(S" << id << ".init = 1)";
+  std::stringstream buffer, init_string;
+  init_string << "S";
+  init_string << id;
+  init_string << ".init";
+
+  buffer << "(" << init_string.str () << " = 1)";
   buffer << " && begin_sim";
   std::string expression = buffer.str ();
+  Madara::Knowledge_Engine::Wait_Settings wait_settings;
+  wait_settings.send_list [init_string.str ()] = true;
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
-  knowledge.wait(compiled);
+  knowledge.wait (compiled, wait_settings);
 }
 
 gams::platforms::VREP_UAV::~VREP_UAV ()
