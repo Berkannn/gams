@@ -442,10 +442,14 @@ gams::controller::Base::run (double period, double max_runtime)
     poll_frequency.set (period);
     next_epoch = current + poll_frequency;
 
+    unsigned int iterations = 0;
     while (current < max_wait)
     {
+      // don't print out knowledge base every iteration
+      if (iterations % 15 == 0)
+        knowledge_.print();
+      ++iterations;
 
-      knowledge_.print();
       // return value should be last return value of mape loop
       return_value = 0;
       return_value |= monitor ();

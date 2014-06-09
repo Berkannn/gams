@@ -156,6 +156,11 @@ gams::algorithms::Formation_Flying::Formation_Flying (
     else // head_
       platform->set_move_speed (platform->get_move_speed () * 0.2);
   }
+  else
+  {
+    if (head_)
+      platform->set_move_speed (platform->get_move_speed () * 0.8);
+  }
 }
 
 gams::algorithms::Formation_Flying::~Formation_Flying ()
@@ -182,11 +187,9 @@ gams::algorithms::Formation_Flying::analyze (void)
   if (head_)
   {
     if (in_formation_ == 0)
-    {
       in_formation_ = knowledge_->evaluate (compiled_formation_).to_integer ();
-      if (in_formation_ == 1)
-        formation_ready_ = 1;
-    }
+    else if (formation_ready_ == 0)
+      formation_ready_ = 1;
   }
   else // follower
   {
@@ -197,10 +200,6 @@ gams::algorithms::Formation_Flying::analyze (void)
       start.from_container (head_location_);
       start.direction_to (destination_, phi_dir_);
 
-      cout << "start:   " << start.to_string () << endl;
-      cout << "dest:    " << destination_.to_string () << endl;
-      cout << "phi_dir: " << phi_dir_ << endl;
-  
       utility::GPS_Position location;
       location.from_container (self_->device.location);
 
@@ -231,7 +230,7 @@ gams::algorithms::Formation_Flying::plan (void)
   need_to_move_ = false;
   if (head_)
   {
-    if (in_formation_ == 1)
+    if (formation_ready_ == 1)
     {
       next_position_ = destination_;
       need_to_move_ = true;
@@ -260,7 +259,7 @@ gams::algorithms::Formation_Flying::plan (void)
         utility::GPS_Position ref_location;
         ref_location.from_container (head_location_);
         utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
-        if (in_formation_ == 0)
+        if (formation_ready_ == 0)
         {
           next_position_ = offset.to_gps_position (ref_location);
         }

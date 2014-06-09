@@ -1,10 +1,10 @@
 #!/bin/bash
 TIME=3600
 MADARA_DEBUG=0
-PERIOD=1
+PERIOD=0.75
+NUM=9
+SIM=rotation_formation_large
 AREA=small
-NUM=3
-SIM=urac
 
 # launch drone controllers
 for (( i=0; i<$NUM; i++ ))

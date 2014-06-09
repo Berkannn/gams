@@ -66,7 +66,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
   variables::Platforms & platforms,
   variables::Self & self)
   : Base (&knowledge, sensors, self), airborne_ (false),
-    move_speed_ (1)
+    move_speed_ (0.8)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
 
@@ -111,37 +111,32 @@ gams::platforms::VREP_UAV::VREP_UAV (
     exit (-1);
   }
 
-  // set initial position if necessary
-  int id = self.id.to_integer ();
-  if (knowledge.get (".set_initial").to_integer ())
+  // get initial position
+  simxFloat pos[3];
+  if (knowledge.get (".initial_lat").to_double () != 0)
   {
-    utility::Position obj_coord;
-    obj_coord.x = knowledge.get (".initial_x").to_double ();
-    obj_coord.y = knowledge.get (".initial_y").to_double ();
-    obj_coord.z = id + 1; // TODO: remove when collision avoidance is added
+    // get gps coords
+    utility::GPS_Position gps_coord;
+    gps_coord.lat = knowledge.get (".initial_lat").to_double ();
+    gps_coord.lon = knowledge.get (".initial_lon").to_double ();
 
-    // do we need to convert from gps first?
-    simxFloat pos[3];
-    if (knowledge.get (".init_using_gps").to_integer () == 1)
-    {
-      utility::GPS_Position gps (obj_coord.x, obj_coord.y, obj_coord.z);
-      utility::Position vrep_coord;
-      gps_to_vrep (gps, vrep_coord);
-      pos[0] = vrep_coord.x;
-      pos[1] = vrep_coord.y;
-      pos[2] = vrep_coord.z;
-    }
-    else
-    {
-      pos[0] = obj_coord.x;
-      pos[1] = obj_coord.y;
-      pos[2] = obj_coord.z;
-    }
-
-    // send set object position command
-    simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,
-      simx_opmode_oneshot_wait);
+    // convert to vrep
+    utility::Position vrep_coord;
+    gps_to_vrep (gps_coord, vrep_coord);
+    pos[0] = vrep_coord.x;
+    pos[1] = vrep_coord.y;
   }
+  else
+  {
+    // get vrep coords
+    pos[0] = knowledge.get (".initial_x").to_double ();
+    pos[1] = knowledge.get (".initial_y").to_double ();
+  }
+
+  // send set object position command
+  pos[2] = self.id.to_integer () + 1; // TODO: remove when collision avoidance is added
+  simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,
+    simx_opmode_oneshot_wait);
 
   //find the dummy base sub-object
   simxInt handlesCount = 0,*handles = NULL;
@@ -169,7 +164,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
   // sync with other nodes; wait for all processes to get up
   std::stringstream buffer, init_string;
   init_string << "S";
-  init_string << id;
+  init_string << self.id.to_integer ();
   init_string << ".init";
 
   buffer << "(" << init_string.str () << " = 1)";

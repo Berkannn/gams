@@ -88,7 +88,13 @@ gams::platforms::Factory::create (const std::string & type)
   else if (type == "vrep")
   {
     if (knowledge_ && sensors_ && platforms_ && self_)
-      return new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
+    {
+      VREP_UAV* ret = new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
+      double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
+      if (move_speed > 0)
+        ret->set_move_speed (move_speed);
+      return ret;
+    }
   }
 #endif
 

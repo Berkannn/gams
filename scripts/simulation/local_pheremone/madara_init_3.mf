@@ -1,7 +1,6 @@
 .id=3;
 .vrep_port=19909;
 
-.set_initial=1;
 .initial_x=20;
 .initial_y=20;
 

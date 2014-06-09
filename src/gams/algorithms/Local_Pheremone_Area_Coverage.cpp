@@ -132,7 +132,7 @@ gams::algorithms::Local_Pheremone_Area_Coverage::plan ()
   }
   else
   {
-    cout << "Local_Pheremone_Area_Coverage::plan(): distance = " << dist << endl;
+    //cout << "Local_Pheremone_Area_Coverage::plan(): distance = " << dist << endl;
   }
 
   return 0;
@@ -142,7 +142,7 @@ void
 gams::algorithms::Local_Pheremone_Area_Coverage::
   generate_new_position ()
 {
-  cout << "Local_Pheremone_Area_Coverage::generate_new_position(): " << endl;
+  //cout << "Local_Pheremone_Area_Coverage::generate_new_position(): " << endl;
 
   // get current location
   utility::GPS_Position cur_gps;
@@ -152,7 +152,7 @@ gams::algorithms::Local_Pheremone_Area_Coverage::
   const int num_possible = 12;
   utility::Position possible[num_possible];
   utility::Position cur = pheremone_.get_index_from_gps (cur_gps);
-  cout << "\tcurrent: " << cur.to_string() << endl;
+  //cout << "\tcurrent: " << cur.to_string() << endl;
   vector<unsigned int> selection;
   for (unsigned int i = 0; i < num_possible; ++i)
   {
@@ -187,11 +187,11 @@ gams::algorithms::Local_Pheremone_Area_Coverage::
     if (my_concentration > executions_)
       executions_ = my_concentration;
 
-    cout << "\tpos_" << i << ": " << possible[index].to_string() << " (" << possible_gps.to_string() << ") = " << my_concentration << endl;
+    //cout << "\tpos_" << i << ": " << possible[index].to_string() << " (" << possible_gps.to_string() << ") = " << my_concentration << endl;
 
     if (search_area_.is_in_search_area (possible_gps))
     {
-      cout << "\t\tin search_area" << endl;
+      //cout << "\t\tin search_area" << endl;
       if (concentration > my_concentration)
       {
         concentration = my_concentration;
@@ -201,7 +201,7 @@ gams::algorithms::Local_Pheremone_Area_Coverage::
     }
     else
     {
-      cout << "\t\tnot in search_area" << endl;
+      //cout << "\t\tnot in search_area" << endl;
     }
   }
 
@@ -212,5 +212,5 @@ gams::algorithms::Local_Pheremone_Area_Coverage::
   lowest.alt = self_->id.to_integer () + 1;
   next_position_ = lowest;
 
-  cout << "\tselected: " << s.to_string() << " (" << next_position_.to_string () << ")" << endl;
+  //cout << "\tselected: " << s.to_string() << " (" << next_position_.to_string () << ")" << endl;
 }
