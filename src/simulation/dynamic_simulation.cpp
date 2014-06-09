@@ -325,8 +325,8 @@ void create_environment (int client_id,
 
         // find where it should go
         simxFloat pos[3];
-        pos[0] = gpos.y;
-        pos[1] = gpos.x;
+        pos[0] = gpos.x;
+        pos[1] = gpos.y;
         pos[2] = 0;
     
         // load object
@@ -343,28 +343,7 @@ void create_environment (int client_id,
           simx_opmode_oneshot_wait);
       }
     }
-    
-//    for (int i = 0; i < (num_x * num_y); ++i)
-//    {
-//      // find where it should go
-//      simxFloat pos[3];
-//      pos[0] = (i / num_y) * floor_side;
-//      pos[1] = (i % num_y) * floor_side;
-//      pos[2] = 0;
-//  
-//      // load object
-//      int node_id;
-//      if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
-//        simx_opmode_oneshot_wait) != simx_error_noerror)
-//      {
-//        cerr << "failure loading plant model" << endl;
-//        exit (0);
-//      }
-//  
-//      // move object
-//      simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
-//        simx_opmode_oneshot_wait);
-//    }
+
     cout << "done" << endl;
   }
 }

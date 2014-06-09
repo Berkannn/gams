@@ -124,15 +124,10 @@ gams::algorithms::Local_Pheremone_Area_Coverage::plan ()
   // find new target if necessary
   utility::GPS_Position current;
   current.from_container (self_->device.location);
-  double dist = current.distance_to (next_position_);
   if (current.approximately_equal(next_position_,
     platform_->get_position_accuracy ()))
   {
     generate_new_position();
-  }
-  else
-  {
-    //cout << "Local_Pheremone_Area_Coverage::plan(): distance = " << dist << endl;
   }
 
   return 0;
