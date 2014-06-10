@@ -103,6 +103,13 @@ namespace gams
       bool is_in_region (const Position & p, const GPS_Position& ref) const;
 
       /**
+       * Get distance from any point in this region
+       * @param   p     point to check
+       * @return 0 if in region, otherwise distance from region
+       **/
+      double distance (const GPS_Position& p) const;
+
+      /**
        * Get bounding box
        * @return Region object corresponding to bounding box
        **/

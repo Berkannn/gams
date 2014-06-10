@@ -114,6 +114,22 @@ gams::utility::Position::operator!= (
 }
 
 bool
+gams::utility::Position::operator< (const Position& rhs) const
+{
+  if (this->x < rhs.x)
+    return true;
+  if (this->y < rhs.y)
+    return true;
+  return this->z < rhs.z;
+}
+
+double
+gams::utility::Position::dot (const Position& p_2) const
+{
+  return this->x * p_2.x + this->y * p_2.y + this->z * p_2.z;
+}
+
+bool
 gams::utility::Position::approximately_equal (const Position & rhs,
   const double & epsilon) const
 {
@@ -140,6 +156,29 @@ gams::utility::Position::distance (const Position & rhs) const
   sum += pow (this->y - rhs.y, 2.0);
   sum += pow (this->z - rhs.z, 2.0);
   return pow (sum, 0.5);
+}
+
+double
+gams::utility::Position::distance (const Position& end, const Position& check)
+  const
+{
+  // taken from
+  // https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
+  double l_2 = pow (this->x - end.x, 2.0) + pow (this->y - end.y, 2.0) +
+    pow (this->z - end.z, 2.0);
+
+  if (l_2 == 0.0) // *this == end
+    return distance (check);
+
+  const Position p_1 = check - *this;
+  const Position p_2 = end - *this;
+  double t = p_1.dot (p_2) / l_2;
+  if (t < 0.0) // beyond *this end of segment
+    return distance (check);
+  else if (t > 1.0) // beyond end end of segment
+    return end.distance (check);
+  Position projection = *this + (end - *this) * t;
+  return check.distance (projection);
 }
 
 double
@@ -281,4 +320,22 @@ gams::utility::Position::from_container (
     y = source[1];
     z = source[2];
   }
+}
+
+gams::utility::Position
+gams::utility::Position::operator- (const Position & rhs) const
+{
+  return Position (this->x - rhs.x, this->y - rhs.y, this->z - rhs.z);
+}
+
+gams::utility::Position
+gams::utility::Position::operator+ (const Position & rhs) const
+{
+  return Position (this->x + rhs.x, this->y + rhs.y, this->z + rhs.z);
+}
+
+gams::utility::Position
+gams::utility::Position::operator* (const double& scale) const
+{
+  return Position (this->x * scale, this->y * scale, this->z * scale);
 }

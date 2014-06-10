@@ -120,7 +120,14 @@ void
 gams::variables::Sensor::set_value (const utility::GPS_Position& pos,
   const double& val, const bool bcast)
 {
-  string idx = index_pos_to_index (get_index_from_gps (pos));
+  set_value (get_index_from_gps (pos), val, bcast);
+}
+
+void
+gams::variables::Sensor::set_value (const utility::Position& pos, const double& val,
+  const bool bcast)
+{
+  string idx = index_pos_to_index (pos);
   covered_.set (idx, val,
     Madara::Knowledge_Engine::Knowledge_Update_Settings (bcast));
 }

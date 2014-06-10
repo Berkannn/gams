@@ -457,8 +457,6 @@ gams::controller::Base::run (double period, double max_runtime)
       return_value |= plan ();
       return_value |= execute ();
     
-      knowledge_.send_modifieds ();
-
       current = ACE_OS::gettimeofday ();
 
       if (current < next_epoch)

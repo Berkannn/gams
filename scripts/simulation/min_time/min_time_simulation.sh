@@ -4,7 +4,7 @@ MADARA_DEBUG=0
 PERIOD=1
 AREA=small
 NUM=10
-SIM=local_pheremone
+SIM=min_time
 
 # launch drone controllers
 for (( i=0; i<$NUM; i++ ))

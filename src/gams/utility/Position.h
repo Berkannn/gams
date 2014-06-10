@@ -139,6 +139,20 @@ namespace gams
         Madara::Knowledge_Engine::Containers::Native_Double_Array & rhs) const;
 
       /**
+       * Less than used for ordering in stl containers
+       * @param rhs   comparing position
+       * @return true if *this is less than rhs
+       **/
+      bool operator< (const Position& rhs) const;
+
+      /**
+       * Dot product of two positions treated as vectors
+       * @param p_2   other position
+       * @return dot product of the two positions
+       **/
+      double dot (const Position& p_2) const;
+
+      /**
        * Approximate equality
        * @param  rhs      value to compare
        * @param  epsilon  approximation value
@@ -161,6 +175,14 @@ namespace gams
        * @return euclidean distance between the two points
        **/
       double distance (const Position & rhs) const;
+
+      /**
+       * Get distance between points that form a line
+       * @param end   end of line segment including *this
+       * @param check point to find distance for
+       * @return distance from check to line including *this and end
+       **/
+      double distance (const Position& end, const Position& check) const;
 
       /**
        * Get the 2D distance between two positions
@@ -241,6 +263,28 @@ namespace gams
 
       /// the z coordinate (e.g. altitude)
       double z;
+
+    protected:
+      /**
+       * Subtraction operator performs element-wise subtraction
+       * @param rhs   value to subtract from *this
+       * @return element-wise subtraction of rhs from *this
+       **/
+      Position operator- (const Position & rhs) const;
+
+      /**
+       * Addition operator performs element-wise addition
+       * @param rhs   value to add to *this
+       * @return element-wise addition of *this and rhs
+       **/
+      Position operator+ (const Position & rhs) const;
+
+      /**
+       * Scale the position
+       * @param scale   factor to scale by
+       * @return scaled version of *this
+       **/
+      Position operator* (const double& scale) const;
     };
   }
 }

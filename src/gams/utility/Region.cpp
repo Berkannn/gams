@@ -114,6 +114,33 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
   return ret;
 }
 
+double
+gams::utility::Region::distance (const GPS_Position& p) const
+{
+  // if point is in region, then the distance is 0
+  if (is_in_region (p))
+    return 0;
+
+  // convert to cartesian coords
+  const GPS_Position sw (min_lat_, min_lon_);
+  vector<Position> local_points;
+  for (size_t i = 0; i < points.size (); ++i)
+    local_points.push_back (points[i].to_position (sw));
+  Position local_p = p.to_position (sw);
+
+  // else we check for distance from each edge
+  double min_dist = DBL_MAX;
+  for (size_t i = 0; i < local_points.size (); ++i)
+  {
+    const size_t i_1 = (i + 1) % local_points.size();
+    double dist = local_points[i].distance (local_points[i_1], local_p);
+    if (dist < min_dist)
+      min_dist = dist;
+  }
+
+  return min_dist;
+}
+
 bool
 gams::utility::Region::is_in_region (const Position & p,
   const GPS_Position& ref) const

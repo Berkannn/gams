@@ -138,12 +138,21 @@ namespace gams
       double get_value (const utility::Position& pos);
 
       /**
-       * Set value at a point
+       * Set value at a point with gps position
        * @param pos     position to set
        * @param val     value to set at position
-       * @param bcast   true to transport values, false to delay
+       * @param bcast   true to transport value, false otherwise
        **/
       void set_value (const utility::GPS_Position& pos, const double& val,
+        const bool bcast = true);
+
+      /**
+       * Set value at a point with index position
+       * @param pos     index of position to set
+       * @param val     value to set at position
+       * @param bcast   true to transport value, false otherwise
+       **/
+      void set_value (const utility::Position& pos, const double& val,
         const bool bcast = true);
 
       /**
@@ -151,8 +160,7 @@ namespace gams
        * @param gps current GPS location
        * @return current location in cartesian location on sensor map
        **/
-      utility::Position get_index_from_gps (
-        const utility::GPS_Position& pos);
+      utility::Position get_index_from_gps (const utility::GPS_Position& pos);
 
       /**
        * Get GPS position from index position

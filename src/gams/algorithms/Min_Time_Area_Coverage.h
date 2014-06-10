@@ -45,103 +45,88 @@
  **/
 
 /**
- * @file Search_Area.h
+ * @file Min_Time_Area_Coverage.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
- *
- * Search Area is a collection of regions, possibly with priority
  **/
 
-#ifndef  _GAMS_UTILITY_SEARCH_AREA_H_
-#define  _GAMS_UTILITY_SEARCH_AREA_H_
+#ifndef _GAMS_ALGORITHMS_MIN_TIME_AREA_COVERAGE_H_
+#define _GAMS_ALGORITHMS_MIN_TIME_AREA_COVERAGE_H_
 
-#include <vector>
-#include <string>
-using std::string;
+#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/utility/Search_Area.h"
+#include "gams/utility/GPS_Position.h"
 
-#include "gams/utility/Prioritized_Region.h"
+#include <set>
+using std::set;
 
 namespace gams
 {
-  namespace utility
+  namespace algorithms
   {
-    class GAMS_Export Search_Area
+    class GAMS_Export Min_Time_Area_Coverage : public Base
     {
     public:
       /**
-       * Default constructor
-       **/
-      Search_Area ();
-
-      /**
        * Constructor
-       * @param  region   the initial region of the search area
+       * @param  knowledge    the context containing variables and values
+       * @param  platform     the underlying platform the algorithm will use
+       * @param  sensors      map of sensor names to sensor information
+       * @param  self         self-referencing variables
        **/
-      Search_Area (const Prioritized_Region& region);
-
-      /**
-       * Destructor
-       **/
-      ~Search_Area ();
+      Min_Time_Area_Coverage (
+        const Madara::Knowledge_Record& search_id, 
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Search_Area & rhs);
-
-      /**
-       * Add prioritized region to search area
-       * @param r   prioritized region to add
-       **/
-      inline void add_prioritized_region (const Prioritized_Region& r);
-
-      /**
-       * Get region data
-       * @return const reference to regions
-       **/
-      const vector<Prioritized_Region>& get_regions () const;
+      void operator= (const Min_Time_Area_Coverage & rhs);
       
       /**
-       * Determine if GPS_Position is in region
-       * @param   p   point to check if in region
-       * @return  true if point is in one of the regions or on border, false otherwise
+       * Analyzes environment, platform, or other information
+       * @return bitmask status of the platform. @see Status.
        **/
-      bool is_in_search_area (const GPS_Position& p) const;
+      virtual int analyze (void);
+      
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int execute (void);
 
       /**
-       * Create string representation of Search_Area
-       * @return string representation of this object
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
        **/
-      string to_string () const;
+      virtual int plan (void);
 
     protected:
-      /**
-       * populate bounding box values
-       **/
-      void calculate_bounding_box ();
+      /// discretize search area
+      void discretize_search_area ();
 
-      /// collection of prioritized regions
-      vector<Prioritized_Region> regions_;
+      /// generate new next position
+      void generate_new_position ();
 
-      /// full region
-      Region union_;
+      /// get utility of moving from one index position to another
+      double get_utility (const utility::Position& start,
+        const utility::Position& end, vector<utility::Position>& online);
 
-      /// bounding box
-      double min_lat_, max_lat_;
-      double min_lon_, max_lon_;
-      double min_alt_, max_alt_;
-    }; // class Search_Area
+      /// next position
+      utility::GPS_Position next_position_;
 
-    /**
-     * Create Search Area from knowledge base information
-     * @param knowledge   knowledge base to draw from
-     * @param region_id   identifier for region
-     * @return Region object created from knowledge base
-     **/
-    Search_Area parse_search_area (
-      Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const string& search_area_id);
-  } // namespace utility
+      /// Search Area to cover
+      utility::Search_Area search_area_;
+
+      /// time since last coverage
+      variables::Sensor min_time_;
+
+      /// discretized positions in search area
+      set<utility::Position> valid_positions_;
+    };
+  } // namespace algorithms
 } // namespace gams
 
-#endif // _GAMS_UTILITY_SEARCH_AREA_H_
+#endif // _GAMS_ALGORITHMS_MIN_TIME_AREA_COVERAGE_H_
