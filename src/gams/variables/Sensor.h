@@ -67,6 +67,10 @@ using std::string;
 
 #include "gams/utility/GPS_Position.h"
 #include "gams/utility/Position.h"
+#include "gams/utility/Search_Area.h"
+
+#include <set>
+using std::set;
 
 namespace gams
 {
@@ -144,7 +148,8 @@ namespace gams
        * @param bcast   true to transport value, false otherwise
        **/
       void set_value (const utility::GPS_Position& pos, const double& val,
-        const bool bcast = true);
+        const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings =
+          Madara::Knowledge_Engine::Knowledge_Update_Settings());
 
       /**
        * Set value at a point with index position
@@ -153,7 +158,8 @@ namespace gams
        * @param bcast   true to transport value, false otherwise
        **/
       void set_value (const utility::Position& pos, const double& val,
-        const bool bcast = true);
+        const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings =
+          Madara::Knowledge_Engine::Knowledge_Update_Settings());
 
       /**
        * Get current location on sensor map
@@ -168,6 +174,14 @@ namespace gams
        * @return GPS_Position of index position
        **/
       utility::GPS_Position get_gps_from_index (const utility::Position& idx);
+
+      /**
+       * Discretize a search area into index positions inside search area
+       * @param search  Search_Area to discretize
+       * @return set of index positions considered inside search area
+       **/
+      set<utility::Position> discretize_search_area (
+        const utility::Search_Area& search);
       
     protected:
       /// initialize madara containers

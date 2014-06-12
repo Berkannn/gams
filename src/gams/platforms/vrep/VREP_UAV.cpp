@@ -82,7 +82,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
 
     // establish sensor
     variables::Sensor* coverage_sensor =
-      new variables::Sensor ("coverage", &knowledge, 1.0, origin);
+      new variables::Sensor ("coverage", &knowledge, 2.5, origin);
     (*sensors)["coverage"] = coverage_sensor;
   }
   sensors_["coverage"] = (*sensors)["coverage"];
@@ -238,8 +238,6 @@ gams::platforms::VREP_UAV::land (void)
   if (airborne_)
   {
     airborne_ = false;
-
-    // TODO: vrep land
   }
 
   return 0;
@@ -250,6 +248,9 @@ int
 gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
   const double & /*epsilon*/)
 {
+  // update variables
+  Base::move (position);
+
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
     takeoff ();
@@ -303,8 +304,6 @@ gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
 int
 gams::platforms::VREP_UAV::sense (void)
 {
-  static unsigned int executions = 0;
-  
   // get position
   simxFloat curr_arr[3];
   simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
@@ -318,9 +317,9 @@ gams::platforms::VREP_UAV::sense (void)
   position_.to_container (self_.device.location);
 
   // set position on coverage map
-  sensors_["coverage"]->set_value (position_, executions);
+  sensors_["coverage"]->set_value (position_,
+    knowledge_->get_context ().get_clock ());
 
-  ++executions;
   return 0;
 }
 
@@ -330,8 +329,6 @@ gams::platforms::VREP_UAV::takeoff (void)
   if (!airborne_)
   {
     airborne_ = true;
-
-    // TODO: vrep takeoff
   }
 
   return 0;

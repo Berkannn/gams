@@ -48,8 +48,8 @@
 #include <float.h>
 #include <sstream>
 using std::stringstream;
-#include <iostream>
-using std::cout;
+#include <vector>
+using std::vector;
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
@@ -113,23 +113,25 @@ gams::variables::Sensor::get_value (const utility::GPS_Position& pos)
 double
 gams::variables::Sensor::get_value (const utility::Position& pos)
 {
+  covered_.sync_keys ();
   return covered_[index_pos_to_index (pos)].to_double ();
 }
 
 void
 gams::variables::Sensor::set_value (const utility::GPS_Position& pos,
-  const double& val, const bool bcast)
+  const double& val,
+  const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings)
 {
-  set_value (get_index_from_gps (pos), val, bcast);
+  set_value (get_index_from_gps (pos), val, settings);
 }
 
 void
-gams::variables::Sensor::set_value (const utility::Position& pos, const double& val,
-  const bool bcast)
+gams::variables::Sensor::set_value (const utility::Position& pos,
+  const double& val,
+  const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings)
 {
   string idx = index_pos_to_index (pos);
-  covered_.set (idx, val,
-    Madara::Knowledge_Engine::Knowledge_Update_Settings (bcast));
+  covered_.set (idx, val, settings);
 }
 
 gams::utility::Position
@@ -154,6 +156,80 @@ gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
   origin.from_container (origin_);
   utility::GPS_Position ret = meters.to_gps_position (origin);
   return ret;
+}
+
+set<gams::utility::Position>
+gams::variables::Sensor::discretize_search_area (
+  const utility::Search_Area& search)
+{
+  // return set
+  set<utility::Position> ret_val;
+  
+  // find west most position
+  utility::GPS_Position start;
+  start.lon = DBL_MAX;
+  const vector<utility::Prioritized_Region> regions = search.get_regions ();
+  for (size_t i = 0; i < regions.size (); ++i)
+  {
+    const utility::Region reg = regions[i];
+    for (size_t j = 0; j < reg.points.size (); ++j)
+      if (start.lon > reg.points[j].lon)
+        start = reg.points[j];
+  }
+
+  // move east each iteration
+  for (utility::Position start_index = get_index_from_gps (start);
+    search.is_in_search_area (get_gps_from_index (start_index));
+    ++start_index.y)
+  {
+    // check north
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos)); ++pos.x)
+    {
+      ret_val.insert (pos);
+    }
+  
+    // check south
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos)); --pos.x)
+    {
+      ret_val.insert (pos);
+    }
+  }
+
+  // find east most position
+  start.lon = -DBL_MAX;
+  for (size_t i = 0; i < regions.size (); ++i)
+  {
+    const utility::Region reg = regions[i];
+    for (size_t j = 0; j < reg.points.size (); ++j)
+      if (start.lon < reg.points[j].lon)
+        start = reg.points[j];
+  }
+
+  // move west each iteration
+  for (utility::Position start_index = get_index_from_gps (start);
+    search.is_in_search_area (get_gps_from_index (start_index));
+    --start_index.y)
+  {
+    // check north
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos));
+      ++pos.x)
+    {
+      ret_val.insert (pos);
+    }
+  
+    // check south
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos));
+      --pos.x)
+    {
+      ret_val.insert (pos);
+    }
+  }
+
+  return ret_val;
 }
 
 void

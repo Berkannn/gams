@@ -52,7 +52,18 @@
  **/
 
 #include "madara/knowledge_engine/Knowledge_Base.h"
+#include "madara/utility/Utility.h"
+
 #include "gams/utility/Region.h"
+using gams::utility::Region;
+#include "gams/utility/Search_Area.h"
+using gams::utility::Search_Area;
+#include "gams/utility/Position.h"
+using gams::utility::Position;
+#include "gams/utility/GPS_Position.h"
+using gams::utility::GPS_Position;
+#include "gams/variables/Sensor.h"
+using gams::variables::Sensor;
 
 extern "C" {
 #include "extApi.h"
@@ -73,6 +84,10 @@ using std::endl;
 using std::string;
 #include <vector>
 using std::vector;
+#include <set>
+using std::set;
+#include <ctime>
+using std::time_t;
 
 #define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
 
@@ -101,6 +116,9 @@ double sw_long = -79.940967;
 // NE corner of simulation
 double ne_lat = 40.44355;
 double ne_long = -79.939626;
+
+// search area identifier
+string search_area_id = "search_area.1";
 
 // Agent information
 unsigned int num_agents = 0;
@@ -359,7 +377,7 @@ void start_simulator (const int & client_id,
   buffer << "S0.init";
   for (unsigned int i = 1; i < num_agents; ++i)
     buffer << " && S" << i << ".init";
-  std::string expression = buffer.str ();
+  string expression = buffer.str ();
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
   cout << "waiting for " << num_agents << " agent (s) to come online...";
@@ -375,6 +393,56 @@ void start_simulator (const int & client_id,
   cout << "informing agents to continue...";
   knowledge.set ("begin_sim", Madara::Knowledge_Record::Integer (1));
   cout << "done" << endl;
+}
+
+void
+time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge, 
+  Search_Area& search)
+{
+  // record start time
+  time_t start = time (NULL);
+
+  // get sensors and discrete area
+  GPS_Position origin;
+  Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
+  origin_container.set_name ("sensor.coverage.origin", knowledge, 3);
+  origin.from_container (origin_container);
+  Sensor coverage_sensor ("coverage", &knowledge, 2.5, origin);
+  set<Position> valid_positions = coverage_sensor.discretize_search_area (
+    search);
+
+  // check for all covered
+  bool all_covered = false;
+  size_t iter = 0;
+  while (!all_covered)
+  {
+    Madara::Utility::sleep (1);
+
+    all_covered = true;
+    unsigned int num_not_covered = 0;
+    for (set<Position>::const_iterator it = valid_positions.begin ();
+      it != valid_positions.end (); ++it)
+    {
+      if (coverage_sensor.get_value (*it) == 0)
+      {
+        all_covered = false;
+        ++num_not_covered;
+      }
+    }
+    cout << "not covered: " << num_not_covered << endl;
+
+    ++iter;
+    if (iter == 10)
+    {
+      knowledge.print();
+      iter = 0;
+    }
+  }
+
+  // find complete time
+  time_t end = time (NULL);
+
+  cout << end - start << " seconds for full coverage" << endl;
 }
 
 /**
@@ -409,7 +477,7 @@ int main (int argc, char ** argv)
   }
   cout << "done" << endl;
 
-  // actual work
+  // create environment and start simulation
   create_environment (client_id, knowledge);
   if (num_agents > 0)
     start_simulator (client_id, knowledge);
@@ -418,6 +486,10 @@ int main (int argc, char ** argv)
   cout << "closing vrep connection...";
   simxFinish (client_id);
   cout << "done" << endl;
+
+  // data collection
+  Search_Area search = gams::utility::parse_search_area (knowledge, search_area_id);
+  time_to_full_coverage (knowledge, search);
 
   // exit
   return 0;

@@ -52,6 +52,8 @@
 #ifndef _GAMS_ALGORITHMS_MIN_TIME_AREA_COVERAGE_H_
 #define _GAMS_ALGORITHMS_MIN_TIME_AREA_COVERAGE_H_
 
+#include "madara/knowledge_engine/Knowledge_Update_Settings.h"
+
 #include "gams/algorithms/Base_Algorithm.h"
 #include "gams/utility/Search_Area.h"
 #include "gams/utility/GPS_Position.h"
@@ -104,15 +106,16 @@ namespace gams
       virtual int plan (void);
 
     protected:
-      /// discretize search area
-      void discretize_search_area ();
-
       /// generate new next position
       void generate_new_position ();
 
       /// get utility of moving from one index position to another
       double get_utility (const utility::Position& start,
         const utility::Position& end, vector<utility::Position>& online);
+
+      /// don't disseminate changes
+      const static Madara::Knowledge_Engine::Knowledge_Update_Settings
+        NO_BROADCAST;
 
       /// next position
       utility::GPS_Position next_position_;

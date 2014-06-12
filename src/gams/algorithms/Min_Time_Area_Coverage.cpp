@@ -62,6 +62,9 @@ using std::cerr;
 using std::endl;
 #include <cmath>
 
+const Madara::Knowledge_Engine::Knowledge_Update_Settings
+  gams::algorithms::Min_Time_Area_Coverage::NO_BROADCAST (true, false);
+
 gams::algorithms::Min_Time_Area_Coverage::
 Min_Time_Area_Coverage (
   const Madara::Knowledge_Record& search_id,
@@ -82,7 +85,12 @@ Min_Time_Area_Coverage (
   min_time_.set_range (2.5);
 
   // perform setup
-  discretize_search_area ();
+  valid_positions_ = min_time_.discretize_search_area (search_area_);
+  for (set<utility::Position>::iterator it = valid_positions_.begin ();
+    it != valid_positions_.end (); ++it)
+  {
+    min_time_.set_value (*it, min_time_.get_value (*it) + 1, NO_BROADCAST);
+  }
   generate_new_position ();
 }
 
@@ -110,7 +118,7 @@ gams::algorithms::Min_Time_Area_Coverage::analyze ()
   for (set<utility::Position>::iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
-    min_time_.set_value (*it, min_time_.get_value (*it) + 1, false);
+    min_time_.set_value (*it, min_time_.get_value (*it) + 1, NO_BROADCAST);
   }
   
   return 0;
@@ -139,76 +147,6 @@ gams::algorithms::Min_Time_Area_Coverage::plan ()
 }
 
 void
-gams::algorithms::Min_Time_Area_Coverage::discretize_search_area ()
-{
-  // find west most position
-  utility::GPS_Position start;
-  start.lon = DBL_MAX;
-  const vector<utility::Prioritized_Region> regions = search_area_.get_regions ();
-  for (size_t i = 0; i < regions.size (); ++i)
-  {
-    const utility::Region reg = regions[i];
-    for (size_t j = 0; j < reg.points.size (); ++j)
-      if (start.lon > reg.points[j].lon)
-        start = reg.points[j];
-  }
-
-  // move east each iteration
-  for (utility::Position start_index = min_time_.get_index_from_gps (start);
-    search_area_.is_in_search_area (min_time_.get_gps_from_index (start_index));
-    ++start_index.y)
-  {
-    // check north
-    for (utility::Position pos = start_index;
-      search_area_.is_in_search_area (min_time_.get_gps_from_index (pos));
-      ++pos.x)
-    {
-      valid_positions_.insert (pos);
-    }
-  
-    // check south
-    for (utility::Position pos = start_index;
-      search_area_.is_in_search_area (min_time_.get_gps_from_index (pos));
-      --pos.x)
-    {
-      valid_positions_.insert (pos);
-    }
-  }
-
-  // find east most position
-  start.lon = -DBL_MAX;
-  for (size_t i = 0; i < regions.size (); ++i)
-  {
-    const utility::Region reg = regions[i];
-    for (size_t j = 0; j < reg.points.size (); ++j)
-      if (start.lon < reg.points[j].lon)
-        start = reg.points[j];
-  }
-
-  // move west each iteration
-  for (utility::Position start_index = min_time_.get_index_from_gps (start);
-    search_area_.is_in_search_area (min_time_.get_gps_from_index (start_index));
-    --start_index.y)
-  {
-    // check north
-    for (utility::Position pos = start_index;
-      search_area_.is_in_search_area (min_time_.get_gps_from_index (pos));
-      ++pos.x)
-    {
-      valid_positions_.insert (pos);
-    }
-  
-    // check south
-    for (utility::Position pos = start_index;
-      search_area_.is_in_search_area (min_time_.get_gps_from_index (pos));
-      --pos.x)
-    {
-      valid_positions_.insert (pos);
-    }
-  }
-}
-
-void
 gams::algorithms::Min_Time_Area_Coverage::generate_new_position ()
 {
   // check each valid position
@@ -226,7 +164,7 @@ gams::algorithms::Min_Time_Area_Coverage::generate_new_position ()
     {
       max_util = util;
       next_position_ = min_time_.get_gps_from_index (*it);
-      next_position_.alt = self_->id.to_integer ();
+      next_position_.alt = self_->id.to_integer () + 1;
       online.swap (cur_online);
     }
   }
@@ -252,12 +190,12 @@ gams::algorithms::Min_Time_Area_Coverage::get_utility (
   {
     if (start.distance (end, *it) < 0.75)
     {
-      double delta_util = min_time_.get_value (*it) /
-        sqrt (start.distance (*it) + 1);
+      double time = min_time_.get_value (*it);
+      double delta_util = pow(time, 3.0);
       util += delta_util;
       online.push_back (*it);
     }
   }
-
-  return util;
+  
+  return util / sqrt(start.distance (end) + 1);
 }

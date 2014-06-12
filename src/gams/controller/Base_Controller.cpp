@@ -449,6 +449,7 @@ gams::controller::Base::run (double period, double max_runtime)
       if (iterations % 15 == 0)
         knowledge_.print();
       ++iterations;
+      knowledge_.send_modifieds();
 
       // return value should be last return value of mape loop
       return_value = 0;
