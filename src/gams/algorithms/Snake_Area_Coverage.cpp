@@ -87,7 +87,7 @@ gams::algorithms::Snake_Area_Coverage::Snake_Area_Coverage (
   waypoints_.push_back (temp);
 
   // determine shift direction
-  const double shift = 1.0; // TODO: update for sensor range
+  const double shift = 2.5;
   const utility::GPS_Position & p_0 = region.points[longest_edge];
   const utility::GPS_Position & p_1 = region.points[(longest_edge + 1) % num_edges];
 

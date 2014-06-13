@@ -113,10 +113,6 @@ namespace gams
       double get_utility (const utility::Position& start,
         const utility::Position& end, vector<utility::Position>& online);
 
-      /// don't disseminate changes
-      const static Madara::Knowledge_Engine::Knowledge_Update_Settings
-        NO_BROADCAST;
-
       /// next position
       utility::GPS_Position next_position_;
 

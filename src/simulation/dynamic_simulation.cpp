@@ -412,22 +412,18 @@ time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
     search);
 
   // check for all covered
-  bool all_covered = false;
   size_t iter = 0;
-  while (!all_covered)
+  unsigned int num_not_covered = 1;
+  while (num_not_covered > 0)
   {
+    num_not_covered = 0;
     Madara::Utility::sleep (1);
 
-    all_covered = true;
-    unsigned int num_not_covered = 0;
     for (set<Position>::const_iterator it = valid_positions.begin ();
       it != valid_positions.end (); ++it)
     {
       if (coverage_sensor.get_value (*it) == 0)
-      {
-        all_covered = false;
         ++num_not_covered;
-      }
     }
     cout << "not covered: " << num_not_covered << endl;
 
@@ -450,12 +446,11 @@ time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
  **/
 int main (int argc, char ** argv)
 {
-  settings.type = Madara::Transport::MULTICAST;
-
   // handle all user arguments
   handle_arguments (argc, argv);
 
   // create knowledge base
+  settings.type = Madara::Transport::MULTICAST;
   if (settings.hosts.size () == 0)
   {
     // setup default transport as multicast

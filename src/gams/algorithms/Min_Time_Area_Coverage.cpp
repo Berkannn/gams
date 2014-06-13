@@ -62,9 +62,6 @@ using std::cerr;
 using std::endl;
 #include <cmath>
 
-const Madara::Knowledge_Engine::Knowledge_Update_Settings
-  gams::algorithms::Min_Time_Area_Coverage::NO_BROADCAST (true, false);
-
 gams::algorithms::Min_Time_Area_Coverage::
 Min_Time_Area_Coverage (
   const Madara::Knowledge_Record& search_id,
@@ -86,6 +83,8 @@ Min_Time_Area_Coverage (
 
   // perform setup
   valid_positions_ = min_time_.discretize_search_area (search_area_);
+  static const Madara::Knowledge_Engine::Knowledge_Update_Settings
+    NO_BROADCAST (true, false);
   for (set<utility::Position>::iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
@@ -115,6 +114,8 @@ gams::algorithms::Min_Time_Area_Coverage::analyze ()
   min_time_.set_value (current, 0);
 
   // increment time since last seen for other cells
+  static const Madara::Knowledge_Engine::Knowledge_Update_Settings
+    NO_BROADCAST (true, false);
   for (set<utility::Position>::iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
