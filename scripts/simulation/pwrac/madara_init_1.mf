@@ -7,4 +7,4 @@
 device.1.command="cover";
 device.1.command.size=2;
 device.1.command.0="pwrac";
-device.1.command.1="search_area.0";
+device.1.command.1="search_area.2";

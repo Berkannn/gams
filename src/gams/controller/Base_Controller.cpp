@@ -446,9 +446,9 @@ gams::controller::Base::run (double period, double max_runtime)
     while (current < max_wait)
     {
       // don't print out knowledge base every iteration
-      if (iterations % 15 == 0)
-        knowledge_.print();
-      ++iterations;
+//      if (iterations % 15 == 0)
+//        knowledge_.print();
+//      ++iterations;
       knowledge_.send_modifieds();
 
       // return value should be last return value of mape loop

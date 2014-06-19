@@ -137,13 +137,13 @@ gams::algorithms::Uniform_Random_Edge_Coverage::generate_new_position ()
   }
   else // other arbitrary line
   {
-    const double slope = (pos_2.lon - pos_1.lon) / (pos_2.lat - pos_1.lat);
+    const double slope = delta_lon / delta_lat;
     next_position_.lat = Madara::Utility::rand_double(pos_1.lat, pos_2.lat);
-    next_position_.lon = slope * (next_position_.lat - pos_1.lat) + pos_1.lon;
+    next_position_.lon = pos_1.lon + slope * (next_position_.lat - pos_1.lat);
   }
 
   // fill in altitude on waypoint
-  next_position_.alt = self_->device.location[2];
+  next_position_.alt = self_->id.to_integer () + 1;
 
   cout << "next_position: " << next_position_.to_string () << endl;
 }

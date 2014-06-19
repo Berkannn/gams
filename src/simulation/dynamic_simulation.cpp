@@ -323,42 +323,65 @@ void create_environment (int client_id,
     model_file = getenv ("VREP_ROOT");
     model_file += "/models/furniture/plants/indoorPlant.ttm";
 
-    // read regions to paint
-    size_t num_regions = 1;
-
     // paint each vertex
+    string regions[] = {"region.3", "region.4", "region.5"};
+    //string regions[] = {"region.0"};
+    // read regions to paint
+    const size_t num_regions = sizeof(regions) / sizeof(regions[0]);
+
     for (size_t i = 0; i < num_regions; ++i)
     {
-      string region = "region.0";
       gams::utility::Region reg =
-        gams::utility::parse_region (knowledge, region);
+        gams::utility::parse_region (knowledge, regions[i]);
       for (size_t j = 0; j < reg.points.size (); ++j)
       {
+        size_t next = (j + 1) % reg.points.size ();
         string sw_position = knowledge.get (".vrep_sw_position").to_string ();
         gams::utility::GPS_Position origin;
         sscanf (sw_position.c_str (), "%lf,%lf", &origin.lat, &origin.lon);
 
-        gams::utility::GPS_Position gps_pos = reg.points[j];
-        gams::utility::Position gpos = gps_pos.to_position (origin);
+        const gams::utility::GPS_Position gps_pos_1 = reg.points[j];
+        const gams::utility::GPS_Position gps_pos_2 = reg.points[next];
+        const gams::utility::Position pos_1 = gps_pos_1.to_position (origin);
+        const gams::utility::Position pos_2 = gps_pos_2.to_position (origin);
+        const double delta_x = pos_2.x - pos_1.x;
 
-        // find where it should go
-        simxFloat pos[3];
-        pos[0] = gpos.x;
-        pos[1] = gpos.y;
-        pos[2] = 0;
-    
-        // load object
-        int node_id;
-        if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
-          simx_opmode_oneshot_wait) != simx_error_noerror)
+        const unsigned int NUM_PLANTS_PER_SIDE = 5;
+        for (unsigned int k = 0; k < NUM_PLANTS_PER_SIDE; ++k)
         {
-          cerr << "failure loading plant model" << endl;
-          exit (0);
+          double plant_x, plant_y;
+          if (delta_x != 0)
+          {
+            const double m = (pos_2.y - pos_1.y) / delta_x;
+            const double k_del_x = k * delta_x / NUM_PLANTS_PER_SIDE;
+            plant_x = pos_1.x + k_del_x;
+            plant_y = pos_1.y + m * k_del_x;
+          }
+          else // vertical line
+          {
+            plant_x = pos_1.x;
+            plant_y = pos_1.y + (pos_2.y - pos_1.y) * k / NUM_PLANTS_PER_SIDE;
+          }
+
+          // find where it should go
+          simxFloat pos[3];
+          pos[0] = plant_y;
+          pos[1] = plant_x;
+          pos[2] = 0;
+      
+          // load object
+          int node_id;
+          if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
+            simx_opmode_oneshot_wait) != simx_error_noerror)
+          {
+            cerr << "failure loading plant model" << endl;
+            exit (0);
+          }
+      
+          // move object
+          simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
+            simx_opmode_oneshot_wait);
         }
-    
-        // move object
-        simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
-          simx_opmode_oneshot_wait);
       }
     }
 
@@ -430,7 +453,7 @@ time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
     ++iter;
     if (iter == 10)
     {
-      knowledge.print();
+      //knowledge.print();
       iter = 0;
     }
   }

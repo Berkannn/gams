@@ -3,7 +3,7 @@ TIME=3600
 MADARA_DEBUG=0
 PERIOD=1
 AREA=small
-NUM=3
+NUM=6
 SIM=pwrac
 
 # launch drone controllers
@@ -13,4 +13,4 @@ do
 done
 
 # launch simulation controller
-$GAMS_ROOT/dynamic_simulation -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf
+$GAMS_ROOT/dynamic_simulation -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf -p

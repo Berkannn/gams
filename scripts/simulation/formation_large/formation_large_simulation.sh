@@ -1,9 +1,9 @@
 #!/bin/bash
 TIME=3600
 MADARA_DEBUG=0
-PERIOD=0.5
-NUM=9
-SIM=rotation_formation_large
+PERIOD=0.7
+NUM=10
+SIM=formation_large
 AREA=small
 
 # launch drone controllers
@@ -13,4 +13,4 @@ do
 done
 
 # launch simulation controller
-$GAMS_ROOT/dynamic_simulation -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf -l $MADARA_DEBUG
+$GAMS_ROOT/dynamic_simulation -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf

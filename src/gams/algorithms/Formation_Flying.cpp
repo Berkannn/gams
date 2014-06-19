@@ -152,14 +152,14 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   if (modifier_ == ROTATE)
   {
     if (!head_)
-      platform->set_move_speed (platform->get_move_speed () * 1.25);
+      platform->set_move_speed (platform->get_move_speed () * 1.5);
     else // head_
       platform->set_move_speed (platform->get_move_speed () * 0.2);
   }
   else
   {
     if (head_)
-      platform->set_move_speed (platform->get_move_speed () * 0.8);
+      platform->set_move_speed (platform->get_move_speed () * 0.6);
   }
 }
 
@@ -242,8 +242,9 @@ gams::algorithms::Formation_Flying::plan (void)
     {
       case ROTATE:
       {
-        double angle = -phi_ + phi_dir_ + executions_ * M_PI / 20;
-        utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
+        const double OMEGA = M_PI / 30;
+        double angle = -phi_ + phi_dir_ + executions_ * OMEGA;
+        utility::Position offset (rho_ * sin (angle), rho_ * cos (angle), z_);
 
         utility::GPS_Position reference;
         reference.from_container (head_location_);
@@ -258,7 +259,7 @@ gams::algorithms::Formation_Flying::plan (void)
         double angle = -phi_ + phi_dir_;
         utility::GPS_Position ref_location;
         ref_location.from_container (head_location_);
-        utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
+        utility::Position offset (rho_ * sin (angle), rho_ * cos (angle), z_);
         if (formation_ready_ == 0)
         {
           next_position_ = offset.to_gps_position (ref_location);
@@ -271,7 +272,7 @@ gams::algorithms::Formation_Flying::plan (void)
           {
             // predict where the reference device will be
             dist = platform_->get_move_speed () * 1.5;
-            utility::Position direction (dist * cos (phi_dir_), dist * sin (phi_dir_));
+            utility::Position direction (dist * sin (phi_dir_), dist * cos (phi_dir_));
             utility::GPS_Position predicted = direction.to_gps_position (ref_location);
             next_position_ = offset.to_gps_position (predicted);
           }

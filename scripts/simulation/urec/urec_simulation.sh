@@ -1,7 +1,7 @@
 #!/bin/bash
 TIME=3600
 MADARA_DEBUG=0
-PERIOD=1
+PERIOD=0.5
 AREA=small
 NUM=3
 SIM=urec
@@ -13,4 +13,4 @@ do
 done
 
 # launch simulation controller
-$GAMS_ROOT/dynamic_simulation -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf
+$GAMS_ROOT/dynamic_simulation -n $NUM -mf $GAMS_ROOT/scripts/simulation/areas/${AREA}.mf -p

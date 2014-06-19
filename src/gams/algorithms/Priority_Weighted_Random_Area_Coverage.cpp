@@ -71,14 +71,18 @@ Priority_Weighted_Random_Area_Coverage (
   // calculate total priority
   const vector<utility::Prioritized_Region>& regions =
     search_area_.get_regions ();
+  //cerr << "getting total priority...";
   for (unsigned int i = 0; i < regions.size (); ++i)
   {
     total_priority_ += regions[i].get_area () * regions[i].priority;
     priority_total_by_region_.push_back (total_priority_);
   }
+  //cerr << total_priority_ << endl;
 
   // generate first position to move
+  //cerr << "generating first position...";
   generate_new_position ();
+  //cerr << "done" << endl;
 }
 
 void
@@ -126,9 +130,12 @@ void
 gams::algorithms::Priority_Weighted_Random_Area_Coverage::
   generate_new_position ()
 {
+  //cerr << endl << "Priority_Weighted_Random_Area_Coverage::generate_new_position()" << endl;
   // select region
+  //cerr << "\tselecting region...";
   double selected_rand = Madara::Utility::rand_double (0.0, total_priority_);
   const utility::Prioritized_Region* selected_region = 0;
+  //cerr << selected_rand << endl;
   for (unsigned int i = 0; i < search_area_.get_regions ().size (); ++i)
   {
     if (priority_total_by_region_[i] > selected_rand)
@@ -137,8 +144,11 @@ gams::algorithms::Priority_Weighted_Random_Area_Coverage::
       break;
     }
   }
+  //cerr << "\tusing region..." << endl;
+  //cerr << selected_region->to_string () << endl;
 
   // select point in region
+  //cerr << "\tselecting point..." << endl;
   do
   {
     next_position_.lat = Madara::Utility::rand_double (selected_region->min_lat_,
@@ -147,6 +157,7 @@ gams::algorithms::Priority_Weighted_Random_Area_Coverage::
       selected_region->max_lon_);
     next_position_.alt = Madara::Utility::rand_double (selected_region->min_alt_,
       selected_region->max_alt_);
+    //cerr << "\t\tchecking " << next_position_.to_string () << endl;
   }
   while (!selected_region->is_in_region (next_position_));
 
@@ -154,4 +165,5 @@ gams::algorithms::Priority_Weighted_Random_Area_Coverage::
   utility::GPS_Position current;
   current.from_container (self_->device.location);
   next_position_.alt = current.alt; // TODO: update when altitude is handled
+  //cerr << "\tusing " << next_position_.to_string () << endl;
 }

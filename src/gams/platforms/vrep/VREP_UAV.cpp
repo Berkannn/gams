@@ -435,8 +435,8 @@ gams::platforms::VREP_UAV::position_to_array(const utility::Position & pos,
   simxFloat (&arr)[3]) const
 {
   // have to swap x and y for vrep
-  arr[0] = pos.y;
-  arr[1] = pos.x;
+  arr[0] = pos.x;
+  arr[1] = pos.y;
   arr[2] = pos.z;
 }
 
@@ -445,8 +445,8 @@ gams::platforms::VREP_UAV::array_to_position(const simxFloat (&arr)[3],
   utility::Position & pos) const
 {
   // have to swap x and y for vrep
-  pos.x = arr[1];
-  pos.y = arr[0];
+  pos.x = arr[0];
+  pos.y = arr[1];
   pos.z = arr[2];
 }
 
