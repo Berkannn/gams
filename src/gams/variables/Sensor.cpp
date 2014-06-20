@@ -130,7 +130,6 @@ gams::variables::Sensor::set_value (const utility::Position& pos,
   const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings)
 {
   string idx = index_pos_to_index (pos);
-  covered_.set_settings (settings);
   covered_.set (idx, val, settings);
   knowledge_->send_modifieds ();
 }
