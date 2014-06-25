@@ -158,7 +158,16 @@ namespace gams
        * @param  epsilon  approximation value
        * @return true if position is within epsilon in each direction of this
        **/
-      bool approximately_equal(
+      bool approximately_equal (
+        const Position & rhs, const double & epsilon) const;
+
+      /**
+       * Approximate equality
+       * @param  rhs      value to compare
+       * @param  epsilon  approximation value
+       * @return true if position is within epsilon in each direction of this
+       **/
+      bool approximately_equal_2d (
         const Position & rhs, const double & epsilon) const;
 
       /**
@@ -174,22 +183,21 @@ namespace gams
        * @param  rhs      second position
        * @return euclidean distance between the two points
        **/
-      double distance (const Position & rhs) const;
+      double distance_to (const Position & rhs) const;
 
       /**
-       * Get distance between points that form a line
+       * @param  rhs      second position
+       * @return euclidean distance between the two points with just x and y
+       **/
+      double distance_to_2d (const Position & rhs) const;
+
+      /**
+       * Get distance between a point and a line segment
        * @param end   end of line segment including *this
        * @param check point to find distance for
        * @return distance from check to line including *this and end
        **/
-      double distance (const Position& end, const Position& check) const;
-
-      /**
-       * Get the 2D distance between two positions
-       * @param  rhs      second position
-       * @return euclidean distance between the two points with just x and y
-       **/
-      double distance_2d (const Position & rhs) const;
+      double distance_to_2d (const Position& end, const Position& check) const;
 
       /**
        * Get slope between two points

@@ -52,6 +52,7 @@
  **/
 
 #include "gams/algorithms/Formation_Flying.h"
+
 #include <cmath>
 #include <string>
 using std::string;
@@ -60,7 +61,6 @@ using std::stringstream;
 using std::set;
 
 #include "gams/utility/Position.h"
-#include "gams/utility/GPS.h"
 
 gams::algorithms::Formation_Flying::Formation_Flying (
   const Madara::Knowledge_Record & head_id,
@@ -78,13 +78,12 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   status_.init_vars (*knowledge, "formation");
 
   // get head information
-  head_id_ = head_id.to_integer ();
-  head_ = (head_id_ == self->id.to_integer ());
+  head_ = (head_id.to_integer () == self->id.to_integer ());
 
   // set madara containers
   stringstream in_formation_str;
   in_formation_str << "formation." << head_id.to_integer ();
-  in_formation_str << "." << self->id.to_integer () << ".ready";
+  in_formation_str << "." << *(self->id) << ".ready";
   in_formation_.set_name (in_formation_str.str (), *knowledge);
 
   stringstream formation_ready_str;
@@ -148,6 +147,11 @@ gams::algorithms::Formation_Flying::Formation_Flying (
     compiled_formation_ = knowledge_->compile (formation_expr.str ());
   }
 
+  /**
+   * These values are used because they were found to produce simulations
+   * that looked good in VREP. These will be parameterized when we perform real
+   * world experiments, but for now will remain hardcoded.
+   */
   // update speed if necessary
   if (modifier_ == ROTATE)
   {
@@ -186,27 +190,33 @@ gams::algorithms::Formation_Flying::analyze (void)
   // split logic by role
   if (head_)
   {
+    // head considers itself in formation when everybody else gets in formation
     if (in_formation_ == 0)
       in_formation_ = knowledge_->evaluate (compiled_formation_).to_integer ();
+    // everybody is in formation, so inform we are ready to move
     else if (formation_ready_ == 0)
       formation_ready_ = 1;
   }
   else // follower
   {
-    if (in_formation_ == 0)
+    if (in_formation_ == 0) // if not yet in formation...
     {
-      // calculate offset
-      utility::GPS_Position start;
-      start.from_container (head_location_);
-      start.direction_to (destination_, phi_dir_);
+      if (phi_dir_ == DBL_MAX)
+      {
+        // calculate offset
+        utility::GPS_Position start;
+        start.from_container (head_location_);
+        start.direction_to (destination_, phi_dir_);
+      }
 
       utility::GPS_Position location;
       location.from_container (self_->device.location);
 
+      // check if in formation
       if (location.approximately_equal (next_position_,
-        platform_->get_position_accuracy ()))
+        platform_->get_gps_accuracy ()))
       {
-        in_formation_ = 1;
+        in_formation_ = 1; // inform in formation
       }
     }
   }
@@ -224,22 +234,26 @@ gams::algorithms::Formation_Flying::execute (void)
 int
 gams::algorithms::Formation_Flying::plan (void)
 {
-  // increment executions
+  // increment executions, only used by rotation formation for now
   ++executions_;
 
   need_to_move_ = false;
   if (head_)
   {
+    // head only has to wait for everybody, and then move to destination
     if (formation_ready_ == 1)
     {
       next_position_ = destination_;
       need_to_move_ = true;
     }
   }
-  else
+  else // !head_
   {
     switch (modifier_)
     {
+      /**
+       * Rotation formation keys off of head location at all times
+       */
       case ROTATE:
       {
         const double OMEGA = M_PI / 30;
@@ -254,12 +268,19 @@ gams::algorithms::Formation_Flying::plan (void)
 
         break;
       }
+
+      /**
+       * Default formation sticks with head, until close to destination
+       */
       default: // case NONE
       {
+        // calculate formation location
         double angle = -phi_ + phi_dir_;
         utility::GPS_Position ref_location;
         ref_location.from_container (head_location_);
         utility::Position offset (rho_ * sin (angle), rho_ * cos (angle), z_);
+
+        // hold position until everybody is ready
         if (formation_ready_ == 0)
         {
           next_position_ = offset.to_gps_position (ref_location);
@@ -268,7 +289,7 @@ gams::algorithms::Formation_Flying::plan (void)
         {
           double dist = ref_location.distance_to (destination_);
           // TODO: tune the movement parameter
-          if (dist > platform_->get_move_speed () * 3)
+          if (dist > platform_->get_move_speed ())
           {
             // predict where the reference device will be
             dist = platform_->get_move_speed () * 1.5;

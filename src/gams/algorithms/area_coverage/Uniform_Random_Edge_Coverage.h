@@ -44,88 +44,69 @@
  *      distribution.
  **/
 
-#include "Mape_Loop.h"
+/**
+ * @file Uniform_Random_Edge_Coverage.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the random area coverage class
+ **/
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+#ifndef   _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_EDGE_COVERAGE_H_
+#define   _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_EDGE_COVERAGE_H_
 
-gams::controller::Mape_Loop::Mape_Loop (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-  : knowledge_ (knowledge)
+#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
+#include "gams/utility/GPS_Position.h"
+#include "gams/utility/Region.h"
+
+namespace gams
 {
-  define_mape ();
-}
+  namespace algorithms
+  {
+    namespace area_coverage
+    {
+      class GAMS_Export Uniform_Random_Edge_Coverage : public Base_Area_Coverage
+      {
+      public:
+        /**
+         * Constructor
+         * @param  knowledge    the context containing variables and values
+         * @param  platform     the underlying platform the algorithm will use
+         * @param  sensors      map of sensor names to sensor information
+         * @param  self         self-referencing variables
+         **/
+        Uniform_Random_Edge_Coverage (
+          const Madara::Knowledge_Record& region_id,
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          variables::Self * self = 0);
+  
+        /**
+         * Destructor
+         **/
+        ~Uniform_Random_Edge_Coverage ();
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Uniform_Random_Edge_Coverage & rhs);
+        
+      protected:
+        /**
+         * Generate new next position
+         */
+        virtual void generate_new_position ();
+  
+        /// coverage region
+        utility::Region region_;
+      }; // class Uniform_Random_Edge_Coverage
+    } // namespace area_coverage
+  } // namespace algorithms
+} // namespace gams
 
-gams::controller::Mape_Loop::~Mape_Loop ()
-{
-
-}
-
-void
-gams::controller::Mape_Loop::define_analyze (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the analyze function
-  knowledge_.define_function ("analyze", func);
-}
-
-void gams::controller::Mape_Loop::define_execute (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the execute function
-  knowledge_.define_function ("execute", func);
-}
-
-void
-gams::controller::Mape_Loop::define_mape (const std::string & loop)
-{
-  // define the mape loop via KaRL compilation
-  mape_loop_ = knowledge_.compile (loop);
-}
-
-void
-gams::controller::Mape_Loop::define_monitor (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the monitor function
-  knowledge_.define_function ("monitor", func);
-}
-
-void gams::controller::Mape_Loop::define_plan (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the plan function
-  knowledge_.define_function ("plan", func);
-}
-
-void
-gams::controller::Mape_Loop::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Integer & id,
-  const Integer & processes)
-{
-  // initialize the devices, swarm, and self variables
-  variables::init_vars (devices_, knowledge_, processes);
-  swarm_.init_vars (knowledge);
-  self_.init_vars (knowledge, id);
-}
-
-Madara::Knowledge_Record
-gams::controller::Mape_Loop::run (double period, double max_runtime)
-{
-  // initialize wait settings
-  Madara::Knowledge_Engine::Wait_Settings  settings;
-  settings.max_wait_time = max_runtime;
-  settings.poll_frequency = period;
-
-  // wait for the max_runtime or for monitor, analyze, plan, or execute
-  // to return non-zero
-  return knowledge_.wait (mape_loop_, settings);
-}
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_EDGE_COVERAGE_H_

@@ -4,7 +4,7 @@
 set -e
 
 # number of build jobs
-CORES=10
+CORES=8
 
 # build ACE
 cd $ACE_ROOT

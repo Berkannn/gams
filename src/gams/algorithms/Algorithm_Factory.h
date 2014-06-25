@@ -105,16 +105,16 @@ namespace gams
         const Madara::Knowledge_Record & arg5 = Madara::Knowledge_Record ());
       
       /**
+       * Sets list of devices participating in swarm
+       * @param  devices    devices in the swarm
+       **/
+      void set_devices (variables::Devices * devices);
+      
+      /**
        * Sets the knowledge base
        * @param  knowledge    the knowledge base to use
        **/
       void set_knowledge (Madara::Knowledge_Engine::Knowledge_Base * knowledge);
-      
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      void set_sensors (variables::Sensors * sensors);
       
       /**
        * Sets the map of platform names to platform information
@@ -129,27 +129,27 @@ namespace gams
       void set_self (variables::Self * self);
       
       /**
-       * Sets list of devices participating in swarm
-       * @param  devices    devices in the swarm
+       * Sets the map of sensor names to sensor information
+       * @param  sensors      map of sensor names to sensor information
        **/
-      void set_devices (variables::Devices * devices);
+      void set_sensors (variables::Sensors * sensors);
       
     private:
 
+      /// list of devices participating in the swarm
+      variables::Devices * devices_;
+
       /// knowledge base containing variables
       Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
+
+      /// self-referencing variables
+      variables::Self * self_;
 
       /// sensor variables
       variables::Sensors * sensors_;
 
       /// platform variables
       platforms::Base * platform_;
-
-      /// self-referencing variables
-      variables::Self * self_;
-
-      /// list of devices participating in the swarm
-      variables::Devices * devices_;
     };
   }
 }

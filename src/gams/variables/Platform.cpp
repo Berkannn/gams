@@ -43,10 +43,9 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Platform.h"
+#include "gams/variables/Platform.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
-
 
 gams::variables::Platform::Platform ()
 {
@@ -76,19 +75,13 @@ gams::variables::Platform::operator= (const Platform & rhs)
   }
 }
 
-
 void
 gams::variables::Platform::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   const std::string & new_name)
 {
   name = new_name;
-
-  std::stringstream buffer;
-  buffer << ".platform.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
+  string prefix (make_variable_prefix ());
 
   // initialize the variable containers
   this->ok.set_name (prefix + ".ok", knowledge);
@@ -105,17 +98,7 @@ gams::variables::Platform::init_vars (
     prefix + ".movement_available", knowledge);
   this->gps_spoofed.set_name (prefix + ".gps_spoofed", knowledge);
 
-  ok = 1;
-  waiting = 0;
-  deadlocked = 0;
-  failed = 0;
-  moving = 0;
-  reduced_sensing = 0;
-  reduced_movement = 0;
-  communication_available = 0;
-  sensors_available = 0;
-  movement_available = 0;
-  gps_spoofed = 0;
+  init_variable_values ();
 }
 
 void
@@ -124,12 +107,7 @@ gams::variables::Platform::init_vars (
   const std::string & new_name)
 {
   name = new_name;
-
-  std::stringstream buffer;
-  buffer << ".platform.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
+  string prefix (make_variable_prefix ());
   
   // initialize the variable containers
   this->ok.set_name (prefix + ".ok", knowledge);
@@ -145,4 +123,31 @@ gams::variables::Platform::init_vars (
   this->movement_available.set_name (
     prefix + ".movement_available", knowledge);
   this->gps_spoofed.set_name (prefix + ".gps_spoofed", knowledge);
+
+  init_variable_values ();
+}
+
+string
+gams::variables::Platform::make_variable_prefix () const
+{
+  std::stringstream buffer;
+  buffer << ".platform.";
+  buffer << name;
+  return buffer.str ();
+}
+
+void
+gams::variables::Platform::init_variable_values ()
+{
+  ok = 1;
+  waiting = 0;
+  deadlocked = 0;
+  failed = 0;
+  moving = 0;
+  reduced_sensing = 0;
+  reduced_movement = 0;
+  communication_available = 0;
+  sensors_available = 0;
+  movement_available = 0;
+  gps_spoofed = 0;
 }

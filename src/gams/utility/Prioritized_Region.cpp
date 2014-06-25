@@ -84,7 +84,7 @@ gams::utility::parse_prioritized_region (
   Prioritized_Region ret (parse_region (knowledge, prioritized_region_id));
 
   // get priority
-  char expr[50];
+  char expr[512];
   sprintf (expr, "%s.priority", prioritized_region_id.c_str ());
   ret.priority = knowledge.get (expr).to_integer ();
 

@@ -45,78 +45,75 @@
  **/
 
 /**
- * @file Local_Pheremone_Area_Coverage.h
+ * @file Min_Time_Area_Coverage.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
  **/
 
-#ifndef _GAMS_ALGORITHMS_PHEREMONE_AREA_COVERAGE_H_
-#define _GAMS_ALGORITHMS_PHEREMONE_AREA_COVERAGE_H_
+#ifndef _GAMS_ALGORITHMS_AREA_COVERAGE_MIN_TIME_AREA_COVERAGE_H_
+#define _GAMS_ALGORITHMS_AREA_COVERAGE_MIN_TIME_AREA_COVERAGE_H_
 
-#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+
+#include "madara/knowledge_engine/Knowledge_Update_Settings.h"
+
 #include "gams/utility/Search_Area.h"
 #include "gams/utility/GPS_Position.h"
+
+#include <set>
+using std::set;
 
 namespace gams
 {
   namespace algorithms
   {
-    class GAMS_Export Local_Pheremone_Area_Coverage : public Base
+    namespace area_coverage
     {
-    public:
-      /**
-       * Constructor
-       * @param  knowledge    the context containing variables and values
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  self         self-referencing variables
-       **/
-      Local_Pheremone_Area_Coverage (
-        const Madara::Knowledge_Record& search_id, 
-        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0);
+      class GAMS_Export Min_Time_Area_Coverage : public Base_Area_Coverage
+      {
+      public:
+        /**
+         * Constructor
+         * @param  knowledge    the context containing variables and values
+         * @param  platform     the underlying platform the algorithm will use
+         * @param  sensors      map of sensor names to sensor information
+         * @param  self         self-referencing variables
+         **/
+        Min_Time_Area_Coverage (
+          const Madara::Knowledge_Record& search_id, 
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          variables::Self * self = 0);
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Min_Time_Area_Coverage & rhs);
 
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Local_Pheremone_Area_Coverage & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void);
-
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void);
-
-    protected:
-      /// generate new next position
-      void generate_new_position ();
-
-      /// next position
-      utility::GPS_Position next_position_;
-
-      /// Search Area to cover
-      utility::Search_Area search_area_;
-
-      /// digital pheremone
-      variables::Sensor pheremone_;
-
-      /// number of executions of this algorithm
-      unsigned int executions_;
-    };
+        /**
+         * Increment sensor values
+         */
+        virtual int analyze ();
+        
+      protected:
+        /// generate new next position
+        virtual void generate_new_position ();
+  
+        /// get utility of moving from one index position to another
+        double get_utility (const utility::Position& start,
+          const utility::Position& end, vector<utility::Position>& online);
+  
+        /// Search Area to cover
+        utility::Search_Area search_area_;
+  
+        /// time since last coverage
+        variables::Sensor min_time_;
+  
+        /// discretized positions in search area
+        set<utility::Position> valid_positions_;
+      }; // class Min_Time_Area_Coverage
+    } // namespace area_coverage
   } // namespace algorithms
 } // namespace gams
 
-#endif //_GAMS_ALGORITHMS_PHEREMONE_AREA_COVERAGE_H_
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_MIN_TIME_AREA_COVERAGE_H_

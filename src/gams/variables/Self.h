@@ -54,13 +54,10 @@
 #ifndef   _GAMS_VARIABLES_SELF_H_
 #define   _GAMS_VARIABLES_SELF_H_
 
-#include <vector>
-
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 #include "Device.h"
-
 
 namespace gams
 {

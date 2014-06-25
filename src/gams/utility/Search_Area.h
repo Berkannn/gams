@@ -55,6 +55,7 @@
 #define  _GAMS_UTILITY_SEARCH_AREA_H_
 
 #include <vector>
+using std::vector;
 #include <string>
 using std::string;
 
@@ -77,6 +78,12 @@ namespace gams
        * @param  region   the initial region of the search area
        **/
       Search_Area (const Prioritized_Region& region);
+
+      /**
+       * Constructor
+       * @param regions   regions in this search area
+       */
+      Search_Area (const vector<Prioritized_Region>& regions);
 
       /**
        * Destructor

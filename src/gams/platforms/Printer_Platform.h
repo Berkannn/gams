@@ -91,7 +91,24 @@ namespace gams
        * @param  rhs   values to copy
        **/
       void operator= (const Printer_Platform & rhs);
+
+      /**
+       * Analyzes platform information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
        
+      /**
+       * Get the location aproximation value of what is considered close enough
+       * @return location approximation radius
+       **/
+      virtual double get_gps_accuracy () const;
+
+      /**
+       * Get move speed
+       **/
+      virtual double get_move_speed () const;
+
       /**
        * Instructs the device to return home
        * @return 1 if moving, 2 if arrived, 0 if error
@@ -120,53 +137,24 @@ namespace gams
       virtual int sense (void);
       
       /**
+       * Set move speed
+       * @param speed new speed in meters/loop execution
+       **/
+      virtual void set_move_speed (const double& speed);
+
+      /**
        * Instructs the platform to take off
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
       virtual int takeoff (void);
       
-      /**
-       * Analyzes platform information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-
-      /**
-       * Fills a list of sensor names with sensors available on the platform
-       **/
-      virtual void get_sensors (variables::Sensor_Names & sensors);
-      
-      /**
-       * Obtains the current position
-       * @param  position  after the call, filled with the current position
-       **/
-      virtual void get_position (utility::GPS_Position & position);
-
-      /**
-       * Get the location aproximation value of what is considered close enough
-       * @return location approximation radius
-       **/
-      virtual double get_position_accuracy () const;
-
-      /**
-       * Get move speed
-       **/
-      virtual double get_move_speed ();
-
-      /**
-       * Set move speed
-       * @param speed new speed in meters/loop execution
-       **/
-      virtual void set_move_speed (const double& speed);
-      
-
     protected:
-
-      /// provides access to variables denoting self state
-      variables::Self * self_;
 
       /// current position
       utility::GPS_Position position_;
+
+      /// provides access to variables denoting self state
+      variables::Self * self_;
     };
   }
 }

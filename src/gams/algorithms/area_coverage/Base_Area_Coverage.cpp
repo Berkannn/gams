@@ -44,45 +44,58 @@
  *      distribution.
  **/
 
-/**
- * @file GPS.h
- * @author James Edmondson <jedmondson@gmail.com>
- *
- * This file contains helper functions for working with GPS
- **/
+#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
 
-#ifndef   _GAMS_UTILITY_GPS_H_
-#define   _GAMS_UTILITY_GPS_H_
-
-#include <vector>
-
-#include "gams/GAMS_Export.h"
-
-#ifndef  _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
-#endif
-
-#include <math.h>
-
-/// macro converts degrees to radians
-#define DEGREES_TO_RADIANS(x) ((x) * M_PI / 180.0)
-
-namespace gams
+gams::algorithms::area_coverage::Base_Area_Coverage::Base_Area_Coverage (
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  platforms::Base * platform,
+  variables::Sensors * sensors,
+  variables::Self * self,
+  variables::Devices * devices)
+  : Base (knowledge, platform, sensors, self, devices)
 {
-  namespace utility
+}
+
+gams::algorithms::area_coverage::Base_Area_Coverage::~Base_Area_Coverage ()
+{
+}
+
+void
+gams::algorithms::area_coverage::Base_Area_Coverage::operator= (
+  const Base_Area_Coverage & rhs)
+{
+  if (this != &rhs)
   {
-    /**
-      * Gets the distance between two coordinates on a sphere
-      * @param   lat1   the latitude of the first coordinate
-      * @param   long1  the longitude of the first coordinate
-      * @param   lat2   the latitude of the second coordinate
-      * @param   long2  the longitude of the second coordinate
-      * @return  distance in meters
-      **/
-    double get_distance (
-      double lat1, double long1,
-      double lat2, double long2);
+    this->next_position_ = rhs.next_position_;
+    this->Base::operator= (rhs);
   }
 }
 
-#endif // _GAMS_UTILITY_GPS_H_
+int
+gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
+{
+  ++executions_;
+  return 0;
+}
+
+int
+gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
+{
+  platform_->move(next_position_);
+  return 0;
+}
+
+int
+gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
+{
+  // generate new next position if necessary
+  utility::GPS_Position current;
+  current.from_container (self_->device.location);
+  if (current.approximately_equal(next_position_,
+    platform_->get_gps_accuracy ()))
+  {
+    generate_new_position();
+  }
+
+  return 0;
+}

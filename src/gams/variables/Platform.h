@@ -45,22 +45,26 @@
  **/
 
 /**
- * @file Self.h
+ * @file Platform.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the self-referencing MADARA variables
+ * This file contains the definition of the platform-referencing MADARA variables
  **/
 
 #ifndef   _GAMS_VARIABLES_PLATFORM_H_
 #define   _GAMS_VARIABLES_PLATFORM_H_
 
 #include <vector>
+using std::vector;
+#include <map>
+using std::map;
+#include <string>
+using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
-#include "Device.h"
-
+#include "gams/variables/Device.h"
 
 namespace gams
 {
@@ -142,13 +146,25 @@ namespace gams
 
       /// status flag for the detection of active spoofing of GPS
       Madara::Knowledge_Engine::Containers::Integer gps_spoofed;
+
+    protected:
+      /**
+       * Get variable prefix
+       * @return string variable prefix
+       */
+      string make_variable_prefix () const;
+
+      /**
+       * Initialize variable values
+       */
+      void init_variable_values ();
     };
 
     /// a map of sensor names to the sensor information
-    typedef  std::map <std::string, Platform>   Platforms;
+    typedef  map <string, Platform>   Platforms;
 
     /// a list of sensor names
-    typedef  std::vector <std::string>        Platform_Names;
+    typedef  vector <string>        Platform_Names;
   }
 }
 

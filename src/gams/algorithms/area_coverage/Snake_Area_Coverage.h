@@ -43,41 +43,81 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "GPS.h"
 
-double
-gams::utility::get_distance (
-      double lat1, double long1,
-      double lat2, double long2)
+/**
+ * @file Snake_Area_Coverage.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the snake area coverage class
+ **/
+
+#ifndef _GAMS_ALGORITHMS_AREA_COVERAGE_SNAKE_AREA_COVERAGE_H_
+#define _GAMS_ALGORITHMS_AREA_COVERAGE_SNAKE_AREA_COVERAGE_H_
+
+#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
+#include "gams/utility/Position.h"
+
+#include <vector>
+
+namespace gams
 {
-  /**
-   * We use Haversine here, though it is known to be less accurate than
-   * Vincenty's formula. Unfortunately, Vincenty's formula is iterative
-   * and can be time consuming. Harversine is less accurate but easier to
-   * code and much quicker.
-   *
-   * From literature reviews, Haversine can be inaccurate up to .3% and
-   * this varies with altitude since Haversine assumes a perfect sphere
-   * and Earth simply isn't one (it's actually an ellipsoid with an irregular
-   * surface).
-   **/
+  namespace algorithms
+  {
+    namespace area_coverage
+    {
+      class GAMS_Export Snake_Area_Coverage : public Base_Area_Coverage
+      {
+      public:
+        /**
+         * Constructor
+         * @param  region_id  id of region to be covered
+         * @param  knowledge  the context containing variables and values
+         * @param  platform   the underlying platform the algorithm will use
+         * @param  sensors    map of sensor names to sensor information
+         * @param  self       self-referencing variables
+         **/
+        Snake_Area_Coverage (
+          const Madara::Knowledge_Record& region_id,
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0,
+          variables::Sensors * sensors = 0,
+          variables::Self * self = 0);
+  
+        /**
+         * Destructor
+         **/
+        ~Snake_Area_Coverage ();
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Snake_Area_Coverage & rhs);
+        
+      protected:
+        /**
+         * Generate new next position
+         */
+        void generate_new_position ();
+        
+        /**
+         * Compute waypoints
+         */
+        void compute_waypoints (const string& region_id);
+  
+        /// waypoints
+        std::vector<utility::GPS_Position> waypoints_;
+  
+        /// current waypoint
+        unsigned int cur_waypoint_;
+      }; // class Snake_Area_Coverage
+    } // namespace area_coverage
+  } // namespace algorithms
+} // namespace gams
 
-  // Convert the coordinates into radians for haversine method
-  lat1 = DEGREES_TO_RADIANS (lat1);
-  lat2 = DEGREES_TO_RADIANS (lat2);
-
-  // get difference in radians
-  double lat_rad_diff = DEGREES_TO_RADIANS (lat2 - lat1);
-  double long_rad_diff = DEGREES_TO_RADIANS (long2 - long1);
-
-  // Here is the meat of the Haversine formula
-  double a =
-    sin (lat_rad_diff / 2) * sin (lat_rad_diff / 2) + (
-      sin (long_rad_diff / 2) * sin (long_rad_diff / 2) *
-        cos (lat1) * cos (lat2));
-
-  double c = 2 * atan2(sqrt (a), sqrt (1 - a));
-
-  // Return Earth's radius 
-  return 6371000 * c;
-}
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_SNAKE_AREA_COVERAGE_H_

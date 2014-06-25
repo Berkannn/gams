@@ -43,71 +43,42 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Uniform_Random_Edge_Coverage.h"
 
-gams::algorithms::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
+#include "gams/algorithms/area_coverage/Uniform_Random_Edge_Coverage.h"
+
+gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
   const Madara::Knowledge_Record& region_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self) :
-  Base (knowledge, platform, sensors, self),
+  Base_Area_Coverage (knowledge, platform, sensors, self),
   region_ (utility::parse_region (*knowledge, region_id.to_string ()))
 {
+  // init status vars
   status_.init_vars (*knowledge, "urec");
+
+  // generate initial waypoint
   generate_new_position ();
 }
 
-gams::algorithms::Uniform_Random_Edge_Coverage::~Uniform_Random_Edge_Coverage ()
+gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::~Uniform_Random_Edge_Coverage ()
 {
 }
 
 void
-gams::algorithms::Uniform_Random_Edge_Coverage::operator= (
+gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::operator= (
   const Uniform_Random_Edge_Coverage & rhs)
 {
   if (this != &rhs)
   {
-    this->platform_ = rhs.platform_;
-    this->sensors_ = rhs.sensors_;
-    this->self_ = rhs.self_;
-    this->status_ = rhs.status_;
+    this->region_ = rhs.region_;
+    this->Base_Area_Coverage::operator= (rhs);
   }
-}
-
-
-int
-gams::algorithms::Uniform_Random_Edge_Coverage::analyze (void)
-{
-  return 0;
-}
-
-
-int
-gams::algorithms::Uniform_Random_Edge_Coverage::execute (void)
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-
-int
-gams::algorithms::Uniform_Random_Edge_Coverage::plan (void)
-{
-  // generate new next position if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_position_accuracy ()))
-  {
-    generate_new_position();
-  }
-
-  return 0;
 }
 
 void
-gams::algorithms::Uniform_Random_Edge_Coverage::generate_new_position ()
+gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::generate_new_position ()
 {
   // select new edge
   int num_edges = region_.points.size();

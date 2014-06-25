@@ -53,27 +53,29 @@
  * pheremone reading as their next destination.
  **/
 
-#include "gams/algorithms/Local_Pheremone_Area_Coverage.h"
+#include "gams/algorithms/area_coverage/Local_Pheremone_Area_Coverage.h"
 
 #include "madara/utility/Utility.h"
 
 #include <iostream>
-using std::cout;
+using std::cerr;
 using std::endl;
 #include <algorithm>
 
-gams::algorithms::Local_Pheremone_Area_Coverage::
+gams::algorithms::area_coverage::Local_Pheremone_Area_Coverage::
 Local_Pheremone_Area_Coverage (
   const Madara::Knowledge_Record& search_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform, variables::Sensors * sensors,
   variables::Self * self) :
-  Base (knowledge, platform, sensors, self),
+  Base_Area_Coverage (knowledge, platform, sensors, self),
   search_area_ (
     utility::parse_search_area (*knowledge, search_id.to_string ())),
-  pheremone_ (search_id.to_string () + ".pheremone", knowledge),
-  executions_ (0)
+  pheremone_ (search_id.to_string () + ".pheremone", knowledge)
 {
+  // init status vars
+  status_.init_vars (*knowledge, "lpac");
+
   // fill out pheremone sensor
   utility::GPS_Position origin;
   Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
@@ -87,58 +89,21 @@ Local_Pheremone_Area_Coverage (
 }
 
 void
-gams::algorithms::Local_Pheremone_Area_Coverage::operator= (
+gams::algorithms::area_coverage::Local_Pheremone_Area_Coverage::operator= (
   const Local_Pheremone_Area_Coverage & rhs)
 {
   if (this != &rhs)
   {
-    this->next_position_ = rhs.next_position_;
     this->search_area_ = rhs.search_area_;
     this->pheremone_ = rhs.pheremone_;
-    this->executions_ = rhs.executions_;
+    this->Base_Area_Coverage::operator= (rhs);
   }
-}
-
-int
-gams::algorithms::Local_Pheremone_Area_Coverage::analyze ()
-{
-  ++executions_;
-
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  pheremone_.set_value (current, executions_);
-  
-  return 0;
-}
-
-int
-gams::algorithms::Local_Pheremone_Area_Coverage::execute ()
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-int
-gams::algorithms::Local_Pheremone_Area_Coverage::plan ()
-{
-  // find new target if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_position_accuracy ()))
-  {
-    generate_new_position();
-  }
-
-  return 0;
 }
 
 void
-gams::algorithms::Local_Pheremone_Area_Coverage::
+gams::algorithms::area_coverage::Local_Pheremone_Area_Coverage::
   generate_new_position ()
 {
-  //cout << "Local_Pheremone_Area_Coverage::generate_new_position(): " << endl;
-
   // get current location
   utility::GPS_Position cur_gps;
   cur_gps.from_container (self_->device.location);
@@ -147,7 +112,6 @@ gams::algorithms::Local_Pheremone_Area_Coverage::
   const int num_possible = 12;
   utility::Position possible[num_possible];
   utility::Position cur = pheremone_.get_index_from_gps (cur_gps);
-  //cout << "\tcurrent: " << cur.to_string() << endl;
   vector<unsigned int> selection;
   for (unsigned int i = 0; i < num_possible; ++i)
   {
@@ -174,38 +138,34 @@ gams::algorithms::Local_Pheremone_Area_Coverage::
   std::random_shuffle (selection.begin (), selection.end ());
   for (unsigned int i = 0; i < num_possible; ++i)
   {
-    const int index = selection[i];
-    utility::GPS_Position possible_gps =
-      pheremone_.get_gps_from_index (possible[index]);
+    const int index = selection[i]; // get randomized index
 
+    // update executions value if necessary
     const double my_concentration = pheremone_.get_value (possible[index]);
     if (my_concentration > executions_)
       executions_ = my_concentration;
 
-    //cout << "\tpos_" << i << ": " << possible[index].to_string() << " (" << possible_gps.to_string() << ") = " << my_concentration << endl;
-
-    if (search_area_.is_in_search_area (possible_gps))
+    // check if new min found and update if necessary
+    if (concentration > my_concentration)
     {
-      //cout << "\t\tin search_area" << endl;
-      if (concentration > my_concentration)
+      utility::GPS_Position possible_gps =
+        pheremone_.get_gps_from_index (possible[index]);
+      if (search_area_.is_in_search_area (possible_gps))
       {
-        concentration = my_concentration;
-        lowest = possible_gps;
-        s = possible[index];
+        {
+          concentration = my_concentration;
+          lowest = possible_gps;
+          s = possible[index];
+        }
       }
-    }
-    else
-    {
-      //cout << "\t\tnot in search_area" << endl;
     }
   }
 
+  // update pheremone value
   pheremone_.set_value (lowest, executions_ + 1);
 
   // assign new next
   // TODO: fix with proper altitude
   lowest.alt = self_->id.to_integer () + 1;
   next_position_ = lowest;
-
-  //cout << "\tselected: " << s.to_string() << " (" << next_position_.to_string () << ")" << endl;
 }

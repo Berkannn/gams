@@ -54,6 +54,8 @@
 #include <sstream>
 using std::stringstream;
 #include <string>
+using std::string;
+
 #include "gams/utility/Search_Area.h"
 
 gams::utility::Search_Area::Search_Area ()
@@ -63,6 +65,13 @@ gams::utility::Search_Area::Search_Area ()
 gams::utility::Search_Area::Search_Area (const Prioritized_Region& region)
 {
   regions_.push_back (region);
+  calculate_bounding_box ();
+}
+
+gams::utility::Search_Area::Search_Area (
+  const vector<Prioritized_Region>& regions) :
+  regions_ (regions)
+{
   calculate_bounding_box ();
 }
 
@@ -91,7 +100,7 @@ gams::utility::Search_Area::add_prioritized_region (const Prioritized_Region& r)
 {
   regions_.push_back (r);
 
-  // add bounding box
+  // modify bounding box
   min_lat_ = (min_lat_ > r.min_lat_) ? r.min_lat_ : min_lat_;
   min_lon_ = (min_lon_ > r.min_lon_) ? r.min_lon_ : min_lon_;
   min_alt_ = (min_alt_ > r.min_alt_) ? r.min_alt_ : min_alt_;
@@ -151,7 +160,7 @@ gams::utility::parse_search_area (
   Search_Area ret;
 
   // get size of search_area in number of regions
-  char expr[50];
+  char expr[512];
   sprintf (expr, "%s.size", search_area_id.c_str ());
   const unsigned int num_regions = knowledge.get (expr).to_integer ();
 

@@ -54,14 +54,11 @@
 #ifndef _GAMS_UTILITY_GPS_POSITION_H_
 #define _GAMS_UTILITY_GPS_POSITION_H_
 
-#include <vector>
-
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Double_Vector.h"
 #include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 
 #include "gams/utility/Position.h"
-#include "gams/utility/GPS.h"
 
 namespace gams
 {
@@ -80,12 +77,8 @@ namespace gams
        * @param  init_alt   the initial altitude
        **/
       GPS_Position (
-        double init_lat = 0.0, double init_lon = 0.0, double init_alt = 0.0);
-
-      /**
-       * Destructor
-       **/
-      ~GPS_Position ();
+        double init_lat = 0.0, double init_lon = 0.0, double init_alt = 0.0) :
+        lat (init_lat), lon (init_lon), alt (init_alt) {}
 
       /**
        * Assignment operator
@@ -163,27 +156,11 @@ namespace gams
       double distance_to (const GPS_Position & rhs) const;
 
       /**
-       * get slope of two points using lat/long
-       * @param rhs other GPS_Position to use
-       * @param slope location to store slope between two points
-       * @return      true if slope exists
-       **/
-      bool slope_2d (const GPS_Position & p, double & slope) const;
-
-      /**
-       * Deterime if a third point is inline and between another two points
-       * @param end     second endpoint
-       * @param check   point to check
-       * @return true if check is inline and between *this and end
-       **/
-      bool is_between_2d (const GPS_Position & end, const GPS_Position & check)
-        const;
-
-      /**
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
        **/
-      std::string to_string (const std::string & delimiter = ",") const;
+      std::string to_string (const std::string & delimiter = ",",
+        const unsigned int precision = 8) const;
 
       /**
        * Convert to position using reference location

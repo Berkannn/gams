@@ -29,6 +29,10 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib {
       src/gams/algorithms
     }
 
+    Area_Coverage {
+      src/gams/algorithms/area_coverage
+    }
+
     Controllers {
       src/gams/controller
     }
@@ -56,6 +60,10 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib {
 
     Algorithms {
       src/gams/algorithms
+    }
+
+    Area_Coverage {
+      src/gams/algorithms/area_coverage
     }
 
     Controllers {

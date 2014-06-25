@@ -57,6 +57,7 @@
 #include <vector>
 using std::vector;
 #include <map>
+using std::map;
 #include <string>
 using std::string;
 
@@ -98,34 +99,50 @@ namespace gams
       void operator= (const Sensor & rhs);
 
       /**
-       * Set range
-       * @param range new range
+       * Discretize a search area into index positions inside search area
+       * @param search  Search_Area to discretize
+       * @return set of index positions considered inside search area
        **/
-      void set_range (const double& range);
+      set<utility::Position> discretize_search_area (
+        const utility::Search_Area& search);
+      
+      /**
+       * Get discretization value
+       * @return discretization value
+       */
+      double get_discretization_value () const;
 
       /**
-       * Set origin
-       * @param origin  new origin
+       * Get GPS position from index position
+       * @param index position
+       * @return GPS_Position of index position
        **/
-      void set_origin (const utility::GPS_Position& origin);
+      utility::GPS_Position get_gps_from_index (const utility::Position& idx);
+
+      /**
+       * Get current location on sensor map
+       * @param gps current GPS location
+       * @return current location in cartesian location on sensor map
+       **/
+      utility::Position get_index_from_gps (const utility::GPS_Position& pos);
 
       /**
        * Get name
        * @return name of sensor
        **/
-      inline string get_name () const { return name_; }
-
-      /**
-       * Get range
-       * @return sensor range
-       **/
-      inline double get_range () const { return range_.to_double (); }
+      string get_name () const;
 
       /**
        * Get origin
        * @return GPS origin
        **/
       utility::GPS_Position get_origin();
+
+      /**
+       * Get range
+       * @return sensor range
+       **/
+      double get_range () const;
 
       /**
        * Get value at gps location
@@ -140,6 +157,18 @@ namespace gams
        * @return sensor value at position
        **/
       double get_value (const utility::Position& pos);
+
+      /**
+       * Set origin
+       * @param origin  new origin
+       **/
+      void set_origin (const utility::GPS_Position& origin);
+
+      /**
+       * Set range
+       * @param range new range
+       **/
+      void set_range (const double& range);
 
       /**
        * Set value at a point with gps position
@@ -161,57 +190,37 @@ namespace gams
         const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings =
           Madara::Knowledge_Engine::Knowledge_Update_Settings());
 
-      /**
-       * Get current location on sensor map
-       * @param gps current GPS location
-       * @return current location in cartesian location on sensor map
-       **/
-      utility::Position get_index_from_gps (const utility::GPS_Position& pos);
-
-      /**
-       * Get GPS position from index position
-       * @param index position
-       * @return GPS_Position of index position
-       **/
-      utility::GPS_Position get_gps_from_index (const utility::Position& idx);
-
-      /**
-       * Discretize a search area into index positions inside search area
-       * @param search  Search_Area to discretize
-       * @return set of index positions considered inside search area
-       **/
-      set<utility::Position> discretize_search_area (
-        const utility::Search_Area& search);
-      
     protected:
-      /// initialize madara containers
-      void init_vars ();
-
       /**
-       * convert index position to string index
+       * Convert index position to string index
        * @param pos   gps position
        * @return string index into map
        **/
       string index_pos_to_index (const utility::Position& pos) const;
 
-      /// the range of the sensor, determines discretization
-      Madara::Knowledge_Engine::Containers::Double range_;
+      /**
+       * Initialize madara containers
+       */
+      void init_vars ();
 
       /// the map area that has been covered by the sensor
       Madara::Knowledge_Engine::Containers::Map covered_;
 
-      /// origin for index calculations
-      Madara::Knowledge_Engine::Containers::Double_Array origin_;
-
       /// knowledge base
       Madara::Knowledge_Engine::Knowledge_Base* knowledge_;
 
+      /// the range of the sensor, determines discretization
+      Madara::Knowledge_Engine::Containers::Double range_;
+
       /// name of the sensor
       string name_;
+
+      /// origin for index calculations
+      Madara::Knowledge_Engine::Containers::Double_Array origin_;
     };
 
     /// a map of sensor names to the sensor information
-    typedef  std::map <string, Sensor*>   Sensors;
+    typedef  map <string, Sensor*>   Sensors;
 
     /// a list of sensor names
     typedef  vector <string>        Sensor_Names;

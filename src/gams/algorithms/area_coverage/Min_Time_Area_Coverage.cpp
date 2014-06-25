@@ -53,8 +53,9 @@
  * highest increase in sensor utility determined by time since last observation.
  **/
 
-#include "gams/algorithms/Min_Time_Area_Coverage.h"
+#include "gams/algorithms/area_coverage/Min_Time_Area_Coverage.h"
 
+#include "gams/utility/GPS_Position.h"
 #include "gams/utility/Position.h"
 
 #include <iostream>
@@ -62,95 +63,85 @@ using std::cerr;
 using std::endl;
 #include <cmath>
 
-gams::algorithms::Min_Time_Area_Coverage::
-Min_Time_Area_Coverage (
+gams::algorithms::area_coverage::Min_Time_Area_Coverage::
+  Min_Time_Area_Coverage (
   const Madara::Knowledge_Record& search_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform, variables::Sensors * sensors,
   variables::Self * self) :
-  Base (knowledge, platform, sensors, self),
+  Base_Area_Coverage (knowledge, platform, sensors, self),
   search_area_ (
     utility::parse_search_area (*knowledge, search_id.to_string ())),
   min_time_ (search_id.to_string () + ".min_time", knowledge)
 {
+  // init status vars
+  status_.init_vars (*knowledge, "mtac");
+
   // fill out min_time_ sensor
+  // TODO: fix sensor setup to be programatically consistent across users
   utility::GPS_Position origin;
   Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
   origin_container.set_name ("sensor.coverage.origin", *knowledge, 3);
   origin.from_container (origin_container);
   min_time_.set_origin (origin);
-  min_time_.set_range (2.5);
+  min_time_.set_range (2.5); // balance this between resolution and performance
 
   // perform setup
   valid_positions_ = min_time_.discretize_search_area (search_area_);
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
+  knowledge_->lock ();
   for (set<utility::Position>::iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
     min_time_.set_value (*it, min_time_.get_value (*it) + 1, NO_BROADCAST);
   }
+  knowledge_->unlock ();
+
+  // find first position to go to
   generate_new_position ();
 }
 
 void
-gams::algorithms::Min_Time_Area_Coverage::operator= (
+gams::algorithms::area_coverage::Min_Time_Area_Coverage::operator= (
   const Min_Time_Area_Coverage & rhs)
 {
   if (this != &rhs)
   {
-    this->next_position_ = rhs.next_position_;
     this->search_area_ = rhs.search_area_;
     this->min_time_ = rhs.min_time_;
+    this->valid_positions_ = rhs.valid_positions_;
+    this->Base_Area_Coverage::operator= (rhs);
   }
 }
 
 int
-gams::algorithms::Min_Time_Area_Coverage::analyze ()
+gams::algorithms::area_coverage::Min_Time_Area_Coverage::analyze ()
 {
-  // update current position
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  min_time_.set_value (current, 0);
-
-  // increment time since last seen for other cells
+  // increment time since last seen for all cells
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
+  knowledge_->lock ();
   for (set<utility::Position>::iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
     min_time_.set_value (*it, min_time_.get_value (*it) + 1, NO_BROADCAST);
   }
+  knowledge_->unlock ();
+
+  // mark current position as seen
+  utility::GPS_Position current;
+  current.from_container (self_->device.location);
+  min_time_.set_value (current, 0);
   
   return 0;
 }
 
-int
-gams::algorithms::Min_Time_Area_Coverage::execute ()
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-int
-gams::algorithms::Min_Time_Area_Coverage::plan ()
-{
-  // find new target if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_position_accuracy ()))
-  {
-    generate_new_position();
-  }
-
-  return 0;
-}
-
 void
-gams::algorithms::Min_Time_Area_Coverage::generate_new_position ()
+gams::algorithms::area_coverage::Min_Time_Area_Coverage::
+  generate_new_position ()
 {
-  // check each valid position
+  // check each possible destination for max utility
   double max_util = -DBL_MAX;
   vector<utility::Position> online;
   utility::GPS_Position current;
@@ -179,17 +170,21 @@ gams::algorithms::Min_Time_Area_Coverage::generate_new_position ()
 }
 
 double
-gams::algorithms::Min_Time_Area_Coverage::get_utility (
+gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
   const utility::Position& start, const utility::Position& end,
   vector<utility::Position>& online)
 {
-  // check each valid position to see if it is in the search area and add
-  //    utility if it is
+  /**
+   * check each valid position and add its value to utility if it is along
+   * the possible travel path of the agent
+   */
   double util = 0.0;
+  const double radius =
+    min_time_.get_range () / min_time_.get_discretization_value ();
   for (set<utility::Position>::const_iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
-    if (start.distance (end, *it) < 0.75)
+    if (start.distance_to_2d (end, *it) < radius)
     {
       double time = min_time_.get_value (*it);
       double delta_util = pow(time, 3.0);
@@ -198,5 +193,6 @@ gams::algorithms::Min_Time_Area_Coverage::get_utility (
     }
   }
   
-  return util / sqrt(start.distance (end) + 1);
+  // modify the utility based on the distance that will be travelled
+  return util / sqrt(start.distance_to_2d (end) + 1);
 }

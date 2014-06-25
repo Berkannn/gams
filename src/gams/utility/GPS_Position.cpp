@@ -44,22 +44,15 @@
  *      distribution.
  **/
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <sstream>
+using std::stringstream;
+
 #include "gams/utility/GPS_Position.h"
 #include "gams/utility/Position.h"
 
 #define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
-
-gams::utility::GPS_Position::GPS_Position (
-  double init_lat, double init_lon, double init_alt) :
-  lat (init_lat), lon (init_lon), alt (init_alt)
-{
-}
-
-gams::utility::GPS_Position::~GPS_Position ()
-{
-}
 
 void
 gams::utility::GPS_Position::operator= (const GPS_Position & rhs)
@@ -125,61 +118,58 @@ void
 gams::utility::GPS_Position::direction_to (const GPS_Position& rhs, 
   double& phi) const
 {
-  // Convert to cartesian and use those
-  Position p1 = this->to_position (*this);
-  Position p2 = rhs.to_position (*this);
-  double temp;
-  p1.direction_to (p2, phi, temp);
+  /**
+   * Use rhumb line
+   * phi = lat, lambda = long
+   * Taken from: http://www.movable-type.co.uk/scripts/latlong.html
+   */
+  double del_psi = log (
+    tan (M_PI / 4 + DEG_TO_RAD (rhs.lat) / 2) /
+    tan (M_PI / 4 + DEG_TO_RAD (this->lat) / 2));
+
+  double del_lambda = this->lon - rhs.lon;
+  if (fabs (del_lambda) > M_PI)
+  {
+    del_lambda =
+      (del_lambda > 0) ? (-2 * M_PI - del_lambda) : (2 * M_PI + del_lambda);
+  }
+
+  phi = atan2 (del_lambda, del_psi); // theta from the website
 }
 
 double
 gams::utility::GPS_Position::distance_to (const GPS_Position & rhs) const
 {
-  // assume the Earth is a perfect sphere
+  /**
+   * We make the assumption that the curvature of the Earth is insignificant
+   * over the distances we will be covering.
+   */
   const double EARTH_RADIUS = 6371000.0;
   const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
 
-  // convert the latitude/x coordinates
-  // VREP uses y for latitude
-  double delta_lat = (rhs.lat - this->lat) / 360.0 * EARTH_CIRCUMFERENCE;
-  
-  // assume the meters/degree longitude is constant throughout environment
-  // convert the longitude/y coordinates
-  // VREP uses x for longitude
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (rhs.lat));
-  double circumference = 2 * r_prime * M_PI;
-  double delta_lon = (rhs.lon - this->lon) / 360.0 * circumference;
+  // calculate north/south distance
+  const double ns_dif = EARTH_CIRCUMFERENCE * (this->lat - rhs.lat) / 360.0;
 
-  double sum = pow (delta_lat, 2.0) + pow (delta_lon, 2.0);
-  double dist = pow (sum, 0.5);
+  // calculate east/west distance
+  const double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (this->lat));
+  const double circumference = 2 * r_prime * M_PI;
+  const double ew_dif = circumference * (this->lon - rhs.lon) / 360.0;
 
+  // calculate altitude difference
+  const double alt_dif = this->alt - rhs.alt;
+
+  // use distance formula
+  const double dist =
+    sqrt (pow (ns_dif, 2.0) + pow (ew_dif, 2.0) + pow (alt_dif, 2.0));
   return dist;
 }
 
-bool
-gams::utility::GPS_Position::slope_2d (const GPS_Position & p, double & slope)
-  const
-{
-  const Position p1 (this->lat, this->lon, this->alt);
-  const Position p2 (p.lat, p.lon, p.alt);
-  return p1.slope_2d (p2, slope);
-}
-
-bool
-gams::utility::GPS_Position::is_between_2d (const GPS_Position & end,
-  const GPS_Position & check) const
-{
-  const Position p (this->lat, this->lon, this->alt);
-  const Position e (end.lat, end.lon, end.alt);
-  const Position c (check.lat, check.lon, check.alt);
-  return p.is_between_2d (e, c);
-}
-
 std::string
-gams::utility::GPS_Position::to_string (const std::string & delimiter) const
+gams::utility::GPS_Position::to_string (const std::string & delimiter,
+  const unsigned int precision) const
 {
-  std::stringstream buffer;
-  buffer << std::setprecision(8);
+  stringstream buffer;
+  buffer << std::setprecision(precision);
   buffer << lat;
   buffer << delimiter;
   buffer << lon;
@@ -192,6 +182,10 @@ gams::utility::GPS_Position::to_string (const std::string & delimiter) const
 gams::utility::Position
 gams::utility::GPS_Position::to_position (const GPS_Position& ref) const
 {
+  /**
+   * Make the assumption that the Earth is a perfect sphere and that the 
+   * curvature of the Earth over the two points is insignificant
+   */
   Position ret;
 
   // assume the Earth is a perfect sphere

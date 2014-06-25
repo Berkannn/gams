@@ -43,7 +43,8 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Self.h"
+
+#include "gams/variables/Self.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 

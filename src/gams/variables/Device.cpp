@@ -45,9 +45,6 @@
  **/
 #include "Device.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
-
-
 gams::variables::Device::Device ()
 {
 }
@@ -78,24 +75,14 @@ gams::variables::Device::operator= (const Device & device)
   }
 }
 
-
 void
 gams::variables::Device::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Integer & id)
+  const Madara::Knowledge_Record::Integer& id)
 {
-  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
-
   // create the device name string identifier ('device.{id}')
-  std::stringstream buffer;
-  buffer << "device.";
-  buffer << id;
-  std::string device_name (buffer.str ());
-
-  std::stringstream local_buffer;
-  local_buffer << ".device.";
-  local_buffer << id;
-  std::string local_device_name (local_buffer.str ());
+  string device_name (make_variable_name (id));
+  string local_device_name ("." + device_name);
 
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
@@ -112,32 +99,20 @@ gams::variables::Device::init_vars (
   source.set_name (device_name + ".source", knowledge);
   dest.set_name (device_name + ".dest", knowledge);
   command_args.set_name (device_name + ".command", knowledge);
-  
-  // keep certain varaible changes as local only
-  command.set_settings (keep_local);
-  command_args.set_settings (keep_local);
-
-  // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);
+
+  // init settings
+  init_variable_settings ();
 }
 
 void
 gams::variables::Device::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge,
-  const Integer & id)
+  const Madara::Knowledge_Record::Integer& id)
 {
-  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
-
   // create the device name string identifier ('device.{id}')
-  std::stringstream buffer;
-  buffer << "device.";
-  buffer << id;
-  std::string device_name (buffer.str ());
-  
-  std::stringstream local_buffer;
-  local_buffer << ".device.";
-  local_buffer << id;
-  std::string local_device_name (local_buffer.str ());
+  string device_name (make_variable_name (id));
+  string local_device_name ("." + device_name);
 
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
@@ -154,31 +129,47 @@ gams::variables::Device::init_vars (
   source.set_name (device_name + ".source", knowledge);
   dest.set_name (device_name + ".dest", knowledge);
   command_args.set_name (device_name + ".command", knowledge);
-
-  // keep certain varaible changes as local only
-  command.set_settings (keep_local);
-  command_args.set_settings (keep_local);
-
-  // environment variables
   temperature.set_name (device_name + ".temperature", knowledge);
+
+  // init settings
+  init_variable_settings ();
 }
 
 void gams::variables::init_vars (Devices & variables,
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-      const Madara::Knowledge_Record::Integer & processes)
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const Madara::Knowledge_Record::Integer& processes)
 {
-  Integer limit = processes;
+  Madara::Knowledge_Record::Integer limit = processes;
   if (processes >= 0)
   {
-    variables.resize ((size_t) processes);
+    variables.resize (processes);
   }
   else
   {
     limit = knowledge.get ("device.size").to_integer ();
   }
 
-  for (Integer i = 0; i < limit; ++i)
+  for (unsigned int i = 0; i < limit; ++i)
   {
     variables[i].init_vars (knowledge, i);
   }
+}
+
+string
+gams::variables::Device::make_variable_name (
+  const Madara::Knowledge_Record::Integer& id)
+{
+  std::stringstream buffer;
+  buffer << "device.";
+  buffer << id;
+  return buffer.str ();
+}
+
+void
+gams::variables::Device::init_variable_settings ()
+{
+  // keep certain varaible changes as local only
+  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
+  command.set_settings (keep_local);
+  command_args.set_settings (keep_local);
 }

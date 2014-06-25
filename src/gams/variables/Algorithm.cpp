@@ -78,12 +78,7 @@ gams::variables::Algorithm::init_vars (
   const std::string & new_name)
 {
   name = new_name;
-
-  std::stringstream buffer;
-  buffer << ".algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
+  std::string prefix (make_variable_prefix ());
 
   // initialize the variable containers
   this->ok.set_name (prefix + ".ok", knowledge);
@@ -93,12 +88,7 @@ gams::variables::Algorithm::init_vars (
   this->failed.set_name (prefix + ".failed", knowledge);
   this->unknown.set_name (prefix + ".unknown", knowledge);
 
-  ok = 1;
-  paused = 0;
-  waiting = 0;
-  deadlocked = 0;
-  failed = 0;
-  unknown = 0;
+  init_variable_values ();
 }
 
 void
@@ -107,12 +97,7 @@ gams::variables::Algorithm::init_vars (
   const std::string & new_name)
 {
   name = new_name;
-
-  std::stringstream buffer;
-  buffer << "algorithm.";
-  buffer << new_name;
-
-  std::string prefix (buffer.str ());
+  std::string prefix (make_variable_prefix ());
 
   // initialize the variable containers
   this->ok.set_name (prefix + ".ok", knowledge);
@@ -121,4 +106,27 @@ gams::variables::Algorithm::init_vars (
   this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
   this->failed.set_name (prefix + ".failed", knowledge);
   this->unknown.set_name (prefix + ".unknown", knowledge);
+
+  init_variable_values ();
+}
+
+string
+gams::variables::Algorithm::make_variable_prefix () const
+{
+  std::stringstream buffer;
+  buffer << "algorithm.";
+  buffer << name;
+
+  return buffer.str ();
+}
+
+void
+gams::variables::Algorithm::init_variable_values ()
+{
+  ok = 1;
+  paused = 0;
+  waiting = 0;
+  deadlocked = 0;
+  failed = 0;
+  unknown = 0;
 }

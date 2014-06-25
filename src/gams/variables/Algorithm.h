@@ -54,7 +54,12 @@
 #ifndef   _GAMS_VARIABLES_ALGORITHM_H_
 #define   _GAMS_VARIABLES_ALGORITHM_H_
 
+#include <string>
+using std::string;
 #include <vector>
+using std::vector;
+#include <map>
+using std::map;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
@@ -124,13 +129,24 @@ namespace gams
 
       /// status flag for unknown
       Madara::Knowledge_Engine::Containers::Integer unknown;
+
+    protected:
+      /**
+       * Get prefix for variables
+       */
+      string make_variable_prefix () const;
+
+      /**
+       * Initialize variable values
+       */
+      void init_variable_values ();
     };
 
     /// a map of sensor names to the sensor information
-    typedef  std::map <std::string, Algorithm>   Algorithms;
+    typedef  map <string, Algorithm>   Algorithms;
 
     /// a list of sensor names
-    typedef  std::vector <std::string>        Algorithm_Names;
+    typedef  vector <string>        Algorithm_Names;
   }
 }
 

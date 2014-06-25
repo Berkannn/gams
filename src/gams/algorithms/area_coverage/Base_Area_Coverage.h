@@ -45,84 +45,80 @@
  **/
 
 /**
- * @file Uniform_Random_Area_Coverage.h
- * @author James Edmondson <jedmondson@gmail.com>
+ * @file Base.h
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file contains the definition of the random area coverage class
+ * This file contains the definition of the base area coverage class
  **/
 
-#ifndef   _GAMS_ALGORITHMS_UNIFORM_RANDOM_AREA_COVERAGE_H_
-#define   _GAMS_ALGORITHMS_UNIFORM_RANDOM_AREA_COVERAGE_H_
+#ifndef _GAMS_ALGORITHMS_AREA_COVERAGE_BASE_AREA_COVERAGE_H_
+#define _GAMS_ALGORITHMS_AREA_COVERAGE_BASE_AREA_COVERAGE_H_
 
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
-#include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
+
 #include "gams/utility/GPS_Position.h"
-#include "gams/utility/Region.h"
-using gams::utility::Region;
 
 namespace gams
 {
   namespace algorithms
   {
-    class GAMS_Export Uniform_Random_Area_Coverage : public Base
+    namespace area_coverage
     {
-    public:
-      /**
-       * Constructor
-       * @param  knowledge    the context containing variables and values
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  self         self-referencing variables
-       **/
-      Uniform_Random_Area_Coverage (
-        const Madara::Knowledge_Record& region_id,
-        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0);
+      class GAMS_Export Base_Area_Coverage : public Base
+      {
+      public:
+        /**
+         * Constructor
+         * @param  knowledge    the knowledge base of variables and values
+         * @param  platform     the underlying platform the algorithm will use
+         * @param  sensors      map of sensor names to sensor information
+         * @param  devices      list of devices in the swarm
+         **/
+        Base_Area_Coverage (
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          variables::Self * self = 0, variables::Devices * devices = 0);
+  
+        /**
+         * Destructor
+         **/
+        virtual ~Base_Area_Coverage ();
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Base_Area_Coverage& rhs);
+        
+        /**
+         * Analyzes environment, platform, or other information
+         * @return bitmask status of the platform. @see Status.
+         **/
+        virtual int analyze ();
+        
+        /**
+         * Plans the next execution of the algorithm
+         * @return bitmask status of the platform. @see Status.
+         **/
+        virtual int execute ();
+  
+        /**
+         * Plans the next execution of the algorithm
+         * @return bitmask status of the platform. @see Status.
+         **/
+        virtual int plan ();
 
-      /**
-       * Destructor
-       **/
-      ~Uniform_Random_Area_Coverage ();
+      protected:
+        /**
+         * Generate new next position
+         */
+        virtual void generate_new_position () = 0;
 
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Uniform_Random_Area_Coverage & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void);
+        /// next position
+        utility::GPS_Position next_position_;
+      };
+    } // namespace area_coverage
+  } // namespace algorithms
+} // namespace gams
 
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void);
-      
-    protected:
-      /// generate new next position
-      void generate_new_position ();
-
-      /// next position
-      utility::GPS_Position next_position_;
-
-      /// vector of vertices in coverage box
-      Region region_;
-    };
-  }
-}
-
-#endif // _GAMS_ALGORITHMS_UNIFORM_RANDOM_AREA_COVERAGE_H_
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_BASE_AREA_COVERAGE_H_

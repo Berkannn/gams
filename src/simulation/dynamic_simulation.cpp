@@ -324,8 +324,8 @@ void create_environment (int client_id,
     model_file += "/models/furniture/plants/indoorPlant.ttm";
 
     // paint each vertex
-    string regions[] = {"region.3", "region.4", "region.5"};
-    //string regions[] = {"region.0"};
+    //string regions[] = {"region.3", "region.4", "region.5"};
+    string regions[] = {"region.0"};
     // read regions to paint
     const size_t num_regions = sizeof(regions) / sizeof(regions[0]);
 
@@ -420,7 +420,7 @@ void start_simulator (const int & client_id,
 
 void
 time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge, 
-  Search_Area& search)
+  const Search_Area& search)
 {
   // record start time
   time_t start = time (NULL);
@@ -431,7 +431,7 @@ time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
   origin_container.set_name ("sensor.coverage.origin", knowledge, 3);
   origin.from_container (origin_container);
   Sensor coverage_sensor ("coverage", &knowledge, 2.5, origin);
-  set<Position> valid_positions = coverage_sensor.discretize_search_area (
+  const set<Position> valid_positions = coverage_sensor.discretize_search_area (
     search);
 
   // check for all covered

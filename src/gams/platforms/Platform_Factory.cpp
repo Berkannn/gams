@@ -107,24 +107,21 @@ gams::platforms::Factory::set_knowledge (
 {
   knowledge_ = knowledge;
 }
-      
-
-void
-gams::platforms::Factory::set_sensors (variables::Sensors * sensors)
-{
-  sensors_ = sensors;
-}
-      
 
 void
 gams::platforms::Factory::set_platforms (variables::Platforms * platforms)
 {
   platforms_ = platforms;
 }
-      
 
 void
 gams::platforms::Factory::set_self (variables::Self * self)
 {
   self_ = self;
+}
+
+void
+gams::platforms::Factory::set_sensors (variables::Sensors * sensors)
+{
+  sensors_ = sensors;
 }

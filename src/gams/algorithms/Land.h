@@ -108,9 +108,6 @@ namespace gams
        * @return bitmask status of the platform. @see Status.
        **/
       virtual int plan (void);
-      
-    protected:
-
     };
   }
 }

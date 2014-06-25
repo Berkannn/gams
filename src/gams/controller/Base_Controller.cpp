@@ -71,120 +71,11 @@ gams::controller::Base::~Base ()
   }
 }
 
-void
-gams::controller::Base::init_vars (
-  const Integer & id,
-  const Integer & processes)
-{
-  // initialize the devices, swarm, and self variables
-  variables::init_vars (devices_, knowledge_, processes);
-  swarm_.init_vars (knowledge_, processes);
-  self_.init_vars (knowledge_, id);
-}
-
-void
-gams::controller::Base::init_platform (
-  const std::string & platform)
-{
-  // initialize the platform
-  
-  if (platform == "")
-  {
-    std::cerr << "Platform is empty. Here is a list of supported platforms.";
-    std::cerr << "\n\n";
-    std::cerr << "SUPPORTED PLATFORMS:\n";
-    std::cerr << "  drone-rk\n";
-    std::cerr << "  vrep\n";
-  }
-  else
-  {
-    delete platform_;
-    platforms::Factory factory (&knowledge_, &sensors_, &platforms_, &self_);
-    platform_ = factory.create (platform);
-
-    if (algorithm_)
-      algorithm_->set_platform (platform_);
-  }
-}
-
-void
-gams::controller::Base::init_algorithm (
-  const std::string & algorithm)
-{
-  // initialize the algorithm
-  
-  if (algorithm == "")
-  {
-    std::cerr << "Algorithm is empty. Here is a list of supported algorithms.";
-    std::cerr << "\n\n";
-    std::cerr << "SUPPORTED ALGORITHMS:\n";
-    std::cerr << "  bridge | bridging\n";
-    std::cerr << "  random area coverage\n";
-    std::cerr << "  priotized area coverage\n";
-  }
-  else
-  {
-    delete algorithm_;
-    algorithms::Factory factory (&knowledge_, &sensors_,
-      platform_, &self_, &devices_);
-    algorithm_ = factory.create (algorithm);
-  }
-}
-
-void
-gams::controller::Base::add_accent (const std::string & algorithm)
-{
-  if (algorithm == "")
-  {
-    std::cerr << "Accent is empty. ";
-    std::cerr << "Please provide a supported accent algorithm.\n\n";
-  }
-  else
-  {
-    // create new accent pointer and algorithm factory
-    algorithms::Base * new_accent (0);
-    algorithms::Factory factory (&knowledge_, &sensors_,
-      platform_, &self_, &devices_);
-
-    new_accent = factory.create (algorithm);
-
-    if (new_accent)
-    {
-      accents_.push_back (new_accent);
-    }
-  }
-}
-
-void gams::controller::Base::clear_accents (void)
-{
-  for (unsigned int i = 0; i < accents_.size (); ++i)
-  {
-    delete accents_[i];
-  }
-
-  accents_.clear ();
-}
 
 int
 gams::controller::Base::monitor (void)
 {
   return platform_->sense ();
-}
-
-int
-gams::controller::Base::analyze (void)
-{
-  int return_value (0);
-
-  if (platform_)
-    return_value |= platform_->analyze ();
-
-  return_value |= system_analyze ();
-
-  if (algorithm_)
-    return_value |= algorithm_->analyze ();
-
-  return return_value;
 }
 
 int
@@ -402,6 +293,22 @@ gams::controller::Base::system_analyze (void)
 }
 
 int
+gams::controller::Base::analyze (void)
+{
+  int return_value (0);
+
+  if (platform_)
+    return_value |= platform_->analyze ();
+
+  return_value |= system_analyze ();
+
+  if (algorithm_)
+    return_value |= algorithm_->analyze ();
+
+  return return_value;
+}
+
+int
 gams::controller::Base::plan (void)
 {
   int return_value (0);
@@ -445,10 +352,11 @@ gams::controller::Base::run (double period, double max_runtime)
     unsigned int iterations = 0;
     while (current < max_wait)
     {
-      // don't print out knowledge base every iteration
-//      if (iterations % 15 == 0)
-//        knowledge_.print();
-//      ++iterations;
+      // some debug output, just not every iteration
+      if ((++iterations) % 15 == 0)
+        knowledge_.print();
+
+      // send modified values through network
       knowledge_.send_modifieds();
 
       // return value should be last return value of mape loop
@@ -472,3 +380,95 @@ gams::controller::Base::run (double period, double max_runtime)
   return return_value;
 }
 
+void
+gams::controller::Base::add_accent (const std::string & algorithm)
+{
+  if (algorithm == "")
+  {
+    std::cerr << "Accent is empty. ";
+    std::cerr << "Please provide a supported accent algorithm.\n\n";
+  }
+  else
+  {
+    // create new accent pointer and algorithm factory
+    algorithms::Base * new_accent (0);
+    algorithms::Factory factory (&knowledge_, &sensors_,
+      platform_, &self_, &devices_);
+
+    new_accent = factory.create (algorithm);
+
+    if (new_accent)
+    {
+      accents_.push_back (new_accent);
+    }
+  }
+}
+
+void gams::controller::Base::clear_accents (void)
+{
+  for (unsigned int i = 0; i < accents_.size (); ++i)
+  {
+    delete accents_[i];
+  }
+
+  accents_.clear ();
+}
+void
+gams::controller::Base::init_algorithm (
+  const std::string & algorithm)
+{
+  // initialize the algorithm
+  
+  if (algorithm == "")
+  {
+    std::cerr << "Algorithm is empty. Here is a list of supported algorithms.";
+    std::cerr << "\n\n";
+    std::cerr << "SUPPORTED ALGORITHMS:\n";
+    std::cerr << "  bridge | bridging\n";
+    std::cerr << "  random area coverage\n";
+    std::cerr << "  priotized area coverage\n";
+  }
+  else
+  {
+    delete algorithm_;
+    algorithms::Factory factory (&knowledge_, &sensors_,
+      platform_, &self_, &devices_);
+    algorithm_ = factory.create (algorithm);
+  }
+}
+
+void
+gams::controller::Base::init_platform (
+  const std::string & platform)
+{
+  // initialize the platform
+  
+  if (platform == "")
+  {
+    std::cerr << "Platform is empty. Here is a list of supported platforms.";
+    std::cerr << "\n\n";
+    std::cerr << "SUPPORTED PLATFORMS:\n";
+    std::cerr << "  drone-rk\n";
+    std::cerr << "  vrep\n";
+  }
+  else
+  {
+    delete platform_;
+    platforms::Factory factory (&knowledge_, &sensors_, &platforms_, &self_);
+    platform_ = factory.create (platform);
+
+    if (algorithm_)
+      algorithm_->set_platform (platform_);
+  }
+}
+
+void
+gams::controller::Base::init_vars (
+  const Integer & id,
+  const Integer & processes)
+{
+  // initialize the devices, swarm, and self variables
+  variables::init_vars (devices_, knowledge_, processes);
+  swarm_.init_vars (knowledge_, processes);
+  self_.init_vars (knowledge_, id);
+}

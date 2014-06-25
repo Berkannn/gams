@@ -133,7 +133,14 @@ bool
 gams::utility::Position::approximately_equal (const Position & rhs,
   const double & epsilon) const
 {
-  return this->distance (rhs) <= epsilon;
+  return this->distance_to (rhs) <= epsilon;
+}
+
+bool
+gams::utility::Position::approximately_equal_2d (const Position & rhs,
+  const double & epsilon) const
+{
+  return this->distance_to_2d (rhs) <= epsilon;
 }
 
 void
@@ -150,7 +157,7 @@ gams::utility::Position::direction_to (const Position& rhs,
 }
 
 double
-gams::utility::Position::distance (const Position & rhs) const
+gams::utility::Position::distance_to (const Position & rhs) const
 {
   double sum = pow (this->x - rhs.x, 2.0);
   sum += pow (this->y - rhs.y, 2.0);
@@ -159,34 +166,33 @@ gams::utility::Position::distance (const Position & rhs) const
 }
 
 double
-gams::utility::Position::distance (const Position& end, const Position& check)
+gams::utility::Position::distance_to_2d (const Position& rhs) const
+{
+  double sum = pow (this->x - rhs.x, 2.0);
+  sum += pow (this->y - rhs.y, 2.0);
+  return pow (sum, 0.5);
+}
+
+double
+gams::utility::Position::distance_to_2d (const Position& end, const Position& check)
   const
 {
   // taken from
   // https://stackoverflow.com/questions/849211/shortest-distance-between-a-point-and-a-line-segment
-  double l_2 = pow (this->x - end.x, 2.0) + pow (this->y - end.y, 2.0) +
-    pow (this->z - end.z, 2.0);
+  double l_2 = pow (this->x - end.x, 2.0) + pow (this->y - end.y, 2.0);
 
   if (l_2 == 0.0) // *this == end
-    return distance (check);
+    return distance_to_2d (check);
 
   const Position p_1 = check - *this;
   const Position p_2 = end - *this;
   double t = p_1.dot (p_2) / l_2;
   if (t < 0.0) // beyond *this end of segment
-    return distance (check);
+    return distance_to_2d (check);
   else if (t > 1.0) // beyond end end of segment
-    return end.distance (check);
+    return end.distance_to_2d (check);
   Position projection = *this + (end - *this) * t;
-  return check.distance (projection);
-}
-
-double
-gams::utility::Position::distance_2d (const Position & rhs) const
-{
-  double sum = pow (this->x - rhs.x, 2.0);
-  sum += pow (this->y - rhs.y, 2.0);
-  return pow (sum, 0.5);
+  return check.distance_to_2d (projection);
 }
 
 bool

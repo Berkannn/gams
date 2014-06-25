@@ -43,15 +43,18 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+
 #include "Base_Platform.h"
 
+#include <cmath>
+
+#include "gams/utility/GPS_Position.h"
 
 gams::platforms::Base::Base (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
   variables::Self & self)
-  : knowledge_ (knowledge), sensors_ (sensors),
-    self_ (self)
+  : knowledge_ (knowledge), self_ (self), sensors_ (sensors)
 {
 }
 
@@ -71,19 +74,43 @@ gams::platforms::Base::operator= (const Base & rhs)
   }
 }
 
-void
-gams::platforms::Base::set_sensors (variables::Sensors * sensors)
+gams::utility::GPS_Position
+gams::platforms::Base::get_gps_position ()
 {
-  sensors_ = sensors;
+  utility::GPS_Position position;
+  position.from_container (self_.device.location);
+  return position;
+}
+
+double
+gams::platforms::Base::get_min_sensor_range () const
+{
+  double min_range = DBL_MAX;
+  for (variables::Sensors::const_iterator it = sensors_->begin ();
+    it != sensors_->end (); ++it)
+  {
+    min_range = fmin (it->second->get_range(), min_range);
+  }
+  return min_range;
+}
+
+const gams::variables::Sensor&
+gams::platforms::Base::get_sensor (const string& name) const
+{
+  return *((*sensors_)[name]);
 }
 
 void
-gams::platforms::Base::set_knowledge (
-  Madara::Knowledge_Engine::Knowledge_Base * rhs)
+gams::platforms::Base::get_sensor_names (variables::Sensor_Names& sensors) const
 {
-  knowledge_ = rhs;
+  variables::Sensor_Names ret_val;
+  for (variables::Sensors::iterator it = sensors_->begin ();
+    it != sensors_->end (); ++it)
+  {
+    ret_val.push_back (it->first);
+  }
+  sensors.swap (ret_val);
 }
-
 
 int
 gams::platforms::Base::move (const utility::GPS_Position & target,
@@ -122,7 +149,6 @@ gams::platforms::Base::move (const utility::GPS_Position & target,
 
   return result;
 }
- 
 
 void
 gams::platforms::Base::pause_move (void)
@@ -132,8 +158,22 @@ gams::platforms::Base::pause_move (void)
 
   status_.paused_moving = 1;
 }
-      
-void  gams::platforms::Base::stop_move (void)
+
+void
+gams::platforms::Base::set_knowledge (
+  Madara::Knowledge_Engine::Knowledge_Base * rhs)
+{
+  knowledge_ = rhs;
+}
+
+void
+gams::platforms::Base::set_sensors (variables::Sensors * sensors)
+{
+  sensors_ = sensors;
+}
+
+void
+gams::platforms::Base::stop_move (void)
 {
   if (*status_.moving)
     status_.moving = 0;

@@ -44,7 +44,7 @@
  *      distribution.
  **/
 
-#include "Base_Algorithm.h"
+#include "gams/algorithms/Base_Algorithm.h"
 #include "gams/utility/Region.h"
 
 gams::algorithms::Base::Base (
@@ -77,9 +77,9 @@ gams::algorithms::Base::operator= (const Base & rhs)
 }
 
 void
-gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
+gams::algorithms::Base::set_devices (variables::Devices * devices)
 {
-  sensors_ = sensors;
+  devices_ = devices;
 }
 
 void
@@ -87,15 +87,15 @@ gams::algorithms::Base::set_platform (platforms::Base * platform)
 {
   platform_ = platform;
 }
-   
+
 void
 gams::algorithms::Base::set_self (variables::Self * self)
 {
   self_ = self;
 }
-   
+
 void
-gams::algorithms::Base::set_devices (variables::Devices * devices)
+gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
 {
-  devices_ = devices;
+  sensors_ = sensors;
 }
