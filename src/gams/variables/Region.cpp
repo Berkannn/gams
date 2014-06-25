@@ -43,7 +43,8 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Region.h"
+
+#include "gams/variables/Region.h"
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
@@ -63,8 +64,6 @@ gams::variables::Region::operator= (const Region & rhs)
   {
     this->type = rhs.type;
     this->name = rhs.name;
-    this->top_left = rhs.top_left;
-    this->bottom_right = rhs.bottom_right;
   }
 }
 
@@ -84,8 +83,6 @@ gams::variables::Region::init_vars (
 
   // initialize the variable containers
   type.set_name (prefix + ".type", knowledge);
-  top_left.set_name (prefix + ".top_left", knowledge);
-  bottom_right.set_name (prefix + ".bottom_right", knowledge);
 }
 
 void
@@ -103,8 +100,6 @@ gams::variables::Region::init_vars (
 
   // initialize the variable containers
   type.set_name (prefix + ".type", knowledge);
-  top_left.set_name (prefix + ".top_left", knowledge);
-  bottom_right.set_name (prefix + ".bottom_right", knowledge);
 }
 
 void gams::variables::init_vars (Region & variables,

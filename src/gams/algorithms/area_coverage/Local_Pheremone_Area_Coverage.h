@@ -45,81 +45,59 @@
  **/
 
 /**
- * @file Priority_Weighted_Random_Area_Coverage.h
+ * @file Local_Pheremone_Area_Coverage.h
  * @author Anton Dukeman <anton.dukeman@gmail.com>
- *
- * Prioritized Random Area Coverage prioritizes certain regions of a search area
- * based on specified priorities
  **/
 
-#ifndef _GAMS_ALGORITHMS_PRIORITY_WEIGHTED_RANDOM_AREA_COVERAGE_H_
-#define _GAMS_ALGORITHMS_PRIORITY_WEIGHTED_RANDOM_AREA_COVERAGE_H_
+#ifndef _GAMS_ALGORITHMS_AREA_COVERAGE_PHEREMONE_AREA_COVERAGE_H_
+#define _GAMS_ALGORITHMS_AREA_COVERAGE_PHEREMONE_AREA_COVERAGE_H_
 
-#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
 #include "gams/utility/Search_Area.h"
-#include "gams/utility/GPS_Position.h"
+#include "gams/variables/Sensor.h"
 
 namespace gams
 {
   namespace algorithms
   {
-    class GAMS_Export Priority_Weighted_Random_Area_Coverage : public Base
+    namespace area_coverage
     {
-    public:
-      /**
-       * Constructor
-       * @param  knowledge    the context containing variables and values
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  self         self-referencing variables
-       **/
-      Priority_Weighted_Random_Area_Coverage (
-        const Madara::Knowledge_Record& search_id, 
-        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0);
-
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Priority_Weighted_Random_Area_Coverage & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void);
-
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void);
-
-    protected:
-      /// generate new next position
-      void generate_new_position ();
-
-      /// next position
-      utility::GPS_Position next_position_;
-
-      /// Search Area to cover
-      utility::Search_Area search_area_;
-
-      /// priority total by region
-      vector<double> priority_total_by_region_;
-
-      /// total priority
-      double total_priority_;
-    };
+      class GAMS_Export Local_Pheremone_Area_Coverage : public Base_Area_Coverage
+      {
+      public:
+        /**
+         * Constructor
+         * @param  knowledge    the context containing variables and values
+         * @param  platform     the underlying platform the algorithm will use
+         * @param  sensors      map of sensor names to sensor information
+         * @param  self         self-referencing variables
+         **/
+        Local_Pheremone_Area_Coverage (
+          const Madara::Knowledge_Record& search_id, 
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          variables::Self * self = 0);
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Local_Pheremone_Area_Coverage & rhs);
+        
+      protected:
+        /**
+         * Generate new next position
+         */
+        virtual void generate_new_position ();
+  
+        /// Search Area to cover
+        utility::Search_Area search_area_;
+  
+        /// virtual pheremone
+        variables::Sensor pheremone_;
+      }; // class Local_Pheremone_Area_Coverage
+    } // namespace area_coverage
   } // namespace algorithms
 } // namespace gams
 
-#endif  // _GAMS_ALGORITHMS_PRIORITY_WEIGHTED_RANDOM_AREA_COVERAGE_H_
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_PHEREMONE_AREA_COVERAGE_H_

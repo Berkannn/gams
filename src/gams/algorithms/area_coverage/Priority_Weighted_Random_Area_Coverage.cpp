@@ -52,90 +52,59 @@
  * based on specified priorities
  **/
 
-#include "gams/algorithms/Priority_Weighted_Random_Area_Coverage.h"
+#include "gams/algorithms/area_coverage/Priority_Weighted_Random_Area_Coverage.h"
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
-gams::algorithms::Priority_Weighted_Random_Area_Coverage::
+gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
 Priority_Weighted_Random_Area_Coverage (
   const Madara::Knowledge_Record& search_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform, variables::Sensors * sensors,
   variables::Self * self) :
-  Base (knowledge, platform, sensors, self),
-  search_area_ (utility::parse_search_area (*knowledge, search_id.to_string ())),
+  Base_Area_Coverage (knowledge, platform, sensors, self),
+  search_area_ (utility::parse_search_area (
+    *knowledge, search_id.to_string ())),
   total_priority_ (0.0)
 {
+  // init status vars
+  status_.init_vars (*knowledge, "pwrac");
+
   // calculate total priority
   const vector<utility::Prioritized_Region>& regions =
     search_area_.get_regions ();
-  //cerr << "getting total priority...";
   for (unsigned int i = 0; i < regions.size (); ++i)
   {
     total_priority_ += regions[i].get_area () * regions[i].priority;
     priority_total_by_region_.push_back (total_priority_);
   }
-  //cerr << total_priority_ << endl;
 
   // generate first position to move
-  //cerr << "generating first position...";
   generate_new_position ();
-  //cerr << "done" << endl;
 }
 
 void
-gams::algorithms::Priority_Weighted_Random_Area_Coverage::operator= (
-  const Priority_Weighted_Random_Area_Coverage & rhs)
+gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
+  operator= (const Priority_Weighted_Random_Area_Coverage & rhs)
 {
   if (this != &rhs)
   {
-    this->next_position_ = rhs.next_position_;
     this->search_area_ = rhs.search_area_;
     this->priority_total_by_region_ = rhs.priority_total_by_region_;
     this->total_priority_ = rhs.total_priority_;
+    this->Base_Area_Coverage::operator= (rhs);
   }
-}
-
-int
-gams::algorithms::Priority_Weighted_Random_Area_Coverage::analyze ()
-{
-  return 0;
-}
-
-int
-gams::algorithms::Priority_Weighted_Random_Area_Coverage::execute ()
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-int
-gams::algorithms::Priority_Weighted_Random_Area_Coverage::plan ()
-{
-  // find new target if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_position_accuracy ()))
-  {
-    generate_new_position();
-  }
-
-  return 0;
 }
 
 void
-gams::algorithms::Priority_Weighted_Random_Area_Coverage::
+gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
   generate_new_position ()
 {
-  //cerr << endl << "Priority_Weighted_Random_Area_Coverage::generate_new_position()" << endl;
   // select region
-  //cerr << "\tselecting region...";
   double selected_rand = Madara::Utility::rand_double (0.0, total_priority_);
   const utility::Prioritized_Region* selected_region = 0;
-  //cerr << selected_rand << endl;
   for (unsigned int i = 0; i < search_area_.get_regions ().size (); ++i)
   {
     if (priority_total_by_region_[i] > selected_rand)
@@ -144,11 +113,8 @@ gams::algorithms::Priority_Weighted_Random_Area_Coverage::
       break;
     }
   }
-  //cerr << "\tusing region..." << endl;
-  //cerr << selected_region->to_string () << endl;
 
   // select point in region
-  //cerr << "\tselecting point..." << endl;
   do
   {
     next_position_.lat = Madara::Utility::rand_double (selected_region->min_lat_,
@@ -157,7 +123,6 @@ gams::algorithms::Priority_Weighted_Random_Area_Coverage::
       selected_region->max_lon_);
     next_position_.alt = Madara::Utility::rand_double (selected_region->min_alt_,
       selected_region->max_alt_);
-    //cerr << "\t\tchecking " << next_position_.to_string () << endl;
   }
   while (!selected_region->is_in_region (next_position_));
 
@@ -165,5 +130,4 @@ gams::algorithms::Priority_Weighted_Random_Area_Coverage::
   utility::GPS_Position current;
   current.from_container (self_->device.location);
   next_position_.alt = current.alt; // TODO: update when altitude is handled
-  //cerr << "\tusing " << next_position_.to_string () << endl;
 }

@@ -55,6 +55,7 @@
 #define  _GAMS_UTILITY_REGION_H_
 
 #include <vector>
+using std::vector;
 #include <string>
 using std::string;
 
@@ -73,8 +74,8 @@ namespace gams
        * Constructor
        * @param  init_points  the vertices of the region
        **/
-      Region (const std::vector <GPS_Position> & init_points = 
-        std::vector<GPS_Position> ());
+      Region (const vector <GPS_Position> & init_points =
+        vector<GPS_Position> ());
 
       /**
        * Destructor
@@ -85,7 +86,7 @@ namespace gams
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Region & rhs);
+      void operator= (const Region& rhs);
       
       /**
        * Determine if GPS_Position is in region
@@ -142,7 +143,7 @@ namespace gams
         Madara::Knowledge_Engine::Containers::String_Array & target);
 
       /// the vertices of the region
-      std::vector <GPS_Position> points;
+      vector <GPS_Position> points;
 
       /// bounding box
       double min_lat_, max_lat_;

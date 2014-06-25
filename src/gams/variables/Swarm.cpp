@@ -47,6 +47,9 @@
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
+const string gams::variables::Swarm::SWARM_COMMAND = "swarm.command";
+const string gams::variables::Swarm::SWARM_MIN_ALT = "swarm.min_alt";
+const string gams::variables::Swarm::SWARM_SIZE = "swarm.size";
 
 gams::variables::Swarm::Swarm ()
 {
@@ -72,48 +75,36 @@ gams::variables::Swarm::operator= (const Swarm & rhs)
 void
 gams::variables::Swarm::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  Madara::Knowledge_Record::Integer swarm_size)
+  const Madara::Knowledge_Record::Integer& swarm_size)
 {
-  Madara::Knowledge_Engine::Knowledge_Update_Settings defaults;
-  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
-
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
   // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  command_args.set_name (prefix, knowledge);
-  size.set_name ("swarm.size", knowledge);
+  min_alt.set_name (SWARM_MIN_ALT, knowledge);
+  command.set_name (SWARM_COMMAND, knowledge);
+  command_args.set_name (SWARM_COMMAND, knowledge);
+  size.set_name (SWARM_SIZE, knowledge);
 
-  // keep certain varaible changes as local only
-  command.set_settings (keep_local);
-  command_args.set_settings (keep_local);
-  size.set_settings (keep_local);
-
-  // update swarm size
-  size = swarm_size;
-
-  // use default settings
-  size.set_settings (defaults);
+  init_vars (swarm_size);
 }
 
 void
 gams::variables::Swarm::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge,
-  Madara::Knowledge_Record::Integer swarm_size)
+  const Madara::Knowledge_Record::Integer& swarm_size)
+{
+  // initialize the variable containers
+  min_alt.set_name (SWARM_MIN_ALT, knowledge);
+  command.set_name (SWARM_COMMAND, knowledge);
+  command_args.set_name (SWARM_COMMAND, knowledge);
+  size.set_name (SWARM_SIZE, knowledge);
+
+  init_vars (swarm_size);
+}
+
+void gams::variables::Swarm::init_vars (
+  const Madara::Knowledge_Record::Integer& swarm_size)
 {
   Madara::Knowledge_Engine::Knowledge_Update_Settings defaults;
   Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
-
-  // swarm commands are prefixed with "swarm.movement_command"
-  std::string prefix ("swarm.command");
-
-  // initialize the variable containers
-  min_alt.set_name ("swarm.min_alt", knowledge);
-  command.set_name (prefix, knowledge);
-  command_args.set_name (prefix, knowledge);
-  size.set_name ("swarm.size", knowledge);
 
   // keep certain varaible changes as local only
   command.set_settings (keep_local);
@@ -129,7 +120,7 @@ gams::variables::Swarm::init_vars (
 
 void gams::variables::init_vars (Swarm & variables,
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  Madara::Knowledge_Record::Integer swarm_size)
+  const Madara::Knowledge_Record::Integer& swarm_size)
 {
   variables.init_vars (knowledge, swarm_size);
 }

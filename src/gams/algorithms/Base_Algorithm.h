@@ -62,6 +62,7 @@
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 #include <vector>
+using std::vector;
 
 namespace gams
 {
@@ -109,37 +110,19 @@ namespace gams
        * Analyzes environment, platform, or other information
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int analyze (void) = 0;
+      virtual int analyze () = 0;
       
       /**
        * Plans the next execution of the algorithm
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int execute (void) = 0;
+      virtual int execute () = 0;
 
       /**
        * Plans the next execution of the algorithm
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int plan (void) = 0;
-      
-      /**
-       * Sets the platform
-       * @param  platform     the underlying platform the algorithm will use
-       **/
-      virtual void set_platform (platforms::Base * platform);
-      
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      virtual void set_sensors (variables::Sensors * sensors);
-      
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      virtual void set_self (variables::Self * self);
+      virtual int plan () = 0;
       
       /**
        * Sets the list of devices in the swarm
@@ -147,30 +130,48 @@ namespace gams
        **/
       virtual void set_devices (variables::Devices * devices);
       
+      /**
+       * Sets the platform
+       * @param  platform     the underlying platform the algorithm will use
+       **/
+      virtual void set_platform (platforms::Base * platform);
+
+      /**
+       * Sets the map of sensor names to sensor information
+       * @param  sensors      map of sensor names to sensor information
+       **/
+      virtual void set_self (variables::Self * self);
+      
+      /**
+       * Sets the map of sensor names to sensor information
+       * @param  sensors      map of sensor names to sensor information
+       **/
+      virtual void set_sensors (variables::Sensors * sensors);
+      
     protected:
+      /// the list of devices potentially participating in the algorithm
+      variables::Devices * devices_;
+
+      /// number of executions
+      unsigned int executions_;
+
       /// provides access to the knowledge base
       Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
 
       /// provides access to the platform
       platforms::Base * platform_;
 
+      /// the algorithm's concept of self
+      variables::Self * self_;
+
       /// provides access to sensor information
       variables::Sensors * sensors_;
 
       /// provides access to status information for this platform
       variables::Algorithm status_;
-
-      /// the algorithm's concept of self
-      variables::Self * self_;
-
-      /// the list of devices potentially participating in the algorithm
-      variables::Devices * devices_;
-
-      /// number of executions
-      unsigned int executions_;
     };
 
-    typedef  std::vector <Base *>   Algorithms;
+    typedef  vector <Base *>   Algorithms;
   }
 }
 

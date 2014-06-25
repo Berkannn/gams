@@ -98,6 +98,29 @@ namespace gams
        * @param  rhs   values to copy
        **/
       void operator= (const VREP_UAV & rhs);
+
+      /**
+       * Polls the sensor environment for useful information
+       * @return number of sensors updated/used
+       **/
+      virtual int sense (void);
+      
+      /**
+       * Analyzes platform information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+
+      /**
+       * Get the position accuracy in meters
+       * @return position accuracy
+       **/
+      virtual double get_gps_accuracy () const;
+
+      /**
+       * Get move speed
+       **/
+      virtual double get_move_speed () const;
       
       /**
        * Instructs the device to return home
@@ -121,52 +144,26 @@ namespace gams
         const double & epsilon = 0.1);
       
       /**
-       * Polls the sensor environment for useful information
-       * @return number of sensors updated/used
-       **/
-      virtual int sense (void);
-      
-      /**
-       * Instructs the platform to take off
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int takeoff (void);
-      
-      /**
-       * Analyzes platform information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-
-      /**
-       * Fills a list of sensor names with sensors available on the platform
-       **/
-      virtual void get_sensors (variables::Sensor_Names & sensors);
-
-      /**
-       * Obtains the current position
-       * @param  position  after the call, filled with the current position
-       **/
-      virtual void get_position (utility::GPS_Position & position);
-
-      /**
-       * Get move speed
-       **/
-      virtual double get_move_speed ();
-
-      /**
        * Set move speed
        * @param speed new speed in meters/loop execution
        **/
       virtual void set_move_speed (const double& speed);
 
       /**
-       * Get the position accuracy
-       * @return position accuracy
+       * Instructs the platform to take off
+       * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual double get_position_accuracy () const;
-
+      virtual int takeoff (void);
+      
     protected:
+
+      /**
+       * Get float array from position
+       * @param arr array to convert
+       * @param pos position to store it in
+       **/
+      inline void array_to_position (const simxFloat (&arr)[3], 
+        utility::Position & pos) const;
 
       /**
        * Converts lat/long coordinates to vrep coordinates
@@ -177,14 +174,6 @@ namespace gams
         utility::Position & converted) const;
 
       /**
-       * Converts lat/long coordinates to vrep coordinates
-       * @param position    lat/long position to convert
-       * @param converted   x/y coords in vrep reference frame
-       **/
-      void vrep_to_gps (const utility::Position & position,
-        utility::GPS_Position & converted) const;
-
-      /**
        * Get position from float array
        * @param pos position to convert
        * @param arr array to store it in
@@ -193,24 +182,24 @@ namespace gams
         simxFloat (&arr)[3]) const;
 
       /**
-       * Get float array from position
-       * @param arr array to convert
-       * @param pos position to store it in
+       * Converts lat/long coordinates to vrep coordinates
+       * @param position    lat/long position to convert
+       * @param converted   x/y coords in vrep reference frame
        **/
-      inline void array_to_position (const simxFloat (&arr)[3], 
-        utility::Position & pos) const;
-
-      /// current position
-      utility::GPS_Position position_;
-
-      /// gps coordinates corresponding to (x_max, y_max) in vrep
-      utility::GPS_Position ne_position_;
-
-      /// gps coordinates corresponding to (0, 0) in vrep
-      utility::GPS_Position sw_position_;
+      void vrep_to_gps (const utility::Position & position,
+        utility::GPS_Position & converted) const;
 
       /// flag for drone being airborne
       bool airborne_;
+
+      /// client id for remote API connection
+      simxInt client_id_;
+
+      /// movement speed in meters/iteration
+      double move_speed_;
+
+      /// gps coordinates corresponding to (x_max, y_max) in vrep
+      utility::GPS_Position ne_position_;
 
       /// object id for quadrotor
       simxInt node_id_;
@@ -218,14 +207,8 @@ namespace gams
       /// object id for quadrotor target
       simxInt node_target_;
 
-      /// client id for remote API connection
-      simxInt client_id_;
-
-      /// sensors
-      variables::Sensors sensors_;
-
-      /// movement speed
-      double move_speed_;
+      /// gps coordinates corresponding to (0, 0) in vrep
+      utility::GPS_Position sw_position_;
     }; // class VREP_UAV
   } // namespace platform
 } // namespace gams

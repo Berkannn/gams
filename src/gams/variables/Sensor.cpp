@@ -43,16 +43,19 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Sensor.h"
+
+#include "gams/variables/Sensor.h"
 
 #include <float.h>
 #include <sstream>
 using std::stringstream;
 #include <vector>
 using std::vector;
+#include <string>
+using std::string;
+#include <cmath>
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
-
 
 gams::variables::Sensor::Sensor (const string& name,
   Madara::Knowledge_Engine::Knowledge_Base* knowledge,
@@ -84,16 +87,121 @@ gams::variables::Sensor::operator= (const Sensor & rhs)
   }
 }
 
-void
-gams::variables::Sensor::set_range (const double& range)
+set<gams::utility::Position>
+gams::variables::Sensor::discretize_search_area (
+  const utility::Search_Area& search)
 {
-  range_ = range;
+  // return set
+  set<utility::Position> ret_val;
+  
+  // find west most position
+  utility::GPS_Position start;
+  start.lon = DBL_MAX;
+  const vector<utility::Prioritized_Region>& regions = search.get_regions ();
+  for (size_t i = 0; i < regions.size (); ++i)
+  {
+    const utility::Prioritized_Region reg = regions[i];
+    for (size_t j = 0; j < reg.points.size (); ++j)
+      if (start.lon > reg.points[j].lon)
+        start = reg.points[j];
+  }
+
+  // move east each iteration
+  utility::Position start_index = get_index_from_gps (start);
+  if (!search.is_in_search_area (get_gps_from_index (start_index)))
+    ++start_index.y;
+  while (search.is_in_search_area (get_gps_from_index (start_index)))
+  {
+    // check north
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos)); ++pos.x)
+    {
+      ret_val.insert (pos);
+    }
+  
+    // check south
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos)); --pos.x)
+    {
+      ret_val.insert (pos);
+    }
+
+    ++start_index.y;
+  }
+
+  // find east most position
+  start.lon = -DBL_MAX;
+  for (size_t i = 0; i < regions.size (); ++i)
+  {
+    const utility::Prioritized_Region reg = regions[i];
+    for (size_t j = 0; j < reg.points.size (); ++j)
+      if (start.lon < reg.points[j].lon)
+        start = reg.points[j];
+  }
+
+  // move west each iteration
+  start_index = get_index_from_gps (start);
+  if (!search.is_in_search_area (get_gps_from_index (start_index)))
+    --start_index.y;
+  while (search.is_in_search_area (get_gps_from_index (start_index)) &&
+    ret_val.find (start_index) == ret_val.end ())
+  {
+    // check north
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos));
+      ++pos.x)
+    {
+      ret_val.insert (pos);
+    }
+  
+    // check south
+    for (utility::Position pos = start_index;
+      search.is_in_search_area (get_gps_from_index (pos));
+      --pos.x)
+    {
+      ret_val.insert (pos);
+    }
+
+    --start_index.y;
+  }
+
+  return ret_val;
 }
 
-void
-gams::variables::Sensor::set_origin (const utility::GPS_Position& origin)
+double
+gams::variables::Sensor::get_discretization () const
 {
-  origin.to_container (origin_);
+  return sqrt (2.0 * pow(get_range (), 2.0));
+}
+
+gams::utility::GPS_Position
+gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
+{
+  const double discretize = get_discretization ();
+  utility::Position meters (int(idx.x) * discretize, int(idx.y) * discretize, int(idx.z));
+  utility::GPS_Position origin;
+  origin.from_container (origin_);
+  utility::GPS_Position ret = meters.to_gps_position (origin);
+  return ret;
+}
+
+gams::utility::Position
+gams::variables::Sensor::get_index_from_gps (const utility::GPS_Position& pos)
+{
+  utility::GPS_Position origin;
+  origin.from_container (origin_);
+  utility::Position idx = pos.to_position (origin);
+  const double discretize = get_discretization ();
+  idx.x = (int)((idx.x + discretize / 2) / discretize);
+  idx.y = (int)((idx.y + discretize / 2) / discretize);
+
+  return idx;
+}
+
+string
+gams::variables::Sensor::get_name () const
+{
+  return name_;
 }
 
 gams::utility::GPS_Position
@@ -102,6 +210,12 @@ gams::variables::Sensor::get_origin ()
   utility::GPS_Position origin;
   origin.from_container (origin_);
   return origin;
+}
+
+double
+gams::variables::Sensor::get_range () const
+{
+  return range_.to_double ();
 }
 
 double
@@ -114,6 +228,18 @@ double
 gams::variables::Sensor::get_value (const utility::Position& pos)
 {
   return covered_[index_pos_to_index (pos)].to_double ();
+}
+
+void
+gams::variables::Sensor::set_origin (const utility::GPS_Position& origin)
+{
+  origin.to_container (origin_);
+}
+
+void
+gams::variables::Sensor::set_range (const double& range)
+{
+  range_ = range;
 }
 
 void
@@ -134,102 +260,13 @@ gams::variables::Sensor::set_value (const utility::Position& pos,
   knowledge_->send_modifieds ();
 }
 
-gams::utility::Position
-gams::variables::Sensor::get_index_from_gps (const utility::GPS_Position& pos)
+string
+gams::variables::Sensor::index_pos_to_index (const utility::Position& pos) const
 {
-  utility::GPS_Position origin;
-  origin.from_container (origin_);
-  utility::Position idx = pos.to_position (origin);
-  double range = range_.to_double ();
-  idx.x = (int)((idx.x + range / 2) / range);
-  idx.y = (int)((idx.y + range / 2) / range);
+  stringstream buffer;
+  buffer << (int)(pos.x) << "x" << (int)(pos.y);
 
-  return idx;
-}
-
-gams::utility::GPS_Position
-gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
-{
-  double range = range_.to_double ();
-  utility::Position meters (int(idx.x) * range, int(idx.y) * range, int(idx.z));
-  utility::GPS_Position origin;
-  origin.from_container (origin_);
-  utility::GPS_Position ret = meters.to_gps_position (origin);
-  return ret;
-}
-
-set<gams::utility::Position>
-gams::variables::Sensor::discretize_search_area (
-  const utility::Search_Area& search)
-{
-  // return set
-  set<utility::Position> ret_val;
-  
-  // find west most position
-  utility::GPS_Position start;
-  start.lon = DBL_MAX;
-  const vector<utility::Prioritized_Region> regions = search.get_regions ();
-  for (size_t i = 0; i < regions.size (); ++i)
-  {
-    const utility::Region reg = regions[i];
-    for (size_t j = 0; j < reg.points.size (); ++j)
-      if (start.lon > reg.points[j].lon)
-        start = reg.points[j];
-  }
-
-  // move east each iteration
-  for (utility::Position start_index = get_index_from_gps (start);
-    search.is_in_search_area (get_gps_from_index (start_index));
-    ++start_index.y)
-  {
-    // check north
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos)); ++pos.x)
-    {
-      ret_val.insert (pos);
-    }
-  
-    // check south
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos)); --pos.x)
-    {
-      ret_val.insert (pos);
-    }
-  }
-
-  // find east most position
-  start.lon = -DBL_MAX;
-  for (size_t i = 0; i < regions.size (); ++i)
-  {
-    const utility::Region reg = regions[i];
-    for (size_t j = 0; j < reg.points.size (); ++j)
-      if (start.lon < reg.points[j].lon)
-        start = reg.points[j];
-  }
-
-  // move west each iteration
-  for (utility::Position start_index = get_index_from_gps (start);
-    search.is_in_search_area (get_gps_from_index (start_index));
-    --start_index.y)
-  {
-    // check north
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos));
-      ++pos.x)
-    {
-      ret_val.insert (pos);
-    }
-  
-    // check south
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos));
-      --pos.x)
-    {
-      ret_val.insert (pos);
-    }
-  }
-
-  return ret_val;
+  return buffer.str ();
 }
 
 void
@@ -244,13 +281,4 @@ gams::variables::Sensor::init_vars ()
   range_.set_name (prefix + ".range", *knowledge_);
   covered_.set_name (prefix + ".covered", *knowledge_);
   origin_.set_name (prefix + ".origin", *knowledge_, 3);
-}
-
-string
-gams::variables::Sensor::index_pos_to_index (const utility::Position& pos) const
-{
-  stringstream buffer;
-  buffer << (int)(pos.x) << "x" << (int)(pos.y);
-
-  return buffer.str ();
 }

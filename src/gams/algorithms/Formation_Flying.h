@@ -115,50 +115,26 @@ namespace gams
       virtual int plan (void);
       
     protected:
-      /// list of sensor names
-      variables::Sensor_Names sensor_names_;
-
-      /// next position
-      utility::GPS_Position next_position_;
-
-      /// do we need to move?
-      bool need_to_move_;
+      /// formation wait string
+      Madara::Knowledge_Engine::Compiled_Expression compiled_formation_;
 
       /// destination
       utility::GPS_Position destination_;
 
-      /// planar distance formation offsets
-      double rho_;
-
-      /// angular formation offsets
-      double phi_;
-
-      /// directional angular formation offsets
-      double phi_dir_;
-
-      /// altitude formation offsets
-      double z_;
-
-      /// number of agents in formation; only head_id_ needs to know this
-      unsigned int num_agents_;
-
-      /// head location
-      Madara::Knowledge_Engine::Containers::Native_Double_Array head_location_;
-
-      /// head id
-      int head_id_;
+      /// are we in formation?
+      Madara::Knowledge_Engine::Containers::Integer formation_ready_;
 
       /// am i the head?
       bool head_;
 
+      /// head id
+      int head_id_;
+
+      /// head location
+      Madara::Knowledge_Engine::Containers::Native_Double_Array head_location_;
+
       /// am i in formation?
       Madara::Knowledge_Engine::Containers::Integer in_formation_;
-
-      /// are we in formation?
-      Madara::Knowledge_Engine::Containers::Integer formation_ready_;
-
-      /// formation wait string
-      Madara::Knowledge_Engine::Compiled_Expression compiled_formation_;
 
       /// modifier enum
       enum
@@ -166,6 +142,30 @@ namespace gams
         NONE,
         ROTATE
       } modifier_;
+
+      /// do we need to move?
+      bool need_to_move_;
+
+      /// next position
+      utility::GPS_Position next_position_;
+
+      /// number of agents in formation; only head_id_ needs to know this
+      unsigned int num_agents_;
+
+      /// angular formation offsets
+      double phi_;
+
+      /// directional angular formation offsets
+      double phi_dir_;
+
+      /// planar distance formation offsets
+      double rho_;
+
+      /// list of sensor names
+      variables::Sensor_Names sensor_names_;
+
+      /// altitude formation offsets
+      double z_;
     };
   }
 }

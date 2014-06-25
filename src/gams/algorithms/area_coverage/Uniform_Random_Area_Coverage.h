@@ -44,83 +44,70 @@
  *      distribution.
  **/
 
-#include "Uniform_Random_Area_Coverage.h"
+/**
+ * @file Uniform_Random_Area_Coverage.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the random area coverage class
+ **/
 
-gams::algorithms::Uniform_Random_Area_Coverage::Uniform_Random_Area_Coverage (
-  const Madara::Knowledge_Record& region_id,
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
-  variables::Sensors * sensors,
-  variables::Self * self) :
-  Base (knowledge, platform, sensors, self),
-  region_ (utility::parse_region (*knowledge, region_id.to_string ()))
-{
-  status_.init_vars (*knowledge, "urac");
-  generate_new_position();
-}
+#ifndef   _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_AREA_COVERAGE_H_
+#define   _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_AREA_COVERAGE_H_
 
-gams::algorithms::Uniform_Random_Area_Coverage::~Uniform_Random_Area_Coverage ()
-{
-}
+#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
 
-void
-gams::algorithms::Uniform_Random_Area_Coverage::operator= (
-  const Uniform_Random_Area_Coverage & rhs)
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Sensor.h"
+#include "gams/variables/Self.h"
+#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/utility/Region.h"
+using gams::utility::Region;
+
+namespace gams
 {
-  if (this != &rhs)
+  namespace algorithms
   {
-    this->platform_ = rhs.platform_;
-    this->sensors_ = rhs.sensors_;
-    this->self_ = rhs.self_;
-    this->status_ = rhs.status_;
-  }
-}
+    namespace area_coverage
+    {
+      class GAMS_Export Uniform_Random_Area_Coverage : public Base_Area_Coverage
+      {
+      public:
+        /**
+         * Constructor
+         * @param  region_id    identifier of region to cover
+         * @param  knowledge    the context containing variables and values
+         * @param  platform     the underlying platform the algorithm will use
+         * @param  sensors      map of sensor names to sensor information
+         * @param  self         self-referencing variables
+         **/
+        Uniform_Random_Area_Coverage (
+          const Madara::Knowledge_Record& region_id,
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          variables::Self * self = 0);
+  
+        /**
+         * Destructor
+         **/
+        ~Uniform_Random_Area_Coverage ();
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Uniform_Random_Area_Coverage & rhs);
+        
+      protected:
+        /**
+         * Generate new next position
+         */
+        virtual void generate_new_position ();
 
-int
-gams::algorithms::Uniform_Random_Area_Coverage::analyze (void)
-{
-  return 0;
-}
+        /// vector of vertices in coverage box
+        Region region_;
+      };
+    } // namespace area_coverage
+  } // namespace algorithms
+} // namespace gams
 
-int
-gams::algorithms::Uniform_Random_Area_Coverage::execute (void)
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-int
-gams::algorithms::Uniform_Random_Area_Coverage::plan (void)
-{
-  // generate new next position if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_position_accuracy ()))
-  {
-    generate_new_position();
-  }
-
-  return 0;
-}
-
-void
-gams::algorithms::Uniform_Random_Area_Coverage::generate_new_position ()
-{
-  // average selection time is area(bounding_box) / area(region)
-  do
-  {
-    next_position_.lat = Madara::Utility::rand_double (region_.min_lat_,
-      region_.max_lat_);
-    next_position_.lon = Madara::Utility::rand_double (region_.min_lon_,
-      region_.max_lon_);
-    next_position_.alt = Madara::Utility::rand_double (region_.min_alt_,
-      region_.max_alt_);
-  }
-  while (!region_.is_in_region (next_position_));
-
-  // found an acceptable position, so set it as next
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  next_position_.alt = current.alt; // TODO: update when altitude is handled
-}
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_AREA_COVERAGE_H_

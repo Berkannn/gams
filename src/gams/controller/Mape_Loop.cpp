@@ -61,15 +61,22 @@ gams::controller::Mape_Loop::~Mape_Loop ()
 }
 
 void
-gams::controller::Mape_Loop::init_vars (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Integer & id,
-  const Integer & processes)
+gams::controller::Mape_Loop::define_analyze (
+  Madara::Knowledge_Record (*func) (
+    Madara::Knowledge_Engine::Function_Arguments &,
+    Madara::Knowledge_Engine::Variables &))
 {
-  // initialize the devices, swarm, and self variables
-  variables::init_vars (devices_, knowledge_, processes);
-  swarm_.init_vars (knowledge);
-  self_.init_vars (knowledge, id);
+  // define the analyze function
+  knowledge_.define_function ("analyze", func);
+}
+
+void gams::controller::Mape_Loop::define_execute (
+  Madara::Knowledge_Record (*func) (
+    Madara::Knowledge_Engine::Function_Arguments &,
+    Madara::Knowledge_Engine::Variables &))
+{
+  // define the execute function
+  knowledge_.define_function ("execute", func);
 }
 
 void
@@ -89,16 +96,6 @@ gams::controller::Mape_Loop::define_monitor (
   knowledge_.define_function ("monitor", func);
 }
 
-void
-gams::controller::Mape_Loop::define_analyze (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
-{
-  // define the analyze function
-  knowledge_.define_function ("analyze", func);
-}
-
 void gams::controller::Mape_Loop::define_plan (
   Madara::Knowledge_Record (*func) (
     Madara::Knowledge_Engine::Function_Arguments &,
@@ -108,13 +105,16 @@ void gams::controller::Mape_Loop::define_plan (
   knowledge_.define_function ("plan", func);
 }
 
-void gams::controller::Mape_Loop::define_execute (
-  Madara::Knowledge_Record (*func) (
-    Madara::Knowledge_Engine::Function_Arguments &,
-    Madara::Knowledge_Engine::Variables &))
+void
+gams::controller::Mape_Loop::init_vars (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const Integer & id,
+  const Integer & processes)
 {
-  // define the execute function
-  knowledge_.define_function ("execute", func);
+  // initialize the devices, swarm, and self variables
+  variables::init_vars (devices_, knowledge_, processes);
+  swarm_.init_vars (knowledge);
+  self_.init_vars (knowledge, id);
 }
 
 Madara::Knowledge_Record

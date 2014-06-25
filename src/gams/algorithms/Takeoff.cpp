@@ -43,8 +43,17 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Takeoff.h"
 
+/**
+ * @file Takeoff.cpp
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the Takeoff movement class
+ **/
+
+#include "gams/algorithms/Takeoff.h"
+
+#include <iostream>
 
 gams::algorithms::Takeoff::Takeoff (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -53,7 +62,7 @@ gams::algorithms::Takeoff::Takeoff (
   variables::Self * self)
   : Base (knowledge, platform, sensors, self)
 {
-  status_.init_vars (*knowledge, "sac");
+  status_.init_vars (*knowledge, "takeoff");
 }
 
 gams::algorithms::Takeoff::~Takeoff ()
@@ -85,7 +94,7 @@ gams::algorithms::Takeoff::execute (void)
 {
   if (executions_ == 0)
   {
-    std::cerr << "Taking off...\n";
+    std::cerr << "Taking off..." << std::endl;
 
     if (platform_)
     {
@@ -93,7 +102,7 @@ gams::algorithms::Takeoff::execute (void)
     }
     else
     {
-      std::cerr << "ERROR: No platform. Takeoff aborted.\n";
+      std::cerr << "ERROR: No platform. Takeoff aborted." << std::endl;
     }
   }
 

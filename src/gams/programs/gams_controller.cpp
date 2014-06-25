@@ -87,25 +87,26 @@ void print_usage (char* prog_name)
       MADARA_DEBUG (MADARA_LOG_EMERGENCY, (LM_DEBUG, 
 "\nProgram summary for %s:\n\n" \
 "     Loop controller setup for gams\n" \
-" [-a |--algorithm type]      algorithm to start with\n" \
-" [-aa|--accent type]         accent algorithm to start with\n" \
-" [-b |--broadcast ip:port]   the broadcast ip to send and listen to\n" \
-" [-d |--domain domain]       the knowledge domain to send and listen to\n" \
-" [-e |--rebroadcasts num]    number of hops for rebroadcasting messages\n" \
-" [-f |--logfile file]        log to a file\n" \
-" [-i |--id id]               the id of this agent (should be non-negative)\n" \
-" [-l |--level level]         the logger level (0+, higher is higher detail)\n" \
-" [-lt|--loop-time time]      time to execute loop\n"\
-" [-m |--multicast ip:port]   the multicast ip to send and listen to\n" \
-" [-mf|--madara-file name]    a file containing madara commands to execute\n" \
-" [-n |--num_agents <number>] the number of agents in the swarm\n" \
-" [-o |--host hostname]       the hostname of this process (def:localhost)\n" \
-" [-p |--platform type]       platform for loop (vrep, dronerk)\n" \
-" [-pd|--period period]       time, in seconds, between control loop executions\n" \
-" [-q |--queue-length length] length of transport queue in bytes\n" \
-" [-r |--reduced]             use the reduced message header\n" \
-" [-t |--target path]         file system location to save received files to (NYI)\n" \
-" [-u |--udp ip:port]         a udp ip to send to (first is self to bind to)\n" \
+" [-A |--algorithm type]        algorithm to start with\n" \
+" [-a |--accent type]           accent algorithm to start with\n" \
+" [-b |--broadcast ip:port]     the broadcast ip to send and listen to\n" \
+" [-d |--domain domain]         the knowledge domain to send and listen to\n" \
+" [-e |--rebroadcasts num]      number of hops for rebroadcasting messages\n" \
+" [-f |--logfile file]          log to a file\n" \
+" [-i |--id id]                 the id of this agent (should be non-negative)\n" \
+" [-l |--level level]           the logger level (0+, higher is higher detail)\n" \
+" [-L |--loop-time time]        time to execute loop\n"\
+" [-m |--multicast ip:port]     the multicast ip to send and listen to\n" \
+" [-M |--madara-file <file>]    file containing madara commands to execute\n" \
+"                               multiple space-delimited files can be used\n" \
+" [-n |--num_agents <number>]   the number of agents in the swarm\n" \
+" [-o |--host hostname]         the hostname of this process (def:localhost)\n" \
+" [-p |--platform type]         platform for loop (vrep, dronerk)\n" \
+" [-P |--period period]         time, in seconds, between control loop executions\n" \
+" [-q |--queue-length length]   length of transport queue in bytes\n" \
+" [-r |--reduced]               use the reduced message header\n" \
+" [-t |--target path]           file system location to save received files (NYI)\n" \
+" [-u |--udp ip:port]           a udp ip to send to (first is self to bind to)\n" \
 "\n",
         prog_name));
   exit (0);
@@ -118,7 +119,7 @@ void handle_arguments (int argc, char ** argv)
   {
     std::string arg1 (argv[i]);
 
-    if (arg1 == "-a" || arg1 == "--algorithm")
+    if (arg1 == "-A" || arg1 == "--algorithm")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
         algorithm = argv[i + 1];
@@ -127,7 +128,7 @@ void handle_arguments (int argc, char ** argv)
 
       ++i;
     }
-    else if (arg1 == "-aa" || arg1 == "--accent")
+    else if (arg1 == "-a" || arg1 == "--accent")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
         accents.push_back (argv[i + 1]);
@@ -206,7 +207,7 @@ void handle_arguments (int argc, char ** argv)
 
       ++i;
     }
-    else if (arg1 == "-lt" || arg1 == "--loop-time")
+    else if (arg1 == "-L" || arg1 == "--loop-time")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
       {
@@ -230,7 +231,7 @@ void handle_arguments (int argc, char ** argv)
 
       ++i;
     }
-    else if (arg1 == "-mf" || arg1 == "--madara-file")
+    else if (arg1 == "-M" || arg1 == "--madara-file")
     {
       bool files = false;
       ++i;
@@ -275,7 +276,7 @@ void handle_arguments (int argc, char ** argv)
 
       ++i;
     }
-    else if (arg1 == "-pd" || arg1 == "--period")
+    else if (arg1 == "-P" || arg1 == "--period")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
       {
@@ -354,9 +355,10 @@ int main (int argc, char ** argv)
   
   // read madara initialization
   if (madara_commands != "")
+  {
     knowledge.evaluate (madara_commands,
       Madara::Knowledge_Engine::Eval_Settings(false, true));
-
+  }
 
   // initialize the platform and algorithm
   loop.init_platform (platform);

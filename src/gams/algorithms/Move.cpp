@@ -45,41 +45,41 @@
  **/
 #include "Move.h"
 
+#include <string>
+using std::string;
+#include <iostream>
 
 gams::algorithms::Move::Move (
-  const std::string & type,
+  const string & type,
   unsigned int max_executions,
   double max_execution_time,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : Base (knowledge, platform, sensors, self), type_ (type),
-  max_executions_ (max_executions),
-  max_execution_time_ (max_execution_time),
-  end_time_ (ACE_OS::gettimeofday ())
+  : Base (knowledge, platform, sensors, self),
+  end_time_ (ACE_OS::gettimeofday ()), max_execution_time_ (max_execution_time),
+  max_executions_ (max_executions), type_ (type)
 {
+  // init status vars
+  status_.init_vars (*knowledge, "move");
+
   if (max_executions > 0)
     mode_ = EXECUTIONS;
   else
     mode_ = TIMED;
-
-  status_.init_vars (*knowledge, "move");
 }
 
 gams::algorithms::Move::Move (
-  const std::string & type,
+  const string & type,
   const utility::Position & target,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self)
-  : Base (knowledge, platform, sensors, self), type_ (type),
-  mode_ (TARGET),
-  max_executions_ (0),
-  max_execution_time_ (-1),
-  target_ (target),
-  end_time_ (ACE_OS::gettimeofday ())
+  : Base (knowledge, platform, sensors, self),
+  end_time_ (ACE_OS::gettimeofday ()), max_execution_time_ (-1),
+  max_executions_ (0), mode_ (TARGET), target_ (target), type_ (type)
 {
   status_.init_vars (*knowledge, "move");
 }

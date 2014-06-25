@@ -94,12 +94,6 @@ namespace gams
       void set_knowledge (Madara::Knowledge_Engine::Knowledge_Base * knowledge);
       
       /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      void set_sensors (variables::Sensors * sensors);
-      
-      /**
        * Sets the map of platform names to platform information
        * @param  platforms   map of platform names to platform information
        **/
@@ -111,19 +105,25 @@ namespace gams
        **/
       void set_self (variables::Self * self);
       
+      /**
+       * Sets the map of sensor names to sensor information
+       * @param  sensors      map of sensor names to sensor information
+       **/
+      void set_sensors (variables::Sensors * sensors);
+      
     private:
 
       /// knowledge base containing variables
       Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
-
-      /// sensor variables
-      variables::Sensors * sensors_;
 
       /// platform variables
       variables::Platforms * platforms_;
 
       /// self-referencing variables
       variables::Self * self_;
+
+      /// sensor variables
+      variables::Sensors * sensors_;
     };
   }
 }

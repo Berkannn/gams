@@ -43,7 +43,7 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Land.h"
+#include "gams/algorithms/Land.h"
 
 
 gams::algorithms::Land::Land (
@@ -53,7 +53,7 @@ gams::algorithms::Land::Land (
   variables::Self * self)
   : Base (knowledge, platform, sensors, self)
 {
-  status_.init_vars (*knowledge, "sac");
+  status_.init_vars (*knowledge, "land");
 }
 
 gams::algorithms::Land::~Land ()

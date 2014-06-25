@@ -43,85 +43,70 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Platform_Factory.h"
-#include "Printer_Platform.h"
 
-#ifdef _GAMS_DRONERK_
-#include "dronerk/Drone_RK.h"
-#endif
+/**
+ * @file Uniform_Random_Edge_Coverage.h
+ * @author James Edmondson <jedmondson@gmail.com>
+ *
+ * This file contains the definition of the random area coverage class
+ **/
 
-#ifdef _GAMS_VREP_
-#include "vrep/VREP_UAV.h"
-#endif
+#ifndef   _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_EDGE_COVERAGE_H_
+#define   _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_EDGE_COVERAGE_H_
 
-gams::platforms::Factory::Factory (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  variables::Sensors * sensors,
-  variables::Platforms * platforms,
-  variables::Self * self)
-: knowledge_ (knowledge), platforms_ (platforms), self_ (self),
-  sensors_ (sensors)
+#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
+#include "gams/utility/GPS_Position.h"
+#include "gams/utility/Region.h"
+
+namespace gams
 {
-}
-
-gams::platforms::Factory::~Factory ()
-{
-}
-
-gams::platforms::Base *
-gams::platforms::Factory::create (const std::string & type)
-{
-  if (type == "debug" || type == "printer" || type == "print")
+  namespace algorithms
   {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-      return new Printer_Platform (*knowledge_, sensors_, *platforms_, *self_);
-  }
-#ifdef _GAMS_DRONERK_
-  else if (type == "drone-rk" || type == "dronerk")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-      return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
-  }
-#endif
-
-#ifdef _GAMS_VREP_
-  else if (type == "vrep")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
+    namespace area_coverage
     {
-      VREP_UAV* ret = new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
-      double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
-      if (move_speed > 0)
-        ret->set_move_speed (move_speed);
-      return ret;
-    }
-  }
-#endif
+      class GAMS_Export Uniform_Random_Edge_Coverage : public Base_Area_Coverage
+      {
+      public:
+        /**
+         * Constructor
+         * @param  knowledge    the context containing variables and values
+         * @param  platform     the underlying platform the algorithm will use
+         * @param  sensors      map of sensor names to sensor information
+         * @param  self         self-referencing variables
+         **/
+        Uniform_Random_Edge_Coverage (
+          const Madara::Knowledge_Record& region_id,
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          variables::Self * self = 0);
+  
+        /**
+         * Destructor
+         **/
+        ~Uniform_Random_Edge_Coverage ();
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Uniform_Random_Edge_Coverage & rhs);
+        
+      protected:
+        /**
+         * Generate new next position
+         */
+        virtual void generate_new_position ();
+  
+        /// coverage region
+        utility::Region region_;
+      }; // class Uniform_Random_Edge_Coverage
+    } // namespace area_coverage
+  } // namespace algorithms
+} // namespace gams
 
-  return 0;
-}
-
-void
-gams::platforms::Factory::set_knowledge (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge)
-{
-  knowledge_ = knowledge;
-}
-
-void
-gams::platforms::Factory::set_platforms (variables::Platforms * platforms)
-{
-  platforms_ = platforms;
-}
-
-void
-gams::platforms::Factory::set_self (variables::Self * self)
-{
-  self_ = self;
-}
-
-void
-gams::platforms::Factory::set_sensors (variables::Sensors * sensors)
-{
-  sensors_ = sensors;
-}
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_UNIFORM_RANDOM_EDGE_COVERAGE_H_

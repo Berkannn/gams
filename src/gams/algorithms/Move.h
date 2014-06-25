@@ -54,11 +54,15 @@
 #ifndef   _GAMS_ALGORITHMS_MOVE_H_
 #define   _GAMS_ALGORITHMS_MOVE_H_
 
+#include "gams/algorithms/Base_Algorithm.h"
+
+#include <string>
+using std::string;
+
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
-#include "gams/algorithms/Base_Algorithm.h"
 #include "ace/High_Res_Timer.h"
 #include "ace/OS_NS_sys_time.h"
 #include "gams/utility/Position.h"
@@ -82,7 +86,7 @@ namespace gams
        * @param  self         self-referencing variables
        **/
       Move (
-        const std::string & type,
+        const string & type,
         unsigned int max_executions = 0,
         double max_execution_time = 5.0,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
@@ -99,7 +103,7 @@ namespace gams
        * @param  self         self-referencing variables
        **/
       Move (
-        const std::string & type,
+        const string & type,
         const utility::Position & target,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0,
@@ -136,30 +140,29 @@ namespace gams
       virtual int plan (void);
       
     protected:
-      enum MOE
+      /// the end time
+      ACE_Time_Value end_time_;  
+
+      /// maximum number of consecutive executions allowed
+      unsigned int max_execution_time_;
+
+      /// maximum number of consecutive executions allowed
+      unsigned int max_executions_;
+
+      /// mode of execution (EXECUTIONS, TIMED, TARGET)
+      enum MODE
       {
         EXECUTIONS = 0,
         TIMED = 1,
         TARGET = 2
       };
-
-      /// type of movement being executed
-      std::string type_;
-
-      /// mode of execution (EXECUTIONS, TIMED, TARGET)
-      int mode_;
-
-      /// maximum number of consecutive executions allowed
-      unsigned int max_executions_;
-
-      /// maximum number of consecutive executions allowed
-      unsigned int max_execution_time_;
+      MODE mode_;
 
       /// the target of the move
       utility::Position target_;
 
-      /// the end time
-      ACE_Time_Value end_time_;  
+      /// type of movement being executed
+      string type_;
     };
   }
 }

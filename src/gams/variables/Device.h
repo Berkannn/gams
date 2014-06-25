@@ -55,6 +55,9 @@
 #define   _GAMS_VARIABLES_DEVICES_H_
 
 #include <vector>
+using std::vector;
+#include <string>
+using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
@@ -93,7 +96,7 @@ namespace gams
        * @param   id         node identifier
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const Madara::Knowledge_Record::Integer & id);
+        const Madara::Knowledge_Record::Integer& id);
       
       /**
        * Initializes variable containers
@@ -101,7 +104,7 @@ namespace gams
        * @param   id         node identifier
        **/
       void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
-        const Madara::Knowledge_Record::Integer & id);
+        const Madara::Knowledge_Record::Integer& id);
 
       /// the minimum altitude for this device
       Madara::Knowledge_Engine::Containers::Double min_alt;
@@ -144,12 +147,26 @@ namespace gams
 
       /// number of arguments for command
       Madara::Knowledge_Engine::Containers::Vector command_args;
+
+    protected:
+      /**
+       * Create device/local device name
+       * @param id  id of device as string
+       * @return device variable name
+       */
+      static string make_variable_name (
+        const Madara::Knowledge_Record::Integer& id);
+
+      /**
+       * Set variable settings
+       */
+      void init_variable_settings ();
     };
 
     /**
      * An array of devices
      **/
-    typedef std::vector <Device>   Devices;
+    typedef vector <Device>   Devices;
     
     /**
       * Initializes a self containers
@@ -158,7 +175,7 @@ namespace gams
       **/
     GAMS_Export void init_vars (Devices & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-      const Madara::Knowledge_Record::Integer & processes);
+      const Madara::Knowledge_Record::Integer& processes);
   }
 }
 

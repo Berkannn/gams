@@ -83,54 +83,23 @@ namespace gams
       ~Base ();
 
       /**
-       * Initializes global variable containers
-       * @param   id         node identifier
-       * @param   processes  processes
-       **/
-      void init_vars (const Madara::Knowledge_Record::Integer & id = 0,
-        const Madara::Knowledge_Record::Integer & processes = -1);
-
-      /**
-       * Initializes the platform
-       * @param  platform   the name of the platform the controller is using
-       **/
-      void init_platform (const std::string & platform);
-      
-      /**
-       * Initializes an algorithm
-       * @param  algorithm   the name of the algorithm to run
-       **/
-      void init_algorithm (const std::string & algorithm);
-      
-      /**
-       * Adds an accent algorithm
-       * @param  algorithm   the name of the accent algorithm to add
-       **/
-      void add_accent (const std::string & algorithm);
-      
-      /**
-       * Clears all accent algorithms
-       **/
-      void clear_accents (void);
-
-      /**
        * Defines the monitor function (the M of MAPE). This function should
        * return a 0 unless the MAPE loop should stop.
        **/
       virtual int monitor (void);
 
       /**
-       * Defines the analyze function (the A of MAPE). This function should
-       * return a 0 unless the MAPE loop should stop.
-       **/
-      virtual int analyze (void);
-      
-      /**
        * Analyzes the system to determine if platform or algorithm changes
        * are necessary. This function should
        * return a 0 unless the MAPE loop should stop.
        **/
       virtual int system_analyze (void);
+
+      /**
+       * Defines the analyze function (the A of MAPE). This function should
+       * return a 0 unless the MAPE loop should stop.
+       **/
+      virtual int analyze (void);
 
       /**
        * Defines the plan function (the P of MAPE). This function should
@@ -143,7 +112,7 @@ namespace gams
        * return a 0 unless the MAPE loop should stop.
        **/
       virtual int execute (void);
-
+     
       /**
        * Runs one iteration of the MAPE loop
        * @param  period       time between executions of the loop
@@ -152,16 +121,59 @@ namespace gams
        **/
       int run (double period = 0.5, double max_runtime = -1);
 
+      /**
+       * Adds an accent algorithm
+       * @param  algorithm   the name of the accent algorithm to add
+       **/
+      void add_accent (const std::string & algorithm);
+
+      /**
+       * Clears all accent algorithms
+       **/
+      void clear_accents (void);
+
+      /**
+       * Initializes an algorithm
+       * @param  algorithm   the name of the algorithm to run
+       **/
+      void init_algorithm (const std::string & algorithm);
+      
+      /**
+       * Initializes the platform
+       * @param  platform   the name of the platform the controller is using
+       **/
+      void init_platform (const std::string & platform);
+      
+      /**
+       * Initializes global variable containers
+       * @param   id         node identifier
+       * @param   processes  processes
+       **/
+      void init_vars (const Madara::Knowledge_Record::Integer & id = 0,
+        const Madara::Knowledge_Record::Integer & processes = -1);
+
     protected:
+
+      /// accents on the primary algorithm
+      algorithms::Algorithms accents_;
+
+      /// algorithm to perform
+      algorithms::Base * algorithm_;
+
+      /// Containers for algorithm information
+      variables::Algorithms algorithms_;
+      
+      /// Containers for device-related variables
+      variables::Devices devices_;
 
       /// knowledge base
       Madara::Knowledge_Engine::Knowledge_Base & knowledge_;
 
-      /// Containers for device-related variables
-      variables::Devices devices_;
+      /// Platform on which the controller is running
+      platforms::Base * platform_;
 
-      /// Containers for swarm-related variables
-      variables::Swarm swarm_;
+      /// Containers for platform information
+      variables::Platforms platforms_;
 
       /// Containers for self-referencing variables
       variables::Self self_;
@@ -169,20 +181,8 @@ namespace gams
       /// Containers for sensor information
       variables::Sensors sensors_;
 
-      /// Containers for algorithm information
-      variables::Algorithms algorithms_;
-      
-      /// Containers for platform information
-      variables::Platforms platforms_;
-
-      /// Platform on which the controller is running
-      platforms::Base * platform_;
-
-      /// algorithm to perform
-      algorithms::Base * algorithm_;
-
-      /// accents on the primary algorithm
-      algorithms::Algorithms accents_;
+      /// Containers for swarm-related variables
+      variables::Swarm swarm_;
     };
   }
 }

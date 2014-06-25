@@ -52,11 +52,14 @@
  **/
 
 #include <sstream>
+using std::stringstream;
 #include <string>
-#include "Region.h"
+using std::string;
 #include <vector>
 using std::vector;
 #include <cmath>
+
+#include "Region.h"
 
 gams::utility::Region::Region (const std::vector <GPS_Position> & init_points)
 : points (init_points)
@@ -69,7 +72,7 @@ gams::utility::Region::~Region ()
 }
 
 void
-gams::utility::Region::operator= (const Region & rhs)
+gams::utility::Region::operator= (const Region& rhs)
 {
   if (this != &rhs)
   {
@@ -121,7 +124,7 @@ gams::utility::Region::distance (const GPS_Position& p) const
   if (is_in_region (p))
     return 0;
 
-  // convert to cartesian coords
+  // convert to cartesian coords with equirectangular projection
   const GPS_Position sw (min_lat_, min_lon_);
   vector<Position> local_points;
   for (size_t i = 0; i < points.size (); ++i)
@@ -133,7 +136,7 @@ gams::utility::Region::distance (const GPS_Position& p) const
   for (size_t i = 0; i < local_points.size (); ++i)
   {
     const size_t i_1 = (i + 1) % local_points.size();
-    double dist = local_points[i].distance (local_points[i_1], local_p);
+    double dist = local_points[i].distance_to_2d (local_points[i_1], local_p);
     if (dist < min_dist)
       min_dist = dist;
   }
@@ -202,10 +205,10 @@ gams::utility::Region::get_area () const
   return fabs(area / 2);
 }
 
-std::string
-gams::utility::Region::to_string (const std::string & delimiter) const
+string
+gams::utility::Region::to_string (const string & delimiter) const
 {
-  std::stringstream buffer;
+  stringstream buffer;
 
   if (points.size () > 0)
   {

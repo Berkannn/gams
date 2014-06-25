@@ -87,15 +87,6 @@ namespace gams
       ~Mape_Loop ();
 
       /**
-       * Initializes global variable containers
-       * @param   id         node identifier
-       * @param   processes  processes
-       **/
-      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const Madara::Knowledge_Record::Integer & id = 0,
-        const Madara::Knowledge_Record::Integer & processes = -1);
-
-      /**
        * Defines the MAPE loop
        **/
       void define_mape (const std::string & loop =
@@ -142,6 +133,15 @@ namespace gams
           Madara::Knowledge_Engine::Variables &));
 
       /**
+       * Initializes global variable containers
+       * @param   id         node identifier
+       * @param   processes  processes
+       **/
+      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const Madara::Knowledge_Record::Integer & id = 0,
+        const Madara::Knowledge_Record::Integer & processes = -1);
+
+      /**
        * Runs one iteration of the MAPE loop
        * @param  period       time between executions of the loop
        * @param  max_runtime  maximum runtime within the MAPE loop
@@ -152,23 +152,23 @@ namespace gams
 
     protected:
 
+      /// Containers for device-related variables
+      variables::Devices devices_;
+
       /// knowledge base
       Madara::Knowledge_Engine::Knowledge_Base & knowledge_;
 
       /// Compiled MAPE Mape_Loop
       Madara::Knowledge_Engine::Compiled_Expression mape_loop_;
 
-      /// Containers for device-related variables
-      variables::Devices devices_;
-
-      /// Containers for swarm-related variables
-      variables::Swarm swarm_;
-
       /// Containers for self-referencing variables
       variables::Self self_;
 
       /// Containers for sensor information
       variables::Sensors sensors_;
+
+      /// Containers for swarm-related variables
+      variables::Swarm swarm_;
     };
   }
 }

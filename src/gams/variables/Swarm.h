@@ -54,7 +54,8 @@
 #ifndef   _GAMS_VARIABLES_SWARM_H_
 #define   _GAMS_VARIABLES_SWARM_H_
 
-#include <vector>
+#include <string>
+using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
@@ -93,7 +94,7 @@ namespace gams
        * @param   swarm_size size of the swarm
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        Madara::Knowledge_Record::Integer swarm_size = 1);
+        const Madara::Knowledge_Record::Integer& swarm_size = 1);
       
       /**
        * Initializes variable containers
@@ -102,7 +103,7 @@ namespace gams
        * @param   swarm_size size of the swarm
        **/
       void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
-        Madara::Knowledge_Record::Integer swarm_size = 1);
+        const Madara::Knowledge_Record::Integer& swarm_size = 1);
 
       /// the current command given to the swarm
       Madara::Knowledge_Engine::Containers::String command;
@@ -116,6 +117,20 @@ namespace gams
       /// the number of agents participating in the swarm
       Madara::Knowledge_Engine::Containers::Integer size;
       
+    protected:
+      /// swarm command variable
+      static const string SWARM_COMMAND;
+
+      /// swarm min altitude variable
+      static const string SWARM_MIN_ALT;
+
+      /// swarm size variable
+      static const string SWARM_SIZE;
+
+      /**
+       * Variable setup
+       */
+      void init_vars (const Madara::Knowledge_Record::Integer& swarm_size);
     };
     
     /**
@@ -126,7 +141,7 @@ namespace gams
       **/
     GAMS_Export void init_vars (Swarm & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        Madara::Knowledge_Record::Integer swarm_size = 1);
+        const Madara::Knowledge_Record::Integer& swarm_size = 1);
   }
 }
 

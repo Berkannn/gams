@@ -54,7 +54,10 @@
 #ifndef   _GAMS_VARIABLES_REGION_H_
 #define   _GAMS_VARIABLES_REGION_H_
 
+#include <string>
+using std::string;
 #include <vector>
+using std::vector;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
@@ -103,11 +106,8 @@ namespace gams
       /// the type of region (0 for arbitary convex polygon)
       Madara::Knowledge_Engine::Containers::Integer type;
 
-      /// the top left coordinate
-      Madara::Knowledge_Engine::Containers::Double_Vector top_left;
-      
       /// the bottom right coordinate
-      Madara::Knowledge_Engine::Containers::Double_Vector bottom_right;
+      vector<Madara::Knowledge_Engine::Containers::Double_Vector> vertices;
 
       /// region identifier
       std::string name;

@@ -43,8 +43,10 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
+
 #include "Printer_Algorithm.h"
 
+#include <iostream>
 
 gams::algorithms::Printer_Algorithm::Printer_Algorithm (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -76,33 +78,33 @@ gams::algorithms::Printer_Algorithm::operator= (const Printer_Algorithm & rhs)
 int
 gams::algorithms::Printer_Algorithm::analyze (void)
 {
-  std::cerr << "algorithm.analyze ()\n";
+  std::cerr << "algorithm.analyze ()" << std::endl;
 
   if (platform_)
-    std::cerr << "  algorithm.platform_ is set.\n";
+    std::cerr << "  algorithm.platform_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.platform is not set.\n";
+    std::cerr << "  ERROR: algorithm.platform is not set." << std::endl;
   
   if (sensors_)
-    std::cerr << "  algorithm.sensors_ is set.\n";
+    std::cerr << "  algorithm.sensors_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.sensors_ is not set.\n";
+    std::cerr << "  ERROR: algorithm.sensors_ is not set." << std::endl;
   
   if (self_)
-    std::cerr << "  algorithm.self_ is set.\n";
+    std::cerr << "  algorithm.self_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.self_ is not set.\n";
+    std::cerr << "  ERROR: algorithm.self_ is not set." << std::endl;
   
   status_.waiting = 1;
   status_.ok = 1;
 
-  std::cerr << "  algorithm.status_.ok == " << *status_.ok << "\n";
-  std::cerr << "  algorithm.status_.paused == " << *status_.paused << "\n";
-  std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << "\n";
+  std::cerr << "  algorithm.status_.ok == " << *status_.ok << std::endl;
+  std::cerr << "  algorithm.status_.paused == " << *status_.paused << std::endl;
+  std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << std::endl;
   std::cerr << "  algorithm.status_.deadlocked == "
-    << *status_.deadlocked << "\n";
-  std::cerr << "  algorithm.status_.failed == " << *status_.failed << "\n";
-  std::cerr << "  algorithm.status_.unknown == " << *status_.unknown << "\n";
+    << *status_.deadlocked << std::endl;
+  std::cerr << "  algorithm.status_.failed == " << *status_.failed << std::endl;
+  std::cerr << "  algorithm.status_.unknown == " << *status_.unknown << std::endl;
 
   return 0;
 }
@@ -111,32 +113,32 @@ gams::algorithms::Printer_Algorithm::analyze (void)
 int
 gams::algorithms::Printer_Algorithm::execute (void)
 {
-  std::cerr << "algorithm.execute ()\n";
+  std::cerr << "algorithm.execute ()" << std::endl;
 
   if (platform_)
-    std::cerr << "  algorithm.platform_ is set.\n";
+    std::cerr << "  algorithm.platform_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.platform is not set.\n";
+    std::cerr << "  ERROR: algorithm.platform is not set." << std::endl;
   
   if (sensors_)
-    std::cerr << "  algorithm.sensors_ is set.\n";
+    std::cerr << "  algorithm.sensors_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.sensors_ is not set.\n";
+    std::cerr << "  ERROR: algorithm.sensors_ is not set." << std::endl;
   
   if (self_)
-    std::cerr << "  algorithm.self_ is set.\n";
+    std::cerr << "  algorithm.self_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.self_ is not set.\n";
+    std::cerr << "  ERROR: algorithm.self_ is not set." << std::endl;
   
   status_.waiting = 0;
 
-  std::cerr << "  algorithm.status_.ok == " << *status_.ok << "\n";
-  std::cerr << "  algorithm.status_.paused == " << *status_.paused << "\n";
-  std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << "\n";
+  std::cerr << "  algorithm.status_.ok == " << *status_.ok << std::endl;
+  std::cerr << "  algorithm.status_.paused == " << *status_.paused << std::endl;
+  std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << std::endl;
   std::cerr << "  algorithm.status_.deadlocked == "
-    << *status_.deadlocked << "\n";
-  std::cerr << "  algorithm.status_.failed == " << *status_.failed << "\n";
-  std::cerr << "  algorithm.status_.unknown == " << *status_.unknown << "\n";
+    << *status_.deadlocked << std::endl;
+  std::cerr << "  algorithm.status_.failed == " << *status_.failed << std::endl;
+  std::cerr << "  algorithm.status_.unknown == " << *status_.unknown << std::endl;
 
   if (platform_)
   {
@@ -145,7 +147,7 @@ gams::algorithms::Printer_Algorithm::execute (void)
   }
   else
   {
-    std::cerr << "  ERROR: platform_ is null. Cannot call move ().\n";
+    std::cerr << "  ERROR: platform_ is null. Cannot call move ()." << std::endl;
   }
 
   return 0;
@@ -155,30 +157,30 @@ gams::algorithms::Printer_Algorithm::execute (void)
 int
 gams::algorithms::Printer_Algorithm::plan (void)
 {
-  std::cerr << "algorithm.plan ()\n";
+  std::cerr << "algorithm.plan ()" << std::endl;
 
   if (platform_)
-    std::cerr << "  algorithm.platform_ is set.\n";
+    std::cerr << "  algorithm.platform_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.platform is not set.\n";
+    std::cerr << "  ERROR: algorithm.platform is not set." << std::endl;
   
   if (sensors_)
-    std::cerr << "  algorithm.sensors_ is set.\n";
+    std::cerr << "  algorithm.sensors_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.sensors_ is not set.\n";
+    std::cerr << "  ERROR: algorithm.sensors_ is not set." << std::endl;
   
   if (self_)
-    std::cerr << "  algorithm.self_ is set.\n";
+    std::cerr << "  algorithm.self_ is set." << std::endl;
   else
-    std::cerr << "  ERROR: algorithm.self_ is not set.\n";
-  
-  std::cerr << "  algorithm.status_.ok == " << *status_.ok << "\n";
-  std::cerr << "  algorithm.status_.paused == " << *status_.paused << "\n";
-  std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << "\n";
+    std::cerr << "  ERROR: algorithm.self_ is not set." << std::endl;
+
+  std::cerr << "  algorithm.status_.ok == " << *status_.ok << std::endl;
+  std::cerr << "  algorithm.status_.paused == " << *status_.paused << std::endl;
+  std::cerr << "  algorithm.status_.waiting == " << *status_.waiting << std::endl;
   std::cerr << "  algorithm.status_.deadlocked == "
-    << *status_.deadlocked << "\n";
-  std::cerr << "  algorithm.status_.failed == " << *status_.failed << "\n";
-  std::cerr << "  algorithm.status_.unknown == " << *status_.unknown << "\n";
+    << *status_.deadlocked << std::endl;
+  std::cerr << "  algorithm.status_.failed == " << *status_.failed << std::endl;
+  std::cerr << "  algorithm.status_.unknown == " << *status_.unknown << std::endl;
 
   return 0;
 }

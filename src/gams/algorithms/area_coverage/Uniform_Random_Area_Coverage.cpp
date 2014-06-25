@@ -44,84 +44,59 @@
  *      distribution.
  **/
 
-/**
- * @file Uniform_Random_Edge_Coverage.h
- * @author James Edmondson <jedmondson@gmail.com>
- *
- * This file contains the definition of the random area coverage class
- **/
+#include "gams/algorithms/area_coverage/Uniform_Random_Area_Coverage.h"
 
-#ifndef   _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
-#define   _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
-
-#include "gams/variables/Sensor.h"
-#include "gams/platforms/Base_Platform.h"
-#include "gams/variables/Algorithm.h"
-#include "gams/variables/Self.h"
-#include "gams/algorithms/Base_Algorithm.h"
-#include "gams/utility/GPS_Position.h"
-#include "gams/utility/Region.h"
-
-namespace gams
+gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::
+  Uniform_Random_Area_Coverage (
+  const Madara::Knowledge_Record& region_id,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  platforms::Base * platform,
+  variables::Sensors * sensors,
+  variables::Self * self) :
+  Base_Area_Coverage (knowledge, platform, sensors, self),
+  region_ (utility::parse_region (*knowledge, region_id.to_string ()))
 {
-  namespace algorithms
+  // init status vars
+  status_.init_vars (*knowledge, "urac");
+
+  // generate initial waypoint
+  generate_new_position();
+}
+
+gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::
+  ~Uniform_Random_Area_Coverage ()
+{
+}
+
+void
+gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::operator= (
+  const Uniform_Random_Area_Coverage & rhs)
+{
+  if (this != &rhs)
   {
-    class GAMS_Export Uniform_Random_Edge_Coverage : public Base
-    {
-    public:
-      /**
-       * Constructor
-       * @param  knowledge    the context containing variables and values
-       * @param  platform     the underlying platform the algorithm will use
-       * @param  sensors      map of sensor names to sensor information
-       * @param  self         self-referencing variables
-       **/
-      Uniform_Random_Edge_Coverage (
-        const Madara::Knowledge_Record& region_id,
-        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0);
-
-      /**
-       * Destructor
-       **/
-      ~Uniform_Random_Edge_Coverage ();
-
-      /**
-       * Assignment operator
-       * @param  rhs   values to copy
-       **/
-      void operator= (const Uniform_Random_Edge_Coverage & rhs);
-      
-      /**
-       * Analyzes environment, platform, or other information
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int analyze (void);
-      
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int execute (void);
-
-      /**
-       * Plans the next execution of the algorithm
-       * @return bitmask status of the platform. @see Status.
-       **/
-      virtual int plan (void);
-      
-    protected:
-      /// generate random position on a side
-      void generate_new_position ();
-
-      /// next position
-      utility::GPS_Position next_position_;
-
-      /// coverage region
-      const utility::Region region_;
-    };
+    this->region_ = rhs.region_;
+    this->Base_Area_Coverage::operator= (rhs);
   }
 }
 
-#endif // _GAMS_ALGORITHMS_UNIFORM_RANDOM_EDGE_COVERAGE_H_
+void
+gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::
+  generate_new_position ()
+{
+  // average selection time is area(bounding_box) / area(region)
+  do
+  {
+    next_position_.lat = Madara::Utility::rand_double (region_.min_lat_,
+      region_.max_lat_);
+    next_position_.lon = Madara::Utility::rand_double (region_.min_lon_,
+      region_.max_lon_);
+    next_position_.alt = Madara::Utility::rand_double (region_.min_alt_,
+      region_.max_alt_);
+  }
+  while (!region_.is_in_region (next_position_));
+
+  // found an acceptable position, so set it as next
+  utility::GPS_Position current;
+  current.from_container (self_->device.location);
+  next_position_.alt = current.alt; // TODO: update when altitude is handled
+}
