@@ -1,8 +1,8 @@
 .id=8;
 .vrep_port=19914;
 
-.initial_x=28;
-.initial_y=28;
+.initial_x=18;
+.initial_y=18;
 
 device.8.command="formation";
 device.8.command.size=5;
