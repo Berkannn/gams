@@ -143,9 +143,13 @@ test_Position ()
   assert (p.to_string () == "1,2,3");
 
   // test from_string
-  testing_output ("to_string", 1);
+  testing_output ("from_string", 1);
   Position p3 = Position::from_string (p.to_string ());
   assert (p == p3);
+  p3 = Position::from_string ("2.3,1.2");
+  assert (p3.x == DBL_MAX);
+  assert (p3.y == DBL_MAX);
+  assert (p3.z == DBL_MAX);
 }
 
 // TODO: fill out remaining GPS_Position function tests

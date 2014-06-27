@@ -282,7 +282,8 @@ gams::utility::Position
 gams::utility::Position::from_string (const std::string & s)
 {
   Position temp;
-  sscanf (s.c_str (), "%lf%*[^0-9]%lf%*[^0-9]%lf", &temp.x, &temp.y, &temp.z);
+  if (sscanf (s.c_str (), "%lf%*[^0-9]%lf%*[^0-9]%lf", &temp.x, &temp.y, &temp.z) != 3)
+    temp.x = temp.y = temp.z = DBL_MAX;
   return temp;
 }
 
