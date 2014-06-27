@@ -57,6 +57,7 @@
 #include "gams/algorithms/area_coverage/Local_Pheremone_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Snake_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Min_Time_Area_Coverage.h"
+#include "gams/algorithms/area_coverage/Prioritized_Min_Time_Area_Coverage.h"
 
 #include <iostream>
 using std::cout;
@@ -127,10 +128,17 @@ gams::algorithms::Factory::create (const std::string & type,
         arg1 /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
-  else if (type == "min time")
+  else if (type == "min time" || type == "mtac")
   {
     if (knowledge_ && sensors_ && self_)
       result = new area_coverage::Min_Time_Area_Coverage (
+        arg1 /* search area id*/,
+        knowledge_, platform_, sensors_, self_);
+  }
+  else if (type == "prioritized min time" || type == "pmtac")
+  {
+    if (knowledge_ && sensors_ && self_)
+      result = new area_coverage::Prioritized_Min_Time_Area_Coverage (
         arg1 /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }

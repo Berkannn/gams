@@ -68,14 +68,15 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   const Madara::Knowledge_Record& search_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform, variables::Sensors * sensors,
-  variables::Self * self) :
+  variables::Self * self, const string& algo_name) :
   Base_Area_Coverage (knowledge, platform, sensors, self),
   search_area_ (
     utility::parse_search_area (*knowledge, search_id.to_string ())),
   min_time_ (search_id.to_string () + ".min_time", knowledge)
 {
+  cerr << "Min_Time_Area_Coverage::Min_Time_Area_Coverage()" << endl;
   // init status vars
-  status_.init_vars (*knowledge, "mtac");
+  status_.init_vars (*knowledge, algo_name);
 
   // fill out min_time_ sensor
   // TODO: fix sensor setup to be programatically consistent across users
@@ -118,6 +119,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::operator= (
 int
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::analyze ()
 {
+  cerr << "Min_Time_Area_Coverage::analyze()" << endl;
   // increment time since last seen for all cells
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
@@ -141,11 +143,13 @@ void
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   generate_new_position ()
 {
+  cerr << "Min_Time_Area_Coverage::generate_new_position()" << endl;
   // check each possible destination for max utility
   double max_util = -DBL_MAX;
   vector<utility::Position> online;
   utility::GPS_Position current;
   current.from_container (self_->device.location);
+  next_position_ = current;
   utility::Position cur_index = min_time_.get_index_from_gps (current);
   for (set<utility::Position>::const_iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
@@ -174,6 +178,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
   const utility::Position& start, const utility::Position& end,
   vector<utility::Position>& online)
 {
+  cerr << "Min_Time_Area_Coverage::get_utility()" << endl;
   /**
    * check each valid position and add its value to utility if it is along
    * the possible travel path of the agent
@@ -187,7 +192,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
     if (start.distance_to_2d (end, *it) < radius)
     {
       double time = min_time_.get_value (*it);
-      double delta_util = pow(time, 3.0);
+      double delta_util = pow (time, 3.0);
       util += delta_util;
       online.push_back (*it);
     }

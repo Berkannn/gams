@@ -109,7 +109,15 @@ gams::variables::Sensor::discretize_search_area (
   // move east each iteration
   utility::Position start_index = get_index_from_gps (start);
   if (!search.is_in_search_area (get_gps_from_index (start_index)))
-    ++start_index.y;
+  {
+    ++start_index.y; // check one east
+    if (!search.is_in_search_area (get_gps_from_index (start_index)))
+    {
+      ++start_index.x; // check one north
+      if (!search.is_in_search_area (get_gps_from_index (start_index)))
+        start_index.x -= 2; // use one south
+    }
+  }
   while (search.is_in_search_area (get_gps_from_index (start_index)))
   {
     // check north
@@ -142,7 +150,15 @@ gams::variables::Sensor::discretize_search_area (
   // move west each iteration
   start_index = get_index_from_gps (start);
   if (!search.is_in_search_area (get_gps_from_index (start_index)))
-    --start_index.y;
+  {
+    --start_index.y; // check one west
+    if (!search.is_in_search_area (get_gps_from_index (start_index)))
+    {
+      ++start_index.x; // check one north
+      if (!search.is_in_search_area (get_gps_from_index (start_index)))
+        start_index.x -= 2; // use one south
+    }
+  }
   while (search.is_in_search_area (get_gps_from_index (start_index)) &&
     ret_val.find (start_index) == ret_val.end ())
   {

@@ -55,6 +55,8 @@
 using std::stringstream;
 #include <string>
 using std::string;
+#include <algorithm>
+using std::max;
 
 #include "gams/utility/Search_Area.h"
 
@@ -116,13 +118,27 @@ gams::utility::Search_Area::get_regions () const
   return regions_;
 }
 
+unsigned int
+gams::utility::Search_Area::get_priority (const GPS_Position& pos) const
+{
+  unsigned int priority = 0;
+  for (vector<Prioritized_Region>::const_iterator it = regions_.begin ();
+    it != regions_.end (); ++it)
+  {
+    if (it->is_in_region (pos))
+      priority = max (priority, it->priority);
+  }
+
+  return priority;
+}
+
 bool
 gams::utility::Search_Area::is_in_search_area (const GPS_Position & p) const
 {
-  bool ret = false;
   for (unsigned int i = 0; i < regions_.size(); ++i)
-    ret = (ret || regions_[i].is_in_region (p));
-  return ret;
+    if (regions_[i].is_in_region (p))
+      return true;
+  return false;
 }
 
 string

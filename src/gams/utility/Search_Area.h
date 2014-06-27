@@ -107,6 +107,13 @@ namespace gams
        * @return const reference to regions
        **/
       const vector<Prioritized_Region>& get_regions () const;
+
+      /**
+       * Get priority of a gps position
+       * @param pos   position to get priority of
+       * @return priority of position
+       */
+      unsigned int get_priority (const GPS_Position& pos) const;
       
       /**
        * Determine if GPS_Position is in region
