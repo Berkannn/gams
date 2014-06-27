@@ -86,57 +86,66 @@ test_Position ()
 
   // test constructor
   testing_output ("constructor", 1);
-  Position* p = new Position (1,2,3);
-  assert (p->x == 1);
-  assert (p->y == 2);
-  assert (p->z == 3);
+  const Position p (1,2,3);
+  assert (p.x == 1);
+  assert (p.y == 2);
+  assert (p.z == 3);
 
   // test assignment operator
   testing_output ("assignment operator", 1);
-  Position p2 = *p;
+  Position p2 = p;
   assert (p2.x == 1);
   assert (p2.y == 2);
   assert (p2.z == 3);
   
   // equality operator
   testing_output ("equality operator", 1);
-  assert (*p == p2);
+  assert (p == p2);
 
   // inequality operator
   testing_output ("inequality operator", 1);
-  assert (!(*p != p2));
+  assert (!(p != p2));
 
   // approximately equal
   testing_output ("approximately_equal", 1);
   p2.z = 4;
-  assert (!(p->approximately_equal (p2, 0.9)));
-  assert (p->approximately_equal (p2, 1));
+  assert (!(p.approximately_equal (p2, 0.9)));
+  assert (p.approximately_equal (p2, 1));
   p2.y = 3;
-  assert (!(p->approximately_equal (p2, 1.4)));
-  assert (p->approximately_equal (p2, 1.5));
+  assert (!(p.approximately_equal (p2, 1.4)));
+  assert (p.approximately_equal (p2, 1.5));
   p2.x = 2;
-  assert (!(p->approximately_equal (p2, 1.7)));
-  assert (p->approximately_equal (p2, 1.8));
+  assert (!(p.approximately_equal (p2, 1.7)));
+  assert (p.approximately_equal (p2, 1.8));
 
   // direction to
   testing_output ("direction_to", 1);
   double phi, theta;
-  p2.z = p->z;
-  p->direction_to (p2, phi, theta);
+  p2.z = p.z;
+  p.direction_to (p2, phi, theta);
   assert (phi == M_PI / 4);
   assert (theta == M_PI / 2);
 
   // distance
   testing_output ("distance", 1);
-  p2 = *p;
+  p2 = p;
   ++p2.z;
   ++p2.y;
   ++p2.x;
-  assert (p->distance (p2) == pow (3.0, 0.5));
+  assert (p.distance_to (p2) == pow (3.0, 0.5));
 
   // distance_2d
   testing_output ("distance_2d", 1);
-  assert (p->distance_2d (p2) == pow (2.0, 0.5));
+  assert (p.distance_to_2d (p2) == pow (2.0, 0.5));
+
+  // test to_string
+  testing_output ("to_string", 1);
+  assert (p.to_string () == "1,2,3");
+
+  // test from_string
+  testing_output ("to_string", 1);
+  Position p3 = Position::from_string (p.to_string ());
+  assert (p == p3);
 }
 
 // TODO: fill out remaining GPS_Position function tests
@@ -193,10 +202,9 @@ test_Region ()
   p.lat = 40.443285; p.lon = -79.940242;
   points.push_back (p);
   Region r (points);
-  string expected = "40.443272999999998,-79.939950999999994,0:" \
-    "40.443116000000003,-79.939972999999995,0:" \
-    "40.443085000000004,-79.940313000000003,0:" \
-    "40.443285000000003,-79.940241999999998,0";
+  string expected = "40.443273,-79.939951,0:" \
+    "40.443116,-79.939973,0:40.443085,-79.940313,0:" \
+    "40.443285,-79.940242,0";
   assert (r.to_string () == expected);
 
   // test is_in_region
@@ -210,10 +218,9 @@ test_Region ()
   // bounding box
   testing_output ("get_bounding_box", 1);
   Region bound = r.get_bounding_box ();
-  expected = "40.443085000000004,-79.940313000000003,0:" \
-    "40.443085000000004,-79.939950999999994,0:" \
-    "40.443285000000003,-79.939950999999994,0:" \
-    "40.443285000000003,-79.940313000000003,0";
+  expected = "40.443085,-79.940313,0:" \
+    "40.443085,-79.939951,0:40.443285,-79.939951,0:" \
+    "40.443285,-79.940313,0";
   assert (r.get_bounding_box ().to_string () == expected);
 
   // get area

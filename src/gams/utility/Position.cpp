@@ -282,7 +282,7 @@ gams::utility::Position
 gams::utility::Position::from_string (const std::string & s)
 {
   Position temp;
-  sscanf (s.c_str (), "%lf%*s%lf%*s%lf", &temp.x, &temp.y, &temp.z);
+  sscanf (s.c_str (), "%lf%*[^0-9]%lf%*[^0-9]%lf", &temp.x, &temp.y, &temp.z);
   return temp;
 }
 
