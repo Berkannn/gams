@@ -1,11 +1,6 @@
-<<<<<<< HEAD
 #use a single space to represent not set
 $term_prefix = " ";
 $term_suffix = " ";
-=======
-#$term_prefix="xterm -hold -e";
-#$term_suffix="&";
->>>>>>> 927307f0e2124879e2bb4e944a3b709476b30327
 
 sub run {
   # get arguments
@@ -13,7 +8,6 @@ sub run {
   my $osname = $^O;
 
   # launch drone controllers
-<<<<<<< HEAD
   $gams_root = $ENV{"GAMS_ROOT"};
   for (my $i=0; $i < $num; $i++)
   {
@@ -35,24 +29,6 @@ sub run {
       print("OS not recognized and \$term_prefix is not set...exiting");
       exit(1);
     }
-=======
-  my $gams_root = $ENV{'GAMS_ROOT'};
-  for (my $i=0; $i < $num; $i++)
-  {
-    my $cmd="\"$gams_root/gams_controller -i $i -n $num -p vrep --loop-time $time --period $period --madara-file $gams_root/scripts/simulation/$sim/madara_init_$i.mf $gams_root/scripts/simulation/areas/$area.mf $gams_root/scripts/simulation/madara_init_common.mf -l $debug\"";
-    if (defined $term_cmd)
-    {
-      system("$term_cmd $cmd $term_suffix");
-    }
-    elsif ($osname eq 'MSWin32') # windows default
-    {
-      system("cmd \c $cmd");
-    }
-    elsif ($osname eq 'linux') # linux default
-    {
-      system("xterm -hold -e $cmd &");
-    }
->>>>>>> 927307f0e2124879e2bb4e944a3b709476b30327
   }
   
   # launch simulation controller
