@@ -1,4 +1,3 @@
-.id=0;
 .vrep_port=19906;
 
 .initial_x=0;
