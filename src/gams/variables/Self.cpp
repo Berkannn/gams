@@ -75,6 +75,7 @@ gams::variables::Self::init_vars (
 {
   // initialize the variable containers
   this->id.set_name (".id", knowledge);
+  this->id = id;
   this->device.init_vars (knowledge, id);
 }
 
