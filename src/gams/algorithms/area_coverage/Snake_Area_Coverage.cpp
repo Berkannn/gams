@@ -46,8 +46,11 @@
 
 #include "Snake_Area_Coverage.h"
 
-#define _USE_MATH_DEFINES
 #include <cmath>
+#include <string>
+using std::string;
+#include <vector>
+using std::vector;
 
 #include "gams/utility/GPS_Position.h"
 #include "gams/utility/Region.h"

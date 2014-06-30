@@ -45,6 +45,9 @@
  **/
 #include "gams/variables/Platform.h"
 
+#include <string>
+using std::string;
+
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
 gams::variables::Platform::Platform ()

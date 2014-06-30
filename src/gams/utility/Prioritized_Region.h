@@ -54,8 +54,8 @@
 #ifndef  _GAMS_UTILITY_PRIORITIZED_REGION_H_
 #define  _GAMS_UTILITY_PRIORITIZED_REGION_H_
 
+#include <string>
 #include <vector>
-using std::vector;
 
 #include "gams/utility/Region.h"
 #include "gams/utility/GPS_Position.h"
@@ -72,8 +72,8 @@ namespace gams
        * @param points    vector of points representing boundary polygon of region
        * @param priority  associated priority
        **/
-      Prioritized_Region (const vector <GPS_Position>& init_points =
-        vector<GPS_Position> (), const unsigned int p = 1);
+      Prioritized_Region (const std::vector <GPS_Position>& init_points =
+        std::vector<GPS_Position> (), const unsigned int p = 1);
 
       /**
        * Constructor
@@ -100,7 +100,7 @@ namespace gams
      **/
     Prioritized_Region parse_prioritized_region (
       Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const string& prioritized_region_id);
+      const std::string& prioritized_region_id);
   } // namespace utility
 } // namespace gams
 

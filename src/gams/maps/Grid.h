@@ -55,8 +55,6 @@
 #ifndef   _GAMS_VARIABLES_GRID_H_
 #define   _GAMS_VARIABLES_GRID_H_
 
-#include <vector>
-
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Double.h"
 #include "madara/knowledge_engine/containers/Map.h"

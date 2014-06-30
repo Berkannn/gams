@@ -55,9 +55,7 @@
 #define  _GAMS_UTILITY_SEARCH_AREA_H_
 
 #include <vector>
-using std::vector;
 #include <string>
-using std::string;
 
 #include "gams/utility/Prioritized_Region.h"
 
@@ -83,7 +81,7 @@ namespace gams
        * Constructor
        * @param regions   regions in this search area
        */
-      Search_Area (const vector<Prioritized_Region>& regions);
+      Search_Area (const std::vector<Prioritized_Region>& regions);
 
       /**
        * Destructor
@@ -106,7 +104,7 @@ namespace gams
        * Get region data
        * @return const reference to regions
        **/
-      const vector<Prioritized_Region>& get_regions () const;
+      const std::vector<Prioritized_Region>& get_regions () const;
 
       /**
        * Get priority of a gps position
@@ -126,7 +124,7 @@ namespace gams
        * Create string representation of Search_Area
        * @return string representation of this object
        **/
-      string to_string () const;
+      std::string to_string () const;
 
     protected:
       /**
@@ -135,7 +133,7 @@ namespace gams
       void calculate_bounding_box ();
 
       /// collection of prioritized regions
-      vector<Prioritized_Region> regions_;
+      std::vector<Prioritized_Region> regions_;
 
       /// full region
       Region union_;
@@ -154,7 +152,7 @@ namespace gams
      **/
     Search_Area parse_search_area (
       Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const string& search_area_id);
+      const std::string& search_area_id);
   } // namespace utility
 } // namespace gams
 

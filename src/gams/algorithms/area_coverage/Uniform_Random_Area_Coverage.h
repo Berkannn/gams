@@ -61,7 +61,6 @@
 #include "gams/variables/Self.h"
 #include "gams/algorithms/Base_Algorithm.h"
 #include "gams/utility/Region.h"
-using gams::utility::Region;
 
 namespace gams
 {
@@ -104,7 +103,7 @@ namespace gams
         virtual void generate_new_position ();
 
         /// vector of vertices in coverage box
-        Region region_;
+        utility::Region region_;
       };
     } // namespace area_coverage
   } // namespace algorithms

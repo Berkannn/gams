@@ -57,7 +57,6 @@
 #include "gams/algorithms/Base_Algorithm.h"
 
 #include <string>
-using std::string;
 
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
@@ -86,7 +85,7 @@ namespace gams
        * @param  self         self-referencing variables
        **/
       Move (
-        const string & type,
+        const std::string & type,
         unsigned int max_executions = 0,
         double max_execution_time = 5.0,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
@@ -103,7 +102,7 @@ namespace gams
        * @param  self         self-referencing variables
        **/
       Move (
-        const string & type,
+        const std::string & type,
         const utility::Position & target,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0,
@@ -162,7 +161,7 @@ namespace gams
       utility::Position target_;
 
       /// type of movement being executed
-      string type_;
+      std::string type_;
     };
   }
 }

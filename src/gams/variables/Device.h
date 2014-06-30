@@ -55,9 +55,7 @@
 #define   _GAMS_VARIABLES_DEVICES_H_
 
 #include <vector>
-using std::vector;
 #include <string>
-using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
@@ -154,7 +152,7 @@ namespace gams
        * @param id  id of device as string
        * @return device variable name
        */
-      static string make_variable_name (
+      static std::string make_variable_name (
         const Madara::Knowledge_Record::Integer& id);
 
       /**
@@ -166,7 +164,7 @@ namespace gams
     /**
      * An array of devices
      **/
-    typedef vector <Device>   Devices;
+    typedef std::vector <Device>   Devices;
     
     /**
       * Initializes a self containers

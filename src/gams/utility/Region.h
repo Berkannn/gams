@@ -55,9 +55,7 @@
 #define  _GAMS_UTILITY_REGION_H_
 
 #include <vector>
-using std::vector;
 #include <string>
-using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/String_Vector.h"
@@ -74,8 +72,8 @@ namespace gams
        * Constructor
        * @param  init_points  the vertices of the region
        **/
-      Region (const vector <GPS_Position> & init_points =
-        vector<GPS_Position> ());
+      Region (const std::vector <GPS_Position> & init_points =
+        std::vector<GPS_Position> ());
 
       /**
        * Destructor
@@ -126,7 +124,7 @@ namespace gams
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
        **/
-      string to_string (const string & delimiter = ":") const;
+      std::string to_string (const std::string & delimiter = ":") const;
 
       /**
        * Helper function for copying values to a MADARA double array
@@ -143,7 +141,7 @@ namespace gams
         Madara::Knowledge_Engine::Containers::String_Array & target);
 
       /// the vertices of the region
-      vector <GPS_Position> points;
+      std::vector <GPS_Position> points;
 
       /// bounding box
       double min_lat_, max_lat_;
@@ -164,7 +162,7 @@ namespace gams
      * @return Region object created from knowledge base
      **/
     Region parse_region (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const string& region_id);
+      const std::string& region_id);
   } // namespace utility
 } // namespace gams
 

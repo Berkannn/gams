@@ -62,7 +62,6 @@
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 #include <vector>
-using std::vector;
 
 namespace gams
 {
@@ -171,7 +170,7 @@ namespace gams
       variables::Algorithm status_;
     };
 
-    typedef  vector <Base *>   Algorithms;
+    typedef  std::vector <Base *>   Algorithms;
   }
 }
 

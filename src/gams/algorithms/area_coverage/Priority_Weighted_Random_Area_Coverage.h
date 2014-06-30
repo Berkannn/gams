@@ -57,8 +57,9 @@
 
 #include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
 
+#include <vector>
+
 #include "gams/utility/Search_Area.h"
-#include "gams/utility/GPS_Position.h"
 
 namespace gams
 {
@@ -98,7 +99,7 @@ namespace gams
         utility::Search_Area search_area_;
   
         /// priority total by region
-        vector<double> priority_total_by_region_;
+        std::vector<double> priority_total_by_region_;
   
         /// total priority
         double total_priority_;

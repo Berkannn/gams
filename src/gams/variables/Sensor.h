@@ -55,11 +55,8 @@
 #define   _GAMS_VARIABLES_SENSOR_H_
 
 #include <vector>
-using std::vector;
 #include <map>
-using std::map;
 #include <string>
-using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Double.h"
@@ -83,7 +80,8 @@ namespace gams
       /**
        * Constructor
        **/
-      Sensor (const string& name, Madara::Knowledge_Engine::Knowledge_Base* knowledge,
+      Sensor (const std::string& name,
+        Madara::Knowledge_Engine::Knowledge_Base* knowledge,
         const double& range = -1.0,
         const utility::GPS_Position& origin = utility::GPS_Position (DBL_MAX));
 
@@ -130,7 +128,7 @@ namespace gams
        * Get name
        * @return name of sensor
        **/
-      string get_name () const;
+      std::string get_name () const;
 
       /**
        * Get origin
@@ -196,7 +194,7 @@ namespace gams
        * @param pos   gps position
        * @return string index into map
        **/
-      string index_pos_to_index (const utility::Position& pos) const;
+      std::string index_pos_to_index (const utility::Position& pos) const;
 
       /**
        * Initialize madara containers
@@ -213,17 +211,17 @@ namespace gams
       Madara::Knowledge_Engine::Containers::Double range_;
 
       /// name of the sensor
-      string name_;
+      std::string name_;
 
       /// origin for index calculations
       Madara::Knowledge_Engine::Containers::Double_Array origin_;
     };
 
     /// a map of sensor names to the sensor information
-    typedef  map <string, Sensor*>   Sensors;
+    typedef  std::map <std::string, Sensor*>   Sensors;
 
     /// a list of sensor names
-    typedef  vector <string>        Sensor_Names;
+    typedef  std::vector <std::string>        Sensor_Names;
   }
 }
 

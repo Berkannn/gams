@@ -95,7 +95,7 @@ gams::platforms::Base::get_min_sensor_range () const
 }
 
 const gams::variables::Sensor&
-gams::platforms::Base::get_sensor (const string& name) const
+gams::platforms::Base::get_sensor (const std::string& name) const
 {
   return *((*sensors_)[name]);
 }

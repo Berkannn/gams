@@ -54,13 +54,10 @@
 
 #include "gams/algorithms/area_coverage/Min_Time_Area_Coverage.h"
 
-#include "madara/knowledge_engine/Knowledge_Update_Settings.h"
-
-#include "gams/utility/Search_Area.h"
-#include "gams/utility/GPS_Position.h"
-
+#include <string>
 #include <set>
-using std::set;
+
+#include "madara/knowledge_engine/Knowledge_Update_Settings.h"
 
 namespace gams
 {
@@ -83,7 +80,7 @@ namespace gams
           const Madara::Knowledge_Record& search_id, 
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
           platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-          variables::Self * self = 0, const string& algo_name = "pmtac");
+          variables::Self * self = 0, const std::string& algo_name = "pmtac");
 
         /**
          * Assignment operator
@@ -94,7 +91,7 @@ namespace gams
       protected:
         /// get utility of moving from one index position to another
         virtual double get_utility (const utility::Position& start,
-          const utility::Position& end, vector<utility::Position>& online);
+          const utility::Position& end, std::set<utility::Position>& online);
       }; // class Prioritized_Min_Time_Area_Coverage
     } // namespace area_coverage
   } // namespace algorithms

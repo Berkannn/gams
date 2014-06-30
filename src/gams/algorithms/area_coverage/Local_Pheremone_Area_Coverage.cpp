@@ -60,7 +60,8 @@
 #include <iostream>
 using std::cerr;
 using std::endl;
-#include <algorithm>
+#include <vector>
+using std::vector;
 
 gams::algorithms::area_coverage::Local_Pheremone_Area_Coverage::
 Local_Pheremone_Area_Coverage (

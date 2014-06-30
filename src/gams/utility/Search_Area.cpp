@@ -57,6 +57,8 @@ using std::stringstream;
 using std::string;
 #include <algorithm>
 using std::max;
+#include <vector>
+using std::vector;
 
 #include "gams/utility/Search_Area.h"
 

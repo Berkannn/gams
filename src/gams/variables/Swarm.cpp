@@ -45,6 +45,9 @@
  **/
 #include "Swarm.h"
 
+#include <string>
+using std::string;
+
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
 const string gams::variables::Swarm::SWARM_COMMAND = "swarm.command";

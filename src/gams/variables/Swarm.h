@@ -55,7 +55,6 @@
 #define   _GAMS_VARIABLES_SWARM_H_
 
 #include <string>
-using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
@@ -119,13 +118,13 @@ namespace gams
       
     protected:
       /// swarm command variable
-      static const string SWARM_COMMAND;
+      static const std::string SWARM_COMMAND;
 
       /// swarm min altitude variable
-      static const string SWARM_MIN_ALT;
+      static const std::string SWARM_MIN_ALT;
 
       /// swarm size variable
-      static const string SWARM_SIZE;
+      static const std::string SWARM_SIZE;
 
       /**
        * Variable setup

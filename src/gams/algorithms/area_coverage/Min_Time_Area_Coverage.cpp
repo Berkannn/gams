@@ -62,6 +62,10 @@
 using std::cerr;
 using std::endl;
 #include <cmath>
+#include <string>
+using std::string;
+#include <set>
+using std::set;
 
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   Min_Time_Area_Coverage (
@@ -146,7 +150,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   cerr << "Min_Time_Area_Coverage::generate_new_position()" << endl;
   // check each possible destination for max utility
   double max_util = -DBL_MAX;
-  vector<utility::Position> online;
+  set<utility::Position> online;
   utility::GPS_Position current;
   current.from_container (self_->device.location);
   next_position_ = current;
@@ -154,7 +158,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   for (set<utility::Position>::const_iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
-    vector<utility::Position> cur_online;
+    set<utility::Position> cur_online;
     double util = get_utility (cur_index, *it, cur_online);
     if (util > max_util)
     {
@@ -166,7 +170,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   }
 
   // 0 out the cells along line
-  for (vector<utility::Position>::iterator it = online.begin ();
+  for (set<utility::Position>::iterator it = online.begin ();
     it != online.end (); ++it)
   {
     min_time_.set_value (*it, 0.0);
@@ -176,7 +180,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
 double
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
   const utility::Position& start, const utility::Position& end,
-  vector<utility::Position>& online)
+  set<utility::Position>& online)
 {
   cerr << "Min_Time_Area_Coverage::get_utility()" << endl;
   /**
@@ -194,7 +198,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
       double time = min_time_.get_value (*it);
       double delta_util = pow (time, 3.0);
       util += delta_util;
-      online.push_back (*it);
+      online.insert (*it);
     }
   }
   

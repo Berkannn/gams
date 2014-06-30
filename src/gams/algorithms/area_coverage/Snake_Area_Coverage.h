@@ -56,13 +56,13 @@
 
 #include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
 
+#include <string>
+#include <vector>
+
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"
 #include "gams/variables/Self.h"
-#include "gams/utility/Position.h"
-
-#include <vector>
 
 namespace gams
 {
@@ -108,7 +108,7 @@ namespace gams
         /**
          * Compute waypoints
          */
-        void compute_waypoints (const string& region_id);
+        void compute_waypoints (const std::string& region_id);
   
         /// waypoints
         std::vector<utility::GPS_Position> waypoints_;

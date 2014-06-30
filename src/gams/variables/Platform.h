@@ -55,11 +55,8 @@
 #define   _GAMS_VARIABLES_PLATFORM_H_
 
 #include <vector>
-using std::vector;
 #include <map>
-using std::map;
 #include <string>
-using std::string;
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
@@ -152,7 +149,7 @@ namespace gams
        * Get variable prefix
        * @return string variable prefix
        */
-      string make_variable_prefix () const;
+      std::string make_variable_prefix () const;
 
       /**
        * Initialize variable values
@@ -161,10 +158,10 @@ namespace gams
     };
 
     /// a map of sensor names to the sensor information
-    typedef  map <string, Platform>   Platforms;
+    typedef  std::map <std::string, Platform>   Platforms;
 
     /// a list of sensor names
-    typedef  vector <string>        Platform_Names;
+    typedef  std::vector <std::string>        Platform_Names;
   }
 }
 

@@ -45,8 +45,10 @@
  **/
 #include "Algorithm.h"
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
+#include <string>
+using std::string;
 
+typedef  Madara::Knowledge_Record::Integer  Integer;
 
 gams::variables::Algorithm::Algorithm ()
 {

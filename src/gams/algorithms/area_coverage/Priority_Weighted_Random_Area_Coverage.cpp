@@ -57,6 +57,8 @@
 #include <iostream>
 using std::cout;
 using std::endl;
+#include <vector>
+using std::vector;
 
 gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
 Priority_Weighted_Random_Area_Coverage (

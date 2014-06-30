@@ -55,15 +55,17 @@
 
 #include "gams/algorithms/area_coverage/Prioritized_Min_Time_Area_Coverage.h"
 
-#include "gams/utility/GPS_Position.h"
-#include "gams/utility/Position.h"
-
+#include <string>
+using std::string;
 #include <iostream>
 using std::cerr;
 using std::endl;
 #include <cmath>
 #include <set>
 using std::set;
+
+#include "gams/utility/GPS_Position.h"
+#include "gams/utility/Position.h"
 
 gams::algorithms::area_coverage::Prioritized_Min_Time_Area_Coverage::
   Prioritized_Min_Time_Area_Coverage (
@@ -94,7 +96,7 @@ gams::algorithms::area_coverage::Prioritized_Min_Time_Area_Coverage::operator= (
 double
 gams::algorithms::area_coverage::Prioritized_Min_Time_Area_Coverage::get_utility (
   const utility::Position& start, const utility::Position& end,
-  vector<utility::Position>& online)
+  set<utility::Position>& online)
 {
   cerr << "Prioritized_Min_Time_Area_Coverage::get_utility()" << endl;
   /**
@@ -113,7 +115,7 @@ gams::algorithms::area_coverage::Prioritized_Min_Time_Area_Coverage::get_utility
       double time = min_time_.get_value (*it) * search_area_.get_priority (gps);
       double delta_util = pow (time, 3.0);
       util += delta_util;
-      online.push_back (*it);
+      online.insert (*it);
     }
   }
   

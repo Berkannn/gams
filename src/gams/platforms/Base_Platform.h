@@ -55,7 +55,6 @@
 #define   _GAMS_PLATFORM_BASE_H_
 
 #include <string>
-using std::string;
 
 #include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
@@ -141,7 +140,7 @@ namespace gams
        * @param sensor  identifier of sensor to get
        * @return Sensor object
        */
-      virtual const variables::Sensor& get_sensor (const string& name) const;
+      virtual const variables::Sensor& get_sensor (const std::string& name) const;
 
       /**
        * Fills a list of sensor names with sensors available on the platform
