@@ -14,16 +14,18 @@
 #                   http://madara.googlecode.com/svn/trunk/
 #   $GAMS_ROOT    - location of this GAMS git repository
 
+source $GAMS_ROOT/scripts/linux/common.sh
+
 # echo build information
 echo "Using ARM prefix of $ARM_PREFIX with $CORES build jobs"
 echo "MADARA will be built from $MADARA_ROOT"
 echo "ACE will be built from $ACE_ROOT"
 echo "GAMS will be built from $GAMS_ROOT"
+echo "Drone files will be copied to $DRONE_DIR"
 echo ""
 
 # prepare destination directory
 cd $GAMS_ROOT
-DRONE_DIR=$GAMS_ROOT/drone_files
 rm -rf $DRONE_DIR
 mkdir $DRONE_DIR
 
@@ -52,8 +54,17 @@ echo "Building MADARA"
 cd $MADARA_ROOT
 perl $ACE_ROOT/bin/mwc.pl -type gnuace MADARA.mwc
 make realclean
-make tests=0 -j $CORES
+make tests=1 -j $CORES
 cp libMADARA.so $DRONE_DIR
+cp network_profiler $DRONE_DIR
+cp test_file_rebroadcasts $DRONE_DIR
+cp test_fragmentation $DRONE_DIR
+cp test_rebroadcast_ring $DRONE_DIR
+cp test_reasoning_throughput $DRONE_DIR
+cp test_udp $DRONE_DIR
+cp test_broadcast $DRONE_DIR
+cp profile_architecture $DRONE_DIR
+cp madara_version $DRONE_DIR
 
 # build GAMS
 echo ""

@@ -1,7 +1,14 @@
 #!/bin/bash
+# copies files from localhost to drone at IP
+#
+# build_ar_drone.sh will build the necessary files and place them in the 
+# location that this script expects
 
+# bring in other variables
+source $GAMS_ROOT/scripts/linux/common.sh
+
+# setup ip address
 IP=192.168.1.1
-
 echo "IP start as $IP"
 
 if [ ! -z $1 ]; then
@@ -9,19 +16,24 @@ if [ ! -z $1 ]; then
     echo "FTP IP is set to $IP"
 fi
 
+# copy scripts file
+cd $GAMS_ROOT/scripts/linux
+ftp -n -v $IP << END_SCRIPTS_FTP
 
-
-ftp -n -v $IP<<END_SCRIPTS_FTP
 binary
+
+delete swarmSetup.sh
+delete hosts
 
 put swarmSetup.sh
 put hosts
+
 quit
 
 END_SCRIPTS_FTP
 
-
-telnet $IP<<END_SCRIPTS_TELNET
+# mark scripts as executable
+telnet $IP << END_SCRIPTS_TELNET
 
 cd data/video
 chmod a+x swarmSetup.sh 
@@ -30,9 +42,10 @@ exit
 
 END_SCRIPTS_TELNET
 
+# copy madara to drone
+cd $DRONE_DIR
+ftp -n -v $IP << END_MADARA_FTP
 
-cd $MADARA_ROOT
-ftp -n -v $IP<<END_MADARA_FTP
 binary
 
 delete libMADARA.so 
@@ -61,10 +74,10 @@ quit
 
 END_MADARA_FTP
 
-telnet $IP<<END_MADARA_TELNET
+# set madara files as executable
+telnet $IP << END_MADARA_TELNET
 
-cd data/video
-chmod a+x libMADARA.so 
+cd /data/video
 chmod a+x network_profiler 
 chmod a+x test_file_rebroadcasts 
 chmod a+x test_fragmentation 
@@ -78,25 +91,14 @@ exit
 
 END_MADARA_TELNET
 
-cd $ACE_ROOT/ace
-ftp -n -v $IP<<END_ACE
+# copy ace to drone
+ftp -n -v $IP << END_ACE_FTP
 
 binary
 delete libACE.so
-
 put libACE.so
-
 quit
-
-END_ACE
-
-telnet $IP<<END_ACE_FTP
-
-cd data/video
-chmod a+x libACE.so
-exit
 
 END_ACE_FTP
 
 exit 0
-
