@@ -1,11 +1,6 @@
 // small test area
-.using_gps=1;
 .vrep_sw_position="40.443077,-79.940570";
 .vrep_ne_position="40.443387,-79.940098";
-.sw_position="40.443077,-79.940570";
-.ne_position="40.443387,-79.940098";
-
-.paint.regions="region.0";
 
 search_area.1.size=1;
 search_area.1.0="region.0";
@@ -16,8 +11,6 @@ region.0.0="40.443237,-79.940570";
 region.0.1="40.443387,-79.940270";
 region.0.2="40.443187,-79.940098";
 region.0.3="40.443077,-79.940398";
-
-search_area.size=1;
 
 search_area.0.size=2;
 search_area.0.0="region.1";
