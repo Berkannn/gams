@@ -88,99 +88,97 @@ gams::variables::Sensor::operator= (const Sensor & rhs)
 }
 
 set<gams::utility::Position>
-gams::variables::Sensor::discretize_search_area (
-  const utility::Search_Area& search)
+gams::variables::Sensor::discretize_region (
+  const utility::Region& region)
 {
-  // return set
   set<utility::Position> ret_val;
-  
-  // find west most position
+
+  // find northern most point
+  utility::GPS_Position northern = region.points[0];
+  for (size_t i = 1; i < region.points.size (); ++i)
+    if (northern.lat < region.points[i].lat)
+      northern = region.points[i];
+  const int max_x = get_index_from_gps (northern).x;
+
+  // find southern most point
+  utility::GPS_Position southern = region.points[0];
+  for (size_t i = 1; i < region.points.size (); ++i)
+    if (southern.lat > region.points[i].lat)
+      southern = region.points[i];
+  const int min_x = get_index_from_gps (southern).x;
+
+  // find west most point 
   utility::GPS_Position start;
   start.lon = DBL_MAX;
-  const vector<utility::Prioritized_Region>& regions = search.get_regions ();
-  for (size_t i = 0; i < regions.size (); ++i)
+  for (size_t i = 0; i < region.points.size (); ++i)
+    if (start.lon > region.points[i].lon)
+      start = region.points[i];
+
+  // find valid corresponding position
+  utility::Position start_index = get_index_from_gps (start);
+  if (!region.is_in_region (get_gps_from_index (start_index)))
   {
-    const utility::Prioritized_Region reg = regions[i];
-    for (size_t j = 0; j < reg.points.size (); ++j)
-      if (start.lon > reg.points[j].lon)
-        start = reg.points[j];
+    ++start_index.y; // go one east...
+    utility::Position check = start_index;
+    while ((!region.is_in_region (get_gps_from_index (check))) &&
+      check.x <= max_x)
+    {
+      ++check.x; // ... and start looking north for position in region
+    }
+
+    // if we still haven't found a good position...
+    if (!region.is_in_region (get_gps_from_index (check)))
+    {
+      // ...start looking south
+      check = start_index;
+      while ((!region.is_in_region (get_gps_from_index (check))) &&
+        check.x >= min_x)
+      {
+        --check.x;
+      }
+    }
+
+    // by now we must have found a starting position, so update start_index
+    start_index = check;
   }
 
+  // find east most point
+  utility::GPS_Position eastern = region.points[0];
+  for (size_t i = 1; i < region.points.size (); ++i)
+    if (eastern.lon < region.points[i].lon)
+      eastern = region.points[i];
+  const int max_y = get_index_from_gps (eastern).y;
+
   // move east each iteration
-  utility::Position start_index = get_index_from_gps (start);
-  if (!search.is_in_search_area (get_gps_from_index (start_index)))
-  {
-    ++start_index.y; // check one east
-    if (!search.is_in_search_area (get_gps_from_index (start_index)))
-    {
-      ++start_index.x; // check one north
-      if (!search.is_in_search_area (get_gps_from_index (start_index)))
-        start_index.x -= 2; // use one south
-    }
-  }
-  while (search.is_in_search_area (get_gps_from_index (start_index)))
+  while (start_index.y < max_y)
   {
     // check north
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos)); ++pos.x)
-    {
-      ret_val.insert (pos);
-    }
+    for (utility::Position pos = start_index; pos.x <= max_x; ++pos.x)
+      if (region.is_in_region (get_gps_from_index (pos)))
+        ret_val.insert (pos);
   
     // check south
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos)); --pos.x)
-    {
-      ret_val.insert (pos);
-    }
+    for (utility::Position pos = start_index; pos.x >= min_x; --pos.x)
+      if (region.is_in_region (get_gps_from_index (pos)))
+        ret_val.insert (pos);
 
     ++start_index.y;
   }
 
-  // find east most position
-  start.lon = -DBL_MAX;
+  return ret_val;
+}
+
+set<gams::utility::Position>
+gams::variables::Sensor::discretize_search_area (
+  const utility::Search_Area& search)
+{
+  set<utility::Position> ret_val;
+  const vector<utility::Prioritized_Region>& regions = search.get_regions ();
   for (size_t i = 0; i < regions.size (); ++i)
   {
-    const utility::Prioritized_Region reg = regions[i];
-    for (size_t j = 0; j < reg.points.size (); ++j)
-      if (start.lon < reg.points[j].lon)
-        start = reg.points[j];
+    set<utility::Position> to_add = discretize_region (regions[i]);
+    ret_val.insert (to_add.begin (), to_add.end ());
   }
-
-  // move west each iteration
-  start_index = get_index_from_gps (start);
-  if (!search.is_in_search_area (get_gps_from_index (start_index)))
-  {
-    --start_index.y; // check one west
-    if (!search.is_in_search_area (get_gps_from_index (start_index)))
-    {
-      ++start_index.x; // check one north
-      if (!search.is_in_search_area (get_gps_from_index (start_index)))
-        start_index.x -= 2; // use one south
-    }
-  }
-  while (search.is_in_search_area (get_gps_from_index (start_index)) &&
-    ret_val.find (start_index) == ret_val.end ())
-  {
-    // check north
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos));
-      ++pos.x)
-    {
-      ret_val.insert (pos);
-    }
-  
-    // check south
-    for (utility::Position pos = start_index;
-      search.is_in_search_area (get_gps_from_index (pos));
-      --pos.x)
-    {
-      ret_val.insert (pos);
-    }
-
-    --start_index.y;
-  }
-
   return ret_val;
 }
 

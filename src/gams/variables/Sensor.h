@@ -101,6 +101,14 @@ namespace gams
        * @param search  Search_Area to discretize
        * @return set of index positions considered inside search area
        **/
+      set<utility::Position> discretize_region (
+        const utility::Region& region);
+
+      /**
+       * Discretize a search area into index positions inside search area
+       * @param search  Search_Area to discretize
+       * @return set of index positions considered inside search area
+       **/
       set<utility::Position> discretize_search_area (
         const utility::Search_Area& search);
       
