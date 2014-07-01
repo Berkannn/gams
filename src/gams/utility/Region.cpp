@@ -61,8 +61,8 @@ using std::vector;
 
 #include "Region.h"
 
-gams::utility::Region::Region (const std::vector <GPS_Position> & init_points)
-: points (init_points)
+gams::utility::Region::Region (const std::vector <GPS_Position> & init_points) :
+  points (init_points)
 {
   calculate_bounding_box ();
 }
@@ -277,10 +277,10 @@ gams::utility::parse_region (
     case 0: // arbitrary convex polygon
     {
       sprintf (expression, "region.%u.size", region_id);
-      const int num_vertices = knowledge.get (expression).to_integer ();
-      for (int i = 1; i <= num_vertices; ++i) // get the vertices
+      const unsigned int num_vertices = knowledge.get (expression).to_integer ();
+      for (unsigned int i = 0; i < num_vertices; ++i) // get the vertices
       {
-        sprintf (expression, "region.%u.%d", region_id, i);
+        sprintf (expression, "region.%u.%u", region_id, i);
         utility::GPS_Position pos;
         sscanf (knowledge.get (expression).to_string ().c_str (),
           "%lf,%lf,%lf", &pos.lat, &pos.lon, &pos.alt);
@@ -292,5 +292,5 @@ gams::utility::parse_region (
       std::cerr << "invalid region type: " << region_type << endl;
   }
 
-  return gams::utility::Region (vertices);
+  return Region(vertices);
 }

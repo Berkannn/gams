@@ -56,6 +56,8 @@
 
 #include "gams/utility/Region.h"
 using gams::utility::Region;
+#include "gams/utility/Prioritized_Region.h"
+using gams::utility::Prioritized_Region;
 #include "gams/utility/Search_Area.h"
 using gams::utility::Search_Area;
 #include "gams/utility/Position.h"
@@ -125,6 +127,7 @@ unsigned int num_agents = 0;
 
 // place plants or not
 bool plants = false;
+vector<string> regions;
 
 // use gps coords
 bool gps = false;
@@ -144,17 +147,17 @@ void print_usage (string prog_name)
   cerr << endl;
   cerr << "   [-g | --gps]" << endl;
   cerr << "       use gps coords (instead of vrep)" << endl;
-  cerr << "   [-l | --log_level <number>]" << endl;
+  cerr << "   [-l | --log-level <number>]" << endl;
   cerr << "       MADARA log level, 1-10" << endl;
-  cerr << "   [-mf| --madara_file <file (s)>]" << endl;
+  cerr << "   [-m | --madara-file <file(s)>]" << endl;
   cerr << "       madara variable initialization files" << endl;
-  cerr << "   [-n | --num_agents <number>]" << endl;
+  cerr << "   [-n | --num-agents <number>]" << endl;
   cerr << "       number of agents that will be launched" << endl;
-  cerr << "   [--north_east <coords>]" << endl;
+  cerr << "   [--north-east <coords>]" << endl;
   cerr << "       northeast corner coordinates, ex. \"40,-72\"" << endl;
   cerr << "   [-p | --plants]" << endl;
   cerr << "       place plants as position markers" << endl;
-  cerr << "   [--south_west <coords>]" << endl;
+  cerr << "   [--south-west <coords>]" << endl;
   cerr << "       southeast corner coordinates, ex. \"40,-72\"" << endl;
   cerr << "   [-v | --vrep <ip_address> <port>]" << endl;
   cerr << "       vrep connection information" << endl;
@@ -173,7 +176,7 @@ void handle_arguments (int argc, char** argv)
     {
       gps = true;
     }
-    else if (arg1 == "-l" || arg1 == "--log_level")
+    else if (arg1 == "-l" || arg1 == "--log-level")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
         sscanf (argv[i + 1], "%d", &MADARA_debug_level);
@@ -181,7 +184,7 @@ void handle_arguments (int argc, char** argv)
         print_usage (argv[0]);
       ++i;
     }
-    else if (arg1 == "-mf" || arg1 == "--madara_file")
+    else if (arg1 == "-m" || arg1 == "--madara-file")
     {
       madara_commands = "";
       bool files = false;
@@ -195,7 +198,7 @@ void handle_arguments (int argc, char** argv)
       if (!files)
         print_usage (argv[0]);
     }
-    else if (arg1 == "-n" || arg1 == "--num_agents")
+    else if (arg1 == "-n" || arg1 == "--num-agents")
     {
       if (i + 1 < argc && argv[i + 1][0] != '-')
         sscanf (argv[i + 1], "%u", &num_agents);
@@ -203,7 +206,7 @@ void handle_arguments (int argc, char** argv)
         print_usage (argv[0]);
       ++i;
     }
-    else if (arg1 == "--north_east")
+    else if (arg1 == "--north-east")
     {
       if (i + 1 < argc)
         sscanf (argv[i + 1], "%lf,%lf", &ne_lat, &ne_long);
@@ -213,9 +216,19 @@ void handle_arguments (int argc, char** argv)
     }
     else if (arg1 == "-p" || arg1 == "--plants")
     {
-      plants = true;
+      if (i + 1 < argc && argv[i + 1][0] != '-')
+      {
+        plants = true;
+        char temp[50];
+        char arg[500];
+        strcpy (arg, argv[i + 1]);
+        while (sscanf(arg, "%[^,],%s", temp, arg) > 1)
+          regions.push_back (temp);
+        regions.push_back (temp);
+      }
+      ++i;
     }
-    else if (arg1 == "--south_west")
+    else if (arg1 == "--south-west")
     {
       if (i + 1 < argc)
         sscanf (argv[i + 1], "%lf,%lf", &sw_lat, &sw_long);
@@ -275,11 +288,73 @@ void get_dimensions (double &max_x, double &max_y,
 }
 
 /**
+ * Put plants around a region
+ * @param region region object to put plants around
+ */
+void put_plants (Madara::Knowledge_Engine::Knowledge_Base& knowledge, 
+   const Region& reg, const int& client_id)
+{
+  string model_file = getenv ("VREP_ROOT");
+  model_file += "/models/furniture/plants/indoorPlant.ttm";
+
+  for (size_t j = 0; j < reg.points.size (); ++j)
+  {
+    size_t next = (j + 1) % reg.points.size ();
+    string sw_position = knowledge.get (".vrep_sw_position").to_string ();
+    gams::utility::GPS_Position origin;
+    sscanf (sw_position.c_str (), "%lf,%lf", &origin.lat, &origin.lon);
+
+    const gams::utility::GPS_Position gps_pos_1 = reg.points[j];
+    const gams::utility::GPS_Position gps_pos_2 = reg.points[next];
+    const gams::utility::Position pos_1 = gps_pos_1.to_position (origin);
+    const gams::utility::Position pos_2 = gps_pos_2.to_position (origin);
+    const double delta_x = pos_2.x - pos_1.x;
+
+    const unsigned int NUM_PLANTS_PER_SIDE = 5;
+    for (unsigned int k = 0; k < NUM_PLANTS_PER_SIDE; ++k)
+    {
+      double plant_x, plant_y;
+      if (delta_x != 0)
+      {
+        const double m = (pos_2.y - pos_1.y) / delta_x;
+        const double k_del_x = k * delta_x / NUM_PLANTS_PER_SIDE;
+        plant_x = pos_1.x + k_del_x;
+        plant_y = pos_1.y + m * k_del_x;
+      }
+      else // vertical line
+      {
+        plant_x = pos_1.x;
+        plant_y = pos_1.y + (pos_2.y - pos_1.y) * k / NUM_PLANTS_PER_SIDE;
+      }
+
+      // find where it should go
+      simxFloat pos[3];
+      pos[0] = plant_y;
+      pos[1] = plant_x;
+      pos[2] = 0;
+  
+      // load object
+      int node_id;
+      if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
+        simx_opmode_oneshot_wait) != simx_error_noerror)
+      {
+        cerr << "failure loading plant model" << endl;
+        exit (0);
+      }
+  
+      // move object
+      simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
+        simx_opmode_oneshot_wait);
+    }
+  }
+}
+
+/**
  * Create environment in vrep
  * Add floors and plants as visible markers
  * @param client_id id for vrep connection
- **/
-void create_environment (int client_id,
+ */
+void create_environment (const int& client_id,
   Madara::Knowledge_Engine::Knowledge_Base& knowledge)
 {
   // find environment parameters
@@ -320,68 +395,23 @@ void create_environment (int client_id,
   if (plants)
   {
     cout << "placing plants as markers...";
-    model_file = getenv ("VREP_ROOT");
-    model_file += "/models/furniture/plants/indoorPlant.ttm";
 
     // paint each vertex
-    //string regions[] = {"region.3", "region.4", "region.5"};
-    string regions[] = {"region.0"};
-    // read regions to paint
-    const size_t num_regions = sizeof(regions) / sizeof(regions[0]);
-
-    for (size_t i = 0; i < num_regions; ++i)
+    for (size_t i = 0; i < regions.size (); ++i)
     {
-      gams::utility::Region reg =
-        gams::utility::parse_region (knowledge, regions[i]);
-      for (size_t j = 0; j < reg.points.size (); ++j)
+      if (regions[i].find ("region") != std::string::npos)
       {
-        size_t next = (j + 1) % reg.points.size ();
-        string sw_position = knowledge.get (".vrep_sw_position").to_string ();
-        gams::utility::GPS_Position origin;
-        sscanf (sw_position.c_str (), "%lf,%lf", &origin.lat, &origin.lon);
-
-        const gams::utility::GPS_Position gps_pos_1 = reg.points[j];
-        const gams::utility::GPS_Position gps_pos_2 = reg.points[next];
-        const gams::utility::Position pos_1 = gps_pos_1.to_position (origin);
-        const gams::utility::Position pos_2 = gps_pos_2.to_position (origin);
-        const double delta_x = pos_2.x - pos_1.x;
-
-        const unsigned int NUM_PLANTS_PER_SIDE = 5;
-        for (unsigned int k = 0; k < NUM_PLANTS_PER_SIDE; ++k)
-        {
-          double plant_x, plant_y;
-          if (delta_x != 0)
-          {
-            const double m = (pos_2.y - pos_1.y) / delta_x;
-            const double k_del_x = k * delta_x / NUM_PLANTS_PER_SIDE;
-            plant_x = pos_1.x + k_del_x;
-            plant_y = pos_1.y + m * k_del_x;
-          }
-          else // vertical line
-          {
-            plant_x = pos_1.x;
-            plant_y = pos_1.y + (pos_2.y - pos_1.y) * k / NUM_PLANTS_PER_SIDE;
-          }
-
-          // find where it should go
-          simxFloat pos[3];
-          pos[0] = plant_y;
-          pos[1] = plant_x;
-          pos[2] = 0;
-      
-          // load object
-          int node_id;
-          if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
-            simx_opmode_oneshot_wait) != simx_error_noerror)
-          {
-            cerr << "failure loading plant model" << endl;
-            exit (0);
-          }
-      
-          // move object
-          simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
-            simx_opmode_oneshot_wait);
-        }
+        gams::utility::Region reg =
+          gams::utility::parse_region (knowledge, regions[i]);
+        put_plants (knowledge, reg, client_id);
+      }
+      else // search_area
+      {
+        gams::utility::Search_Area search =
+          gams::utility::parse_search_area (knowledge, regions[i]);
+        vector<Prioritized_Region> search_regions = search.get_regions ();
+        for (size_t j = 0; j < search_regions.size (); ++j)
+          put_plants (knowledge, search_regions[j], client_id);
       }
     }
 
@@ -403,7 +433,7 @@ void start_simulator (const int & client_id,
   string expression = buffer.str ();
   Madara::Knowledge_Engine::Compiled_Expression compiled;
   compiled = knowledge.compile (expression);
-  cout << "waiting for " << num_agents << " agent (s) to come online...";
+  cout << "waiting for " << num_agents << " agent(s) to come online...";
   knowledge.wait (compiled);
   cout << "done" << endl;
 

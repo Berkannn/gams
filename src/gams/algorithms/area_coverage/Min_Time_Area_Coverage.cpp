@@ -78,7 +78,6 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
     utility::parse_search_area (*knowledge, search_id.to_string ())),
   min_time_ (search_id.to_string () + ".min_time", knowledge)
 {
-  cerr << "Min_Time_Area_Coverage::Min_Time_Area_Coverage()" << endl;
   // init status vars
   status_.init_vars (*knowledge, algo_name);
 
@@ -123,7 +122,6 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::operator= (
 int
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::analyze ()
 {
-  cerr << "Min_Time_Area_Coverage::analyze()" << endl;
   // increment time since last seen for all cells
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
@@ -147,7 +145,6 @@ void
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   generate_new_position ()
 {
-  cerr << "Min_Time_Area_Coverage::generate_new_position()" << endl;
   // check each possible destination for max utility
   double max_util = -DBL_MAX;
   set<utility::Position> online;
@@ -182,7 +179,6 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
   const utility::Position& start, const utility::Position& end,
   set<utility::Position>& online)
 {
-  cerr << "Min_Time_Area_Coverage::get_utility()" << endl;
   /**
    * check each valid position and add its value to utility if it is along
    * the possible travel path of the agent

@@ -85,13 +85,11 @@ gams::utility::parse_prioritized_region (
   Madara::Knowledge_Engine::Knowledge_Base& knowledge,
   const string& prioritized_region_id)
 {
-  // start with just the region
-  Prioritized_Region ret (parse_region (knowledge, prioritized_region_id));
-
   // get priority
   char expr[512];
   sprintf (expr, "%s.priority", prioritized_region_id.c_str ());
-  ret.priority = knowledge.get (expr).to_integer ();
+  int priority = knowledge.get (expr).to_integer ();
 
-  return ret;
+  return Prioritized_Region (
+    parse_region (knowledge, prioritized_region_id), priority);
 }

@@ -75,15 +75,6 @@ gams::algorithms::area_coverage::Prioritized_Min_Time_Area_Coverage::
   variables::Self * self, const string& algo_name) :
   Min_Time_Area_Coverage (search_id, knowledge, platform, sensors, self, algo_name)
 {
-  cerr << "Prioritized_Min_Time_Area_Coverage::Prioritized_Min_Time_Area_Coverage()" << endl;
-  cerr << "search_area_ = " << search_area_.to_string () << endl;
-  cerr << "next_position_ = " << next_position_.to_string () << endl;
-  cerr << "valid_positions_ = " << endl;
-  for (set<utility::Position>::const_iterator it = valid_positions_.begin ();
-    it != valid_positions_.end(); ++it)
-  {
-    cerr << "\t" << it->to_string () << endl;
-  }
 }
 
 void
@@ -98,7 +89,6 @@ gams::algorithms::area_coverage::Prioritized_Min_Time_Area_Coverage::get_utility
   const utility::Position& start, const utility::Position& end,
   set<utility::Position>& online)
 {
-  cerr << "Prioritized_Min_Time_Area_Coverage::get_utility()" << endl;
   /**
    * check each valid position and add its value to utility if it is along
    * the possible travel path of the agent

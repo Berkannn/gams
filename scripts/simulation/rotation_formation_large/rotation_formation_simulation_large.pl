@@ -1,12 +1,13 @@
 #!/usr/bin/perl
-$gams_root=$ENV{'GAMS_ROOT'};
-require "$gams_root/scripts/simulation/launch.pl";
+use lib "$ENV{GAMS_ROOT}/scripts/simulation";
+use simulation;
 
-$time=3600;
-$madara_debug=0;
-$period=0.5;
-$num=9;
-$sim="rotation_formation_large";
-$area="small";
+$gams_root = $ENV{GAMS_ROOT};
+$time = 3600;
+$madara_debug = 0;
+$period = 0.5;
+$num = 9;
+$sim = "rotation_formation_large";
+$area = "small";
 
-run($num, $time, $period, $sim, $area, $madara_debug);
+simulation::run($num, $time, $period, $sim, $area, $madara_debug);
