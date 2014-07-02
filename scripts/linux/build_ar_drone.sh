@@ -73,7 +73,15 @@ cd $GAMS_ROOT
 perl $ACE_ROOT/bin/mwc.pl -type gnuace gams.mwc 
 make realclean
 make dronerk=1 -j $CORES
+cp libGAMS.so $DRONE_DIR
 cp gams_controller $DRONE_DIR
+
+# build Drone-RK
+echo ""
+echo "Build Drone-RK"
+cd $DRK_ROOT
+make libdrk.so -j $CORES
+cp lib/libdrk.so $DRONE_DIR
 
 # strip libraries and binaries
 echo "Strip files"

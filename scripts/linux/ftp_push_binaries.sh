@@ -101,4 +101,26 @@ quit
 
 END_ACE_FTP
 
+# copy gams to drone
+ftp -n -v $IP << END_GAMS_FTP
+
+binary
+delete libGAMS.so
+delete gams_controller
+put libGAMS.so
+put gams_controller
+quit
+
+END_GAMS_FTP
+
+# copy drk to drone
+ftp -n -v $IP << END_DRK_FTP
+
+binary
+delete libdrk.so
+put libdrk.so
+quit
+
+END_DRK_FTP
+
 exit 0
