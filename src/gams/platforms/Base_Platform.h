@@ -133,7 +133,7 @@ namespace gams
       /**
        * Get move speed
        **/
-      virtual double get_move_speed () const = 0;
+      virtual double get_move_speed () const;
 
       /**
        * Get a sensor
@@ -190,7 +190,7 @@ namespace gams
        * Set move speed
        * @param speed new speed in meters/second
        **/
-      virtual void set_move_speed (const double& speed) = 0;
+      virtual void set_move_speed (const double& speed);
       
       /**
        * Sets the map of sensor names to sensor information
@@ -210,6 +210,8 @@ namespace gams
       virtual int takeoff (void) = 0;
       
     protected:
+      /// movement speed for platform in meters/second
+      double move_speed_;
 
       /// provides access to variables and values
       Madara::Knowledge_Engine::Knowledge_Base * knowledge_;

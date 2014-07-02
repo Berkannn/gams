@@ -45,6 +45,11 @@
  **/
 #include "Drone_RK.h"
 
+extern "C"
+{
+#include "drk/flight_control_api.h"
+#include "drk/drk.h"
+}
 
 gams::platforms::Drone_RK::Drone_RK (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
@@ -54,10 +59,13 @@ gams::platforms::Drone_RK::Drone_RK (
   : Base (&knowledge, sensors, self), airborne_ (false)
 {
   platforms["drone_rk"].init_vars (knowledge, "drone_rk");
+
+  drk_init(0);
 }
 
 gams::platforms::Drone_RK::~Drone_RK ()
 {
+  drk_exit (0);
 }
 
 void
@@ -102,12 +110,6 @@ gams::platforms::Drone_RK::get_position (utility::Position & position)
   position = position_;
 }
 
-double
-gams::platforms::Drone_RK::get_position_accuracy () const
-{
-  return 1.0;
-}
-
 int
 gams::platforms::Drone_RK::home (void)
 {
@@ -141,6 +143,7 @@ gams::platforms::Drone_RK::move (const utility::Position & position)
 int
 gams::platforms::Drone_RK::sense (void)
 {
+  // read gps
   return 0;
 }
       
@@ -155,6 +158,8 @@ gams::platforms::Drone_RK::takeoff (void)
 {
   if (!airborne_)
   {
+    drk_takeoff ();
+    drk_hover (0);
     airborne_ = true;
   }
 
@@ -166,8 +171,16 @@ gams::platforms::Drone_RK::land (void)
 {
   if (airborne_)
   {
+    drk_hover (0);
+    drk_land ();
     airborne_ = false;
   }
 
   return 0;
+}
+
+double
+gams::platforms::Drone_RK::get_gps_accuracy () const
+{
+  return 2.0;
 }

@@ -45,6 +45,11 @@
  **/
 
 #include "Base_Controller.h"
+
+#include <iostream>
+using std::cerr;
+using std::endl;
+
 #include "ace/High_Res_Timer.h"
 #include "ace/OS_NS_sys_time.h"
 #include "madara/utility/Utility.h"
@@ -352,6 +357,8 @@ gams::controller::Base::run (double period, double max_runtime)
     unsigned int iterations = 0;
     while (current < max_wait)
     {
+      cerr << "iteration: " << iterations << endl;
+
       // some debug output, just not every iteration
       if ((++iterations) % 15 == 0)
         knowledge_.print();

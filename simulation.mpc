@@ -2,6 +2,8 @@ project (dynamic_simulation) : using_madara, using_ace, using_gams, using_vrep {
   exeout = $(GAMS_ROOT)/bin
   exename = dynamic_simulation
 
+  requires += vrep
+
   Documentation_Files {
     INSTALL.txt
     LICENSE.txt

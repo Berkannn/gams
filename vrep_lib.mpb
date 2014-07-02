@@ -1,4 +1,5 @@
 feature (vrep) {
+  requires += vrep
   
   macros += _GAMS_VREP_
   macros += MAX_EXT_API_CONNECTIONS=255

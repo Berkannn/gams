@@ -94,6 +94,12 @@ gams::platforms::Base::get_min_sensor_range () const
   return min_range;
 }
 
+double
+gams::platforms::Base::get_move_speed () const
+{
+  return move_speed_;
+}
+
 const gams::variables::Sensor&
 gams::platforms::Base::get_sensor (const std::string& name) const
 {
@@ -164,6 +170,12 @@ gams::platforms::Base::set_knowledge (
   Madara::Knowledge_Engine::Knowledge_Base * rhs)
 {
   knowledge_ = rhs;
+}
+
+void
+gams::platforms::Base::set_move_speed (const double& speed)
+{
+  move_speed_ = speed;
 }
 
 void

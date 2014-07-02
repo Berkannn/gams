@@ -7,6 +7,14 @@
 # bring in other variables
 source $GAMS_ROOT/scripts/linux/common.sh
 
+# copy files for gdb to use
+rm -rf lib
+cp -r $DRONE_DIR lib
+
+# strip binaries
+echo "Strip binaries"
+${ARM_PREFIX}strip $DRONE_DIR/*
+
 # setup ip address
 IP=192.168.1.1
 echo "IP start as $IP"
@@ -78,15 +86,15 @@ END_MADARA_FTP
 telnet $IP << END_MADARA_TELNET
 
 cd /data/video
-chmod a+x network_profiler 
-chmod a+x test_file_rebroadcasts 
-chmod a+x test_fragmentation 
-chmod a+x test_rebroadcast_ring
-chmod a+x test_reasoning_throughput 
-chmod a+x test_udp 
-chmod a+x test_broadcast 
-chmod a+x profile_architecture
-chmod a+x madara_version
+chmod +x network_profiler 
+chmod +x test_file_rebroadcasts 
+chmod +x test_fragmentation 
+chmod +x test_rebroadcast_ring
+chmod +x test_reasoning_throughput 
+chmod +x test_udp 
+chmod +x test_broadcast 
+chmod +x profile_architecture
+chmod +x madara_version
 exit
 
 END_MADARA_TELNET
@@ -100,5 +108,47 @@ put libACE.so
 quit
 
 END_ACE_FTP
+
+# copy gams to drone
+ftp -n -v $IP << END_GAMS_FTP
+
+binary
+delete libGAMS.so
+delete gams_controller
+put libGAMS.so
+put gams_controller
+quit
+
+END_GAMS_FTP
+
+# set gams files as executable
+telnet $IP << END_GAMS_TELNET
+
+cd /data/video
+chmod +x gams_controller
+exit
+
+END_GAMS_TELNET
+
+# copy drk to drone
+ftp -n -v $IP << END_DRK_FTP
+
+binary
+delete libdrk.so
+delete all_sensor_data
+put libdrk.so
+put all_sensor_data
+quit
+
+END_DRK_FTP
+
+# set drk files as executable
+telnet $IP << END_DRK_TELNET
+
+cd /data/video
+chmod +x all_sensor_data
+exit
+
+END_DRK_TELNET
 
 exit 0

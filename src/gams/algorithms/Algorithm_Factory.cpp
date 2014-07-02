@@ -164,25 +164,26 @@ gams::algorithms::Factory::create (const std::string & type,
   {
     if (knowledge_ && sensors_ && platform_ && self_ && arg1.is_string_type ())
     {
+      result = new Move ("", 0, 0, knowledge_, platform_, sensors_, self_);
       // if an integer is passed as arg2, then it's the number of executions 
-      if (arg2.is_integer_type ())
-      {
-        result = new Move (arg1.to_string (), arg2.to_integer (), -1,
-          knowledge_, platform_, sensors_, self_);
-      }
-      else if (arg2.type () == Madara::Knowledge_Record::DOUBLE)
-      {
-        result = new Move (arg1.to_string (), 0, arg2.to_double (),
-          knowledge_, platform_, sensors_, self_);
-      }
-      else if (arg2.type () == Madara::Knowledge_Record::UNCREATED)
-      {
-        utility::Position target;
-        target.from_container (self_->device.dest);
-
-        result = new Move (arg1.to_string (), target,
-          knowledge_, platform_, sensors_, self_);
-      }
+//      if (arg2.is_integer_type ())
+//      {
+//        result = new Move (arg1.to_string (), arg2.to_integer (), -1,
+//          knowledge_, platform_, sensors_, self_);
+//      }
+//      else if (arg2.type () == Madara::Knowledge_Record::DOUBLE)
+//      {
+//        result = new Move (arg1.to_string (), 0, arg2.to_double (),
+//          knowledge_, platform_, sensors_, self_);
+//      }
+//      else if (arg2.type () == Madara::Knowledge_Record::UNCREATED)
+//      {
+//        utility::Position target;
+//        target.from_container (self_->device.dest);
+//
+//        result = new Move (arg1.to_string (), target,
+//          knowledge_, platform_, sensors_, self_);
+//      }
     }
   }
 

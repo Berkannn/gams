@@ -48,6 +48,8 @@
 #include <string>
 using std::string;
 #include <iostream>
+using std::cerr;
+using std::endl;
 
 gams::algorithms::Move::Move (
   const string & type,
@@ -61,9 +63,12 @@ gams::algorithms::Move::Move (
   end_time_ (ACE_OS::gettimeofday ()), max_execution_time_ (max_execution_time),
   max_executions_ (max_executions), type_ (type)
 {
+  cerr << "Move::Move()" << endl;
   // init status vars
+  cerr << "Move::Move() init_vars" << endl;
   status_.init_vars (*knowledge, "move");
 
+  cerr << "Move::Move() mode" << endl;
   if (max_executions > 0)
     mode_ = EXECUTIONS;
   else
@@ -127,9 +132,12 @@ gams::algorithms::Move::execute (void)
   {
   }
 
-  std::cout << "We should be executing a move right now...\n";
-
   ++executions_;
+
+  if ((executions_ / 20) % 2 == 0)
+    platform_->takeoff ();
+  else
+    platform_->land ();
 
   return 0;
 }

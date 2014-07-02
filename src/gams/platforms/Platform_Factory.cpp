@@ -83,7 +83,6 @@ gams::platforms::Factory::create (const std::string & type)
       return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
   }
 #endif
-
 #ifdef _GAMS_VREP_
   else if (type == "vrep")
   {
