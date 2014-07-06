@@ -81,6 +81,11 @@ namespace gams
         lat (init_lat), lon (init_lon), alt (init_alt) {}
 
       /**
+       * Ordering operator for sets
+       **/
+      bool operator< (const GPS_Position& rhs) const;
+
+      /**
        * Assignment operator
        * @param  rhs   values to copy
        **/

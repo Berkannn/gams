@@ -51,13 +51,6 @@
  * Tests the functionality of gams::utility classes
  **/
 
-#include "gams/utility/Position.h"
-using gams::utility::Position;
-#include "gams/utility/GPS_Position.h"
-using gams::utility::GPS_Position;
-#include "gams/utility/Region.h"
-using gams::utility::Region;
-
 #include <string>
 using std::string;
 #include <iostream>
@@ -66,9 +59,19 @@ using std::endl;
 #include <assert.h>
 #include <vector>
 using std::vector;
-
 #define _USING_MATH_DEFINES
 #include <cmath>
+
+#include "gams/utility/Position.h"
+using gams::utility::Position;
+#include "gams/utility/GPS_Position.h"
+using gams::utility::GPS_Position;
+#include "gams/utility/Region.h"
+using gams::utility::Region;
+#include "gams/utility/Prioritized_Region.h"
+using gams::utility::Prioritized_Region;
+#include "gams/utility/Search_Area.h"
+using gams::utility::Search_Area;
 
 void
 testing_output (const string& str, const unsigned int& tabs = 0)
@@ -233,11 +236,44 @@ test_Region ()
   assert (bound.get_area () < 681.3 && bound.get_area() > 681.2);
 }
 
+void
+test_Search_Area ()
+{
+  testing_output ("gams::utility::Search_Area");
+
+  // test constructor
+  testing_output ("get_convex_hull", 1);
+  vector<GPS_Position> points;
+  GPS_Position p (40.443237, -79.94057);
+  points.push_back (p);
+  p.lat = 40.443387; p.lon = -79.94027;
+  points.push_back (p);
+  p.lat = 40.443187; p.lon = -79.940098;
+  points.push_back (p);
+  p.lat = 40.443077; p.lon = -79.940398;
+  points.push_back (p);
+  Prioritized_Region pr (points, 1);
+  Search_Area search (pr);
+  Region convex1 = search.get_convex_hull ();
+
+  points.clear ();
+  p.lat = 40.443237; p.lon = -79.94047;
+  points.push_back (p);
+  p.lat = 40.443377; p.lon = -79.94027;
+  points.push_back (p);
+  p.lat = 40.443337; p.lon = -79.940298;
+  points.push_back (p);
+  Prioritized_Region pr2 (points, 1);
+  search.add_prioritized_region (pr2);
+  assert (search.get_convex_hull () == convex1);
+}
+
 int
 main ()
 {
   test_Position ();
   test_GPS_Position ();
   test_Region ();
+  test_Search_Area ();
   return 0;
 }

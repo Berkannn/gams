@@ -66,6 +66,21 @@ gams::utility::GPS_Position::operator= (const GPS_Position & rhs)
 }
 
 bool
+gams::utility::GPS_Position::operator< (const GPS_Position& rhs) const
+{
+  if (this->lat < rhs.lat)
+    return true;
+  else if (this->lat == rhs.lat)
+  {
+    if (this->lon < rhs.lon)
+      return true;
+    else if (this->lon == rhs.lon)
+      return this->alt < rhs.alt;
+  }
+  return true;
+}
+
+bool
 gams::utility::GPS_Position::operator== (const GPS_Position & rhs) const
 {
   return this->lat == rhs.lat && this->lon == rhs.lon && this->alt == rhs.alt;
