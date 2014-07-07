@@ -54,7 +54,7 @@ echo "Building MADARA"
 cd $MADARA_ROOT
 perl $ACE_ROOT/bin/mwc.pl -type gnuace MADARA.mwc
 make realclean
-make tests=1 -j $CORES
+make optimize=0 tests=1 -j $CORES
 cp libMADARA.so $DRONE_DIR
 cp network_profiler $DRONE_DIR
 cp test_file_rebroadcasts $DRONE_DIR
@@ -72,7 +72,7 @@ echo "Build GAMS"
 cd $GAMS_ROOT
 perl $ACE_ROOT/bin/mwc.pl -type gnuace gams.mwc 
 make realclean
-make dronerk=1 -j $CORES
+make optimize=0 dronerk=1 -j $CORES
 cp libGAMS.so $DRONE_DIR
 cp gams_controller $DRONE_DIR
 
@@ -80,9 +80,6 @@ cp gams_controller $DRONE_DIR
 echo ""
 echo "Build Drone-RK"
 cd $DRK_ROOT
+make realclean
 make libdrk.so -j $CORES
 cp lib/libdrk.so $DRONE_DIR
-
-# strip libraries and binaries
-echo "Strip files"
-${ARM_PREFIX}strip $DRONE_DIR/*

@@ -7,6 +7,10 @@
 # bring in other variables
 source $GAMS_ROOT/scripts/linux/common.sh
 
+# strip binaries
+echo "Strip binaries"
+${ARM_PREFIX}strip $DRONE_DIR/*
+
 # setup ip address
 IP=192.168.1.1
 echo "IP start as $IP"
@@ -112,6 +116,15 @@ put gams_controller
 quit
 
 END_GAMS_FTP
+
+# set gams files as executable
+telnet $IP << END_GAMS_TELNET
+
+cd /data/video
+chmod +x gams_controller
+exit
+
+END_GAMS_TELNET
 
 # copy drk to drone
 ftp -n -v $IP << END_DRK_FTP
