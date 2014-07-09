@@ -14,6 +14,9 @@
 #                   http://madara.googlecode.com/svn/trunk/
 #   $GAMS_ROOT    - location of this GAMS git repository
 
+# quit on any failure
+set -e
+
 source $GAMS_ROOT/scripts/linux/common.sh
 
 # echo build information

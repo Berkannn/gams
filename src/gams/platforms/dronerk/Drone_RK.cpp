@@ -65,6 +65,8 @@ gams::platforms::Drone_RK::Drone_RK (
 
 gams::platforms::Drone_RK::~Drone_RK ()
 {
+  drk_hover (0);
+  drk_land ();
   drk_exit (0);
 }
 

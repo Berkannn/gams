@@ -63,12 +63,9 @@ gams::algorithms::Move::Move (
   end_time_ (ACE_OS::gettimeofday ()), max_execution_time_ (max_execution_time),
   max_executions_ (max_executions), type_ (type)
 {
-  cerr << "Move::Move()" << endl;
   // init status vars
-  cerr << "Move::Move() init_vars" << endl;
   status_.init_vars (*knowledge, "move");
 
-  cerr << "Move::Move() mode" << endl;
   if (max_executions > 0)
     mode_ = EXECUTIONS;
   else
@@ -110,14 +107,12 @@ gams::algorithms::Move::operator= (const Move & rhs)
   }
 }
 
-
 int
 gams::algorithms::Move::analyze (void)
 {
   return 0;
 }
       
-
 int
 gams::algorithms::Move::execute (void)
 {
@@ -141,7 +136,6 @@ gams::algorithms::Move::execute (void)
 
   return 0;
 }
-
 
 int
 gams::algorithms::Move::plan (void)

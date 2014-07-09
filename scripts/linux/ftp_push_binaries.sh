@@ -136,8 +136,10 @@ ftp -n -v $IP << END_DRK_FTP
 binary
 delete libdrk.so
 delete all_sensor_data
+delete simple_flight
 put libdrk.so
 put all_sensor_data
+put simple_flight
 quit
 
 END_DRK_FTP
@@ -147,8 +149,30 @@ telnet $IP << END_DRK_TELNET
 
 cd /data/video
 chmod +x all_sensor_data
+chmod +x simple_flight
 exit
 
 END_DRK_TELNET
+
+# copy testing scripts
+cd $GAMS_ROOT/scripts/drone_rk/testing/takeoff_land
+ftp -n -v $IP << END_SCRIPTS_FTP
+
+binary
+delete madara_init.mf
+delete test.sh
+put madara_init.mf
+put test.sh
+quit
+
+END_SCRIPTS_FTP
+
+# mark as executable
+telnet $IP << END_SCRIPTS_TELNET
+
+cd /data/video
+chmod +x test.sh
+
+END_SCRIPTS_TELNET
 
 exit 0
