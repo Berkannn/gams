@@ -73,14 +73,14 @@ namespace gams
       public:
         /**
          * Constructor
-         * @param  region_id    identifier of region to cover
-         * @param  knowledge    the context containing variables and values
-         * @param  platform     the underlying platform the algorithm will use
-         * @param  sensors      map of sensor names to sensor information
-         * @param  self         self-referencing variables
+         * @param search_area_id  identifier of region to cover
+         * @param knowledge       the context containing variables and values
+         * @param platform        the underlying platform the algorithm will use
+         * @param sensors         map of sensor names to sensor information
+         * @param self            self-referencing variables
          **/
         Uniform_Random_Area_Coverage (
-          const Madara::Knowledge_Record& region_id,
+          const Madara::Knowledge_Record& search_area_id,
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
           platforms::Base * platform = 0, variables::Sensors * sensors = 0,
           variables::Self * self = 0);
@@ -102,7 +102,7 @@ namespace gams
          */
         virtual void generate_new_position ();
 
-        /// vector of vertices in coverage box
+        /// region to cover
         utility::Region region_;
       };
     } // namespace area_coverage

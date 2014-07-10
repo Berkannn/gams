@@ -51,6 +51,8 @@
  * Search Area is a collection of regions, possibly with priority
  **/
 
+#include "gams/utility/Search_Area.h"
+
 #include <sstream>
 using std::stringstream;
 #include <string>
@@ -59,8 +61,20 @@ using std::string;
 using std::max;
 #include <vector>
 using std::vector;
+#include <set>
+using std::set;
+#include <algorithm>
+using std::sort;
+using std::swap;
+using std::copy;
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <iostream>
+using std::cerr;
+using std::endl;
 
-#include "gams/utility/Search_Area.h"
+#include "gams/utility/Region.h"
+#include "gams/utility/GPS_Position.h"
 
 gams::utility::Search_Area::Search_Area ()
 {
@@ -89,7 +103,6 @@ gams::utility::Search_Area::operator= (const Search_Area & rhs)
   if (this != &rhs)
   {
     this->regions_ = rhs.regions_;
-    this->union_ = rhs.union_;
     this->min_lat_ = rhs.min_lat_;
     this->max_lat_ = rhs.max_lat_;
     this->min_lon_ = rhs.min_lon_;
@@ -99,7 +112,7 @@ gams::utility::Search_Area::operator= (const Search_Area & rhs)
   }
 }
 
-inline void
+void
 gams::utility::Search_Area::add_prioritized_region (const Prioritized_Region& r)
 {
   regions_.push_back (r);
@@ -112,6 +125,97 @@ gams::utility::Search_Area::add_prioritized_region (const Prioritized_Region& r)
   max_lat_ = (max_lat_ < r.max_lat_) ? r.max_lat_ : max_lat_;
   max_lon_ = (max_lon_ < r.max_lon_) ? r.max_lon_ : max_lon_;
   max_alt_ = (max_alt_ < r.max_alt_) ? r.max_alt_ : max_alt_;
+}
+
+// sort points by angle with point, for use in get_convex_hull
+struct sort_by_angle
+{
+  const gams::utility::GPS_Position anchor;
+
+  sort_by_angle (const gams::utility::GPS_Position& p) : anchor (p) {}
+
+  bool operator() (const gams::utility::GPS_Position& gp1,
+    const gams::utility::GPS_Position& gp2)
+  {
+    gams::utility::Position p1 = gp1.to_position (anchor);
+    gams::utility::Position p2 = gp2.to_position (anchor);
+
+    double angle1 = atan2 (p1.x, p1.y) + 2 * M_PI;
+    double angle2 = atan2 (p2.x, p2.y) + 2 * M_PI;
+    
+    return angle1 < angle2;
+  }
+};
+
+gams::utility::Region
+gams::utility::Search_Area::get_convex_hull () const
+{
+  /**
+   * Use Graham Scan algorithm
+   * Time complexity is O(n * log n)
+   * pseudocode at https://en.wikipedia.org/wiki/Graham_scan
+   */
+  // get all points, filter out duplicates
+  set<GPS_Position> s_points;
+  for (size_t i = 0; i < regions_.size (); ++i)
+    for (size_t j = 0; j < regions_[i].points.size (); ++j)
+      s_points.insert (regions_[i].points[j]);
+  const size_t N = s_points.size ();
+
+  // create array of points
+  GPS_Position points[N + 1];
+  size_t index = 1;
+  for (set<GPS_Position>::const_iterator it = s_points.begin ();
+    it != s_points.end(); ++it)
+  {
+    points[index++] = *it;
+  }
+
+  // find point with lowest y/lat coord...
+  size_t lowest = 1;
+  double min_lat = points[1].lat; 
+  for (size_t i = 2; i <= N; ++i)
+  {
+    if (points[i].lat < min_lat)
+    {
+      lowest = i;
+      min_lat = points[i].lat;
+    }
+  }
+
+  // ...and swap with points[1]
+  swap (points[lowest], points[1]);
+
+  // sort positions
+  sort (&points[2], &points[N + 1], sort_by_angle (points[1]));
+
+  // copy sentinel point
+  points[0] = points[N];
+
+  // find convex hull
+  unsigned int M = 1;
+  for (unsigned int i = 2; i <= N; ++i)
+  {
+    // find next valid point on convex hull
+    while (cross (points[M - 1], points[M], points[i]) <= 0)
+    {
+      if (M > 1)
+        M -= 1;
+      else if (i == N)
+        break;
+      else
+        i += 1;
+    }
+
+    // update M and swap points to the correct place
+    M += 1;
+    swap (points[M], points[i]);
+  }
+
+  // fill vector of points
+  vector<GPS_Position> temp (M);
+  copy (&points[1], &points[M + 1], temp.begin ());
+  return Region (temp);
 }
 
 const vector<gams::utility::Prioritized_Region>&
@@ -170,6 +274,16 @@ gams::utility::Search_Area::calculate_bounding_box ()
   }
 }
 
+double
+gams::utility::Search_Area::cross (const GPS_Position& gp1, const GPS_Position& gp2,
+  const GPS_Position& gp3) const
+{
+  Position p1 = gp1.to_position (gp3);
+  Position p2 = gp2.to_position (gp3);
+  return (p2.y - p1.y) * (0 - p1.x) -
+    (p2.x- p1.x) * (0 - p1.y);
+}
+
 gams::utility::Search_Area
 gams::utility::parse_search_area (
   Madara::Knowledge_Engine::Knowledge_Base& knowledge,
@@ -178,17 +292,25 @@ gams::utility::parse_search_area (
   Search_Area ret;
 
   // get size of search_area in number of regions
-  char expr[512];
-  sprintf (expr, "%s.size", search_area_id.c_str ());
-  const unsigned int num_regions = knowledge.get (expr).to_integer ();
-
-  // parse each region
-  for (unsigned int i = 0; i < num_regions; ++i)
+  if (search_area_id.find ("search_area") != std::string::npos)
   {
-    // get prioritized region and add to search area
-    sprintf (expr, "%s.%u", search_area_id.c_str (), i);
+    char expr[512];
+    sprintf (expr, "%s.size", search_area_id.c_str ());
+    const unsigned int num_regions = knowledge.get (expr).to_integer ();
+  
+    // parse each region
+    for (unsigned int i = 0; i < num_regions; ++i)
+    {
+      // get prioritized region and add to search area
+      sprintf (expr, "%s.%u", search_area_id.c_str (), i);
+      ret.add_prioritized_region (
+        parse_prioritized_region (knowledge, knowledge.get (expr).to_string ()));
+    }
+  }
+  else // this is just a region
+  {
     ret.add_prioritized_region (
-      parse_prioritized_region (knowledge, knowledge.get (expr).to_string ()));
+      parse_prioritized_region (knowledge, search_area_id));
   }
 
   return ret;

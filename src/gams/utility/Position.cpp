@@ -118,9 +118,14 @@ gams::utility::Position::operator< (const Position& rhs) const
 {
   if (this->x < rhs.x)
     return true;
-  if (this->y < rhs.y)
-    return true;
-  return this->z < rhs.z;
+  else if (this->x == rhs.x)
+  {
+    if (this->y < rhs.y)
+      return true;
+    else if (this->y == rhs.y)
+      return this->z < rhs.z;
+  }
+  return false;
 }
 
 double

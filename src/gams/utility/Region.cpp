@@ -81,6 +81,26 @@ gams::utility::Region::operator= (const Region& rhs)
 }
 
 bool
+gams::utility::Region::operator== (const Region& rhs) const
+{
+  if (points.size () != rhs.points.size ())
+    return false;
+
+  // ensure all contents are the same
+  for (size_t i = 0; i < points.size (); ++i)
+  {
+    size_t j;
+    for (j = 0; j < points.size (); ++j)
+      if (points[i] == rhs.points[j])
+        break;
+    if (j == points.size())
+      return false;
+  }
+
+  return true;
+}
+
+bool
 gams::utility::Region::is_in_region (const GPS_Position & p) const
 {
   // check if in bounding box
