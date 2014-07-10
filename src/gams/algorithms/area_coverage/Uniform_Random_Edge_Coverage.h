@@ -80,7 +80,7 @@ namespace gams
          * @param  self         self-referencing variables
          **/
         Uniform_Random_Edge_Coverage (
-          const Madara::Knowledge_Record& region_id,
+          const Madara::Knowledge_Record& search_area_id,
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
           platforms::Base * platform = 0, variables::Sensors * sensors = 0,
           variables::Self * self = 0);
@@ -102,7 +102,7 @@ namespace gams
          */
         virtual void generate_new_position ();
   
-        /// coverage region
+        /// convex hull of coverage region
         utility::Region region_;
       }; // class Uniform_Random_Edge_Coverage
     } // namespace area_coverage

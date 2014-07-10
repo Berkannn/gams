@@ -46,17 +46,22 @@
 
 #include "gams/algorithms/area_coverage/Uniform_Random_Edge_Coverage.h"
 
-gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
-  const Madara::Knowledge_Record& region_id,
+gams::algorithms::area_coverage::
+Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
+  const Madara::Knowledge_Record& search_area_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self) :
-  Base_Area_Coverage (knowledge, platform, sensors, self),
-  region_ (utility::parse_region (*knowledge, region_id.to_string ()))
+  Base_Area_Coverage (knowledge, platform, sensors, self)
 {
   // init status vars
   status_.init_vars (*knowledge, "urec");
+
+  // generate search region
+  utility::Search_Area search = utility::parse_search_area (
+    *knowledge, search_area_id.to_string ());
+  region_ = search.get_convex_hull ();
 
   // generate initial waypoint
   generate_new_position ();

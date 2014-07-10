@@ -172,6 +172,7 @@ telnet $IP << END_SCRIPTS_TELNET
 
 cd /data/video
 chmod +x test.sh
+exit
 
 END_SCRIPTS_TELNET
 

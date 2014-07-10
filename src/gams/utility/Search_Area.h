@@ -98,7 +98,13 @@ namespace gams
        * Add prioritized region to search area
        * @param r   prioritized region to add
        **/
-      inline void add_prioritized_region (const Prioritized_Region& r);
+      void add_prioritized_region (const Prioritized_Region& r);
+
+      /**
+       * Find the convex hull
+       * @return Convex hull of the regions
+       **/
+      Region get_convex_hull () const;
 
       /**
        * Get region data
@@ -126,22 +132,28 @@ namespace gams
        **/
       std::string to_string () const;
 
+      /// bounding box
+      double min_lat_, max_lat_;
+      double min_lon_, max_lon_;
+      double min_alt_, max_alt_;
+
     protected:
       /**
        * populate bounding box values
        **/
       void calculate_bounding_box ();
 
+      /**
+       * Helper function for convex hull calculations
+       * @param p1  start point
+       * @param p2  pivot point
+       * @param p3  end point
+       */
+      double cross (const GPS_Position& gp1, const GPS_Position& gp2, 
+        const GPS_Position& gp3) const;
+
       /// collection of prioritized regions
       std::vector<Prioritized_Region> regions_;
-
-      /// full region
-      Region union_;
-
-      /// bounding box
-      double min_lat_, max_lat_;
-      double min_lon_, max_lon_;
-      double min_alt_, max_alt_;
     }; // class Search_Area
 
     /**

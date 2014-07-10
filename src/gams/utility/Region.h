@@ -85,6 +85,12 @@ namespace gams
        * @param  rhs   values to copy
        **/
       void operator= (const Region& rhs);
+
+      /**
+       * Equality operator
+       * @param rhs   Region to compare with
+       */
+      bool operator== (const Region& rhs) const;
       
       /**
        * Determine if GPS_Position is in region

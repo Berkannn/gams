@@ -89,7 +89,3 @@ make realclean
 make optimize=0 dronerk=1 -j $CORES
 cp libGAMS.so $DRONE_DIR
 cp gams_controller $DRONE_DIR
-
-# strip libraries and binaries
-#echo "Strip files"
-#${ARM_PREFIX}strip $DRONE_DIR/*
