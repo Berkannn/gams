@@ -104,8 +104,8 @@ bool
 gams::utility::Region::is_in_region (const GPS_Position & p) const
 {
   // check if in bounding box
-  if (p.lat < min_lat_ || p.lat > max_lat_ ||
-      p.lon < min_lon_ || p.lon > max_lon_)
+  if (p.latitude () < min_lat_ || p.latitude () > max_lat_ ||
+      p.longitude () < min_lon_ || p.longitude () > max_lon_)
   {
     return false;
   }
@@ -116,10 +116,10 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
   bool ret = false;
   for (i = 0, j = points.size() - 1; i < points.size(); j = i++)
   {
-    if ( ((points[i].lon > p.lon) != (points[j].lon > p.lon)) &&
-         (p.lat < (points[j].lat - points[i].lat) * (p.lon - points[i].lon) / 
-                (points[j].lon - points[i].lon) + 
-                 points[i].lat) )
+    if ( ((points[i].longitude () > p.longitude ()) != (points[j].longitude () > p.longitude ())) &&
+         (p.latitude () < (points[j].latitude () - points[i].latitude ()) * (p.longitude () - points[i].longitude ()) / 
+                (points[j].longitude () - points[i].longitude ()) + 
+                 points[i].latitude ()) )
     {
       ret = !ret;
     }
@@ -166,10 +166,11 @@ gams::utility::Region::distance (const GPS_Position& p) const
 
 bool
 gams::utility::Region::is_in_region (const Position & p,
-  const GPS_Position& ref) const
+  const GPS_Position & ref) const
 {
   // convert to GPS_Position and then just use other is_in_region
-  return is_in_region (p.to_gps_position (ref));
+  return is_in_region (
+    utility::GPS_Position::to_gps_position (p, ref));
 }
 
 gams::utility::Region
@@ -178,13 +179,25 @@ gams::utility::Region::get_bounding_box () const
   Region ret;
 
   GPS_Position p;
-  p.lat = min_lat_; p.lon = min_lon_; p.alt = 0;
+
+  p.latitude (min_lat_);
+  p.longitude (min_lon_);
+  p.altitude (0);
   ret.points.push_back (p);
-  p.lat = min_lat_; p.lon = max_lon_; p.alt = 0;
+
+  p.latitude (min_lat_);
+  p.longitude (max_lon_);
+  p.altitude (0);
   ret.points.push_back (p);
-  p.lat = max_lat_; p.lon = max_lon_; p.alt = 0;
+
+  p.latitude (max_lat_);
+  p.longitude (max_lon_);
+  p.altitude (0);
   ret.points.push_back (p);
-  p.lat = max_lat_; p.lon = min_lon_; p.alt = 0;
+
+  p.latitude (max_lat_);
+  p.longitude (min_lon_);
+  p.altitude (0);
   ret.points.push_back (p);
 
   ret.min_lat_ = this->min_lat_;
@@ -268,13 +281,13 @@ gams::utility::Region::calculate_bounding_box ()
   max_lat_ = max_lon_ = max_alt_ = -DBL_MAX;
   for (unsigned int i = 0; i < points.size(); ++i)
   {
-    min_lat_ = (min_lat_ > points[i].lat) ? points[i].lat : min_lat_;
-    min_lon_ = (min_lon_ > points[i].lon) ? points[i].lon : min_lon_;
-    min_alt_ = (min_alt_ > points[i].alt) ? points[i].alt : min_alt_;
+    min_lat_ = (min_lat_ > points[i].latitude ()) ? points[i].latitude () : min_lat_;
+    min_lon_ = (min_lon_ > points[i].longitude ()) ? points[i].longitude () : min_lon_;
+    min_alt_ = (min_alt_ > points[i].altitude ()) ? points[i].altitude () : min_alt_;
 
-    max_lat_ = (max_lat_ < points[i].lat) ? points[i].lat : max_lat_;
-    max_lon_ = (max_lon_ < points[i].lon) ? points[i].lon : max_lon_;
-    max_alt_ = (max_alt_ < points[i].alt) ? points[i].alt : max_alt_;
+    max_lat_ = (max_lat_ < points[i].latitude ()) ? points[i].latitude () : max_lat_;
+    max_lon_ = (max_lon_ < points[i].longitude ()) ? points[i].longitude () : max_lon_;
+    max_alt_ = (max_alt_ < points[i].altitude ()) ? points[i].altitude () : max_alt_;
   }
 }
 
@@ -302,8 +315,9 @@ gams::utility::parse_region (
       {
         sprintf (expression, "region.%u.%u", region_id, i);
         utility::GPS_Position pos;
+        double latitude (pos.latitude ()), longitude (pos.longitude ()), altitude (pos.altitude ());
         sscanf (knowledge.get (expression).to_string ().c_str (),
-          "%lf,%lf,%lf", &pos.lat, &pos.lon, &pos.alt);
+          "%lf,%lf,%lf", &latitude, &longitude, &altitude);
         vertices.push_back (pos);
       }
       break;

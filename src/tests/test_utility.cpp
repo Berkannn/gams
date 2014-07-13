@@ -165,13 +165,19 @@ test_GPS_Position ()
   testing_output ("constructor", 1);
   GPS_Position p (40.442775, -79.940967);
   GPS_Position p2 (40.443412, -79.93954);
-  assert (p.lat == 40.442775 && p.lon == -79.940967 && p.alt == 0.0);
-  assert (p2.lat == 40.443412 && p2.lon == -79.93954 && p2.alt == 0.0);
+  assert (p.latitude () == 40.442775
+    && p.longitude () == -79.940967
+    && p.altitude () == 0.0);
+  assert (p2.latitude () == 40.443412
+    && p2.longitude () == -79.93954
+    && p2.altitude () == 0.0);
 
   // test assignment operator
   testing_output ("assignment operator", 1);
   GPS_Position p3 = p;
-  assert (p3.lat == p.lat && p3.lon == p.lon && p3.alt == p.alt);
+  assert (p3.latitude () == p.latitude ()
+    && p3.longitude () == p.longitude ()
+    && p3.altitude () == p.altitude ());
 
   // test equality operator
   testing_output ("equality operator", 1);
@@ -186,7 +192,7 @@ test_GPS_Position ()
   // test approximately equal
   testing_output ("approximately_equal", 1);
   assert (p3.approximately_equal (p, 0.1));
-  p3.lat = 40.442776;
+  p3.latitude (40.442776);
   assert (!p3.approximately_equal (p, 0.1));
   assert (p3.approximately_equal (p, 1.0));
 }
@@ -202,11 +208,14 @@ test_Region ()
   vector<GPS_Position> points;
   GPS_Position p (40.443273, -79.939951);
   points.push_back (p);
-  p.lat = 40.443116; p.lon = -79.939973;
+  p.latitude (40.443116);
+  p.longitude (-79.939973);
   points.push_back (p);
-  p.lat = 40.443085; p.lon = -79.940313;
+  p.latitude (40.443085);
+  p.longitude (-79.940313);
   points.push_back (p);
-  p.lat = 40.443285; p.lon = -79.940242;
+  p.latitude (40.443285);
+  p.longitude (-79.940242);
   points.push_back (p);
   Region r (points);
   string expected = "40.443273,-79.939951,0:" \
@@ -246,22 +255,28 @@ test_Search_Area ()
   vector<GPS_Position> points;
   GPS_Position p (40.443237, -79.94057);
   points.push_back (p);
-  p.lat = 40.443387; p.lon = -79.94027;
+  p.latitude (40.443387);
+  p.longitude (-79.94027);
   points.push_back (p);
-  p.lat = 40.443187; p.lon = -79.940098;
+  p.latitude (40.443187);
+  p.longitude (-79.940098);
   points.push_back (p);
-  p.lat = 40.443077; p.lon = -79.940398;
+  p.latitude (40.443077);
+  p.longitude (-79.940398);
   points.push_back (p);
   Prioritized_Region pr (points, 1);
   Search_Area search (pr);
   Region convex1 = search.get_convex_hull ();
 
   points.clear ();
-  p.lat = 40.443237; p.lon = -79.94047;
+  p.latitude (40.443237);
+  p.longitude (-79.94047);
   points.push_back (p);
-  p.lat = 40.443377; p.lon = -79.94027;
+  p.latitude (40.443377);
+  p.longitude (-79.94027);
   points.push_back (p);
-  p.lat = 40.443337; p.lon = -79.940298;
+  p.latitude (40.443337);
+  p.longitude (-79.940298);
   points.push_back (p);
   Prioritized_Region pr2 (points, 1);
   search.add_prioritized_region (pr2);
@@ -269,7 +284,7 @@ test_Search_Area ()
 }
 
 int
-main ()
+main (int argc, char ** argv)
 {
   test_Position ();
   test_GPS_Position ();

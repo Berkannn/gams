@@ -58,16 +58,13 @@
 #include "madara/knowledge_engine/containers/Double_Vector.h"
 #include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 
-#include "gams/utility/Position.h"
+#include "Position.h"
 
 namespace gams
 {
   namespace utility
   {
-    // forward declaration
-    class Position;
-
-    class GAMS_Export GPS_Position
+    class GAMS_Export GPS_Position : public Position
     {
     public:
       /**
@@ -77,8 +74,9 @@ namespace gams
        * @param  init_alt   the initial altitude
        **/
       GPS_Position (
-        double init_lat = 0.0, double init_lon = 0.0, double init_alt = 0.0) :
-        lat (init_lat), lon (init_lon), alt (init_alt) {}
+        double init_lat = 0.0, double init_lon = 0.0, double init_alt = 0.0);
+
+      virtual ~GPS_Position ();
 
       /**
        * Ordering operator for sets
@@ -143,7 +141,7 @@ namespace gams
        * @param  epsilon  approximation value in meters
        * @return true if position is within distance epsilon of *this
        **/
-      bool approximately_equal(
+      virtual bool approximately_equal(
         const GPS_Position & rhs, const double & epsilon) const;
 
       /**
@@ -151,20 +149,20 @@ namespace gams
        * @param rhs     other position
        * @param phi     direction to rhs
        **/
-      void direction_to (const GPS_Position& rhs, double& phi) const;
+      virtual void direction_to (const GPS_Position& rhs, double& phi) const;
 
       /**
        * Get distance between two positions
        * @param  rhs      second position
        * @return euclidean distance between the two points in meters
        **/
-      double distance_to (const GPS_Position & rhs) const;
+      virtual double distance_to (const GPS_Position & rhs) const;
 
       /**
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
        **/
-      std::string to_string (const std::string & delimiter = ",",
+      virtual std::string to_string (const std::string & delimiter = ",",
         const unsigned int precision = 8) const;
 
       /**
@@ -172,7 +170,16 @@ namespace gams
        * @param ref   Reference location
        * @return Position object relative to ref
        **/
-      Position to_position (const GPS_Position& ref) const;
+      virtual Position to_position (const GPS_Position& ref) const;
+      
+      /**
+       * Convert source to a GPS_Position
+       * @param source   source position to convert
+       * @param ref      origin GPS_Position
+       * @return GPS_Position corresponding to source
+       **/
+      static GPS_Position to_gps_position (const Position & source,
+        const GPS_Position & ref);
 
       /**
        * Helper function for creating a GPS_Position from a string
@@ -184,21 +191,21 @@ namespace gams
        * Helper function for copying values to a MADARA double array
        * @param target     target container to copy values to
        **/
-      void to_container (
+      virtual void to_container (
         Madara::Knowledge_Engine::Containers::Double_Array & target) const;
       
       /**
        * Helper function for copying values to a MADARA double array
        * @param source     source container to copy values from
        **/
-      void from_container (
+      virtual void from_container (
         Madara::Knowledge_Engine::Containers::Double_Array & source);
       
       /**
        * Helper function for copying values to a MADARA double array
        * @param target     target container to copy values to
        **/
-      void to_container (
+      virtual void to_container (
         Madara::Knowledge_Engine::Containers::Native_Double_Array & target)
         const;
       
@@ -206,17 +213,39 @@ namespace gams
        * Helper function for copying values to a MADARA double array
        * @param source     source container to copy values from
        **/
-      void from_container (
+      virtual void from_container (
         Madara::Knowledge_Engine::Containers::Native_Double_Array & source);
 
-      /// latitude
-      double lat;
+      /**
+       * Returns the latitude of the GPS coordinate
+       **/
+      inline double latitude () const { return x; }
+      
+      /**
+       * Returns the longitude of the GPS coordinate
+       **/
+      inline double longitude () const { return y; }
+      
+      /**
+       * Returns the altitude of the GPS coordinate
+       **/
+      inline double altitude () const { return z; }
 
-      /// longitude
-      double lon;
+      /**
+       * Sets the latitude to the input
+       **/
+      inline void latitude (double input) { x = input; }
+      
+      /**
+       * Sets the longitude to the input
+       **/
+      inline void longitude (double input) { y = input; }
+      
+      /**
+       * Sets the altitude to the input
+       **/
+      inline void altitude (double input) { z = input; }
 
-      /// altitude
-      double alt;
     }; // class GPS_Position
   } // namespace utility
 } // namespace gams

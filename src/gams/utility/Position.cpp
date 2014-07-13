@@ -259,30 +259,6 @@ gams::utility::Position::to_string (const std::string & delimiter) const
   return buffer.str ();
 }
 
-gams::utility::GPS_Position
-gams::utility::Position::to_gps_position (const GPS_Position& ref) const
-{
-  GPS_Position ret;
-
-  // assume the Earth is a perfect sphere
-  const double EARTH_RADIUS = 6371000.0;
-  const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
-
-  // convert the latitude/x coordinates
-  ret.lat = this->x * 360.0 / EARTH_CIRCUMFERENCE + ref.lat;
-  
-  // assume the meters/degree longitude is constant throughout environment
-  // convert the longitude/y coordinates
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (ref.lat));
-  double circumference = 2 * r_prime * M_PI;
-  ret.lon = this->y / circumference * 360 + ref.lon;
-
-  // keep same altitude
-  ret.alt = ref.alt + this->z;
-
-  return ret;
-}
-
 gams::utility::Position
 gams::utility::Position::from_string (const std::string & s)
 {

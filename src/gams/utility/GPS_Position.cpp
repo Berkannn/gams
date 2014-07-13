@@ -44,7 +44,6 @@
  *      distribution.
  **/
 
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <sstream>
 using std::stringstream;
@@ -54,28 +53,38 @@ using std::stringstream;
 
 #define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
 
+gams::utility::GPS_Position::GPS_Position (double init_lat, double init_lon, double init_alt)
+: Position (init_lat, init_lon, init_alt)
+{
+}
+
+gams::utility::GPS_Position::~GPS_Position ()
+{
+}
+
+
 void
 gams::utility::GPS_Position::operator= (const GPS_Position & rhs)
 {
   if (this != &rhs)
   {
-    this->lat = rhs.lat;
-    this->lon = rhs.lon;
-    this->alt = rhs.alt;
+    this->x = rhs.x;
+    this->y = rhs.y;
+    this->z = rhs.z;
   }
 }
 
 bool
 gams::utility::GPS_Position::operator< (const GPS_Position& rhs) const
 {
-  if (this->lat < rhs.lat)
+  if (this->x < rhs.x)
     return true;
-  else if (this->lat == rhs.lat)
+  else if (this->x == rhs.x)
   {
-    if (this->lon < rhs.lon)
+    if (this->y < rhs.y)
       return true;
-    else if (this->lon == rhs.lon)
-      return this->alt < rhs.alt;
+    else if (this->y == rhs.y)
+      return this->z < rhs.z;
   }
   return true;
 }
@@ -83,7 +92,7 @@ gams::utility::GPS_Position::operator< (const GPS_Position& rhs) const
 bool
 gams::utility::GPS_Position::operator== (const GPS_Position & rhs) const
 {
-  return this->lat == rhs.lat && this->lon == rhs.lon && this->alt == rhs.alt;
+  return this->x == rhs.x && this->y == rhs.y && this->z == rhs.z;
 }
 
 bool
@@ -91,7 +100,7 @@ gams::utility::GPS_Position::operator== (
   const Madara::Knowledge_Engine::Containers::Double_Array & rhs) const
 {
   return rhs.size () == 3 && 
-    this->lat == rhs[0] && this->lon == rhs[1] && this->alt == rhs[2];
+    this->x == rhs[0] && this->y == rhs[1] && this->z == rhs[2];
 }
 
 bool
@@ -99,7 +108,7 @@ gams::utility::GPS_Position::operator== (
   const Madara::Knowledge_Engine::Containers::Native_Double_Array & rhs) const
 {
   return rhs.size () == 3 && 
-    this->lat == rhs[0] && this->lon == rhs[1] && this->alt == rhs[2];
+    this->x == rhs[0] && this->y == rhs[1] && this->z == rhs[2];
 }
 
 bool
@@ -139,10 +148,10 @@ gams::utility::GPS_Position::direction_to (const GPS_Position& rhs,
    * Taken from: http://www.movable-type.co.uk/scripts/latlong.html
    */
   double del_psi = log (
-    tan (M_PI / 4 + DEG_TO_RAD (rhs.lat) / 2) /
-    tan (M_PI / 4 + DEG_TO_RAD (this->lat) / 2));
+    tan (M_PI / 4 + DEG_TO_RAD (rhs.x) / 2) /
+    tan (M_PI / 4 + DEG_TO_RAD (this->x) / 2));
 
-  double del_lambda = this->lon - rhs.lon;
+  double del_lambda = this->y - rhs.y;
   if (fabs (del_lambda) > M_PI)
   {
     del_lambda =
@@ -163,15 +172,15 @@ gams::utility::GPS_Position::distance_to (const GPS_Position & rhs) const
   const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
 
   // calculate north/south distance
-  const double ns_dif = EARTH_CIRCUMFERENCE * (this->lat - rhs.lat) / 360.0;
+  const double ns_dif = EARTH_CIRCUMFERENCE * (this->x - rhs.x) / 360.0;
 
   // calculate east/west distance
-  const double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (this->lat));
+  const double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (this->x));
   const double circumference = 2 * r_prime * M_PI;
-  const double ew_dif = circumference * (this->lon - rhs.lon) / 360.0;
+  const double ew_dif = circumference * (this->y - rhs.y) / 360.0;
 
   // calculate altitude difference
-  const double alt_dif = this->alt - rhs.alt;
+  const double alt_dif = this->z - rhs.z;
 
   // use distance formula
   const double dist =
@@ -185,13 +194,38 @@ gams::utility::GPS_Position::to_string (const std::string & delimiter,
 {
   stringstream buffer;
   buffer << std::setprecision(precision);
-  buffer << lat;
+  buffer << latitude ();
   buffer << delimiter;
-  buffer << lon;
+  buffer << longitude ();
   buffer << delimiter;
-  buffer << alt;
+  buffer << altitude ();
 
   return buffer.str ();
+}
+
+gams::utility::GPS_Position
+gams::utility::GPS_Position::to_gps_position (
+  const Position & source, const GPS_Position & ref)
+{
+  GPS_Position ret;
+
+  // assume the Earth is a perfect sphere
+  const double EARTH_RADIUS = 6371000.0;
+  const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
+
+  // convert the latitude/x coordinates
+  ret.x = source.x * 360.0 / EARTH_CIRCUMFERENCE + ref.x;
+  
+  // assume the meters/degree longitude is constant throughout environment
+  // convert the longitude/y coordinates
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (ref.x));
+  double circumference = 2 * r_prime * M_PI;
+  ret.y = source.y / circumference * 360 + ref.y;
+
+  // keep same altitude
+  ret.z = ref.z + source.z;
+
+  return ret;
 }
 
 gams::utility::Position
@@ -209,17 +243,17 @@ gams::utility::GPS_Position::to_position (const GPS_Position& ref) const
 
   // convert the latitude/x coordinates
   // VREP uses y for latitude
-  ret.x = (this->lat - ref.lat) / 360.0 * EARTH_CIRCUMFERENCE;
+  ret.x = (this->x - ref.x) / 360.0 * EARTH_CIRCUMFERENCE;
   
   // assume the meters/degree longitude is constant throughout environment
   // convert the longitude/y coordinates
   // VREP uses x for longitude
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (this->lat));
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (this->x));
   double circumference = 2 * r_prime * M_PI;
-  ret.y = (this->lon - ref.lon) / 360.0 * circumference;
+  ret.y = (this->y - ref.y) / 360.0 * circumference;
 
   // keep same altitude
-  ret.z = this->alt - ref.alt;
+  ret.z = this->z - ref.z;
 
   return ret;
 }
@@ -228,7 +262,7 @@ gams::utility::GPS_Position
 gams::utility::GPS_Position::from_string (const std::string & s)
 {
   GPS_Position temp;
-  sscanf (s.c_str (), "%lf%*s%lf%*s%lf", &temp.lat, &temp.lon, &temp.alt);
+  sscanf (s.c_str (), "%lf%*s%lf%*s%lf", &temp.x, &temp.y, &temp.z);
   return temp;
 }
 
@@ -236,9 +270,9 @@ void
 gams::utility::GPS_Position::to_container (
   Madara::Knowledge_Engine::Containers::Double_Array & target) const
 {
-  target.set (0, lat);
-  target.set (1, lon);
-  target.set (2, alt);
+  target.set (0, latitude ());
+  target.set (1, longitude ());
+  target.set (2, altitude ());
 }
 
 void
@@ -247,9 +281,9 @@ gams::utility::GPS_Position::from_container (
 {
   if (source.size () >= 3)
   {
-    lat = source[0];
-    lon = source[1];
-    alt = source[2];
+    latitude (source[0]);
+    longitude (source[1]);
+    altitude (source[2]);
   }
 }
 
@@ -257,9 +291,9 @@ void
 gams::utility::GPS_Position::to_container (
   Madara::Knowledge_Engine::Containers::Native_Double_Array & target) const
 {
-  target.set (0, lat);
-  target.set (1, lon);
-  target.set (2, alt);
+  target.set (0, latitude ());
+  target.set (1, longitude ());
+  target.set (2, altitude ());
 }
 
 void
@@ -268,8 +302,8 @@ gams::utility::GPS_Position::from_container (
 {
   if (source.size () >= 3)
   {
-    lat = source[0];
-    lon = source[1];
-    alt = source[2];
+    latitude (source[0]);
+    longitude (source[1]);
+    altitude (source[2]);
   }
 }

@@ -60,6 +60,7 @@
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/String_Vector.h"
 #include "gams/utility/Position.h"
+#include "gams/utility/GPS_Position.h"
 
 namespace gams
 {

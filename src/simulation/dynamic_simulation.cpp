@@ -302,7 +302,8 @@ void put_plants (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
     size_t next = (j + 1) % reg.points.size ();
     string sw_position = knowledge.get (".vrep_sw_position").to_string ();
     gams::utility::GPS_Position origin;
-    sscanf (sw_position.c_str (), "%lf,%lf", &origin.lat, &origin.lon);
+    double latitude (origin.latitude ()), longitude (origin.longitude ());
+    sscanf (sw_position.c_str (), "%lf,%lf", &latitude, &longitude);
 
     const gams::utility::GPS_Position gps_pos_1 = reg.points[j];
     const gams::utility::GPS_Position gps_pos_2 = reg.points[next];

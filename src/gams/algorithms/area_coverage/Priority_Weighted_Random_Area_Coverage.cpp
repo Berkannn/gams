@@ -119,17 +119,18 @@ gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
   // select point in region
   do
   {
-    next_position_.lat = Madara::Utility::rand_double (selected_region->min_lat_,
-      selected_region->max_lat_);
-    next_position_.lon = Madara::Utility::rand_double (selected_region->min_lon_,
-      selected_region->max_lon_);
-    next_position_.alt = Madara::Utility::rand_double (selected_region->min_alt_,
-      selected_region->max_alt_);
+    next_position_.latitude (Madara::Utility::rand_double (selected_region->min_lat_,
+      selected_region->max_lat_));
+    next_position_.longitude (Madara::Utility::rand_double (selected_region->min_lon_,
+      selected_region->max_lon_));
+    next_position_.altitude (Madara::Utility::rand_double (selected_region->min_alt_,
+      selected_region->max_alt_));
   }
   while (!selected_region->is_in_region (next_position_));
 
   // found an acceptable position, so set it as next
   utility::GPS_Position current;
   current.from_container (self_->device.location);
-  next_position_.alt = current.alt; // TODO: update when altitude is handled
+  next_position_.altitude (current.altitude ());
+  // TODO: update when altitude is handled
 }

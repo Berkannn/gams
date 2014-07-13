@@ -60,15 +60,10 @@
 #include "madara/knowledge_engine/containers/Double_Vector.h"
 #include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 
-#include "gams/utility/GPS_Position.h"
-
 namespace gams
 {
   namespace utility
   {
-    // forward declaration
-    class GPS_Position;
-
     class GAMS_Export Position
     {
     public:
@@ -84,7 +79,7 @@ namespace gams
       /**
        * Destructor
        **/
-      ~Position ();
+      virtual ~Position ();
 
       /**
        * Assignment operator
@@ -150,7 +145,7 @@ namespace gams
        * @param p_2   other position
        * @return dot product of the two positions
        **/
-      double dot (const Position& p_2) const;
+      virtual double dot (const Position& p_2) const;
 
       /**
        * Approximate equality
@@ -158,7 +153,7 @@ namespace gams
        * @param  epsilon  approximation value
        * @return true if position is within epsilon in each direction of this
        **/
-      bool approximately_equal (
+      virtual bool approximately_equal (
         const Position & rhs, const double & epsilon) const;
 
       /**
@@ -167,7 +162,7 @@ namespace gams
        * @param  epsilon  approximation value
        * @return true if position is within epsilon in each direction of this
        **/
-      bool approximately_equal_2d (
+      virtual bool approximately_equal_2d (
         const Position & rhs, const double & epsilon) const;
 
       /**
@@ -176,20 +171,21 @@ namespace gams
        * @param phi     direction in x/y plane
        * @param theta   direction in z plane
        **/
-      void direction_to (const Position& rhs, double& phi, double& theta) const;
+      virtual void direction_to (
+        const Position& rhs, double& phi, double& theta) const;
 
       /**
        * Get distance between two positions
        * @param  rhs      second position
        * @return euclidean distance between the two points
        **/
-      double distance_to (const Position & rhs) const;
+      virtual double distance_to (const Position & rhs) const;
 
       /**
        * @param  rhs      second position
        * @return euclidean distance between the two points with just x and y
        **/
-      double distance_to_2d (const Position & rhs) const;
+      virtual double distance_to_2d (const Position & rhs) const;
 
       /**
        * Get distance between a point and a line segment
@@ -197,7 +193,8 @@ namespace gams
        * @param check point to find distance for
        * @return distance from check to line including *this and end
        **/
-      double distance_to_2d (const Position& end, const Position& check) const;
+      virtual double distance_to_2d (
+        const Position& end, const Position& check) const;
 
       /**
        * Get slope between two points
@@ -205,7 +202,8 @@ namespace gams
        * @param slope location to store slope between two points
        * @return      true if slope exists
        **/
-      bool slope_2d (const Position & p, double & slope) const;
+      virtual bool slope_2d (
+        const Position & p, double & slope) const;
 
       /**
        * Deterime if a third point is inline and between another two points
@@ -213,20 +211,13 @@ namespace gams
        * @param check   point to check
        * @return true if check is inline and between *this and end
        **/
-      bool is_between_2d (const Position & end, const Position & check) const;
+      virtual bool is_between_2d (const Position & end, const Position & check) const;
       
       /**
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
        **/
-      std::string to_string (const std::string & delimiter = ",") const;
-
-      /**
-       * Convert this to a GPS_Position
-       * @param ref   origin GPS_Position
-       * @return GPS_Position corresponding to *this
-       **/
-      GPS_Position to_gps_position (const GPS_Position& ref) const;
+      virtual std::string to_string (const std::string & delimiter = ",") const;
 
       /**
        * Helper function for creating a Position from a string
@@ -238,21 +229,21 @@ namespace gams
        * Helper function for copying values to a MADARA double array
        * @param target     target container to copy values to
        **/
-      void to_container (
+      virtual void to_container (
         Madara::Knowledge_Engine::Containers::Double_Array & target) const;
       
       /**
        * Helper function for copying values to a MADARA double array
        * @param source     source container to copy values from
        **/
-      void from_container (
+      virtual void from_container (
         Madara::Knowledge_Engine::Containers::Double_Array & source);
       
       /**
        * Helper function for copying values to a MADARA double array
        * @param target     target container to copy values to
        **/
-      void to_container (
+      virtual void to_container (
         Madara::Knowledge_Engine::Containers::Native_Double_Array & target)
         const;
       
@@ -260,7 +251,7 @@ namespace gams
        * Helper function for copying values to a MADARA double array
        * @param source     source container to copy values from
        **/
-      void from_container (
+      virtual void from_container (
         Madara::Knowledge_Engine::Containers::Native_Double_Array & source);
 
       /// the x coordinate (e.g. latitude)

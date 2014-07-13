@@ -66,7 +66,7 @@ gams::variables::Sensor::Sensor (const string& name,
 
   if (range != -1.0)
     range_ = range;
-  if (origin.lat != DBL_MAX)
+  if (origin.latitude () != DBL_MAX)
     origin.to_container (origin_);
 }
 
@@ -96,22 +96,22 @@ gams::variables::Sensor::discretize_region (
   // find northern most point
   utility::GPS_Position northern = region.points[0];
   for (size_t i = 1; i < region.points.size (); ++i)
-    if (northern.lat < region.points[i].lat)
+    if (northern.latitude () < region.points[i].latitude ())
       northern = region.points[i];
   const int max_x = get_index_from_gps (northern).x;
 
   // find southern most point
   utility::GPS_Position southern = region.points[0];
   for (size_t i = 1; i < region.points.size (); ++i)
-    if (southern.lat > region.points[i].lat)
+    if (southern.latitude () > region.points[i].latitude ())
       southern = region.points[i];
   const int min_x = get_index_from_gps (southern).x;
 
   // find west most point 
   utility::GPS_Position start;
-  start.lon = DBL_MAX;
+  start.longitude (DBL_MAX);
   for (size_t i = 0; i < region.points.size (); ++i)
-    if (start.lon > region.points[i].lon)
+    if (start.longitude () > region.points[i].longitude ())
       start = region.points[i];
 
   // find valid corresponding position
@@ -145,7 +145,7 @@ gams::variables::Sensor::discretize_region (
   // find east most point
   utility::GPS_Position eastern = region.points[0];
   for (size_t i = 1; i < region.points.size (); ++i)
-    if (eastern.lon < region.points[i].lon)
+    if (eastern.longitude () < region.points[i].longitude ())
       eastern = region.points[i];
   const int max_y = get_index_from_gps (eastern).y;
 
@@ -192,10 +192,12 @@ gams::utility::GPS_Position
 gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
 {
   const double discretize = get_discretization ();
-  utility::Position meters (int(idx.x) * discretize, int(idx.y) * discretize, int(idx.z));
+  utility::Position meters (
+    int(idx.x) * discretize, int(idx.y) * discretize, int(idx.z));
   utility::GPS_Position origin;
   origin.from_container (origin_);
-  utility::GPS_Position ret = meters.to_gps_position (origin);
+  utility::GPS_Position ret =
+    utility::GPS_Position::to_gps_position (meters, origin);
   return ret;
 }
 

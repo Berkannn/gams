@@ -2,7 +2,7 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib {
   libout = lib
   sharedname = GAMS
   includes += src
-  dynamicflags += GAMS_BUILD_DLL 
+  dynamicflags += GAMS_BUILD_DLL _USE_MATH_DEFINES
   
   Documentation_Files {
     INSTALL.txt
@@ -92,6 +92,9 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib {
 project (gams_controller) : using_gams, using_madara, using_ace, using_vrep {
   exeout = $(GAMS_ROOT)/bin
   exename = gams_controller
+
+
+  macros +=  _USE_MATH_DEFINES
 
   Documentation_Files {
   }

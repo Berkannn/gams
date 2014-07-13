@@ -90,17 +90,17 @@ gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::
   // average selection time is area(bounding_box) / area(region)
   do
   {
-    next_position_.lat = Madara::Utility::rand_double (region_.min_lat_,
-      region_.max_lat_);
-    next_position_.lon = Madara::Utility::rand_double (region_.min_lon_,
-      region_.max_lon_);
-    next_position_.alt = Madara::Utility::rand_double (region_.min_alt_,
-      region_.max_alt_);
+    next_position_.latitude (Madara::Utility::rand_double (region_.min_lat_,
+      region_.max_lat_));
+    next_position_.longitude (Madara::Utility::rand_double (region_.min_lon_,
+      region_.max_lon_));
+    next_position_.altitude (Madara::Utility::rand_double (region_.min_alt_,
+      region_.max_alt_));
   }
   while (!region_.is_in_region (next_position_));
 
   // found an acceptable position, so set it as next
   utility::GPS_Position current;
   current.from_container (self_->device.location);
-  next_position_.alt = current.alt; // TODO: update when altitude is handled
+  next_position_.altitude (current.altitude ()); // TODO: update when altitude is handled
 }

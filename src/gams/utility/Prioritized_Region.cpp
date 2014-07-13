@@ -59,19 +59,19 @@ using std::vector;
 using std::string;
 
 gams::utility::Prioritized_Region::Prioritized_Region (
-  const vector <GPS_Position>& init_points, const unsigned int p) :
+  const vector <GPS_Position> & init_points, const unsigned int p) :
   Region (init_points), priority (p)
 {
 }
 
-gams::utility::Prioritized_Region::Prioritized_Region (const Region& region,
+gams::utility::Prioritized_Region::Prioritized_Region (const Region & region,
   const unsigned int p) :
   Region (region), priority (p)
 {
 }
 
 void
-gams::utility::Prioritized_Region::operator= (const Prioritized_Region& rhs)
+gams::utility::Prioritized_Region::operator= (const Prioritized_Region & rhs)
 {
   if (this != &rhs)
   {

@@ -109,7 +109,7 @@ test_Sensor ()
   assert (s.get_value (origin) == value);
   assert (s.get_value (origin_idx) == value);
   GPS_Position g1 (origin);
-  g1.lat = 40.01;
+  g1.latitude (40.01);
   value = 2;
   s.set_value (g1, value);
   Position p1 = s.get_index_from_gps (g1);
@@ -120,7 +120,7 @@ test_Sensor ()
 }
 
 int
-main ()
+main (int argc, char ** argv)
 {
   test_Sensor ();
   return 0;

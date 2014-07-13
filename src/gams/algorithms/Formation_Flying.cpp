@@ -61,6 +61,7 @@ using std::stringstream;
 using std::set;
 
 #include "gams/utility/Position.h"
+#include "gams/utility/GPS_Position.h"
 
 gams::algorithms::Formation_Flying::Formation_Flying (
   const Madara::Knowledge_Record & head_id,
@@ -99,9 +100,13 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   if (!head_)
     sscanf (offset.to_string ().c_str (), "%lf,%lf,%lf", &rho_, &phi_, &z_);
 
+  double lat (destination_.latitude ()),
+    lon (destination_.longitude ()),
+    alt (destination_.altitude ());
+
   // parse destination
   sscanf (destination.to_string (). c_str(), "%lf,%lf,%lf",
-    &destination_.lat, &destination_.lon, &destination_.alt);
+    &lat, &lon, &alt);
 
   // parse modifier
   string mod = modifier.to_string ();
@@ -262,7 +267,8 @@ gams::algorithms::Formation_Flying::plan (void)
 
         utility::GPS_Position reference;
         reference.from_container (head_location_);
-        next_position_ = offset.to_gps_position (reference);
+        next_position_ = utility::GPS_Position::to_gps_position (
+          offset, reference);
         
         need_to_move_ = true;
 
@@ -283,7 +289,8 @@ gams::algorithms::Formation_Flying::plan (void)
         // hold position until everybody is ready
         if (formation_ready_ == 0)
         {
-          next_position_ = offset.to_gps_position (ref_location);
+          next_position_ = utility::GPS_Position::to_gps_position (
+            offset, ref_location);
         }
         else // we are moving or already at destination
         {
@@ -293,13 +300,18 @@ gams::algorithms::Formation_Flying::plan (void)
           {
             // predict where the reference device will be
             dist = platform_->get_move_speed () * 1.5;
-            utility::Position direction (dist * sin (phi_dir_), dist * cos (phi_dir_));
-            utility::GPS_Position predicted = direction.to_gps_position (ref_location);
-            next_position_ = offset.to_gps_position (predicted);
+            utility::Position direction (
+              dist * sin (phi_dir_), dist * cos (phi_dir_));
+            utility::GPS_Position predicted =
+              utility::GPS_Position::to_gps_position (
+              direction, ref_location);
+            next_position_ = utility::GPS_Position::to_gps_position (
+              offset, predicted);
           }
           else // close enough, just go to final location
           {
-            next_position_ = offset.to_gps_position (destination_);
+            next_position_ = utility::GPS_Position::to_gps_position (
+              offset, destination_);
           }
         }
         need_to_move_ = true;

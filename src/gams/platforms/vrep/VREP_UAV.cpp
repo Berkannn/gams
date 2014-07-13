@@ -54,7 +54,6 @@
 using std::endl;
 using std::cout;
 using std::string;
-#define _USE_MATH_DEFINES // bring in M_PI
 #include <cmath>
 
 #include "madara/knowledge_engine/containers/Double_Vector.h"
@@ -99,7 +98,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
 
   // get vrep environment data
   string sw = knowledge.get (".vrep_sw_position").to_string ();
-  sscanf(sw.c_str (), "%lf,%lf", &sw_position_.lat, &sw_position_.lon);
+  double lat (sw_position_.latitude ()), lon (sw_position_.longitude ());
+  sscanf(sw.c_str (), "%lf,%lf", &lat, &lon);
 
   // init quadrotor in env
   string modelFile (getenv("GAMS_ROOT"));
@@ -118,8 +118,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   {
     // get gps coords
     utility::GPS_Position gps_coord;
-    gps_coord.lat = knowledge.get (".initial_lat").to_double ();
-    gps_coord.lon = knowledge.get (".initial_lon").to_double ();
+    gps_coord.latitude (knowledge.get (".initial_lat").to_double ());
+    gps_coord.longitude (knowledge.get (".initial_lon").to_double ());
 
     // convert to vrep
     utility::Position vrep_coord;
@@ -381,16 +381,16 @@ gams::platforms::VREP_UAV::gps_to_vrep (const utility::GPS_Position & position,
   const double EARTH_CIRCUMFERENCE = 2 * EARTH_RADIUS * M_PI;
 
   // convert the latitude/y coordinates
-  converted.y = (position.lat - sw_position_.lat) / 360.0 * EARTH_CIRCUMFERENCE;
+  converted.y = (position.latitude () - sw_position_.latitude ()) / 360.0 * EARTH_CIRCUMFERENCE;
   
   // assume the meters/degree longitude is constant throughout environment
   // convert the longitude/x coordinates
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.lat));
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.latitude ()));
   double circumference = 2 * r_prime * M_PI;
-  converted.x = (position.lon - sw_position_.lon) / 360.0 * circumference;
+  converted.x = (position.longitude () - sw_position_.longitude ()) / 360.0 * circumference;
 
   // do nothing to altitude
-  converted.z = position.alt;
+  converted.z = position.altitude ();
 }
 
 inline void
@@ -412,17 +412,17 @@ gams::platforms::VREP_UAV::vrep_to_gps (const utility::Position & position,
 
   // convert the latitude/y coordinates
   // VREP uses y for latitude
-  converted.lat = (360.0 * position.y / EARTH_CIRCUMFERENCE) + sw_position_.lat;
+  converted.latitude ((360.0 * position.y / EARTH_CIRCUMFERENCE) + sw_position_.latitude ());
   
   // assume the meters/degree longitude is constant throughout environment
   // convert the longitude/x coordinates
   // VREP uses x for longitude
-  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.lat));
+  double r_prime = EARTH_RADIUS * cos (DEG_TO_RAD (sw_position_.latitude ()));
   double circumference = 2 * r_prime * M_PI;
-  converted.lon = (360.0 * position.x / circumference) + sw_position_.lon;
+  converted.longitude ((360.0 * position.x / circumference) + sw_position_.longitude ());
 
   // do nothing to altitude
-  converted.alt = position.z;
+  converted.altitude (position.z);
 }
 
 #endif // _GAMS_VREP_

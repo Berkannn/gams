@@ -124,13 +124,13 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::compute_waypoints (
   }
 
   // starting points are vertices of longest edge
-  utility::GPS_Position temp = positions[longest_edge].to_gps_position (
-    reference);
-  temp.alt = 1.5;
+  utility::GPS_Position temp = utility::GPS_Position::to_gps_position (
+    positions[longest_edge], reference);
+  temp.altitude (1.5);
   waypoints_.push_back (temp);
-  temp = positions[(longest_edge + 1) % num_edges].to_gps_position (
-    reference);
-  temp.alt = 1.5;
+  temp = utility::GPS_Position::to_gps_position (
+    positions[(longest_edge + 1) % num_edges], reference);
+  temp.altitude (1.5);
   waypoints_.push_back (temp);
 
   // determine shift direction
@@ -232,18 +232,23 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::compute_waypoints (
         if (prev.distance_to_2d (intercepts[0]) >
             prev.distance_to_2d (intercepts[1]))
         {
-          waypoints_.push_back (intercepts[1].to_gps_position (reference));
-          waypoints_.push_back (intercepts[0].to_gps_position (reference));
+          waypoints_.push_back (
+            utility::GPS_Position::to_gps_position (intercepts[1], reference));
+          waypoints_.push_back (
+            utility::GPS_Position::to_gps_position (intercepts[0], reference));
         }
         else
         {
-          waypoints_.push_back (intercepts[0].to_gps_position (reference));
-          waypoints_.push_back (intercepts[1].to_gps_position (reference));
+          waypoints_.push_back (
+            utility::GPS_Position::to_gps_position (intercepts[0], reference));
+          waypoints_.push_back (
+            utility::GPS_Position::to_gps_position (intercepts[1], reference));
         }
       }
       else if (intercept_idx > 0)
       {
-        waypoints_.push_back (intercepts[0].to_gps_position (reference));
+        waypoints_.push_back (
+          utility::GPS_Position::to_gps_position (intercepts[0], reference));
       }
     } // end while still finding intercepts
   } // end for +/- delta_b

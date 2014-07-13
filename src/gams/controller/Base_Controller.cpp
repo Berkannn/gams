@@ -71,7 +71,6 @@ gams::controller::Base::~Base ()
   }
 }
 
-
 int
 gams::controller::Base::monitor (void)
 {
@@ -305,6 +304,15 @@ gams::controller::Base::analyze (void)
   if (algorithm_)
     return_value |= algorithm_->analyze ();
 
+  if (accents_.size () > 0)
+  {
+    for (algorithms::Algorithms::iterator i = accents_.begin ();
+      i != accents_.end (); ++i)
+    {
+      (*i)->analyze ();
+    }
+  }
+
   return return_value;
 }
 
@@ -315,6 +323,15 @@ gams::controller::Base::plan (void)
   
   if (algorithm_)
     return_value |= algorithm_->plan ();
+  
+  if (accents_.size () > 0)
+  {
+    for (algorithms::Algorithms::iterator i = accents_.begin ();
+      i != accents_.end (); ++i)
+    {
+      (*i)->plan ();
+    }
+  }
 
   return return_value;
 }
@@ -326,6 +343,15 @@ gams::controller::Base::execute (void)
   
   if (algorithm_)
     return_value |= algorithm_->execute ();
+
+  if (accents_.size () > 0)
+  {
+    for (algorithms::Algorithms::iterator i = accents_.begin ();
+      i != accents_.end (); ++i)
+    {
+      (*i)->plan ();
+    }
+  }
 
   return return_value;
 }

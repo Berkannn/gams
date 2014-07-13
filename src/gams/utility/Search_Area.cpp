@@ -67,7 +67,6 @@ using std::set;
 using std::sort;
 using std::swap;
 using std::copy;
-#define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
 using std::cerr;
@@ -163,7 +162,8 @@ gams::utility::Search_Area::get_convex_hull () const
   const size_t N = s_points.size ();
 
   // create array of points
-  GPS_Position points[N + 1];
+
+  std::vector <GPS_Position> points (N + 1);
   size_t index = 1;
   for (set<GPS_Position>::const_iterator it = s_points.begin ();
     it != s_points.end(); ++it)
@@ -173,13 +173,13 @@ gams::utility::Search_Area::get_convex_hull () const
 
   // find point with lowest y/lat coord...
   size_t lowest = 1;
-  double min_lat = points[1].lat; 
+  double min_lat = points[1].latitude (); 
   for (size_t i = 2; i <= N; ++i)
   {
-    if (points[i].lat < min_lat)
+    if (points[i].latitude () < min_lat)
     {
       lowest = i;
-      min_lat = points[i].lat;
+      min_lat = points[i].latitude ();
     }
   }
 

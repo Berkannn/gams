@@ -95,29 +95,29 @@ gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::generate_new_posi
     region_.points[(target_edge + 1) % num_edges];
 
   // get random point on line
-  double delta_lat = pos_2.lat - pos_1.lat;
-  double delta_lon = pos_2.lon - pos_1.lon;
+  double delta_lat = pos_2.latitude () - pos_1.latitude ();
+  double delta_lon = pos_2.longitude () - pos_1.longitude ();
   if (delta_lon == 0) // north/south line
   {
-    const double & min = pos_1.lat < pos_2.lat ? pos_1.lat : pos_2.lat;
-    const double & max = pos_1.lat > pos_2.lat ? pos_1.lat : pos_2.lat;
-    next_position_.lat = Madara::Utility::rand_double(min, max);
-    next_position_.lon = pos_1.lon;
+    const double & min = pos_1.latitude () < pos_2.latitude () ? pos_1.latitude () : pos_2.latitude ();
+    const double & max = pos_1.latitude () > pos_2.latitude () ? pos_1.latitude () : pos_2.latitude ();
+    next_position_.latitude (Madara::Utility::rand_double(min, max));
+    next_position_.longitude (pos_1.longitude ());
   }
   else if (delta_lat == 0) // east/west line
   {
-    const double & min = pos_1.lon < pos_2.lon ? pos_1.lon : pos_2.lon;
-    const double & max = pos_1.lon > pos_2.lon ? pos_1.lon : pos_2.lon;
-    next_position_.lon = Madara::Utility::rand_double(min, max);
-    next_position_.lat = pos_1.lat;
+    const double & min = pos_1.longitude () < pos_2.longitude () ? pos_1.longitude () : pos_2.longitude ();
+    const double & max = pos_1.longitude () > pos_2.longitude () ? pos_1.longitude () : pos_2.longitude ();
+    next_position_.longitude (Madara::Utility::rand_double(min, max));
+    next_position_.latitude (pos_1.latitude ());
   }
   else // other arbitrary line
   {
     const double slope = delta_lon / delta_lat;
-    next_position_.lat = Madara::Utility::rand_double(pos_1.lat, pos_2.lat);
-    next_position_.lon = pos_1.lon + slope * (next_position_.lat - pos_1.lat);
+    next_position_.latitude (Madara::Utility::rand_double(pos_1.latitude (), pos_2.latitude ()));
+    next_position_.longitude (pos_1.longitude () + slope * (next_position_.latitude () - pos_1.latitude ()));
   }
 
   // fill in altitude on waypoint
-  next_position_.alt = self_->id.to_integer () + 1;
+  next_position_.altitude (self_->id.to_integer () + 1);
 }

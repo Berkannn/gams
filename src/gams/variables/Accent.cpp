@@ -43,87 +43,97 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Swarm.h"
+#include "Accent.h"
 
 #include <string>
 using std::string;
 
-typedef  Madara::Knowledge_Record::Integer  Integer;
-
-const string gams::variables::Swarm::SWARM_COMMAND = "swarm.command";
-const string gams::variables::Swarm::SWARM_MIN_ALT = "swarm.min_alt";
-const string gams::variables::Swarm::SWARM_SIZE = "swarm.size";
-
-gams::variables::Swarm::Swarm ()
+gams::variables::Accent::Accent ()
 {
 }
 
-gams::variables::Swarm::~Swarm ()
+gams::variables::Accent::~Accent ()
 {
 }
 
 void
-gams::variables::Swarm::operator= (const Swarm & rhs)
+gams::variables::Accent::operator= (const Accent & accent)
 {
-  if (this != &rhs)
+  if (this != &accent)
   {
-    this->command = rhs.command;
-    this->command_args = rhs.command_args;
-    this->min_alt = rhs.min_alt;
-    this->size = rhs.size;
+    this->command = accent.command;
+    this->command_args = accent.command_args;
   }
 }
 
-
 void
-gams::variables::Swarm::init_vars (
+gams::variables::Accent::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Madara::Knowledge_Record::Integer & swarm_size)
+  const Madara::Knowledge_Record::Integer& id)
 {
-  // initialize the variable containers
-  min_alt.set_name (SWARM_MIN_ALT, knowledge);
-  command.set_name (SWARM_COMMAND, knowledge);
-  command_args.set_name (SWARM_COMMAND, knowledge);
-  size.set_name (SWARM_SIZE, knowledge);
+  // create the accent name string identifier ('accent.{id}')
+  string accent_name (make_variable_name (id));
+  string local_accent_name ("." + accent_name);
 
-  init_vars (swarm_size);
+  // initialize the variable containers
+  command_args.set_name (accent_name + ".command", knowledge);
+
+  // init settings
+  init_variable_settings ();
 }
 
 void
-gams::variables::Swarm::init_vars (
+gams::variables::Accent::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge,
-  const Madara::Knowledge_Record::Integer& swarm_size)
+  const Madara::Knowledge_Record::Integer& id)
 {
-  // initialize the variable containers
-  min_alt.set_name (SWARM_MIN_ALT, knowledge);
-  command.set_name (SWARM_COMMAND, knowledge);
-  command_args.set_name (SWARM_COMMAND, knowledge);
-  size.set_name (SWARM_SIZE, knowledge);
+  // create the accent name string identifier ('accent.{id}')
+  string accent_name (make_variable_name (id));
+  string local_accent_name ("." + accent_name);
 
-  init_vars (swarm_size);
+  // initialize the variable containers
+  command.set_name (accent_name + ".command", knowledge);
+  command_args.set_name (accent_name + ".command", knowledge);
+
+  // init settings
+  init_variable_settings ();
 }
 
-void gams::variables::Swarm::init_vars (
-  const Madara::Knowledge_Record::Integer& swarm_size)
+void gams::variables::init_vars (Accents & variables,
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const Madara::Knowledge_Record::Integer& processes)
 {
-  Madara::Knowledge_Engine::Knowledge_Update_Settings defaults;
-  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
+  Madara::Knowledge_Record::Integer limit = processes;
+  if (processes >= 0)
+  {
+    variables.resize (processes);
+  }
+  else
+  {
+    limit = knowledge.get ("accent.size").to_integer ();
+  }
 
+  for (unsigned int i = 0; i < limit; ++i)
+  {
+    variables[i].init_vars (knowledge, i);
+  }
+}
+
+string
+gams::variables::Accent::make_variable_name (
+  const Madara::Knowledge_Record::Integer& id)
+{
+  std::stringstream buffer;
+  buffer << "accent.";
+  buffer << id;
+  return buffer.str ();
+}
+
+void
+gams::variables::Accent::init_variable_settings ()
+{
   // keep certain varaible changes as local only
+  Madara::Knowledge_Engine::Knowledge_Update_Settings keep_local (true);
   command.set_settings (keep_local);
   command_args.set_settings (keep_local);
-  size.set_settings (keep_local);
-
-  // update swarm size
-  size = swarm_size;
-
-  // use default settings
-  size.set_settings (defaults);
-}
-
-void gams::variables::init_vars (Swarm & variables,
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Madara::Knowledge_Record::Integer& swarm_size)
-{
-  variables.init_vars (knowledge, swarm_size);
 }
