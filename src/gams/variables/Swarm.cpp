@@ -67,6 +67,7 @@ gams::variables::Swarm::operator= (const Swarm & rhs)
 {
   if (this != &rhs)
   {
+    this->accents = rhs.accents;
     this->command = rhs.command;
     this->command_args = rhs.command_args;
     this->min_alt = rhs.min_alt;
@@ -81,6 +82,7 @@ gams::variables::Swarm::init_vars (
   const Madara::Knowledge_Record::Integer & swarm_size)
 {
   // initialize the variable containers
+  variables::init_vars (accents, knowledge, "swarm");
   min_alt.set_name (SWARM_MIN_ALT, knowledge);
   command.set_name (SWARM_COMMAND, knowledge);
   command_args.set_name (SWARM_COMMAND, knowledge);
@@ -95,6 +97,7 @@ gams::variables::Swarm::init_vars (
   const Madara::Knowledge_Record::Integer& swarm_size)
 {
   // initialize the variable containers
+  variables::init_vars (accents, knowledge, "swarm");
   min_alt.set_name (SWARM_MIN_ALT, knowledge);
   command.set_name (SWARM_COMMAND, knowledge);
   command_args.set_name (SWARM_COMMAND, knowledge);
@@ -123,6 +126,13 @@ void gams::variables::Swarm::init_vars (
 
 void gams::variables::init_vars (Swarm & variables,
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const Madara::Knowledge_Record::Integer& swarm_size)
+{
+  variables.init_vars (knowledge, swarm_size);
+}
+
+void gams::variables::init_vars (Swarm & variables,
+  Madara::Knowledge_Engine::Variables & knowledge,
   const Madara::Knowledge_Record::Integer& swarm_size)
 {
   variables.init_vars (knowledge, swarm_size);

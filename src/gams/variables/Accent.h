@@ -91,18 +91,18 @@ namespace gams
       /**
        * Initializes variable containers
        * @param   knowledge  the variable context
-       * @param   id         node identifier
+       * @param   prefix     the prefix of the accents (e.g. swarm/device)
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const Madara::Knowledge_Record::Integer& id);
+        const std::string & prefix);
       
       /**
        * Initializes variable containers
        * @param   knowledge  the variable context
-       * @param   id         node identifier
+       * @param   prefix     the prefix of the accents (e.g. swarm/device)
        **/
       void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
-        const Madara::Knowledge_Record::Integer& id);
+        const std::string & prefix);
 
       /// accent specific command
       Madara::Knowledge_Engine::Containers::String command;
@@ -111,14 +111,6 @@ namespace gams
       Madara::Knowledge_Engine::Containers::Vector command_args;
 
     protected:
-      /**
-       * Create accent/local accent name
-       * @param id  id of accent as string
-       * @return accent variable name
-       */
-      static std::string make_variable_name (
-        const Madara::Knowledge_Record::Integer& id);
-
       /**
        * Set variable settings
        */
@@ -134,10 +126,21 @@ namespace gams
       * Initializes a self containers
       * @param   variables  the variables to initialize
       * @param   knowledge  the knowledge base that houses the variables
+      * @param   prefix     the prefix of the accents (e.g. swarm/device)
       **/
     GAMS_Export void init_vars (Accents & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-      const Madara::Knowledge_Record::Integer& processes);
+      const std::string & prefix);
+    
+    /**
+      * Initializes a self containers
+      * @param   variables  the variables to initialize
+      * @param   knowledge  the knowledge base that houses the variables
+      * @param   prefix     the prefix of the accents (e.g. swarm/device)
+      **/
+    GAMS_Export void init_vars (Accents & variables,
+      Madara::Knowledge_Engine::Variables & knowledge,
+      const std::string & prefix);
   }
 }
 

@@ -64,6 +64,7 @@
 #include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 #include "madara/knowledge_engine/containers/Vector.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
+#include "Accent.h"
 
 namespace gams
 {
@@ -145,6 +146,9 @@ namespace gams
 
       /// number of arguments for command
       Madara::Knowledge_Engine::Containers::Vector command_args;
+
+      /// container for accents
+      Accents accents;
 
     protected:
       /**

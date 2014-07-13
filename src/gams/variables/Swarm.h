@@ -62,6 +62,7 @@
 #include "madara/knowledge_engine/containers/Double.h"
 #include "madara/knowledge_engine/containers/Vector.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
+#include "Accent.h"
 
 namespace gams
 {
@@ -116,6 +117,9 @@ namespace gams
       /// the number of agents participating in the swarm
       Madara::Knowledge_Engine::Containers::Integer size;
       
+      /// container for accents
+      Accents accents;
+
     protected:
       /// swarm command variable
       static const std::string SWARM_COMMAND;
@@ -140,6 +144,16 @@ namespace gams
       **/
     GAMS_Export void init_vars (Swarm & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const Madara::Knowledge_Record::Integer& swarm_size = 1);
+    
+    /**
+      * Initializes a self containers
+      * @param   variables  the variables to initialize
+      * @param   knowledge  the knowledge base that houses the variables
+      * @param   swarm_size size of the swarm
+      **/
+    GAMS_Export void init_vars (Swarm & variables,
+      Madara::Knowledge_Engine::Variables & knowledge,
         const Madara::Knowledge_Record::Integer& swarm_size = 1);
   }
 }

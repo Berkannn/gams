@@ -46,7 +46,6 @@
 #include "Accent.h"
 
 #include <string>
-using std::string;
 
 gams::variables::Accent::Accent ()
 {
@@ -69,14 +68,14 @@ gams::variables::Accent::operator= (const Accent & accent)
 void
 gams::variables::Accent::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Madara::Knowledge_Record::Integer& id)
+  const std::string & prefix)
 {
-  // create the accent name string identifier ('accent.{id}')
-  string accent_name (make_variable_name (id));
-  string local_accent_name ("." + accent_name);
+  std::string accent_name (prefix);
+  accent_name += ".accent";
 
   // initialize the variable containers
-  command_args.set_name (accent_name + ".command", knowledge);
+  command.set_name (accent_name, knowledge);
+  command_args.set_name (accent_name, knowledge);
 
   // init settings
   init_variable_settings ();
@@ -85,15 +84,14 @@ gams::variables::Accent::init_vars (
 void
 gams::variables::Accent::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge,
-  const Madara::Knowledge_Record::Integer& id)
+  const std::string & prefix)
 {
-  // create the accent name string identifier ('accent.{id}')
-  string accent_name (make_variable_name (id));
-  string local_accent_name ("." + accent_name);
+  std::string accent_name (prefix);
+  accent_name += ".accent";
 
   // initialize the variable containers
-  command.set_name (accent_name + ".command", knowledge);
-  command_args.set_name (accent_name + ".command", knowledge);
+  command.set_name (accent_name, knowledge);
+  command_args.set_name (accent_name, knowledge);
 
   // init settings
   init_variable_settings ();
@@ -101,33 +99,48 @@ gams::variables::Accent::init_vars (
 
 void gams::variables::init_vars (Accents & variables,
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const Madara::Knowledge_Record::Integer& processes)
+  const std::string & prefix)
 {
-  Madara::Knowledge_Record::Integer limit = processes;
-  if (processes >= 0)
-  {
-    variables.resize (processes);
-  }
-  else
-  {
-    limit = knowledge.get ("accent.size").to_integer ();
-  }
+  std::string accent_name (prefix);
+  accent_name += ".accent";
 
-  for (unsigned int i = 0; i < limit; ++i)
+  Madara::Knowledge_Record::Integer size =
+    knowledge.get (accent_name + ".size").to_integer ();
+  
+  // iterate through all accents
+  for (unsigned int i = 0; i < size; ++i)
   {
-    variables[i].init_vars (knowledge, i);
+    // each accent is at prefix.{i}
+    std::stringstream buffer (accent_name);
+    buffer << ".";
+    buffer << i;
+
+    variables[i].init_vars (knowledge, buffer.str ());
   }
 }
 
-string
-gams::variables::Accent::make_variable_name (
-  const Madara::Knowledge_Record::Integer& id)
+void gams::variables::init_vars (Accents & variables,
+  Madara::Knowledge_Engine::Variables & knowledge,
+  const std::string & prefix)
 {
-  std::stringstream buffer;
-  buffer << "accent.";
-  buffer << id;
-  return buffer.str ();
+  std::string accent_name (prefix);
+  accent_name += ".accent";
+
+  Madara::Knowledge_Record::Integer size =
+    knowledge.get (accent_name + ".size").to_integer ();
+  
+  // iterate through all accents
+  for (unsigned int i = 0; i < size; ++i)
+  {
+    // each accent is at prefix.{i}
+    std::stringstream buffer (accent_name);
+    buffer << ".";
+    buffer << i;
+
+    variables[i].init_vars (knowledge, buffer.str ());
+  }
 }
+
 
 void
 gams::variables::Accent::init_variable_settings ()
