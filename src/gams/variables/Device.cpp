@@ -46,6 +46,7 @@
 #include "Device.h"
 
 #include <string>
+
 using std::string;
 
 gams::variables::Device::Device ()

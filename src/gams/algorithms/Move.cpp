@@ -46,8 +46,9 @@
 #include "Move.h"
 
 #include <string>
-using std::string;
 #include <iostream>
+
+using std::string;
 using std::cerr;
 using std::endl;
 

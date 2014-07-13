@@ -52,14 +52,15 @@
  **/
 
 #include <sstream>
-using std::stringstream;
 #include <string>
-using std::string;
 #include <vector>
-using std::vector;
 #include <cmath>
 
 #include "Region.h"
+
+using std::string;
+using std::stringstream;
+using std::vector;
 
 gams::utility::Region::Region (const std::vector <GPS_Position> & init_points) :
   points (init_points)

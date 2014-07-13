@@ -60,6 +60,7 @@
 #include "gams/algorithms/area_coverage/Prioritized_Min_Time_Area_Coverage.h"
 
 #include <iostream>
+
 using std::cout;
 using std::endl;
 

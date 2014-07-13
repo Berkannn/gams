@@ -47,31 +47,32 @@
 /**
  * @file test_utility.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
+ * @author James Edmondson <jedmondson@gmail.com>
  *
  * Tests the functionality of gams::utility classes
  **/
 
 #include <string>
-using std::string;
 #include <iostream>
-using std::cout;
-using std::endl;
 #include <assert.h>
 #include <vector>
-using std::vector;
-#define _USING_MATH_DEFINES
 #include <cmath>
 
 #include "gams/utility/Position.h"
-using gams::utility::Position;
 #include "gams/utility/GPS_Position.h"
-using gams::utility::GPS_Position;
 #include "gams/utility/Region.h"
-using gams::utility::Region;
 #include "gams/utility/Prioritized_Region.h"
-using gams::utility::Prioritized_Region;
 #include "gams/utility/Search_Area.h"
+
+using gams::utility::GPS_Position;
+using gams::utility::Position;
+using gams::utility::Prioritized_Region;
+using gams::utility::Region;
 using gams::utility::Search_Area;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
 
 void
 testing_output (const string& str, const unsigned int& tabs = 0)

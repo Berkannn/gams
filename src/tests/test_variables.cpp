@@ -47,25 +47,34 @@
 /**
  * @file test_variables.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
+ * @author James Edmondson <jedmondson@gmail.com>
  *
  * Tests the functionality of gams::variables classes
  **/
 
 #include "gams/utility/Position.h"
-using gams::utility::Position;
 #include "gams/utility/GPS_Position.h"
-using gams::utility::GPS_Position;
 #include "gams/variables/Sensor.h"
-using gams::variables::Sensor;
+
+#include "gams/variables/Accent.h"
 
 #include <string>
-using std::string;
 #include <iostream>
-using std::cout;
-using std::endl;
 #include <assert.h>
 #include <vector>
+
+using gams::utility::GPS_Position;
+using gams::utility::Position;
+using gams::variables::Sensor;
+using std::cout;
+using std::endl;
+using std::string;
 using std::vector;
+
+namespace transport = Madara::Transport;
+namespace engine = Madara::Knowledge_Engine;
+namespace utility = Madara::Utility;
+namespace variables = gams::variables;
 
 void
 testing_output (const string& str, const unsigned int& tabs = 0)
@@ -76,6 +85,24 @@ testing_output (const string& str, const unsigned int& tabs = 0)
 }
 
 void
+test_accent ()
+{
+  testing_output ("gams::variables::Accent");
+
+  engine::Knowledge_Base knowledge;
+  variables::Accent cur_accent;
+  cur_accent.init_vars (knowledge, "device");
+
+  knowledge.print ("Check the following printout for device.accent vars.\n");
+  knowledge.print ();
+  
+  cur_accent.init_vars (knowledge, "swarm");
+
+  knowledge.print ("Check the following printout for swarm.accent vars.\n");
+  knowledge.print ();
+}
+
+void
 test_Sensor ()
 {
   testing_output ("gams::variables::Sensor");
@@ -83,13 +110,13 @@ test_Sensor ()
   // init knowledge base to use
   std::string host ("");
   const std::string default_multicast ("239.255.0.1:4150");
-  Madara::Transport::QoS_Transport_Settings settings;
-  settings.type = Madara::Transport::MULTICAST;
+  transport::QoS_Transport_Settings settings;
+  settings.type = transport::MULTICAST;
   if (settings.hosts.size () == 0)
   {
     settings.hosts.push_back (default_multicast);
   }
-  Madara::Knowledge_Engine::Knowledge_Base test (host, settings);
+  engine::Knowledge_Base test (host, settings);
 
   // test constructor
   testing_output ("constructor", 1);
@@ -122,6 +149,7 @@ test_Sensor ()
 int
 main (int argc, char ** argv)
 {
+  test_accent ();
   test_Sensor ();
   return 0;
 }

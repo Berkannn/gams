@@ -55,10 +55,11 @@
 
 #include <cmath>
 #include <string>
+#include <set>
+
+using std::set;
 using std::string;
 using std::stringstream;
-#include <set>
-using std::set;
 
 #include "gams/utility/Position.h"
 #include "gams/utility/GPS_Position.h"

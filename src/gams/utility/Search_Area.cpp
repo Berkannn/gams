@@ -54,26 +54,27 @@
 #include "gams/utility/Search_Area.h"
 
 #include <sstream>
-using std::stringstream;
 #include <string>
-using std::string;
 #include <algorithm>
-using std::max;
 #include <vector>
-using std::vector;
 #include <set>
-using std::set;
 #include <algorithm>
-using std::sort;
-using std::swap;
-using std::copy;
 #include <cmath>
 #include <iostream>
-using std::cerr;
-using std::endl;
 
 #include "gams/utility/Region.h"
 #include "gams/utility/GPS_Position.h"
+
+using std::cerr;
+using std::copy;
+using std::endl;
+using std::max;
+using std::set;
+using std::sort;
+using std::string;
+using std::stringstream;
+using std::swap;
+using std::vector;
 
 gams::utility::Search_Area::Search_Area ()
 {

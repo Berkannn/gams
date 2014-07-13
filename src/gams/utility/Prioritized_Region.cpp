@@ -54,9 +54,10 @@
 #include "gams/utility/Prioritized_Region.h"
 
 #include <vector>
-using std::vector;
 #include <string>
+
 using std::string;
+using std::vector;
 
 gams::utility::Prioritized_Region::Prioritized_Region (
   const vector <GPS_Position> & init_points, const unsigned int p) :

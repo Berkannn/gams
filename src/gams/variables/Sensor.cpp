@@ -48,12 +48,13 @@
 
 #include <float.h>
 #include <sstream>
-using std::stringstream;
 #include <vector>
-using std::vector;
 #include <string>
-using std::string;
 #include <cmath>
+
+using std::string;
+using std::stringstream;
+using std::vector;
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 

@@ -46,10 +46,11 @@
 
 #include <cmath>
 #include <sstream>
-using std::stringstream;
 
 #include "gams/utility/GPS_Position.h"
 #include "gams/utility/Position.h"
+
+using std::stringstream;
 
 #define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
 

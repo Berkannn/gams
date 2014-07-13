@@ -47,14 +47,15 @@
 #include "Base_Controller.h"
 
 #include <iostream>
-using std::cerr;
-using std::endl;
 
 #include "ace/High_Res_Timer.h"
 #include "ace/OS_NS_sys_time.h"
 #include "madara/utility/Utility.h"
 #include "gams/platforms/Platform_Factory.h"
 #include "gams/algorithms/Algorithm_Factory.h"
+
+using std::cerr;
+using std::endl;
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 

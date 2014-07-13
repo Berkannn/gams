@@ -46,6 +46,7 @@
 #include "Swarm.h"
 
 #include <string>
+
 using std::string;
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
