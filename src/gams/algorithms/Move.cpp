@@ -48,6 +48,8 @@
 #include <string>
 using std::string;
 #include <iostream>
+using std::cerr;
+using std::endl;
 
 gams::algorithms::Move::Move (
   const string & type,
@@ -105,14 +107,12 @@ gams::algorithms::Move::operator= (const Move & rhs)
   }
 }
 
-
 int
 gams::algorithms::Move::analyze (void)
 {
   return 0;
 }
       
-
 int
 gams::algorithms::Move::execute (void)
 {
@@ -127,13 +127,15 @@ gams::algorithms::Move::execute (void)
   {
   }
 
-  std::cout << "We should be executing a move right now...\n";
-
   ++executions_;
+
+  if ((executions_ / 20) % 2 == 0)
+    platform_->takeoff ();
+  else
+    platform_->land ();
 
   return 0;
 }
-
 
 int
 gams::algorithms::Move::plan (void)

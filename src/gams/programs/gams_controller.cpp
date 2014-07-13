@@ -51,9 +51,14 @@
  * This file contains a test driver for the GAMS controller loop.
  **/
 
+#include <iostream>
+using std::cerr;
+using std::endl;
+
 #include "madara/knowledge_engine/Knowledge_Base.h"
 #include "gams/controller/Base_Controller.h"
 
+const std::string default_broadcast ("192.168.1.255:15000");
 // default transport settings
 std::string host ("");
 const std::string default_multicast ("239.255.0.1:4150");
@@ -335,7 +340,7 @@ void handle_arguments (int argc, char ** argv)
 // perform main logic of program
 int main (int argc, char ** argv)
 {
-  settings.type = Madara::Transport::MULTICAST;
+  settings.type = Madara::Transport::BROADCAST;
 
   // handle all user arguments
   handle_arguments (argc, argv);
@@ -343,7 +348,7 @@ int main (int argc, char ** argv)
   if (settings.hosts.size () == 0)
   {
     // setup default transport as multicast
-    settings.hosts.push_back (default_multicast);
+    settings.hosts.push_back (default_broadcast);
   }
 
   // create knowledge base and a control loop

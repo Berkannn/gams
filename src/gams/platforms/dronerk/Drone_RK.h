@@ -129,6 +129,12 @@ namespace gams
       virtual int analyze (void);
 
       /**
+       * Get the position accuracy in meters
+       * @return position accuracy
+       **/
+      virtual double get_gps_accuracy () const;
+
+      /**
        * Fills a list of sensor names with sensors available on the platform
        **/
       virtual void get_sensors (variables::Sensor_Names & sensors);
@@ -138,12 +144,6 @@ namespace gams
        * @param  position  after the call, filled with the current position
        **/
       virtual void get_position (utility::Position & position);
-
-      /**
-       * Get the location aproximation value of what is considered close enough
-       * @return location approximation radius
-       **/
-      virtual double get_position_accuracy () const;
 
     protected:
 

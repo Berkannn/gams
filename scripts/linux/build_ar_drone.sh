@@ -14,6 +14,9 @@
 #                   http://madara.googlecode.com/svn/trunk/
 #   $GAMS_ROOT    - location of this GAMS git repository
 
+# quit on any failure
+set -e
+
 source $GAMS_ROOT/scripts/linux/common.sh
 
 # echo build information
@@ -45,7 +48,7 @@ echo "Building ACE"
 cd $ACE_ROOT/ace
 perl $ACE_ROOT/bin/mwc.pl -type gnuace ace.mwc
 make realclean
-make -j $CORES
+make optimize=0 -j $CORES
 cp libACE.so $DRONE_DIR
 
 # build MADARA
@@ -54,7 +57,7 @@ echo "Building MADARA"
 cd $MADARA_ROOT
 perl $ACE_ROOT/bin/mwc.pl -type gnuace MADARA.mwc
 make realclean
-make tests=1 -j $CORES
+make optimize=0 tests=1 -j $CORES
 cp libMADARA.so $DRONE_DIR
 cp network_profiler $DRONE_DIR
 cp test_file_rebroadcasts $DRONE_DIR
@@ -66,23 +69,23 @@ cp test_broadcast $DRONE_DIR
 cp profile_architecture $DRONE_DIR
 cp madara_version $DRONE_DIR
 
-# build GAMS
-echo ""
-echo "Build GAMS"
-cd $GAMS_ROOT
-perl $ACE_ROOT/bin/mwc.pl -type gnuace gams.mwc 
-make realclean
-make dronerk=1 -j $CORES
-cp libGAMS.so $DRONE_DIR
-cp gams_controller $DRONE_DIR
-
 # build Drone-RK
 echo ""
 echo "Build Drone-RK"
 cd $DRK_ROOT
-make libdrk.so -j $CORES
+make libdrk.so
 cp lib/libdrk.so $DRONE_DIR
+make all_sensor_data
+cp bin/all_sensor_data $DRONE_DIR
+make simple_flight
+cp bin/simple_flight $DRONE_DIR
 
-# strip libraries and binaries
-echo "Strip files"
-${ARM_PREFIX}strip $DRONE_DIR/*
+# build GAMS
+echo ""
+echo "Build GAMS"
+cd $GAMS_ROOT
+perl $ACE_ROOT/bin/mwc.pl -type gnuace -features dronerk=1 gams.mwc 
+make realclean
+make optimize=0 dronerk=1 -j $CORES
+cp libGAMS.so $DRONE_DIR
+cp gams_controller $DRONE_DIR

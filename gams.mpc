@@ -88,8 +88,7 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib {
   }
 }
 
-
-project (gams_controller) : using_gams, using_madara, using_ace, using_vrep {
+project (gams_controller) : using_gams, using_madara, using_ace, using_dronerk, using_vrep {
   exeout = $(GAMS_ROOT)/bin
   exename = gams_controller
 

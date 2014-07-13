@@ -3,6 +3,7 @@ project (dynamic_simulation) : using_gams, using_madara, using_ace, using_vrep {
   exename = dynamic_simulation
 
   macros +=  _USE_MATH_DEFINES
+  requires += vrep
 
   Documentation_Files {
     INSTALL.txt
