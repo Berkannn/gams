@@ -101,13 +101,13 @@ gams::algorithms::Formation_Flying::Formation_Flying (
   if (!head_)
     sscanf (offset.to_string ().c_str (), "%lf,%lf,%lf", &rho_, &phi_, &z_);
 
-  double lat (destination_.latitude ()),
-    lon (destination_.longitude ()),
-    alt (destination_.altitude ());
-
   // parse destination
+  double lat, lon, alt;
   sscanf (destination.to_string (). c_str(), "%lf,%lf,%lf",
     &lat, &lon, &alt);
+  destination_.latitude (lat);
+  destination_.longitude (lon);
+  destination_.altitude (alt);
 
   // parse modifier
   string mod = modifier.to_string ();
@@ -207,13 +207,10 @@ gams::algorithms::Formation_Flying::analyze (void)
   {
     if (in_formation_ == 0) // if not yet in formation...
     {
-      if (phi_dir_ == DBL_MAX)
-      {
-        // calculate offset
-        utility::GPS_Position start;
-        start.from_container (head_location_);
-        start.direction_to (destination_, phi_dir_);
-      }
+      // calculate offset
+      utility::GPS_Position start;
+      start.from_container (head_location_);
+      start.direction_to (destination_, phi_dir_);
 
       utility::GPS_Position location;
       location.from_container (self_->device.location);
@@ -223,6 +220,20 @@ gams::algorithms::Formation_Flying::analyze (void)
         platform_->get_gps_accuracy ()))
       {
         in_formation_ = 1; // inform in formation
+      }
+    }
+    else
+    {
+      utility::GPS_Position ref_location;
+      ref_location.from_container (head_location_);
+      double dist = ref_location.distance_to (destination_);
+      // TODO: tune the movement parameter
+      if (dist > platform_->get_move_speed () * 3)
+      {
+        // calculate offset
+        utility::GPS_Position start;
+        start.from_container (head_location_);
+        start.direction_to (destination_, phi_dir_);
       }
     }
   }
@@ -264,7 +275,7 @@ gams::algorithms::Formation_Flying::plan (void)
       {
         const double OMEGA = M_PI / 30;
         double angle = -phi_ + phi_dir_ + executions_ * OMEGA;
-        utility::Position offset (rho_ * sin (angle), rho_ * cos (angle), z_);
+        utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
 
         utility::GPS_Position reference;
         reference.from_container (head_location_);
@@ -282,10 +293,10 @@ gams::algorithms::Formation_Flying::plan (void)
       default: // case NONE
       {
         // calculate formation location
-        double angle = -phi_ + phi_dir_;
+        double angle = phi_ + phi_dir_;
         utility::GPS_Position ref_location;
         ref_location.from_container (head_location_);
-        utility::Position offset (rho_ * sin (angle), rho_ * cos (angle), z_);
+        utility::Position offset (rho_ * cos (angle), rho_ * sin (angle), z_);
 
         // hold position until everybody is ready
         if (formation_ready_ == 0)
@@ -302,7 +313,7 @@ gams::algorithms::Formation_Flying::plan (void)
             // predict where the reference device will be
             dist = platform_->get_move_speed () * 1.5;
             utility::Position direction (
-              dist * sin (phi_dir_), dist * cos (phi_dir_));
+              dist * cos (phi_dir_), dist * sin (phi_dir_));
             utility::GPS_Position predicted =
               utility::GPS_Position::to_gps_position (
               direction, ref_location);

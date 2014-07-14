@@ -98,8 +98,9 @@ gams::platforms::VREP_UAV::VREP_UAV (
 
   // get vrep environment data
   string sw = knowledge.get (".vrep_sw_position").to_string ();
-  double lat (sw_position_.latitude ()), lon (sw_position_.longitude ());
+  double lat, lon;
   sscanf(sw.c_str (), "%lf,%lf", &lat, &lon);
+  sw_position_.latitude (lat); sw_position_.longitude (lon);
 
   // init quadrotor in env
   string modelFile (getenv("GAMS_ROOT"));
@@ -124,8 +125,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
     // convert to vrep
     utility::Position vrep_coord;
     gps_to_vrep (gps_coord, vrep_coord);
-    pos[0] = vrep_coord.x;
-    pos[1] = vrep_coord.y;
+    position_to_array (vrep_coord, pos);
   }
   else
   {

@@ -148,18 +148,16 @@ gams::utility::GPS_Position::direction_to (const GPS_Position& rhs,
    * phi = lat, lambda = long
    * Taken from: http://www.movable-type.co.uk/scripts/latlong.html
    */
-  double del_psi = log (
-    tan (M_PI / 4 + DEG_TO_RAD (rhs.x) / 2) /
-    tan (M_PI / 4 + DEG_TO_RAD (this->x) / 2));
-
-  double del_lambda = this->y - rhs.y;
+  double phi_1 = DEG_TO_RAD (latitude ());
+  double phi_2 = DEG_TO_RAD (rhs.latitude ());
+  double del_lambda = DEG_TO_RAD (rhs.longitude () - longitude ());
   if (fabs (del_lambda) > M_PI)
-  {
-    del_lambda =
-      (del_lambda > 0) ? (-2 * M_PI - del_lambda) : (2 * M_PI + del_lambda);
-  }
+    del_lambda = (del_lambda > 0) ? (-2 * M_PI + del_lambda) : (2 * M_PI + del_lambda);
+  double del_psi = log (tan (phi_2 / 2 + M_PI / 4) / tan(phi_1 / 2 + M_PI / 4));
+  double theta = atan2 (del_lambda, del_psi);
+  theta = fmod (theta + 2 * M_PI, 2 * M_PI);
 
-  phi = atan2 (del_lambda, del_psi); // theta from the website
+  phi = theta;
 }
 
 double

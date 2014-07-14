@@ -340,7 +340,7 @@ void handle_arguments (int argc, char ** argv)
 // perform main logic of program
 int main (int argc, char ** argv)
 {
-  settings.type = Madara::Transport::BROADCAST;
+  settings.type = Madara::Transport::MULTICAST;
 
   // handle all user arguments
   handle_arguments (argc, argv);
@@ -348,7 +348,7 @@ int main (int argc, char ** argv)
   if (settings.hosts.size () == 0)
   {
     // setup default transport as multicast
-    settings.hosts.push_back (default_broadcast);
+    settings.hosts.push_back (default_multicast);
   }
 
   // create knowledge base and a control loop

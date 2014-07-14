@@ -196,6 +196,26 @@ test_GPS_Position ()
   p3.latitude (40.442776);
   assert (!p3.approximately_equal (p, 0.1));
   assert (p3.approximately_equal (p, 1.0));
+
+  // test direction_to
+  testing_output ("direction_to", 1);
+  GPS_Position p4 = p;
+  p4.latitude (p4.latitude() + 1);
+  double phi;
+  p.direction_to (p4, phi);
+  assert (phi == 0);
+  p4 = p;
+  p4.longitude (p4.longitude() + 1);
+  p.direction_to (p4, phi);
+  assert (phi == M_PI / 2);
+  p4 = p;
+  p4.longitude (p4.longitude() - 1);
+  p.direction_to (p4, phi);
+  assert (phi == 3 * M_PI / 2);
+  p4 = p;
+  p4.latitude (p4.latitude() - 1);
+  p.direction_to (p4, phi);
+  assert (phi == M_PI);
 }
 
 // TODO: fill out remaining Region function tests
