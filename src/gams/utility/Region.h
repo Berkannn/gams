@@ -168,7 +168,7 @@ namespace gams
      * @param region_id   identifier for region
      * @return Region object created from knowledge base
      **/
-    Region parse_region (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
+    GAMS_Export Region parse_region (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
       const std::string& region_id);
   } // namespace utility
 } // namespace gams
