@@ -316,9 +316,12 @@ gams::utility::parse_region (
       {
         sprintf (expression, "region.%u.%u", region_id, i);
         utility::GPS_Position pos;
-        double latitude (pos.latitude ()), longitude (pos.longitude ()), altitude (pos.altitude ());
+        double latitude, longitude, altitude;
         sscanf (knowledge.get (expression).to_string ().c_str (),
           "%lf,%lf,%lf", &latitude, &longitude, &altitude);
+        pos.latitude (latitude);
+        pos.longitude (longitude);
+        pos.altitude (altitude);
         vertices.push_back (pos);
       }
       break;
