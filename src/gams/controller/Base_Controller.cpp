@@ -172,7 +172,11 @@ gams::controller::Base::system_analyze (void)
       delete algorithm_;
       algorithms::Factory factory (&knowledge_, &sensors_,
         platform_, &self_, &devices_);
-      algorithm_ = factory.create (type.to_string (), area);
+
+      Madara::Knowledge_Vector args (1);
+      args[0] = area;
+
+      algorithm_ = factory.create (type.to_string (), args);
     }
   }
   
@@ -234,7 +238,12 @@ gams::controller::Base::system_analyze (void)
       delete algorithm_;
       algorithms::Factory factory (&knowledge_, &sensors_,
         platform_, &self_, &devices_);
-      algorithm_ = factory.create ("move", arg1, arg2);
+
+      Madara::Knowledge_Vector args (2);
+      args[0] = arg1;
+      args[1] = arg2;
+
+      algorithm_ = factory.create ("move", args);
     }
   }
  
@@ -284,8 +293,15 @@ gams::controller::Base::system_analyze (void)
       delete algorithm_;
       algorithms::Factory factory (&knowledge_, &sensors_,
         platform_, &self_, &devices_);
-      algorithm_ = factory.create ("formation", target_id, cylindrical_offset,
-        destination, members, modifier);
+
+      Madara::Knowledge_Vector args (5);
+      args[0] = target_id;
+      args[1] = cylindrical_offset;
+      args[2] = destination;
+      args[3] = members;
+      args[4] = modifier;
+
+      algorithm_ = factory.create ("formation", args);
     }
   }
   
@@ -415,7 +431,8 @@ gams::controller::Base::run (double period, double max_runtime)
 }
 
 void
-gams::controller::Base::add_accent (const std::string & algorithm)
+gams::controller::Base::add_accent (const std::string & algorithm,
+  const Madara::Knowledge_Vector & args)
 {
   if (algorithm == "")
   {
@@ -429,7 +446,7 @@ gams::controller::Base::add_accent (const std::string & algorithm)
     algorithms::Factory factory (&knowledge_, &sensors_,
       platform_, &self_, &devices_);
 
-    new_accent = factory.create (algorithm);
+    new_accent = factory.create (algorithm, args);
 
     if (new_accent)
     {
@@ -449,7 +466,7 @@ void gams::controller::Base::clear_accents (void)
 }
 void
 gams::controller::Base::init_algorithm (
-  const std::string & algorithm)
+const std::string & algorithm, const Madara::Knowledge_Vector & args)
 {
   // initialize the algorithm
   
@@ -467,7 +484,7 @@ gams::controller::Base::init_algorithm (
     delete algorithm_;
     algorithms::Factory factory (&knowledge_, &sensors_,
       platform_, &self_, &devices_);
-    algorithm_ = factory.create (algorithm);
+    algorithm_ = factory.create (algorithm, args);
   }
 }
 

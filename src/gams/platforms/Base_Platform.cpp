@@ -44,11 +44,10 @@
  *      distribution.
  **/
 
-#include "Base_Platform.h"
-
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
+#include "Base_Platform.h"
 #include "gams/utility/GPS_Position.h"
 
 gams::platforms::Base::Base (
@@ -90,7 +89,13 @@ gams::platforms::Base::get_min_sensor_range () const
   for (variables::Sensors::const_iterator it = sensors_->begin ();
     it != sensors_->end (); ++it)
   {
-    min_range = std::min (it->second->get_range(), min_range);
+    /**
+     * std::min appears to be confusing Visual Studio 2010. Consequently,
+     * use a ternary operator here which should be highly optimized during
+     * compilation
+     **/
+    double cur_range (it->second->get_range ());
+    min_range = cur_range < min_range ? cur_range : min_range;
   }
   return min_range;
 }

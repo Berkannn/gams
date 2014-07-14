@@ -81,11 +81,7 @@ gams::algorithms::Factory::~Factory ()
 
 gams::algorithms::Base *
 gams::algorithms::Factory::create (const std::string & type,
-  const Madara::Knowledge_Record & arg1,
-  const Madara::Knowledge_Record & arg2,
-  const Madara::Knowledge_Record & arg3,
-  const Madara::Knowledge_Record & arg4,
-  const Madara::Knowledge_Record & arg5)
+        const Madara::Knowledge_Vector & args)
 {
   gams::algorithms::Base * result = 0;
 
@@ -96,59 +92,59 @@ gams::algorithms::Factory::create (const std::string & type,
   }
   else if (type == "uniform random area coverage" || type == "urac")
   {
-    if (knowledge_ && sensors_ && self_)
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
       result = new area_coverage::Uniform_Random_Area_Coverage (
-        arg1 /* region id */,
+        args[0] /* region id */,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "uniform random edge coverage" || type == "urec")
   {
-    if (knowledge_ && sensors_ && self_)
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
       result = new area_coverage::Uniform_Random_Edge_Coverage (
-        arg1 /* region id*/,
+        args[0] /* region id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "priority weighted random area coverage" || type == "pwrac")
   {
-    if (knowledge_ && sensors_ && self_)
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
       result = new area_coverage::Priority_Weighted_Random_Area_Coverage (
-        arg1 /* search area id*/,
+        args[0] /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "snake" || type == "sac")
   {
-    if (knowledge_ && sensors_ && platform_ && self_)
+    if (knowledge_ && sensors_ && platform_ && self_ && args.size () > 0)
       result = new area_coverage::Snake_Area_Coverage (
-        arg1 /* region id*/,
+        args[0] /* region id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "local pheremone")
   {
-    if (knowledge_ && sensors_ && self_)
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
       result = new area_coverage::Local_Pheremone_Area_Coverage (
-        arg1 /* search area id*/,
+        args[0] /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "min time" || type == "mtac")
   {
-    if (knowledge_ && sensors_ && self_)
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
       result = new area_coverage::Min_Time_Area_Coverage (
-        arg1 /* search area id*/,
+        args[0] /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "prioritized min time" || type == "pmtac")
   {
-    if (knowledge_ && sensors_ && self_)
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
       result = new area_coverage::Prioritized_Min_Time_Area_Coverage (
-        arg1 /* search area id*/,
+        args[0] /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "formation")
   {
-    if (knowledge_ && sensors_ && platform_ && self_)
+    if (knowledge_ && sensors_ && platform_ && self_ && args.size () == 5)
       result = new Formation_Flying (
-        arg1 /* target */, arg2 /* offset */, arg3 /* destination */,
-        arg4 /* members */, arg5 /* modifier */,
+        args[0] /* target */, args[1] /* offset */, args[2] /* destination */,
+        args[3] /* members */, args[4] /* modifier */,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "takeoff")
@@ -163,7 +159,8 @@ gams::algorithms::Factory::create (const std::string & type,
   }
   else if (type == "move")
   {
-    if (knowledge_ && sensors_ && platform_ && self_ && arg1.is_string_type ())
+    if (knowledge_ && sensors_ && platform_ && self_ && 
+      args.size () >= 1 && args[0].is_string_type ())
     {
       result = new Move ("", 0, 0, knowledge_, platform_, sensors_, self_);
       // if an integer is passed as arg2, then it's the number of executions 

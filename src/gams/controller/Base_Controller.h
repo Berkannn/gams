@@ -124,8 +124,10 @@ namespace gams
       /**
        * Adds an accent algorithm
        * @param  algorithm   the name of the accent algorithm to add
+       * @param  args        vector of knowledge record arguments
        **/
-      void add_accent (const std::string & algorithm);
+      void add_accent (const std::string & algorithm,
+        const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
 
       /**
        * Clears all accent algorithms
@@ -135,8 +137,10 @@ namespace gams
       /**
        * Initializes an algorithm
        * @param  algorithm   the name of the algorithm to run
+       * @param  args        vector of knowledge record arguments
        **/
-      void init_algorithm (const std::string & algorithm);
+      void init_algorithm (const std::string & algorithm,
+        const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
       
       /**
        * Initializes the platform
