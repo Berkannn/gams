@@ -9,9 +9,21 @@ sub run {
   # get arguments
   my ($num, $time, $period, $sim, $area, $debug, $plants) = @_;
   my $osname = $^O;
-
+  my $vreproot = $ENV{"VREP_ROOT"};
+  
+  #launch the VREP simulator
+  if ($osname eq "MSWin32")
+  {
+    my $cmd = "$vreproot\\vrep.exe";
+    system("taskkill /im vrep.exe");
+    system("start \"vrep\" /D $vreproot /REALTIME $cmd");
+    system("timeout 10");
+  }
+  
   # launch drone controllers
   my $gams_root = $ENV{"GAMS_ROOT"};
+  #$gams_root =~ s/\\/\//g;
+  print("$gams_root\n");
   for (my $i=0; $i < $num; $i++)
   {
     my $cmd = "\"$gams_root/gams_controller -i $i -n $num -p vrep --loop-time $time --period $period --madara-file $gams_root/scripts/simulation/$sim/madara_init_$i.mf $gams_root/scripts/simulation/areas/$area.mf $gams_root/scripts/simulation/madara_init_common.mf -l $debug\"";
@@ -21,7 +33,9 @@ sub run {
     }
     elsif ($osname eq "MSWin32") # windows default
     {
-      system("cmd \c $cmd");
+      $cmd = "$gams_root\\bin\\gams_controller -i $i -n $num -p vrep --loop-time $time --period $period --madara-file $gams_root\\scripts\\simulation\\$sim\\madara_init_$i.mf $gams_root\\scripts\\simulation\\areas\\$area.mf $gams_root\\scripts\\simulation\\madara_init_common.mf -l $debug";
+      print("start \"Device$i\" /REALTIME $cmd\n\n");
+      system("start \"Device$i\" /REALTIME $cmd");
     }
     elsif ($osname eq "linux") # linux default
     {
@@ -35,12 +49,20 @@ sub run {
   }
  
   # launch simulation controller
-  my $cmd = "$gams_root/dynamic_simulation -n $num --madara-file $gams_root/scripts/simulation/areas/$area.mf";
+  my $cmd = "$gams_root/bin/dynamic_simulation -n $num --madara-file $gams_root/scripts/simulation/areas/$area.mf";
   if ($plants)
   {
     $cmd = "$cmd -p $plants";
   }
-  system("$cmd");
+  
+  if ($osname eq "MSWin32")
+  {
+    system("start \"DeviceSimulator\" /REALTIME $cmd");
+  }
+  else
+  {
+    system("$cmd");
+  }
 }
 
 1;
