@@ -90,7 +90,7 @@ gams::platforms::Base::get_min_sensor_range () const
   for (variables::Sensors::const_iterator it = sensors_->begin ();
     it != sensors_->end (); ++it)
   {
-    min_range = min (it->second->get_range(), min_range);
+    min_range = std::min (it->second->get_range(), min_range);
   }
   return min_range;
 }
