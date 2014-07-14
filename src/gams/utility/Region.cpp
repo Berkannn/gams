@@ -78,6 +78,7 @@ gams::utility::Region::operator= (const Region& rhs)
   if (this != &rhs)
   {
     this->points = rhs.points;
+    calculate_bounding_box ();
   }
 }
 
@@ -117,12 +118,15 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
   bool ret = false;
   for (i = 0, j = points.size() - 1; i < points.size(); j = i++)
   {
-    if ( ((points[i].longitude () > p.longitude ()) != (points[j].longitude () > p.longitude ())) &&
-         (p.latitude () < (points[j].latitude () - points[i].latitude ()) * (p.longitude () - points[i].longitude ()) / 
-                (points[j].longitude () - points[i].longitude ()) + 
-                 points[i].latitude ()) )
+    if ( (points[i].longitude () > p.longitude ()) !=
+        (points[j].longitude () > p.longitude ()))
     {
-      ret = !ret;
+      if (p.latitude () < (points[j].latitude () - points[i].latitude ()) * (p.longitude () - points[i].longitude ()) / 
+                (points[j].longitude () - points[i].longitude ()) + 
+                 points[i].latitude ())
+      {
+        ret = !ret;
+      }
     }
   }
 
@@ -278,8 +282,12 @@ gams::utility::Region::from_container (
 void
 gams::utility::Region::calculate_bounding_box ()
 {
-  min_lat_ = min_lon_ = min_alt_ = DBL_MAX;
-  max_lat_ = max_lon_ = max_alt_ = -DBL_MAX;
+  min_lat_ = DBL_MAX;
+  min_lon_ = DBL_MAX;
+  min_alt_ = DBL_MAX;
+  max_lat_ = -DBL_MAX;
+  max_lon_ = -DBL_MAX;
+  max_alt_ = -DBL_MAX;
   for (unsigned int i = 0; i < points.size(); ++i)
   {
     min_lat_ = (min_lat_ > points[i].latitude ()) ? points[i].latitude () : min_lat_;
