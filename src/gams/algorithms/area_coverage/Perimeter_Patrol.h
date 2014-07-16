@@ -45,66 +45,75 @@
  **/
 
 /**
- * Base_Area_Coverage.cpp
+ * @file Perimeter_Patrol.h
  * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file defines common functionality for area coverage algorithms. If this
- * file is updated, please also update the tutorials in the wiki with line
- * numbers or implementation changes.
- */
+ * This file contains the definition of the Perimeter_Patrol area coverage. 
+ * This class is used for the tutorial on designing custom area coverages. 
+ **/
+
+#ifndef _GAMS_ALGORITHMS_AREA_COVERAGE_PERIMETER_PATROL_H_
+#define _GAMS_ALGORITHMS_AREA_COVERAGE_PERIMETER_PATROL_H_
 
 #include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
 
-gams::algorithms::area_coverage::Base_Area_Coverage::Base_Area_Coverage (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
-  variables::Sensors * sensors,
-  variables::Self * self,
-  variables::Devices * devices)
-  : Base (knowledge, platform, sensors, self, devices)
-{
-}
+#include <string>
+#include <vector>
 
-gams::algorithms::area_coverage::Base_Area_Coverage::~Base_Area_Coverage ()
-{
-}
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
 
-void
-gams::algorithms::area_coverage::Base_Area_Coverage::operator= (
-  const Base_Area_Coverage & rhs)
+namespace gams
 {
-  if (this != &rhs)
+  namespace algorithms
   {
-    this->next_position_ = rhs.next_position_;
-    this->Base::operator= (rhs);
-  }
-}
+    namespace area_coverage
+    {
+      class GAMS_Export Perimeter_Patrol : public Base_Area_Coverage
+      {
+      public:
+        /**
+         * Constructor
+         * @param  region_id  id of region to be covered
+         * @param  knowledge  the context containing variables and values
+         * @param  platform   the underlying platform the algorithm will use
+         * @param  sensors    map of sensor names to sensor information
+         * @param  self       self-referencing variables
+         **/
+        Perimeter_Patrol (
+          const Madara::Knowledge_Record& region_id,
+          Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+          platforms::Base * platform = 0,
+          variables::Sensors * sensors = 0,
+          variables::Self * self = 0);
+  
+        /**
+         * Destructor
+         **/
+        ~Perimeter_Patrol ();
+  
+        /**
+         * Assignment operator
+         * @param  rhs   values to copy
+         **/
+        void operator= (const Perimeter_Patrol & rhs);
+        
+      protected:
+        /**
+         * Generate new next position
+         */
+        virtual void generate_new_position ();
+        
+        /// waypoints
+        std::vector<utility::GPS_Position> waypoints_;
+  
+        /// current waypoint
+        unsigned int cur_waypoint_;
+      }; // class Perimeter_Patrol
+    } // namespace area_coverage
+  } // namespace algorithms
+} // namespace gams
 
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
-{
-  ++executions_;
-  return 0;
-}
-
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
-{
-  // generate new next position if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_gps_accuracy ()))
-  {
-    generate_new_position();
-  }
-
-  return 0;
-}
+#endif // _GAMS_ALGORITHMS_AREA_COVERAGE_PERIMETER_PATROL_H_

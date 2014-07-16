@@ -58,6 +58,7 @@
 #include "gams/algorithms/area_coverage/Snake_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Min_Time_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Prioritized_Min_Time_Area_Coverage.h"
+#include "gams/algorithms/area_coverage/Perimeter_Patrol.h"
 
 #include <iostream>
 
@@ -137,6 +138,12 @@ gams::algorithms::Factory::create (const std::string & type,
     if (knowledge_ && sensors_ && self_ && args.size () > 0)
       result = new area_coverage::Prioritized_Min_Time_Area_Coverage (
         args[0] /* search area id*/,
+        knowledge_, platform_, sensors_, self_);
+  }
+  else if (type == "perimeter patrol" || type == "ppac")
+  {
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
+      result = new area_coverage::Perimeter_Patrol (args[0] /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
   else if (type == "formation")
