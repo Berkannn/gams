@@ -95,6 +95,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
     cerr << "couldn't connect to vrep" << endl;
     exit (-1);
   }
+  knowledge.wait ("vrep_ready == 1;");
 
   // get vrep environment data
   string sw = knowledge.get (".vrep_sw_position").to_string ();
