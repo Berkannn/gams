@@ -69,7 +69,7 @@ gams::algorithms::Follow::Follow (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform, variables::Sensors * sensors,
   variables::Self * self) :
-  Base (knowledge, platform, sensors, self),next_position_ (DBL_MAX),
+  Base (knowledge, platform, sensors, self), next_position_ (DBL_MAX),
   delay_ (delay.to_integer ())
 {
   stringstream location_string;
@@ -97,9 +97,16 @@ gams::algorithms::Follow::operator= (const Follow & rhs)
 int
 gams::algorithms::Follow::analyze (void)
 {
+  static utility::GPS_Position prev;
   utility::GPS_Position current;
   current.from_container (target_location_);
-  previous_locations_.push (current);
+
+  // if target agent has moved
+  if (current.distance_to (prev) > 1.0)
+  {
+    previous_locations_.push (current);
+    prev = current;
+  }
 
   ++executions_;
   return 0;
@@ -117,7 +124,7 @@ gams::algorithms::Follow::execute (void)
 int
 gams::algorithms::Follow::plan (void)
 {
-  if (previous_locations_.size () > delay_)
+  if (previous_locations_.size () == delay_)
   {
     next_position_ = previous_locations_.front ();
     previous_locations_.pop ();
