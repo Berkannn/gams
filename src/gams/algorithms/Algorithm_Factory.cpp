@@ -194,11 +194,12 @@ gams::algorithms::Factory::create (const std::string & type,
   }
   else if (type == "follow")
   {
-    cerr << "creating follow algorithm" << endl;
     if (knowledge_ && sensors_ && platform_ && self_ && 
-      args.size () == 1 && args[0].is_integer_type ())
+      args.size () == 2 && args[0].is_integer_type () &&
+      args[1].is_integer_type ())
     {
-      result = new Follow (args[0], knowledge_, platform_, sensors_, self_);
+      result = new Follow (args[0] /*follow target*/,
+        args[1] /*timestep delay*/, knowledge_, platform_, sensors_, self_);
     }
   }
 

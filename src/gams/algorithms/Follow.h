@@ -73,6 +73,7 @@ namespace gams
       /**
        * Constructor
        * @param  id         id of agent to follow
+       * @param  delay      timesteps to delay until follow
        * @param  knowledge  the context containing variables and values
        * @param  platform   the underlying platform the algorithm will use
        * @param  sensors    map of sensor names to sensor information
@@ -80,6 +81,7 @@ namespace gams
        **/
       Follow (
         const Madara::Knowledge_Record& id,
+        const Madara::Knowledge_Record& delay,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         platforms::Base * platform = 0,
         variables::Sensors * sensors = 0,
@@ -123,6 +125,9 @@ namespace gams
 
       /// previous locations of target agent
       std::queue<utility::GPS_Position> previous_locations_;
+
+      /// timesteps to delay/max size of queue
+      size_t delay_;
     };
   }
 }

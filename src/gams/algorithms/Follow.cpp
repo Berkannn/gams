@@ -65,16 +65,16 @@ using std::stringstream;
 
 gams::algorithms::Follow::Follow (
   const Madara::Knowledge_Record& id,
+  const Madara::Knowledge_Record& delay,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform, variables::Sensors * sensors,
   variables::Self * self) :
-  Base (knowledge, platform, sensors, self)
+  Base (knowledge, platform, sensors, self),next_position_ (DBL_MAX),
+  delay_ (delay.to_integer ())
 {
-  cerr << "Follow::Follow()" << endl;
   stringstream location_string;
   location_string << "device." << id.to_integer () << ".location";
   target_location_.set_name (location_string.str (), *knowledge, 3);
-  next_position_.latitude (DBL_MAX);
 }
 
 gams::algorithms::Follow::~Follow ()
@@ -90,6 +90,7 @@ gams::algorithms::Follow::operator= (const Follow & rhs)
     this->target_location_ = rhs.target_location_;
     this->next_position_ = rhs.next_position_;
     this->previous_locations_ = rhs.previous_locations_;
+    this->delay_ = rhs.delay_;
   }
 }
 
@@ -116,7 +117,7 @@ gams::algorithms::Follow::execute (void)
 int
 gams::algorithms::Follow::plan (void)
 {
-  if (previous_locations_.size () > 5)
+  if (previous_locations_.size () > delay_)
   {
     next_position_ = previous_locations_.front ();
     previous_locations_.pop ();
