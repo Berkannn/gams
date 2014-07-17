@@ -1,0 +1,8 @@
+.vrep_port=19907;
+
+.initial_x=5;
+.initial_y=5;
+
+device.1.command="follow";
+device.1.command.size=1;
+device.1.command.0=0;

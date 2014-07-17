@@ -56,6 +56,7 @@
 
 #include <queue>
 
+#include "gams/algorithms/Base_Algorithm.h"
 #include "gams/variables/Sensor.h"
 #include "gams/platforms/Base_Platform.h"
 #include "gams/variables/Algorithm.h"

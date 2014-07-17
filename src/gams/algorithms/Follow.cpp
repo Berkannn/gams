@@ -54,23 +54,27 @@
 #include "gams/algorithms/Follow.h"
 
 #include <sstream>
+#include <iostream>
+#include <limits.h>
+using std::cerr;
+using std::endl;
 
-#include "gams/algorithms/GPS_Position.h"
+#include "gams/utility/GPS_Position.h"
 
 using std::stringstream;
 
 gams::algorithms::Follow::Follow (
   const Madara::Knowledge_Record& id,
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-  platforms::Base * platform = 0,
-  variables::Sensors * sensors = 0,
-  variables::Self * self = 0) :
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  platforms::Base * platform, variables::Sensors * sensors,
+  variables::Self * self) :
   Base (knowledge, platform, sensors, self)
 {
+  cerr << "Follow::Follow()" << endl;
   stringstream location_string;
-  location_string << "device" << id.to_integer ();
-  location_string << ".location";
-  target_location_.set_name (location_string.str (), *knowledge);
+  location_string << "device." << id.to_integer () << ".location";
+  target_location_.set_name (location_string.str (), *knowledge, 3);
+  next_position_.latitude (DBL_MAX);
 }
 
 gams::algorithms::Follow::~Follow ()
@@ -95,12 +99,18 @@ gams::algorithms::Follow::analyze (void)
   utility::GPS_Position current;
   current.from_container (target_location_);
   previous_locations_.push (current);
+
+  ++executions_;
+  return 0;
 }
       
 int
 gams::algorithms::Follow::execute (void)
 {
-  platform_->move (next_position_);
+  if (next_position_.latitude () != DBL_MAX)
+    platform_->move (next_position_);
+  
+  return 0;
 }
 
 int
@@ -111,4 +121,5 @@ gams::algorithms::Follow::plan (void)
     next_position_ = previous_locations_.front ();
     previous_locations_.pop ();
   }
+  return 0;
 }

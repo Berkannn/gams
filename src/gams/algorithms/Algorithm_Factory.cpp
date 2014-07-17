@@ -50,6 +50,7 @@
 #include "gams/algorithms/Printer_Algorithm.h"
 #include "gams/algorithms/Formation_Flying.h"
 #include "gams/algorithms/Takeoff.h"
+#include "gams/algorithms/Follow.h"
 
 #include "gams/algorithms/area_coverage/Uniform_Random_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Uniform_Random_Edge_Coverage.h"
@@ -189,6 +190,15 @@ gams::algorithms::Factory::create (const std::string & type,
 //        result = new Move (arg1.to_string (), target,
 //          knowledge_, platform_, sensors_, self_);
 //      }
+    }
+  }
+  else if (type == "follow")
+  {
+    cerr << "creating follow algorithm" << endl;
+    if (knowledge_ && sensors_ && platform_ && self_ && 
+      args.size () == 1 && args[0].is_integer_type ())
+    {
+      result = new Follow (args[0], knowledge_, platform_, sensors_, self_);
     }
   }
 
