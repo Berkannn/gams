@@ -43,93 +43,73 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Platform_Factory.h"
-#include "Printer_Platform.h"
 
-#ifdef _GAMS_DRONERK_
-#include "dronerk/Drone_RK.h"
-#endif
+/**
+ * @file VREP_Ant.cpp
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
+ *
+ * This file contains the definition of the VREP_Ant simulator ant robot class
+ */
 
-#ifdef _GAMS_VREP_
-#include "gams/platforms/vrep/VREP_UAV.h"
+#ifdef _GAMS_VREP_ // only compile this if we are simulating in VREP
+
 #include "gams/platforms/vrep/VREP_Ant.h"
-#endif
 
-gams::platforms::Factory::Factory (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+#define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
+
+#include <iostream>
+using std::endl;
+using std::cout;
+using std::string;
+#include <cmath>
+
+#include "madara/knowledge_engine/containers/Double_Vector.h"
+
+#include "gams/variables/Sensor.h"
+
+gams::platforms::VREP_Ant::VREP_Ant (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   variables::Sensors * sensors,
-  variables::Platforms * platforms,
-  variables::Self * self)
-: knowledge_ (knowledge), platforms_ (platforms), self_ (self),
-  sensors_ (sensors)
+  variables::Platforms & platforms,
+  variables::Self & self)
+  : VREP_Base (knowledge, sensors, self)
 {
-}
-
-gams::platforms::Factory::~Factory ()
-{
-}
-
-gams::platforms::Base *
-gams::platforms::Factory::create (const std::string & type)
-{
-  if (type == "debug" || type == "printer" || type == "print")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-      return new Printer_Platform (*knowledge_, sensors_, *platforms_, *self_);
-  }
-#ifdef _GAMS_DRONERK_
-  else if (type == "drone-rk" || type == "dronerk")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-      return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
-  }
-#endif
-#ifdef _GAMS_VREP_
-  else if (type == "vrep" || type == "vrep-uav")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-    {
-      VREP_UAV* ret = new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
-      double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
-      if (move_speed > 0)
-        ret->set_move_speed (move_speed);
-      return ret;
-    }
-  }
-  else if (type == "vrep-ant")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-    {
-      VREP_Ant* ret = new VREP_Ant (*knowledge_, sensors_, *platforms_, *self_);
-      return ret;
-    }
-  }
-#endif
-
-  return 0;
+  platforms["vrep_ant"].init_vars (knowledge, "vrep_ant");
+  add_model_to_environment ();
+  set_initial_position ();
+  get_target_handle ();
+  wait_for_go ();
 }
 
 void
-gams::platforms::Factory::set_knowledge (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge)
+gams::platforms::VREP_Ant::add_model_to_environment ()
 {
-  knowledge_ = knowledge;
+  string modelFile (getenv ("GAMS_ROOT"));
+  modelFile += "/resources/vrep/tracker_ant.ttm";
+  if (simxLoadModel (client_id_, modelFile.c_str (), 0, &node_id_,
+    simx_opmode_oneshot_wait) != simx_error_noerror)
+  {
+    cerr << "error loading VREP_Ant model in vrep" << endl;
+    exit (-1);
+  }
+
+  if (node_id_ < 0)
+  {
+    cerr << "invalid handle id for VREP_Ant base" << endl;
+    exit (-1);
+  }
 }
 
 void
-gams::platforms::Factory::set_platforms (variables::Platforms * platforms)
+gams::platforms::VREP_Ant::get_target_handle ()
 {
-  platforms_ = platforms;
+  simxGetObjectChild(client_id_, node_id_, 0, &node_target_, simx_opmode_oneshot_wait);
+
+  if (node_target_ < 0)
+  {
+    cerr << "invalid handle id for VREP_Ant base" << endl;
+    exit (-1);
+  }
 }
 
-void
-gams::platforms::Factory::set_self (variables::Self * self)
-{
-  self_ = self;
-}
-
-void
-gams::platforms::Factory::set_sensors (variables::Sensors * sensors)
-{
-  sensors_ = sensors;
-}
+#endif // _GAMS_VREP_

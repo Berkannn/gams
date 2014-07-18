@@ -333,7 +333,7 @@ void put_plants (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
       simxFloat pos[3];
       pos[0] = plant_y;
       pos[1] = plant_x;
-      pos[2] = 0;
+      pos[2] = 0.4;
   
       // load object
       int node_id;
@@ -363,7 +363,7 @@ void create_environment (const int& client_id,
   simxCloseScene (client_id, simx_opmode_oneshot_wait);
   string scene (getenv ("GAMS_ROOT"));
   scene += "/resources/vrep/starting.ttt";
-  simxLoadScene (client_id, scene.c_str(), 1, simx_opmode_oneshot_wait);
+  simxLoadScene (client_id, scene.c_str(), 0, simx_opmode_oneshot_wait);
 
   // inform clients they can interact with scene now
   knowledge.set ("vrep_ready", Integer (1));
@@ -452,8 +452,6 @@ void start_simulator (const int & client_id,
   cout << "starting simulation...";
   simxSetBooleanParameter (client_id, sim_boolparam_hierarchy_visible, false, simx_opmode_oneshot);
   simxSetBooleanParameter (client_id, sim_boolparam_browser_visible, false, simx_opmode_oneshot);
-  simxSetBooleanParameter (client_id, sim_boolparam_console_visible, false, simx_opmode_oneshot);
-  simxSetBooleanParameter (client_id, sim_boolparam_threaded_rendering_enabled, true, simx_opmode_oneshot);
   simxStartSimulation (client_id, simx_opmode_oneshot_wait);
   cout << "done" << endl;
 

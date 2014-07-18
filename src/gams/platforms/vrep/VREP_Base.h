@@ -45,19 +45,19 @@
  **/
 
 /**
- * @file VREP_UAV.h
+ * @file VREP_Base.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the VREP_UAV simulator uav class
+ * This file contains the definition of the VREP_Base simulator uav class
  **/
 
-#ifndef   _GAMS_PLATFORM_VREP_UAV_H_
-#define   _GAMS_PLATFORM_VREP_UAV_H_
+#ifndef   _GAMS_PLATFORM_VREP_BASE_H_
+#define   _GAMS_PLATFORM_VREP_BASE_H_
 
-#include "gams/platforms/vrep/VREP_Base.h"
 #include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
+#include "gams/platforms/Base_Platform.h"
 #include "gams/utility/GPS_Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
@@ -65,14 +65,13 @@ extern "C" {
 #include "extApi.h"
 }
 
-
 #ifdef _GAMS_VREP_
 
 namespace gams
 {
   namespace platforms
   {
-    class GAMS_Export VREP_UAV : public VREP_Base
+    class GAMS_Export VREP_Base : public Base
     {
     public:
       /**
@@ -82,11 +81,56 @@ namespace gams
        * @param  platforms  map of platform names to platform information
        * @param  self       device variables that describe self state
        **/
-      VREP_UAV (
+      VREP_Base (
         Madara::Knowledge_Engine::Knowledge_Base & knowledge,
         variables::Sensors * sensors,
-        variables::Platforms & platforms,
         variables::Self & self);
+
+      /**
+       * Destructor
+       **/
+      virtual ~VREP_Base ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const VREP_Base & rhs);
+
+      /**
+       * Polls the sensor environment for useful information
+       * @return number of sensors updated/used
+       **/
+      virtual int sense (void);
+
+      /**
+       * Analyzes platform information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+
+      /**
+       * Get the position accuracy in meters
+       * @return position accuracy
+       **/
+      virtual double get_gps_accuracy () const;
+
+      /**
+       * Get move speed
+       **/
+      virtual double get_move_speed () const;
+
+      /**
+       * Instructs the device to return home
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int home (void);
+
+      /**
+       * Instructs the platform to land
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int land (void);
 
       /**
        * Moves the platform to a position
@@ -96,26 +140,93 @@ namespace gams
        **/
       virtual int move (const utility::GPS_Position & position,
         const double & epsilon = 0.1);
+      
+      /**
+       * Set move speed
+       * @param speed new speed in meters/loop execution
+       **/
+      virtual void set_move_speed (const double& speed);
+
+      /**
+       * Instructs the platform to take off
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int takeoff (void);
 
     protected:
       /**
+       * Get float array from position
+       * @param arr array to convert
+       * @param pos position to store it in
+       **/
+      void array_to_position (const simxFloat (&arr)[3], 
+        utility::Position & pos) const;
+
+      /**
+       * Converts lat/long coordinates to vrep coordinates
+       * @param position    lat/long position to convert
+       * @param converted   x/y coords in vrep reference frame
+       **/
+      void gps_to_vrep (const utility::GPS_Position & position,
+        utility::Position & converted) const;
+
+      /**
+       * Get position from float array
+       * @param pos position to convert
+       * @param arr array to store it in
+       **/
+      void position_to_array (const utility::Position & pos,
+        simxFloat (&arr)[3]) const;
+
+      /**
+       * Converts lat/long coordinates to vrep coordinates
+       * @param position    lat/long position to convert
+       * @param converted   x/y coords in vrep reference frame
+       **/
+      void vrep_to_gps (const utility::Position & position,
+        utility::GPS_Position & converted) const;
+
+      /**
        * Add model to environment
        */
-      virtual void add_model_to_environment ();
+      virtual void add_model_to_environment () = 0;
 
       /**
        * Get node target handle
        */
-      virtual void get_target_handle ();
+      virtual void get_target_handle () = 0;
 
       /**
        * Set initial position for agent
        */
       virtual void set_initial_position () const;
-    }; // class VREP_UAV
+
+      /**
+       * wait for go signal from controller
+       */
+      void wait_for_go () const;
+
+      /// flag for drone being airborne
+      bool airborne_;
+
+      /// client id for remote API connection
+      simxInt client_id_;
+
+      /// movement speed in meters/iteration
+      double move_speed_;
+
+      /// object id for quadrotor
+      simxInt node_id_;
+
+      /// object id for quadrotor target
+      simxInt node_target_;
+
+      /// gps coordinates corresponding to (0, 0) in vrep
+      utility::GPS_Position sw_position_;
+    }; // class VREP_Base
   } // namespace platform
 } // namespace gams
 
 #endif // _GAMS_VREP_
 
-#endif // _GAMS_PLATFORM_VREP_UAV_H_
+#endif // _GAMS_PLATFORM_VREP_BASE_H_

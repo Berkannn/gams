@@ -43,93 +43,66 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Platform_Factory.h"
-#include "Printer_Platform.h"
 
-#ifdef _GAMS_DRONERK_
-#include "dronerk/Drone_RK.h"
-#endif
+/**
+ * @file VREP_Ant.h
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
+ *
+ * This file contains the declaration of the VREP_Ant simulator ant robot class
+ **/
+
+#ifndef   _GAMS_PLATFORM_VREP_ANT_H_
+#define   _GAMS_PLATFORM_VREP_ANT_H_
+
+#include "gams/platforms/vrep/VREP_Base.h"
+
+#include "gams/variables/Self.h"
+#include "gams/variables/Sensor.h"
+#include "gams/variables/Platform.h"
+#include "gams/utility/GPS_Position.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+
+extern "C" {
+#include "extApi.h"
+}
+
 
 #ifdef _GAMS_VREP_
-#include "gams/platforms/vrep/VREP_UAV.h"
-#include "gams/platforms/vrep/VREP_Ant.h"
-#endif
 
-gams::platforms::Factory::Factory (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  variables::Sensors * sensors,
-  variables::Platforms * platforms,
-  variables::Self * self)
-: knowledge_ (knowledge), platforms_ (platforms), self_ (self),
-  sensors_ (sensors)
+namespace gams
 {
-}
-
-gams::platforms::Factory::~Factory ()
-{
-}
-
-gams::platforms::Base *
-gams::platforms::Factory::create (const std::string & type)
-{
-  if (type == "debug" || type == "printer" || type == "print")
+  namespace platforms
   {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-      return new Printer_Platform (*knowledge_, sensors_, *platforms_, *self_);
-  }
-#ifdef _GAMS_DRONERK_
-  else if (type == "drone-rk" || type == "dronerk")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-      return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
-  }
-#endif
-#ifdef _GAMS_VREP_
-  else if (type == "vrep" || type == "vrep-uav")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
+    class GAMS_Export VREP_Ant : public VREP_Base
     {
-      VREP_UAV* ret = new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
-      double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
-      if (move_speed > 0)
-        ret->set_move_speed (move_speed);
-      return ret;
-    }
-  }
-  else if (type == "vrep-ant")
-  {
-    if (knowledge_ && sensors_ && platforms_ && self_)
-    {
-      VREP_Ant* ret = new VREP_Ant (*knowledge_, sensors_, *platforms_, *self_);
-      return ret;
-    }
-  }
-#endif
+    public:
+      /**
+       * Constructor
+       * @param  knowledge  knowledge base
+       * @param  sensors    map of sensor names to sensor information
+       * @param  platforms  map of platform names to platform information
+       * @param  self       device variables that describe self state
+       **/
+      VREP_Ant (
+        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        variables::Sensors * sensors,
+        variables::Platforms & platforms,
+        variables::Self & self);
 
-  return 0;
-}
+    protected:
+      /**
+       * Add model to environment
+       */
+      virtual void add_model_to_environment ();
 
-void
-gams::platforms::Factory::set_knowledge (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge)
-{
-  knowledge_ = knowledge;
-}
+      /**
+       * Get target handle
+       */
+      virtual void get_target_handle ();
+    }; // class VREP_Ant
+  } // namespace platform
+} // namespace gams
 
-void
-gams::platforms::Factory::set_platforms (variables::Platforms * platforms)
-{
-  platforms_ = platforms;
-}
+#endif // _GAMS_VREP_
 
-void
-gams::platforms::Factory::set_self (variables::Self * self)
-{
-  self_ = self;
-}
-
-void
-gams::platforms::Factory::set_sensors (variables::Sensors * sensors)
-{
-  sensors_ = sensors;
-}
+#endif // _GAMS_PLATFORM_VREP_ANT_H_
