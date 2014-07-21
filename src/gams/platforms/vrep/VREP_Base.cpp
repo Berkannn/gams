@@ -158,16 +158,16 @@ gams::platforms::VREP_Base::sense (void)
   // set position in madara
   position.to_container (self_.device.location);
 
-  // set position on coverage map
-  (*sensors_)["coverage"]->set_value (get_gps_position(),
-    knowledge_->get_context ().get_clock ());
-
   return 0;
 }
 
 int
 gams::platforms::VREP_Base::analyze (void)
 {
+  // set position on coverage map
+  (*sensors_)["coverage"]->set_value (get_gps_position(),
+    knowledge_->get_context ().get_clock ());
+
   return 0;
 }
 
@@ -184,23 +184,6 @@ gams::platforms::VREP_Base::get_move_speed () const
 }
 
 int
-gams::platforms::VREP_Base::home (void)
-{
-  // check if home has been set
-  if (self_.device.home.size () == 3)
-  {
-    // read the home position
-    utility::GPS_Position position;
-    position.from_container (self_.device.home);
-
-    // move to home
-    move (position);
-  }
-
-  return 0;
-}
-
-int
 gams::platforms::VREP_Base::land (void)
 {
   if (airborne_)
@@ -213,7 +196,7 @@ gams::platforms::VREP_Base::land (void)
 
 int
 gams::platforms::VREP_Base::move (const utility::GPS_Position & position,
-  const double & /*epsilon*/)
+  const double & epsilon)
 {
   // update variables
   Base::move (position);
@@ -230,7 +213,18 @@ gams::platforms::VREP_Base::move (const utility::GPS_Position & position,
   simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, dest_arr,
                         simx_opmode_oneshot_wait);
 
-  return 0;
+  // check if we have reached target
+  simxFloat curr_arr[3];
+  simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
+                        simx_opmode_oneshot_wait);
+  utility::Position vrep_pos;
+  array_to_position (curr_arr, vrep_pos);
+
+  // return code
+  if (vrep_pos.distance_to (dest_pos) < epsilon)
+    return 2;
+  else
+    return 1;
 }
 
 void

@@ -109,7 +109,7 @@ gams::algorithms::area_coverage::Perimeter_Patrol::Perimeter_Patrol (
       utility::GPS_Position temp (
         start.latitude () - lat_dif * j / NUM_INTERMEDIATE_PTS,
         start.longitude () - lon_dif * j / NUM_INTERMEDIATE_PTS,
-        2.0);
+        self_->device.desired_altitude.to_double ());
       waypoints_.push_back (temp);
     }
   }

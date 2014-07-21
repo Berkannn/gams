@@ -69,6 +69,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   : VREP_Base (knowledge, sensors, self)
 {
   platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
+
+  self.device.desired_altitude = self.id.to_integer () + 1;
   add_model_to_environment ();
   set_initial_position ();
   get_target_handle ();

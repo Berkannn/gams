@@ -121,12 +121,6 @@ namespace gams
       virtual double get_move_speed () const;
 
       /**
-       * Instructs the device to return home
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int home (void);
-
-      /**
        * Instructs the platform to land
        * @return 1 if moving, 2 if arrived, 0 if error
        **/

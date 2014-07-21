@@ -152,7 +152,7 @@ namespace gams
        * Instructs the device to return home
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual int home (void) = 0;
+      virtual int home (void);
 
       /**
        * Instructs the device to land

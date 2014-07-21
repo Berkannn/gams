@@ -111,6 +111,9 @@ namespace gams
       /// the location, usually encoded in GPS, for this device
       Madara::Knowledge_Engine::Containers::Native_Double_Array location;
       
+      /// indicator for temperature
+      Madara::Knowledge_Engine::Containers::Double desired_altitude;
+
       /// the source location
       Madara::Knowledge_Engine::Containers::Native_Double_Array source;
       

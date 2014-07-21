@@ -125,6 +125,23 @@ gams::platforms::Base::get_sensor_names (variables::Sensor_Names& sensors) const
 }
 
 int
+gams::platforms::Base::home (void)
+{
+  // check if home has been set
+  if (self_.device.home.size () == 3)
+  {
+    // read the home position
+    utility::GPS_Position position;
+    position.from_container (self_.device.home);
+
+    // move to home
+    move (position);
+  }
+
+  return 0;
+}
+
+int
 gams::platforms::Base::move (const utility::GPS_Position & target,
   const double & epsilon)
 {

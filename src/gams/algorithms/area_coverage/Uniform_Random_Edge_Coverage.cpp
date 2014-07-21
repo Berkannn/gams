@@ -119,5 +119,5 @@ gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::generate_new_posi
   }
 
   // fill in altitude on waypoint
-  next_position_.altitude (self_->id.to_integer () + 1);
+  next_position_.altitude (self_->device.desired_altitude.to_double ());
 }

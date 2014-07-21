@@ -75,6 +75,8 @@ gams::platforms::VREP_Ant::VREP_Ant (
   : VREP_Base (knowledge, sensors, self)
 {
   platforms["vrep_ant"].init_vars (knowledge, "vrep_ant");
+
+  self.device.desired_altitude = 0.05;
   add_model_to_environment ();
   set_initial_position ();
   get_target_handle ();
