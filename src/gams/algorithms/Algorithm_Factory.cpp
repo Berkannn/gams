@@ -50,6 +50,7 @@
 #include "gams/algorithms/Printer_Algorithm.h"
 #include "gams/algorithms/Formation_Flying.h"
 #include "gams/algorithms/Takeoff.h"
+#include "gams/algorithms/Follow.h"
 
 #include "gams/algorithms/area_coverage/Uniform_Random_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Uniform_Random_Edge_Coverage.h"
@@ -58,6 +59,7 @@
 #include "gams/algorithms/area_coverage/Snake_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Min_Time_Area_Coverage.h"
 #include "gams/algorithms/area_coverage/Prioritized_Min_Time_Area_Coverage.h"
+#include "gams/algorithms/area_coverage/Perimeter_Patrol.h"
 
 #include <iostream>
 
@@ -139,6 +141,12 @@ gams::algorithms::Factory::create (const std::string & type,
         args[0] /* search area id*/,
         knowledge_, platform_, sensors_, self_);
   }
+  else if (type == "perimeter patrol" || type == "ppac")
+  {
+    if (knowledge_ && sensors_ && self_ && args.size () > 0)
+      result = new area_coverage::Perimeter_Patrol (args[0] /* search area id*/,
+        knowledge_, platform_, sensors_, self_);
+  }
   else if (type == "formation")
   {
     if (knowledge_ && sensors_ && platform_ && self_ && args.size () == 5)
@@ -182,6 +190,16 @@ gams::algorithms::Factory::create (const std::string & type,
 //        result = new Move (arg1.to_string (), target,
 //          knowledge_, platform_, sensors_, self_);
 //      }
+    }
+  }
+  else if (type == "follow")
+  {
+    if (knowledge_ && sensors_ && platform_ && self_ && 
+      args.size () == 2 && args[0].is_integer_type () &&
+      args[1].is_integer_type ())
+    {
+      result = new Follow (args[0] /*follow target*/,
+        args[1] /*timestep delay*/, knowledge_, platform_, sensors_, self_);
     }
   }
 

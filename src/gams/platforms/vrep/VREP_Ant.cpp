@@ -45,66 +45,73 @@
  **/
 
 /**
- * Base_Area_Coverage.cpp
+ * @file VREP_Ant.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file defines common functionality for area coverage algorithms. If this
- * file is updated, please also update the tutorials in the wiki with line
- * numbers or implementation changes.
+ * This file contains the definition of the VREP_Ant simulator ant robot class
  */
 
-#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+#ifdef _GAMS_VREP_ // only compile this if we are simulating in VREP
 
-gams::algorithms::area_coverage::Base_Area_Coverage::Base_Area_Coverage (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
+#include "gams/platforms/vrep/VREP_Ant.h"
+
+#define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
+
+#include <iostream>
+using std::endl;
+using std::cout;
+using std::string;
+#include <cmath>
+
+#include "madara/knowledge_engine/containers/Double_Vector.h"
+
+#include "gams/variables/Sensor.h"
+
+gams::platforms::VREP_Ant::VREP_Ant (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   variables::Sensors * sensors,
-  variables::Self * self,
-  variables::Devices * devices)
-  : Base (knowledge, platform, sensors, self, devices)
+  variables::Platforms & platforms,
+  variables::Self & self)
+  : VREP_Base (knowledge, sensors, self)
 {
-}
+  platforms["vrep_ant"].init_vars (knowledge, "vrep_ant");
 
-gams::algorithms::area_coverage::Base_Area_Coverage::~Base_Area_Coverage ()
-{
+  self.device.desired_altitude = 0.05;
+  add_model_to_environment ();
+  set_initial_position ();
+  get_target_handle ();
+  wait_for_go ();
 }
 
 void
-gams::algorithms::area_coverage::Base_Area_Coverage::operator= (
-  const Base_Area_Coverage & rhs)
+gams::platforms::VREP_Ant::add_model_to_environment ()
 {
-  if (this != &rhs)
+  string modelFile (getenv ("GAMS_ROOT"));
+  modelFile += "/resources/vrep/tracker_ant.ttm";
+  if (simxLoadModel (client_id_, modelFile.c_str (), 0, &node_id_,
+    simx_opmode_oneshot_wait) != simx_error_noerror)
   {
-    this->next_position_ = rhs.next_position_;
-    this->Base::operator= (rhs);
+    cerr << "error loading VREP_Ant model in vrep" << endl;
+    exit (-1);
+  }
+
+  if (node_id_ < 0)
+  {
+    cerr << "invalid handle id for VREP_Ant base" << endl;
+    exit (-1);
   }
 }
 
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
+void
+gams::platforms::VREP_Ant::get_target_handle ()
 {
-  ++executions_;
-  return 0;
-}
+  simxGetObjectChild(client_id_, node_id_, 0, &node_target_, simx_opmode_oneshot_wait);
 
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
-{
-  // generate new next position if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_gps_accuracy ()))
+  if (node_target_ < 0)
   {
-    generate_new_position();
+    cerr << "invalid handle id for VREP_Ant base" << endl;
+    exit (-1);
   }
-
-  return 0;
 }
+
+#endif // _GAMS_VREP_

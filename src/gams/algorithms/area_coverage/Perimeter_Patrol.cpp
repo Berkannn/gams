@@ -44,80 +44,100 @@
  *      distribution.
  **/
 
-#include "gams/algorithms/area_coverage/Uniform_Random_Edge_Coverage.h"
+/**
+ * @file Perimeter_Patrol.cpp
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
+ *
+ * Defines a Perimeter Patrol path for agents to follow. Used as tutorial for
+ * creating custom area coverage algorithms. If this file is updated, please
+ * update the wiki as well.
+ */
 
-gams::algorithms::area_coverage::
-Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
-  const Madara::Knowledge_Record& search_area_id,
+#include "gams/algorithms/area_coverage/Perimeter_Patrol.h"
+
+#include <vector>
+
+#include "gams/utility/GPS_Position.h"
+#include "gams/utility/Region.h"
+#include "gams/utility/Search_Area.h"
+#include "gams/utility/Position.h"
+
+using std::vector;
+
+gams::algorithms::area_coverage::Perimeter_Patrol::Perimeter_Patrol (
+  const Madara::Knowledge_Record& region_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
   variables::Self * self) :
   Base_Area_Coverage (knowledge, platform, sensors, self)
 {
-  // init status vars
-  status_.init_vars (*knowledge, "urec");
+  // initialize some status variables
+  status_.init_vars (*knowledge, "ppac");
 
-  // generate search region
-  utility::Search_Area search = utility::parse_search_area (
-    *knowledge, search_area_id.to_string ());
-  region_ = search.get_convex_hull ();
+  // get waypoints
+  utility::Region reg = utility::parse_search_area (
+    *knowledge, region_id.to_string ()).get_convex_hull ();
+  vector<utility::GPS_Position> vertices = reg.points;
 
-  // generate initial waypoint
-  generate_new_position ();
+  // find closest waypoint as starting point
+  size_t closest = 0;
+  utility::GPS_Position current;
+  current.from_container (self_->device.location);
+  double min_distance = current.distance_to (vertices[0]);
+  for (size_t i = 1; i < vertices.size (); ++i)
+  {
+    double dist = current.distance_to (vertices[i]);
+    if (min_distance > dist)
+    {
+      dist = min_distance;
+      closest = i;
+    }
+  }
+
+  // add some intermediate points
+  const size_t NUM_INTERMEDIATE_PTS = 5;
+  for (size_t i = 0; i < vertices.size(); ++i)
+  {
+    utility::GPS_Position start = vertices[(i + closest) % vertices.size ()];
+    utility::GPS_Position end = vertices[(i + closest + 1) % vertices.size ()];
+    double lat_dif = start.latitude () - end.latitude ();
+    double lon_dif = start.longitude () - end.longitude ();
+
+    for (size_t j = 0; j < NUM_INTERMEDIATE_PTS; ++j)
+    {
+      utility::GPS_Position temp (
+        start.latitude () - lat_dif * j / NUM_INTERMEDIATE_PTS,
+        start.longitude () - lon_dif * j / NUM_INTERMEDIATE_PTS,
+        self_->device.desired_altitude.to_double ());
+      waypoints_.push_back (temp);
+    }
+  }
+
+  // set next_position_
+  cur_waypoint_ = 0;
+  next_position_ = waypoints_[cur_waypoint_];
 }
 
-gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::~Uniform_Random_Edge_Coverage ()
+gams::algorithms::area_coverage::Perimeter_Patrol::~Perimeter_Patrol ()
 {
 }
 
 void
-gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::operator= (
-  const Uniform_Random_Edge_Coverage & rhs)
+gams::algorithms::area_coverage::Perimeter_Patrol::operator= (
+  const Perimeter_Patrol& rhs)
 {
   if (this != &rhs)
   {
-    this->region_ = rhs.region_;
     this->Base_Area_Coverage::operator= (rhs);
+    this->waypoints_ = rhs.waypoints_;
+    this->cur_waypoint_ = rhs.cur_waypoint_;
   }
 }
 
 void
-gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::generate_new_position ()
+gams::algorithms::area_coverage::Perimeter_Patrol::generate_new_position ()
 {
-  // select new edge
-  int num_edges = (int)region_.points.size();
-  int target_edge = rand() % num_edges;
-
-  // get endpoints
-  const utility::GPS_Position & pos_1 = region_.points[target_edge];
-  const utility::GPS_Position & pos_2 = 
-    region_.points[(target_edge + 1) % num_edges];
-
-  // get random point on line
-  double delta_lat = pos_2.latitude () - pos_1.latitude ();
-  double delta_lon = pos_2.longitude () - pos_1.longitude ();
-  if (delta_lon == 0) // north/south line
-  {
-    const double & min = pos_1.latitude () < pos_2.latitude () ? pos_1.latitude () : pos_2.latitude ();
-    const double & max = pos_1.latitude () > pos_2.latitude () ? pos_1.latitude () : pos_2.latitude ();
-    next_position_.latitude (Madara::Utility::rand_double(min, max));
-    next_position_.longitude (pos_1.longitude ());
-  }
-  else if (delta_lat == 0) // east/west line
-  {
-    const double & min = pos_1.longitude () < pos_2.longitude () ? pos_1.longitude () : pos_2.longitude ();
-    const double & max = pos_1.longitude () > pos_2.longitude () ? pos_1.longitude () : pos_2.longitude ();
-    next_position_.longitude (Madara::Utility::rand_double(min, max));
-    next_position_.latitude (pos_1.latitude ());
-  }
-  else // other arbitrary line
-  {
-    const double slope = delta_lon / delta_lat;
-    next_position_.latitude (Madara::Utility::rand_double(pos_1.latitude (), pos_2.latitude ()));
-    next_position_.longitude (pos_1.longitude () + slope * (next_position_.latitude () - pos_1.latitude ()));
-  }
-
-  // fill in altitude on waypoint
-  next_position_.altitude (self_->device.desired_altitude.to_double ());
+  cur_waypoint_ = (cur_waypoint_ + 1) % waypoints_.size ();
+  next_position_ = waypoints_[cur_waypoint_];
 }

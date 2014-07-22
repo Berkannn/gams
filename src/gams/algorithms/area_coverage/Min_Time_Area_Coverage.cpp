@@ -161,7 +161,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
     {
       max_util = util;
       next_position_ = min_time_.get_gps_from_index (*it);
-      next_position_.altitude (self_->id.to_integer () + 1);
+      next_position_.altitude (self_->device.desired_altitude.to_double ());
       online.swap (cur_online);
     }
   }

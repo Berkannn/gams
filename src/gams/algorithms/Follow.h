@@ -45,66 +45,91 @@
  **/
 
 /**
- * Base_Area_Coverage.cpp
+ * @file Follow.h
  * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file defines common functionality for area coverage algorithms. If this
- * file is updated, please also update the tutorials in the wiki with line
- * numbers or implementation changes.
- */
+ * This file contains the declaration of the Follow algorithm
+ **/
 
-#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+#ifndef   _GAMS_ALGORITHMS_FOLLOW_H_
+#define   _GAMS_ALGORITHMS_FOLLOW_H_
 
-gams::algorithms::area_coverage::Base_Area_Coverage::Base_Area_Coverage (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
-  variables::Sensors * sensors,
-  variables::Self * self,
-  variables::Devices * devices)
-  : Base (knowledge, platform, sensors, self, devices)
+#include <queue>
+
+#include "gams/algorithms/Base_Algorithm.h"
+#include "gams/variables/Sensor.h"
+#include "gams/platforms/Base_Platform.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Self.h"
+#include "gams/utility/GPS_Position.h"
+
+namespace gams
 {
-}
-
-gams::algorithms::area_coverage::Base_Area_Coverage::~Base_Area_Coverage ()
-{
-}
-
-void
-gams::algorithms::area_coverage::Base_Area_Coverage::operator= (
-  const Base_Area_Coverage & rhs)
-{
-  if (this != &rhs)
+  namespace algorithms
   {
-    this->next_position_ = rhs.next_position_;
-    this->Base::operator= (rhs);
+    class GAMS_Export Follow : public Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  id         id of agent to follow
+       * @param  delay      timesteps to delay until follow
+       * @param  knowledge  the context containing variables and values
+       * @param  platform   the underlying platform the algorithm will use
+       * @param  sensors    map of sensor names to sensor information
+       * @param  self       self-referencing variables
+       **/
+      Follow (
+        const Madara::Knowledge_Record& id,
+        const Madara::Knowledge_Record& delay,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        platforms::Base * platform = 0,
+        variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
+      
+      /**
+       * Destructor
+       **/
+      ~Follow ();
+
+      /**
+       * Assignment operator
+       * @param  rhs   values to copy
+       **/
+      void operator= (const Follow & rhs);
+      
+      /**
+       * Analyzes environment, platform, or other information
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int analyze (void);
+      
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int execute (void);
+
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int plan (void);
+      
+    protected:
+      /// location of agent to follow
+      Madara::Knowledge_Engine::Containers::Native_Double_Array target_location_;
+
+      /// type of movement being executed
+      utility::GPS_Position next_position_;
+
+      /// previous locations of target agent
+      std::queue<utility::GPS_Position> previous_locations_;
+
+      /// timesteps to delay/max size of queue
+      size_t delay_;
+    };
   }
 }
 
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
-{
-  ++executions_;
-  return 0;
-}
-
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
-{
-  platform_->move(next_position_);
-  return 0;
-}
-
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
-{
-  // generate new next position if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_gps_accuracy ()))
-  {
-    generate_new_position();
-  }
-
-  return 0;
-}
+#endif // _GAMS_ALGORITHMS_FOLLOW_H_

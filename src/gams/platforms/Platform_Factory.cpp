@@ -51,8 +51,11 @@
 #endif
 
 #ifdef _GAMS_VREP_
-#include "vrep/VREP_UAV.h"
+#include "gams/platforms/vrep/VREP_UAV.h"
+#include "gams/platforms/vrep/VREP_Ant.h"
 #endif
+
+#include <string>
 
 gams::platforms::Factory::Factory (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -71,27 +74,84 @@ gams::platforms::Factory::~Factory ()
 gams::platforms::Base *
 gams::platforms::Factory::create (const std::string & type)
 {
+  static const std::string default_multicast ("239.255.0.1:4150");
+  static const std::string default_broadcast ("192.168.1.255:15000");
   if (type == "debug" || type == "printer" || type == "print")
   {
     if (knowledge_ && sensors_ && platforms_ && self_)
+    {
+      // add transport to knowledge base if necessary
+      Madara::Transport::Settings settings = knowledge_->transport_settings ();
+      if (settings.type == Madara::Transport::NO_TRANSPORT)
+      {
+        settings.type = Madara::Transport::MULTICAST;
+        settings.hosts.push_back (default_multicast);
+        knowledge_->attach_transport ("", settings);
+        knowledge_->activate_transport ();
+        knowledge_->apply_modified ();
+      }
       return new Printer_Platform (*knowledge_, sensors_, *platforms_, *self_);
+    }
   }
 #ifdef _GAMS_DRONERK_
   else if (type == "drone-rk" || type == "dronerk")
   {
     if (knowledge_ && sensors_ && platforms_ && self_)
+    {
+      // add transport to knowledge base if necessary
+      Madara::Transport::Settings settings = knowledge_->transport_settings ();
+      if (settings.type == Madara::Transport::NO_TRANSPORT)
+      {
+        settings.type = Madara::Transport::BROADCAST;
+        settings.hosts.push_back (default_broadcast);
+        knowledge_->attach_transport ("", settings);
+        knowledge_->activate_transport ();
+        knowledge_->apply_modified ();
+      }
+
       return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
+    }
   }
 #endif
 #ifdef _GAMS_VREP_
-  else if (type == "vrep")
+  else if (type == "vrep" || type == "vrep-uav")
   {
     if (knowledge_ && sensors_ && platforms_ && self_)
     {
+      // add transport to knowledge base if necessary
+      Madara::Transport::Settings settings = knowledge_->transport_settings ();
+      if (settings.type == Madara::Transport::NO_TRANSPORT)
+      {
+        settings.type = Madara::Transport::MULTICAST;
+        settings.hosts.push_back (default_multicast);
+        knowledge_->attach_transport ("", settings);
+        knowledge_->activate_transport ();
+        knowledge_->apply_modified ();
+      }
+
       VREP_UAV* ret = new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
       double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
       if (move_speed > 0)
         ret->set_move_speed (move_speed);
+      return ret;
+    }
+  }
+  else if (type == "vrep-ant")
+  {
+    if (knowledge_ && sensors_ && platforms_ && self_)
+    {
+      // add transport to knowledge base if necessary
+      Madara::Transport::Settings settings = knowledge_->transport_settings ();
+      if (settings.type == Madara::Transport::NO_TRANSPORT)
+      {
+        settings.type = Madara::Transport::MULTICAST;
+        settings.hosts.push_back (default_multicast);
+        knowledge_->attach_transport ("", settings);
+        knowledge_->activate_transport ();
+        knowledge_->apply_modified ();
+      }
+
+      VREP_Ant* ret = new VREP_Ant (*knowledge_, sensors_, *platforms_, *self_);
       return ret;
     }
   }

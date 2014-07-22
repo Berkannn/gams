@@ -45,66 +45,64 @@
  **/
 
 /**
- * Base_Area_Coverage.cpp
+ * @file VREP_Ant.h
  * @author Anton Dukeman <anton.dukeman@gmail.com>
  *
- * This file defines common functionality for area coverage algorithms. If this
- * file is updated, please also update the tutorials in the wiki with line
- * numbers or implementation changes.
- */
+ * This file contains the declaration of the VREP_Ant simulator ant robot class
+ **/
 
-#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+#ifndef   _GAMS_PLATFORM_VREP_ANT_H_
+#define   _GAMS_PLATFORM_VREP_ANT_H_
 
-gams::algorithms::area_coverage::Base_Area_Coverage::Base_Area_Coverage (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
-  variables::Sensors * sensors,
-  variables::Self * self,
-  variables::Devices * devices)
-  : Base (knowledge, platform, sensors, self, devices)
-{
+#include "gams/platforms/vrep/VREP_Base.h"
+
+#include "gams/variables/Self.h"
+#include "gams/variables/Sensor.h"
+#include "gams/variables/Platform.h"
+#include "gams/utility/GPS_Position.h"
+#include "madara/knowledge_engine/Knowledge_Base.h"
+
+extern "C" {
+#include "extApi.h"
 }
 
-gams::algorithms::area_coverage::Base_Area_Coverage::~Base_Area_Coverage ()
-{
-}
 
-void
-gams::algorithms::area_coverage::Base_Area_Coverage::operator= (
-  const Base_Area_Coverage & rhs)
+#ifdef _GAMS_VREP_
+
+namespace gams
 {
-  if (this != &rhs)
+  namespace platforms
   {
-    this->next_position_ = rhs.next_position_;
-    this->Base::operator= (rhs);
-  }
-}
+    class GAMS_Export VREP_Ant : public VREP_Base
+    {
+    public:
+      /**
+       * Constructor
+       * @param  knowledge  knowledge base
+       * @param  sensors    map of sensor names to sensor information
+       * @param  platforms  map of platform names to platform information
+       * @param  self       device variables that describe self state
+       **/
+      VREP_Ant (
+        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        variables::Sensors * sensors,
+        variables::Platforms & platforms,
+        variables::Self & self);
 
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
-{
-  ++executions_;
-  return 0;
-}
+    protected:
+      /**
+       * Add model to environment
+       */
+      virtual void add_model_to_environment ();
 
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
-{
-  platform_->move(next_position_);
-  return 0;
-}
+      /**
+       * Get target handle
+       */
+      virtual void get_target_handle ();
+    }; // class VREP_Ant
+  } // namespace platform
+} // namespace gams
 
-int
-gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
-{
-  // generate new next position if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_gps_accuracy ()))
-  {
-    generate_new_position();
-  }
+#endif // _GAMS_VREP_
 
-  return 0;
-}
+#endif // _GAMS_PLATFORM_VREP_ANT_H_

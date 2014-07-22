@@ -36,7 +36,7 @@ make -j $CORES
 # build GAMS
 echo "Building GAMS"
 cd $GAMS_ROOT
-mwc.pl -type gnuace -features vrep=1 gams.mwc
+mwc.pl -type gnuace gams.mwc
 make realclean -j $CORES
 make vrep=1 -j $CORES
 make vrep=1

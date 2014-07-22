@@ -67,6 +67,7 @@ gams::variables::Device::operator= (const Device & device)
     this->coverage_type = device.coverage_type;
     this->is_mobile = device.is_mobile;
     this->location = device.location;
+    this->desired_altitude = device.desired_altitude;
     this->source = device.source;
     this->dest = device.dest;
     this->home = device.home;
@@ -92,6 +93,7 @@ gams::variables::Device::init_vars (
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
   location.set_name (device_name + ".location", knowledge);
+  desired_altitude.set_name (device_name + ".desired_altitude", knowledge);
   is_mobile.set_name (device_name + ".mobile", knowledge);
   battery_remaining.set_name (device_name + ".battery", knowledge);
   bridge_id.set_name (device_name + ".bridge_id", knowledge);
@@ -123,6 +125,7 @@ gams::variables::Device::init_vars (
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
   location.set_name (device_name + ".location", knowledge, 3);
+  desired_altitude.set_name (device_name + ".desired_altitude", knowledge);
   is_mobile.set_name (device_name + ".mobile", knowledge);
   battery_remaining.set_name (device_name + ".battery", knowledge);
   bridge_id.set_name (device_name + ".bridge_id", knowledge);

@@ -304,6 +304,49 @@ gams::controller::Base::system_analyze (void)
       algorithm_ = factory.create ("formation", args);
     }
   }
+
+  else if (this->self_.device.command == "follow")
+  {
+    Madara::Knowledge_Record target_id;
+    Madara::Knowledge_Record delay;
+
+    if (self_.device.command == "follow")
+    {
+      self_.device.command_args.resize ();
+
+      if (this->self_.device.command_args.size () == 1)
+      {
+        target_id = self_.device.command_args[0];
+        delay.set_value ((Madara::Knowledge_Record::Integer)5);
+      }
+      else if (this->self_.device.command_args.size () == 2)
+      {
+        target_id = self_.device.command_args[0];
+        delay = self_.device.command_args[1];
+      }
+      else
+      {
+        error = true;
+      }
+    }
+
+    if (error)
+    {
+      std::cerr << "ERROR: Formation requested with improper args.\n";
+    }
+    else
+    {
+      delete algorithm_;
+      algorithms::Factory factory (&knowledge_, &sensors_,
+        platform_, &self_, &devices_);
+
+      Madara::Knowledge_Vector args (2);
+      args[0] = target_id;
+      args[1] = delay;
+
+      algorithm_ = factory.create ("follow", args);
+    }
+  }
   
   self_.device.command = "";
   swarm_.command = "";

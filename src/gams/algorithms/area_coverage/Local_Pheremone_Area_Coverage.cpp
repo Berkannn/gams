@@ -167,6 +167,6 @@ gams::algorithms::area_coverage::Local_Pheremone_Area_Coverage::
 
   // assign new next
   // TODO: fix with proper altitude
-  lowest.altitude (self_->id.to_integer () + 1);
+  lowest.altitude (self_->device.desired_altitude.to_double ());
   next_position_ = lowest;
 }

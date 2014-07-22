@@ -333,7 +333,7 @@ void put_plants (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
       simxFloat pos[3];
       pos[0] = plant_y;
       pos[1] = plant_x;
-      pos[2] = 0;
+      pos[2] = 0.4;
   
       // load object
       int node_id;
@@ -359,6 +359,15 @@ void put_plants (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
 void create_environment (const int& client_id,
   Madara::Knowledge_Engine::Knowledge_Base& knowledge)
 {
+  // close scene
+  simxCloseScene (client_id, simx_opmode_oneshot_wait);
+  string scene (getenv ("GAMS_ROOT"));
+  scene += "/resources/vrep/starting.ttt";
+  simxLoadScene (client_id, scene.c_str(), 0, simx_opmode_oneshot_wait);
+
+  // inform clients they can interact with scene now
+  knowledge.set ("vrep_ready", Integer (1));
+
   // find environment parameters
   double max_x, max_y;
   get_dimensions (max_x, max_y, knowledge);
@@ -441,12 +450,14 @@ void start_simulator (const int & client_id,
 
   // start the simulation
   cout << "starting simulation...";
+  simxSetBooleanParameter (client_id, sim_boolparam_hierarchy_visible, false, simx_opmode_oneshot);
+  simxSetBooleanParameter (client_id, sim_boolparam_browser_visible, false, simx_opmode_oneshot);
   simxStartSimulation (client_id, simx_opmode_oneshot_wait);
   cout << "done" << endl;
 
   // inform simulated control loops to begin
   cout << "informing agents to continue...";
-  knowledge.set ("begin_sim", Madara::Knowledge_Record::Integer (1));
+  knowledge.set ("begin_sim", Integer (1));
   cout << "done" << endl;
 }
 
@@ -525,6 +536,7 @@ int main (int argc, char ** argv)
     cerr << "failure connecting to vrep" << endl;
     exit (-1);
   }
+  simxStopSimulation (client_id, simx_opmode_oneshot);
   cout << "done" << endl;
 
   // create environment and start simulation

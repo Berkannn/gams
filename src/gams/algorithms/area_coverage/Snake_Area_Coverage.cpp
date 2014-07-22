@@ -126,11 +126,11 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::compute_waypoints (
   // starting points are vertices of longest edge
   utility::GPS_Position temp = utility::GPS_Position::to_gps_position (
     positions[longest_edge], reference);
-  temp.altitude (1.5);
+  temp.altitude (self_->device.desired_altitude.to_double ());
   waypoints_.push_back (temp);
   temp = utility::GPS_Position::to_gps_position (
     positions[(longest_edge + 1) % num_edges], reference);
-  temp.altitude (1.5);
+  temp.altitude (self_->device.desired_altitude.to_double ());
   waypoints_.push_back (temp);
 
   // determine shift direction
@@ -219,7 +219,7 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::compute_waypoints (
         } // end else longest_edge is vertical line
 
         // check if it's actually an intercept
-        check.z = 1.5; // TODO: actual altitude control
+        check.z = self_->device.desired_altitude.to_double (); // TODO: actual altitude control
         if (check_intercept && p_n_0.is_between_2d(p_n_1, check))
           intercepts[intercept_idx++] = check;
       } // end foreach edge

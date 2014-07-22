@@ -42,69 +42,92 @@
  * 
  *      This material has been approved for public release and unlimited
  *      distribution.
- **/
-
-/**
- * Base_Area_Coverage.cpp
- * @author Anton Dukeman <anton.dukeman@gmail.com>
- *
- * This file defines common functionality for area coverage algorithms. If this
- * file is updated, please also update the tutorials in the wiki with line
- * numbers or implementation changes.
  */
 
-#include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
+/**
+ * @file Follow.cpp
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
+ *
+ * This file contains the definition of the Follow algorithm
+ */
 
-gams::algorithms::area_coverage::Base_Area_Coverage::Base_Area_Coverage (
+#include "gams/algorithms/Follow.h"
+
+#include <sstream>
+#include <iostream>
+#include <limits.h>
+using std::cerr;
+using std::endl;
+
+#include "gams/utility/GPS_Position.h"
+
+using std::stringstream;
+
+gams::algorithms::Follow::Follow (
+  const Madara::Knowledge_Record& id,
+  const Madara::Knowledge_Record& delay,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  platforms::Base * platform,
-  variables::Sensors * sensors,
-  variables::Self * self,
-  variables::Devices * devices)
-  : Base (knowledge, platform, sensors, self, devices)
+  platforms::Base * platform, variables::Sensors * sensors,
+  variables::Self * self) :
+  Base (knowledge, platform, sensors, self), next_position_ (DBL_MAX),
+  delay_ (delay.to_integer ())
 {
+  stringstream location_string;
+  location_string << "device." << id.to_integer () << ".location";
+  target_location_.set_name (location_string.str (), *knowledge, 3);
 }
 
-gams::algorithms::area_coverage::Base_Area_Coverage::~Base_Area_Coverage ()
+gams::algorithms::Follow::~Follow ()
 {
 }
 
 void
-gams::algorithms::area_coverage::Base_Area_Coverage::operator= (
-  const Base_Area_Coverage & rhs)
+gams::algorithms::Follow::operator= (const Follow & rhs)
 {
   if (this != &rhs)
   {
-    this->next_position_ = rhs.next_position_;
     this->Base::operator= (rhs);
+    this->target_location_ = rhs.target_location_;
+    this->next_position_ = rhs.next_position_;
+    this->previous_locations_ = rhs.previous_locations_;
+    this->delay_ = rhs.delay_;
   }
 }
 
 int
-gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
+gams::algorithms::Follow::analyze (void)
 {
+  static utility::GPS_Position prev;
+  utility::GPS_Position current;
+  current.from_container (target_location_);
+
+  // if target agent has moved
+  if (current.distance_to (prev) > 1.0)
+  {
+    previous_locations_.push (current);
+    prev = current;
+  }
+
   ++executions_;
   return 0;
 }
-
+      
 int
-gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
+gams::algorithms::Follow::execute (void)
 {
-  platform_->move(next_position_);
+  if (next_position_.latitude () != DBL_MAX)
+    platform_->move (next_position_);
+  
   return 0;
 }
 
 int
-gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
+gams::algorithms::Follow::plan (void)
 {
-  // generate new next position if necessary
-  utility::GPS_Position current;
-  current.from_container (self_->device.location);
-  if (current.approximately_equal(next_position_,
-    platform_->get_gps_accuracy ()))
+  if (previous_locations_.size () == delay_)
   {
-    generate_new_position();
+    next_position_ = previous_locations_.front ();
+    previous_locations_.pop ();
   }
-
   return 0;
 }
