@@ -135,6 +135,9 @@ bool gps = false;
 // madara init
 string madara_commands = "";
 
+// number of coverages
+unsigned int num_coverages = 1;
+
 /**
  * Print out program usage
  **/
@@ -145,6 +148,8 @@ void print_usage (string prog_name)
   cerr << "   Creates VREP simulation environment of specific size and" << endl;
   cerr << "   launches simulated gams agents" << endl;
   cerr << endl;
+  cerr << "   [-c | --coverages <number>]" << endl;
+  cerr << "       number of coverages to collect data for" << endl;
   cerr << "   [-g | --gps]" << endl;
   cerr << "       use gps coords (instead of vrep)" << endl;
   cerr << "   [-l | --log-level <number>]" << endl;
@@ -172,7 +177,14 @@ void handle_arguments (int argc, char** argv)
   {
     std::string arg1 (argv[i]);
 
-    if (arg1 == "-g" || arg1 == "--gps")
+    if (arg1 == "-c" || arg1 == "--coverages")
+    {
+      if (i + 1 < argc && argv[i + 1][0] != '-')
+        sscanf (argv[i + 1], "%u", &num_coverages);
+      else
+        print_usage (argv[0]);
+    }
+    else if (arg1 == "-g" || arg1 == "--gps")
     {
       gps = true;
     }
@@ -438,7 +450,7 @@ void start_simulator (const int & client_id,
 {
   // wait for all processes to get up
   std::stringstream buffer;
-  buffer << "S0.init";
+  buffer << "vrep_ready = 1 && S0.init";
   for (unsigned int i = 1; i < num_agents; ++i)
     buffer << " && S" << i << ".init";
   string expression = buffer.str ();
@@ -465,9 +477,6 @@ void
 time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge, 
   const Search_Area& search)
 {
-  // record start time
-  time_t start = time (NULL);
-
   // get sensors and discrete area
   GPS_Position origin;
   Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
@@ -477,34 +486,46 @@ time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
   const set<Position> valid_positions = coverage_sensor.discretize_search_area (
     search);
 
-  // check for all covered
-  size_t iter = 0;
-  unsigned int num_not_covered = 1;
-  while (num_not_covered > 0)
-  {
-    num_not_covered = 0;
-    Madara::Utility::sleep (1);
+  // record start time
+  time_t start = time (NULL);
 
+  // check for multiple rounds of coverage
+  for (unsigned int i = 0; i < num_coverages; ++i)
+  {
+    time_t inner_start = time (NULL);
+
+    unsigned int num_not_covered = 1;
+    while (num_not_covered > 0)
+    {
+      Madara::Utility::sleep (1);
+
+      num_not_covered = 0;
+      for (set<Position>::const_iterator it = valid_positions.begin ();
+        it != valid_positions.end (); ++it)
+      {
+        if (coverage_sensor.get_value (*it) == 0)
+          ++num_not_covered;
+      }
+
+      double coverage = double(valid_positions.size() - num_not_covered) / 
+        valid_positions.size ();
+      cout << "coverage: " << (coverage * 100) << "%" << endl;
+    }
+  
+    // find complete time
+    time_t inner_end = time (NULL);
+    cout << inner_end - inner_start << " seconds for full coverage " << (i + 1) << endl;
+
+    // reset coverage
     for (set<Position>::const_iterator it = valid_positions.begin ();
       it != valid_positions.end (); ++it)
     {
-      if (coverage_sensor.get_value (*it) == 0)
-        ++num_not_covered;
-    }
-    cout << "not covered: " << num_not_covered << endl;
-
-    ++iter;
-    if (iter == 10)
-    {
-      //knowledge.print();
-      iter = 0;
+      coverage_sensor.set_value (*it, 0);
     }
   }
 
-  // find complete time
   time_t end = time (NULL);
-
-  cout << end - start << " seconds for full coverage" << endl;
+  cout << end - start << " seconds for " << num_coverages << " full coverages" << endl;
 }
 
 /**
