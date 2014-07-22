@@ -114,7 +114,7 @@ gams::utility::Region::is_in_region (const GPS_Position & p) const
 
   // check if point in polygon code from 
   // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-  unsigned int i, j;
+  size_t i, j;
   bool ret = false;
   for (i = 0, j = points.size() - 1; i < points.size(); j = i++)
   {
@@ -232,8 +232,8 @@ gams::utility::Region::get_area () const
 
   // perform calculations with cartesian points
   double area = 0.0;
-  unsigned int i, j, k;
-  unsigned int num_points = cart_points.size ();
+  size_t i, j, k;
+  size_t num_points = cart_points.size ();
   for (i = 1, j = 2, k = 0; i < num_points; ++i, ++j, ++k)
   {
     area += cart_points[i].x *

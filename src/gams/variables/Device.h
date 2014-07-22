@@ -104,16 +104,22 @@ namespace gams
        **/
       void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
         const Madara::Knowledge_Record::Integer& id);
-
-      /// the minimum altitude for this device
-      Madara::Knowledge_Engine::Containers::Double min_alt;
-
-      /// the location, usually encoded in GPS, for this device
-      Madara::Knowledge_Engine::Containers::Native_Double_Array location;
       
-      /// the source location
-      Madara::Knowledge_Engine::Containers::Native_Double_Array source;
+      /// the battery indicator for this device
+      Madara::Knowledge_Engine::Containers::Integer battery_remaining;
+
+      /// indicator for whether or not the device is busy with a mission
+      Madara::Knowledge_Engine::Containers::Integer bridge_id;
+
+      /// device specific command
+      Madara::Knowledge_Engine::Containers::String command;
+
+      /// number of arguments for command
+      Madara::Knowledge_Engine::Containers::Vector command_args;
       
+      /// indicator for type of area coverage requested of the device
+      Madara::Knowledge_Engine::Containers::String coverage_type;
+
       /// the destination location
       Madara::Knowledge_Engine::Containers::Native_Double_Array dest;
       
@@ -123,29 +129,23 @@ namespace gams
       /// the mobility indicator for this device (true if mobile)
       Madara::Knowledge_Engine::Containers::Integer is_mobile;
 
-      /// the battery indicator for this device
-      Madara::Knowledge_Engine::Containers::Integer battery_remaining;
-
-      /// indicator for whether or not the device is busy with a mission
-      Madara::Knowledge_Engine::Containers::Integer bridge_id;
-
-      /// indicator for type of area coverage requested of the device
-      Madara::Knowledge_Engine::Containers::String coverage_type;
-
+      /// the location, usually encoded in GPS, for this device
+      Madara::Knowledge_Engine::Containers::Native_Double_Array location;
+      
+      /// the minimum altitude for this device
+      Madara::Knowledge_Engine::Containers::Double min_alt;
+      
       /// indicator for next type of area coverage requested (queue like)
       Madara::Knowledge_Engine::Containers::String next_coverage_type;
 
       /// indicator for next assigned search area id
       Madara::Knowledge_Engine::Containers::Integer search_area_id;
 
+      /// the source location
+      Madara::Knowledge_Engine::Containers::Native_Double_Array source;
+      
       /// indicator for temperature
       Madara::Knowledge_Engine::Containers::Double temperature;
-
-      /// device specific command
-      Madara::Knowledge_Engine::Containers::String command;
-
-      /// number of arguments for command
-      Madara::Knowledge_Engine::Containers::Vector command_args;
 
       /// container for accents
       Accents accents;

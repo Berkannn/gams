@@ -164,7 +164,7 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::compute_waypoints (
       for(size_t i = 1; i < num_edges && intercept_idx < 2; ++i)
       {
         // check current vertex for intercept
-        int cur_vertex = (longest_edge + i) % num_edges;
+        int cur_vertex = (longest_edge + i) % (int)num_edges;
 
         // beginning and end vertex of intersecing line segment
         const utility::Position p_n_0 = positions[cur_vertex];

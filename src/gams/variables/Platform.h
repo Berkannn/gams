@@ -106,22 +106,28 @@ namespace gams
       std::string name;
       
       /// the device-specific variables
-      Device device;
+      //Device device;
       
-      /// status flag for ok
-      Madara::Knowledge_Engine::Containers::Integer ok;
-
-      /// status flag for waiting
-      Madara::Knowledge_Engine::Containers::Integer waiting;
+      /// status flag for number of communication channels available
+      Madara::Knowledge_Engine::Containers::Integer communication_available;
 
       /// status flag for deadlocked
       Madara::Knowledge_Engine::Containers::Integer deadlocked;
-
+      
       /// status flag for failed
       Madara::Knowledge_Engine::Containers::Integer failed;
+      
+      /// status flag for the detection of active spoofing of GPS
+      Madara::Knowledge_Engine::Containers::Integer gps_spoofed;
+
+      /// status flag for full movement availability
+      Madara::Knowledge_Engine::Containers::Integer movement_available;
 
       /// status flag for moving to a location
       Madara::Knowledge_Engine::Containers::Integer moving;
+      
+      /// status flag for ok
+      Madara::Knowledge_Engine::Containers::Integer ok;
       
       /// status flag for paused while moving to a location
       Madara::Knowledge_Engine::Containers::Integer paused_moving;
@@ -132,17 +138,11 @@ namespace gams
       /// status flag for reduced movement available
       Madara::Knowledge_Engine::Containers::Integer reduced_movement;
 
-      /// status flag for number of communication channels available
-      Madara::Knowledge_Engine::Containers::Integer communication_available;
-
       /// status flag for full sensor availability
       Madara::Knowledge_Engine::Containers::Integer sensors_available;
 
-      /// status flag for full movement availability
-      Madara::Knowledge_Engine::Containers::Integer movement_available;
-
-      /// status flag for the detection of active spoofing of GPS
-      Madara::Knowledge_Engine::Containers::Integer gps_spoofed;
+      /// status flag for waiting
+      Madara::Knowledge_Engine::Containers::Integer waiting;
 
     protected:
       /**

@@ -107,25 +107,25 @@ namespace gams
       std::string name;
       
       /// the device-specific variables
-      Device device;
-
-      /// status flag for ok
-      Madara::Knowledge_Engine::Containers::Integer ok;
+      //Device device;
       
-      /// status flag for ok
-      Madara::Knowledge_Engine::Containers::Integer paused;
-
-      /// status flag for waiting
-      Madara::Knowledge_Engine::Containers::Integer waiting;
-
       /// status flag for deadlocked
       Madara::Knowledge_Engine::Containers::Integer deadlocked;
 
       /// status flag for failed
       Madara::Knowledge_Engine::Containers::Integer failed;
 
+      /// status flag for ok
+      Madara::Knowledge_Engine::Containers::Integer ok;
+      
+      /// status flag for ok
+      Madara::Knowledge_Engine::Containers::Integer paused;
+      
       /// status flag for unknown
       Madara::Knowledge_Engine::Containers::Integer unknown;
+
+      /// status flag for waiting
+      Madara::Knowledge_Engine::Containers::Integer waiting;
 
     protected:
       /**

@@ -59,7 +59,7 @@
 
 #include "gams/GAMS_Export.h"
 #include "madara/knowledge_engine/containers/Integer.h"
-#include "madara/knowledge_engine/containers/Double_Vector.h"
+#include "madara/knowledge_engine/containers/Native_Double_Vector.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
@@ -105,7 +105,7 @@ namespace gams
       Madara::Knowledge_Engine::Containers::Integer type;
 
       /// vertices of the convex polygon
-      std::vector<Madara::Knowledge_Engine::Containers::Double_Vector> vertices;
+      std::vector<Madara::Knowledge_Engine::Containers::Native_Double_Vector> vertices;
 
       /// region identifier
       std::string name;

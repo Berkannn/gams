@@ -86,7 +86,7 @@ void
 gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::generate_new_position ()
 {
   // select new edge
-  int num_edges = region_.points.size();
+  int num_edges = (int)region_.points.size();
   int target_edge = rand() % num_edges;
 
   // get endpoints
