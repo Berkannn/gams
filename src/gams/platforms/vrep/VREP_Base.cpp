@@ -207,7 +207,7 @@ gams::platforms::VREP_Base::move (const utility::GPS_Position & position,
   gps_to_vrep (position, dest_pos);
   position_to_array (dest_pos, dest_arr);
   if (dest_arr[2] == 0)
-    dest_arr[2] = 0.08;
+    dest_arr[2] = (simxFloat)0.08;
 
   // send movement command
   simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, dest_arr,
@@ -334,7 +334,7 @@ gams::platforms::VREP_Base::set_initial_position () const
     pos[0] = knowledge_->get (".initial_x").to_double ();
     pos[1] = knowledge_->get (".initial_y").to_double ();
   }
-  pos[2] = 0.08;
+  pos[2] = (simxFloat) 0.08;
 
   // send set object position command
   simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,

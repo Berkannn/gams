@@ -117,6 +117,9 @@ namespace gams
       /// number of arguments for command
       Madara::Knowledge_Engine::Containers::Vector command_args;
       
+      /// device specific command
+      Madara::Knowledge_Engine::Containers::String coverage_type;
+
       /// desired altitude in meters
       Madara::Knowledge_Engine::Containers::Double desired_altitude;
 
