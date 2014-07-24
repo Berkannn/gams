@@ -183,6 +183,7 @@ void handle_arguments (int argc, char** argv)
         sscanf (argv[i + 1], "%u", &num_coverages);
       else
         print_usage (argv[0]);
+      ++i;
     }
     else if (arg1 == "-g" || arg1 == "--gps")
     {
@@ -450,7 +451,7 @@ void start_simulator (const int & client_id,
 {
   // wait for all processes to get up
   std::stringstream buffer;
-  buffer << "vrep_ready = 1 && S0.init";
+  buffer << "(vrep_ready = 1) && S0.init";
   for (unsigned int i = 1; i < num_agents; ++i)
     buffer << " && S" << i << ".init";
   string expression = buffer.str ();

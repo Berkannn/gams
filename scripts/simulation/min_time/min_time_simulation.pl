@@ -6,9 +6,10 @@ $gams_root = $ENV{GAMS_ROOT};
 $time = 3600;
 $madara_debug = 0;
 $period = 1;
-$num = 10;
+$num = 6;
 $sim = "min_time";
 $area = "small";
 $plants = "search_area.1";
+$num_coverages = 10;
 
-simulation::run($num, $time, $period, $sim, $area, $madara_debug, $plants);
+simulation::run($num, $time, $period, $sim, $area, $madara_debug, $plants, $num_coverages);

@@ -54,6 +54,7 @@
 
 #include "gams/algorithms/area_coverage/Base_Area_Coverage.h"
 
+#include <map>
 #include <set>
 #include <string>
 
@@ -103,6 +104,9 @@ namespace gams
         /// get utility of moving from one index position to another
         virtual double get_utility (const utility::Position& start,
           const utility::Position& end, std::set<utility::Position>& online);
+
+        /// review if last move was good, did we hit all cells we said we would
+        virtual void review_last_move ();
   
         /// Search Area to cover
         utility::Search_Area search_area_;
@@ -112,6 +116,12 @@ namespace gams
   
         /// discretized positions in search area
         std::set<utility::Position> valid_positions_;
+
+        /// positions we will be passing through and their previous values
+        std::map<utility::Position, double> position_value_map_;
+
+        /// time step of last position generation
+        unsigned int last_generation_;
       }; // class Min_Time_Area_Coverage
     } // namespace area_coverage
   } // namespace algorithms

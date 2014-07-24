@@ -7,7 +7,7 @@ my $term_suffix = "";
 
 sub run {
   # get arguments
-  my ($num, $time, $period, $sim, $area, $debug, $plants) = @_;
+  my ($num, $time, $period, $sim, $area, $debug, $plants, $num_coverages) = @_;
   my $osname = $^O;
   my $vreproot = $ENV{"VREP_ROOT"};
   
@@ -53,6 +53,10 @@ sub run {
   if ($plants)
   {
     $cmd = "$cmd -p $plants";
+  }
+  if ($num_coverages)
+  {
+    $cmd = "$cmd -c $num_coverages";
   }
   
   if ($osname eq "MSWin32")

@@ -59,20 +59,20 @@
 #include "gams/utility/Position.h"
 
 #include <iostream>
-using std::cerr;
-using std::endl;
 #include <cmath>
 #include <string>
-using std::string;
 #include <set>
-using std::set;
+#include <map>
+
+using std::cerr;
+using std::endl;
 
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   Min_Time_Area_Coverage (
   const Madara::Knowledge_Record& search_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform, variables::Sensors * sensors,
-  variables::Self * self, const string& algo_name) :
+  variables::Self * self, const std::string& algo_name) :
   Base_Area_Coverage (knowledge, platform, sensors, self),
   search_area_ (
     utility::parse_search_area (*knowledge, search_id.to_string ())),
@@ -95,7 +95,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
   knowledge_->lock ();
-  for (set<utility::Position>::iterator it = valid_positions_.begin ();
+  for (std::set<utility::Position>::iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
     min_time_.set_value (*it, min_time_.get_value (*it) + 1, NO_BROADCAST);
@@ -122,11 +122,13 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::operator= (
 int
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::analyze ()
 {
+  ++executions_;
+
   // increment time since last seen for all cells
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
   knowledge_->lock ();
-  for (set<utility::Position>::iterator it = valid_positions_.begin ();
+  for (std::set<utility::Position>::iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
     min_time_.set_value (*it, min_time_.get_value (*it) + 1, NO_BROADCAST);
@@ -137,6 +139,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::analyze ()
   utility::GPS_Position current;
   current.from_container (self_->device.location);
   min_time_.set_value (current, 0);
+  position_value_map_.erase (min_time_.get_index_from_gps (current));
   
   return 0;
 }
@@ -145,17 +148,20 @@ void
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   generate_new_position ()
 {
+  review_last_move ();
+  last_generation_ = executions_;
+
   // check each possible destination for max utility
   double max_util = -DBL_MAX;
-  set<utility::Position> online;
+  std::set<utility::Position> online;
   utility::GPS_Position current;
   current.from_container (self_->device.location);
   next_position_ = current;
   utility::Position cur_index = min_time_.get_index_from_gps (current);
-  for (set<utility::Position>::const_iterator it = valid_positions_.begin ();
+  for (std::set<utility::Position>::const_iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
-    set<utility::Position> cur_online;
+    std::set<utility::Position> cur_online;
     double util = get_utility (cur_index, *it, cur_online);
     if (util > max_util)
     {
@@ -167,9 +173,10 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   }
 
   // 0 out the cells along line
-  for (set<utility::Position>::iterator it = online.begin ();
+  for (std::set<utility::Position>::iterator it = online.begin ();
     it != online.end (); ++it)
   {
+    position_value_map_[*it] = min_time_.get_value (*it);
     min_time_.set_value (*it, 0.0);
   }
 }
@@ -177,7 +184,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
 double
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
   const utility::Position& start, const utility::Position& end,
-  set<utility::Position>& online)
+  std::set<utility::Position>& online)
 {
   /**
    * check each valid position and add its value to utility if it is along
@@ -186,7 +193,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
   double util = 0.0;
   const double radius =
     min_time_.get_range () / min_time_.get_discretization ();
-  for (set<utility::Position>::const_iterator it = valid_positions_.begin ();
+  for (std::set<utility::Position>::const_iterator it = valid_positions_.begin ();
     it != valid_positions_.end (); ++it)
   {
     if (start.distance_to_2d (end, *it) < radius)
@@ -200,4 +207,20 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
   
   // modify the utility based on the distance that will be travelled
   return util / sqrt(start.distance_to_2d (end) + 1);
+}
+
+void
+gams::algorithms::area_coverage::Min_Time_Area_Coverage::review_last_move ()
+{
+  double expected = executions_ - last_generation_;
+  for (std::map<utility::Position, double>::const_iterator it = 
+    position_value_map_.begin (); it != position_value_map_.end ();
+    ++it)
+  {
+    if (min_time_.get_value (it->first) == expected)
+      min_time_.set_value (it->first,
+        min_time_.get_value (it->first) + it->second);
+  }
+
+  position_value_map_.clear ();
 }
