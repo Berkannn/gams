@@ -93,9 +93,13 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib, port/java/usi
 project (gams_jar) : using_madara, using_ace {
   requires += java
   
-  prebuild += javac -classpath $MADARA_ROOT/lib/Madara.jar -sourcepath port/java/src port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java
-  
   postbuild += jar cf lib/gams.jar -C port/java/src .
+  
+  specific (prop:windows) {
+    prebuild += javac -classpath %MADARA_ROOT%/lib/Madara.jar -sourcepath port/java/src port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java
+  } else {
+    prebuild += javac -classpath $MADARA_ROOT/lib/Madara.jar -sourcepath port/java/src port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java
+  }
 
   Documentation_Files {
     port/java/src/*.java

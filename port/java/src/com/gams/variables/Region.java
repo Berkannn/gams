@@ -51,25 +51,24 @@ import com.madara.Variables;
 import com.madara.containers.String;
 import com.madara.containers.Vector;
 
-public class Accent extends GamsJNI
+public class Region extends GamsJNI
 {	
-  private native long jni_Accent();
-  private native long jni_Accent(long cptr);
-  private static native void jni_freeAccent(long cptr);
+  private native long jni_Region();
+  private native long jni_Region(long cptr);
+  private static native void jni_freeRegion(long cptr);
   private native java.lang.String jni_getName(long cptr);
   private native void jni_init(long cptr, long type, long kb, java.lang.String name);
   private native java.lang.String jni_toString(long cptr);
-  private native long jni_getCommand(long cptr);
-  private native long jni_getArgs(long cptr);
+  private native long jni_getVertices(long cptr);
 
-  public Accent()
+  public Region()
   {
-    setCPtr(jni_Accent());
+    setCPtr(jni_Region());
   }
 
-  public Accent(Accent input)
+  public Region(Region input)
   {
-    setCPtr(jni_Accent(input.getCPtr()));
+    setCPtr(jni_Region(input.getCPtr()));
   }
 
   /**
@@ -92,10 +91,10 @@ public class Accent extends GamsJNI
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
     
-    command = new com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    name = new com.madara.containers.Integer.fromPointer (
+      jni_getName (getCPtr ()));
+    vertices = new com.madara.containers.Integer.fromPointer (
+      jni_getVertices (getCPtr ()));
   }
 
   /**
@@ -108,21 +107,21 @@ public class Accent extends GamsJNI
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
     
-    command = new com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    name = new com.madara.containers.Integer.fromPointer (
+      jni_getName (getCPtr ()));
+    vertices = new com.madara.containers.Integer.fromPointer (
+      jni_getVertices (getCPtr ()));
   }
 
   /**
    * The current accent command
    */
-  public com.madara.containers.String command;
+  public com.madara.containers.String name;
 
   /**
    * The current accent command arguments
    */
-  public com.madara.containers.Vector args;
+  public com.madara.containers.Vector vertices;
 
   /**
    * Converts the value to a string
@@ -140,7 +139,7 @@ public class Accent extends GamsJNI
    */
   public void free()
   {
-    jni_freeAccent(getCPtr());
+    jni_freeRegion(getCPtr());
   }
 }
 

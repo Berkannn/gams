@@ -50,11 +50,11 @@ import com.madara.KnowledgeBase;
 import com.madara.Variables;
 import com.madara.containers.Integer;
 
-public class Device extends GamsJNI
+public class Algorithm extends GamsJNI
 {	
-  private native long jni_Device();
-  private native long jni_Device(long cptr);
-  private static native void jni_freeDevice(long cptr);
+  private native long jni_Algorithm();
+  private native long jni_Algorithm(long cptr);
+  private static native void jni_freeAlgorithm(long cptr);
   private native java.lang.String jni_getName(long cptr);
   private native void jni_init(long cptr, long type, long kb, java.lang.String name);
   private native java.lang.String jni_toString(long cptr);
@@ -65,14 +65,14 @@ public class Device extends GamsJNI
   private native long jni_getUnknown(long cptr);
   private native long jni_getWaiting(long cptr);
 
-  public Device()
+  public Algorithm()
   {
-    setCPtr(jni_Device());
+    setCPtr(jni_Algorithm());
   }
 
-  public Device(Device input)
+  public Algorithm(Algorithm input)
   {
-    setCPtr(jni_Device(input.getCPtr()));
+    setCPtr(jni_Algorithm(input.getCPtr()));
   }
 
   /**
@@ -94,11 +94,6 @@ public class Device extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    command = new com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
   }
 
   /**
@@ -110,11 +105,6 @@ public class Device extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    command = new com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
   }
 
   /**
@@ -163,7 +153,7 @@ public class Device extends GamsJNI
    */
   public void free()
   {
-    jni_freeDevice(getCPtr());
+    jni_freeAlgorithm(getCPtr());
   }
 }
 

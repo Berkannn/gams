@@ -101,10 +101,30 @@ public class Platform extends GamsJNI
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
     
-    command = new com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    communicationAvailable = new com.madara.containers.Integer.fromPointer (
+      jni_getCommunicationAvailable (getCPtr ()));
+    deadlocked = new com.madara.containers.Integer.fromPointer (
+      jni_getDeadlocked (getCPtr ()));
+    failed = new com.madara.containers.Integer.fromPointer (
+      jni_getFailed (getCPtr ()));
+    gpsSpoofed = new com.madara.containers.Integer.fromPointer (
+      jni_getGpsSpoofed (getCPtr ()));
+    movementAvailable = new com.madara.containers.Integer.fromPointer (
+      jni_getMovementAvailable (getCPtr ()));
+    moving = new com.madara.containers.Integer.fromPointer (
+      jni_getMoving (getCPtr ()));
+    ok = new com.madara.containers.Integer.fromPointer (
+      jni_getOk (getCPtr ()));
+    pausedMoving = new com.madara.containers.Integer.fromPointer (
+      jni_getPausedMoving (getCPtr ()));
+    reducedSensing = new com.madara.containers.Integer.fromPointer (
+      jni_getReducedSensing (getCPtr ()));
+    reducedMovement = new com.madara.containers.Integer.fromPointer (
+      jni_getReducedMovement (getCPtr ()));
+    sensorsAvailable = new com.madara.containers.Integer.fromPointer (
+      jni_getSensorsAvailable (getCPtr ()));
+    waiting = new com.madara.containers.Integer.fromPointer (
+      jni_getWaiting (getCPtr ()));
   }
 
   /**
@@ -117,10 +137,30 @@ public class Platform extends GamsJNI
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
     
-    command = new com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    communicationAvailable = new com.madara.containers.Integer.fromPointer (
+      jni_getCommunicationAvailable (getCPtr ()));
+    deadlocked = new com.madara.containers.Integer.fromPointer (
+      jni_getDeadlocked (getCPtr ()));
+    failed = new com.madara.containers.Integer.fromPointer (
+      jni_getFailed (getCPtr ()));
+    gpsSpoofed = new com.madara.containers.Integer.fromPointer (
+      jni_getGpsSpoofed (getCPtr ()));
+    movementAvailable = new com.madara.containers.Integer.fromPointer (
+      jni_getMovementAvailable (getCPtr ()));
+    moving = new com.madara.containers.Integer.fromPointer (
+      jni_getMoving (getCPtr ()));
+    ok = new com.madara.containers.Integer.fromPointer (
+      jni_getOk (getCPtr ()));
+    pausedMoving = new com.madara.containers.Integer.fromPointer (
+      jni_getPausedMoving (getCPtr ()));
+    reducedSensing = new com.madara.containers.Integer.fromPointer (
+      jni_getReducedSensing (getCPtr ()));
+    reducedMovement = new com.madara.containers.Integer.fromPointer (
+      jni_getReducedMovement (getCPtr ()));
+    sensorsAvailable = new com.madara.containers.Integer.fromPointer (
+      jni_getSensorsAvailable (getCPtr ()));
+    waiting = new com.madara.containers.Integer.fromPointer (
+      jni_getWaiting (getCPtr ()));
   }
 
   /**
