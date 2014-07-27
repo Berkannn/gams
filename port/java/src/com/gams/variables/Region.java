@@ -91,9 +91,7 @@ public class Region extends GamsJNI
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
     
-    name = new com.madara.containers.Integer.fromPointer (
-      jni_getName (getCPtr ()));
-    vertices = new com.madara.containers.Integer.fromPointer (
+    vertices = com.madara.containers.Vector.fromPointer (
       jni_getVertices (getCPtr ()));
   }
 
@@ -107,16 +105,9 @@ public class Region extends GamsJNI
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
     
-    name = new com.madara.containers.Integer.fromPointer (
-      jni_getName (getCPtr ()));
-    vertices = new com.madara.containers.Integer.fromPointer (
+    vertices = com.madara.containers.Vector.fromPointer (
       jni_getVertices (getCPtr ()));
   }
-
-  /**
-   * The current accent command
-   */
-  public com.madara.containers.String name;
 
   /**
    * The current accent command arguments

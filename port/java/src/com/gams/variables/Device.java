@@ -76,8 +76,8 @@ public class Device extends GamsJNI
   private native long jni_getSource(long cptr);
   private native long jni_getTemperature(long cptr);
 
-  private long id;
-  
+  private boolean manageMemory = true;
+
   public Device()
   {
     setCPtr(jni_Device());
@@ -86,6 +86,35 @@ public class Device extends GamsJNI
   public Device(Device input)
   {
     setCPtr(jni_Device(input.getCPtr()));
+  }
+
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @return a new java instance of the underlying pointer
+   */
+  public static Device fromPointer(long cptr)
+  {
+    Device ret = new Device();
+    ret.manageMemory = true;
+    ret.setCPtr(cptr);
+    return ret;
+  }
+
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @param shouldManage  if true, manage the pointer
+   * @return a new java instance of the underlying pointer
+   */
+  public static Device fromPointer(long cptr, boolean shouldManage)
+  {
+    Device ret = new Device();
+    ret.manageMemory=shouldManage;
+    ret.setCPtr(cptr);
+    return ret;
   }
 
   /**
@@ -98,33 +127,33 @@ public class Device extends GamsJNI
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
     
-    batteryRemaining = new com.madara.containers.Integer.fromPointer (
+    batteryRemaining = com.madara.containers.Integer.fromPointer (
       jni_getBatteryRemaining (getCPtr ()));
-    bridgeId = new com.madara.containers.Integer.fromPointer (
+    bridgeId = com.madara.containers.Integer.fromPointer (
       jni_getBridgeId (getCPtr ()));
-    command = new com.madara.containers.String.fromPointer (
+    command = com.madara.containers.String.fromPointer (
       jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
+    args = com.madara.containers.Vector.fromPointer (
       jni_getArgs (getCPtr ()));
-    coverageType = new com.madara.containers.String.fromPointer (
+    coverageType = com.madara.containers.String.fromPointer (
       jni_getCoverageType (getCPtr ()));
-    dest = new com.madara.containers.NativeDoubleVector.fromPointer (
+    dest = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getDest (getCPtr ()));
-    home = new com.madara.containers.NativeDoubleVector.fromPointer (
+    home = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getHome (getCPtr ()));
-    isMobile = new com.madara.containers.Integer.fromPointer (
-      jni_getMobile (getCPtr ()));
-    location = new com.madara.containers.NativeDoubleVector.fromPointer (
+    isMobile = com.madara.containers.Integer.fromPointer (
+      jni_getIsMobile (getCPtr ()));
+    location = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getLocation (getCPtr ()));
-    minAlt = new com.madara.containers.Double.fromPointer (
+    minAlt = com.madara.containers.Double.fromPointer (
       jni_getMinAlt (getCPtr ()));
-    nextCoverageType = new com.madara.containers.String.fromPointer (
+    nextCoverageType = com.madara.containers.String.fromPointer (
       jni_getNextCoverageType (getCPtr ()));
-    searchAreaId = new com.madara.containers.Integer.fromPointer (
+    searchAreaId = com.madara.containers.Integer.fromPointer (
       jni_getSearchAreaId (getCPtr ()));
-    source = new com.madara.containers.NativeDoubleVector.fromPointer (
+    source = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getSource (getCPtr ()));
-    temperature = new com.madara.containers.Double.fromPointer (
+    temperature = com.madara.containers.Double.fromPointer (
       jni_getTemperature (getCPtr ()));
   }
 
@@ -138,33 +167,33 @@ public class Device extends GamsJNI
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
     
-    batteryRemaining = new com.madara.containers.Integer.fromPointer (
+    batteryRemaining = com.madara.containers.Integer.fromPointer (
       jni_getBatteryRemaining (getCPtr ()));
-    bridgeId = new com.madara.containers.Integer.fromPointer (
+    bridgeId = com.madara.containers.Integer.fromPointer (
       jni_getBridgeId (getCPtr ()));
-    command = new com.madara.containers.String.fromPointer (
+    command = com.madara.containers.String.fromPointer (
       jni_getCommand (getCPtr ()));
-    args = new com.madara.containers.Vector.fromPointer (
+    args = com.madara.containers.Vector.fromPointer (
       jni_getArgs (getCPtr ()));
-    coverageType = new com.madara.containers.String.fromPointer (
+    coverageType = com.madara.containers.String.fromPointer (
       jni_getCoverageType (getCPtr ()));
-    dest = new com.madara.containers.NativeDoubleVector.fromPointer (
+    dest = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getDest (getCPtr ()));
-    home = new com.madara.containers.NativeDoubleVector.fromPointer (
+    home = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getHome (getCPtr ()));
-    isMobile = new com.madara.containers.Integer.fromPointer (
-      jni_getMobile (getCPtr ()));
-    location = new com.madara.containers.NativeDoubleVector.fromPointer (
+    isMobile = com.madara.containers.Integer.fromPointer (
+      jni_getIsMobile (getCPtr ()));
+    location = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getLocation (getCPtr ()));
-    minAlt = new com.madara.containers.Double.fromPointer (
+    minAlt = com.madara.containers.Double.fromPointer (
       jni_getMinAlt (getCPtr ()));
-    nextCoverageType = new com.madara.containers.String.fromPointer (
+    nextCoverageType = com.madara.containers.String.fromPointer (
       jni_getNextCoverageType (getCPtr ()));
-    searchAreaId = new com.madara.containers.Integer.fromPointer (
+    searchAreaId = com.madara.containers.Integer.fromPointer (
       jni_getSearchAreaId (getCPtr ()));
-    source = new com.madara.containers.NativeDoubleVector.fromPointer (
+    source = com.madara.containers.NativeDoubleVector.fromPointer (
       jni_getSource (getCPtr ()));
-    temperature = new com.madara.containers.Double.fromPointer (
+    temperature = com.madara.containers.Double.fromPointer (
       jni_getTemperature (getCPtr ()));
   }
 
@@ -254,7 +283,10 @@ public class Device extends GamsJNI
    */
   public void free()
   {
-    jni_freeDevice(getCPtr());
+    if (manageMemory)
+    {
+      jni_freeDevice(getCPtr());
+    }
   }
 }
 

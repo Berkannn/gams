@@ -48,38 +48,28 @@ package com.gams.variables;
 import com.gams.GamsJNI;
 import com.madara.KnowledgeBase;
 import com.madara.Variables;
+import com.madara.containers.Integer;
 import com.madara.containers.String;
 import com.madara.containers.Vector;
 
-public class Accent extends GamsJNI
+public class Self extends GamsJNI
 {	
-  private native long jni_Accent();
-  private native long jni_Accent(long cptr);
-  private static native void jni_freeAccent(long cptr);
-  private native java.lang.String jni_getName(long cptr);
+  private native long jni_Self();
+  private native long jni_Self(long cptr);
+  private static native void jni_freeSelf(long cptr);
   private native void jni_init(long cptr, long type, long kb, java.lang.String name);
   private native java.lang.String jni_toString(long cptr);
-  private native long jni_getCommand(long cptr);
-  private native long jni_getArgs(long cptr);
+  private native long jni_getId(long cptr);
+  private native long jni_getDevice(long cptr);
 
-  public Accent()
+  public Self()
   {
-    setCPtr(jni_Accent());
+    setCPtr(jni_Self());
   }
 
-  public Accent(Accent input)
+  public Self(Self input)
   {
-    setCPtr(jni_Accent(input.getCPtr()));
-  }
-
-  /**
-   * Gets the name of the variable
-   *
-   * @param  name of the variable within the context
-   */
-  public java.lang.String getName()
-  {
-    return jni_getName(getCPtr());
+    setCPtr(jni_Self(input.getCPtr()));
   }
 
   /**
@@ -92,10 +82,8 @@ public class Accent extends GamsJNI
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
     
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    id = Integer.fromPointer (jni_getId (getCPtr ()));
+    device = Device.fromPointer (jni_getDevice (getCPtr ()));
   }
 
   /**
@@ -107,23 +95,21 @@ public class Accent extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    
+    id = Integer.fromPointer (jni_getId (getCPtr ()));
+    device = Device.fromPointer (jni_getDevice (getCPtr ()));
   }
 
   /**
-   * The current accent command
+   * The device id
    */
-  public com.madara.containers.String command;
+  public com.madara.containers.Integer id;
 
   /**
-   * The current accent command arguments
+   * The device-specific variables
    */
-  public com.madara.containers.Vector args;
-
+  public Device device;
+  
   /**
    * Converts the value to a string
    *
@@ -140,7 +126,7 @@ public class Accent extends GamsJNI
    */
   public void free()
   {
-    jni_freeAccent(getCPtr());
+    jni_freeSelf(getCPtr());
   }
 }
 

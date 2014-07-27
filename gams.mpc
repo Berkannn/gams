@@ -90,7 +90,7 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib, port/java/usi
   }
 }
 
-project (gams_jar) : using_madara, using_ace {
+project (gams_jar) : using_gams, using_madara, using_ace {
   requires += java
   
   postbuild += jar cf lib/gams.jar -C port/java/src .

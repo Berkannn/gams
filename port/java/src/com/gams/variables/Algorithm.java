@@ -94,6 +94,13 @@ public class Algorithm extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
+    
+    deadlocked = Integer.fromPointer (jni_getDeadlocked (getCPtr ()));
+    failed = Integer.fromPointer (jni_getFailed (getCPtr ()));
+    ok = Integer.fromPointer (jni_getOk (getCPtr ()));
+    paused = Integer.fromPointer (jni_getPaused (getCPtr ()));
+    unknown = Integer.fromPointer (jni_getUnknown (getCPtr ()));
+    waiting = Integer.fromPointer (jni_getWaiting (getCPtr ()));
   }
 
   /**
@@ -105,6 +112,13 @@ public class Algorithm extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
+    
+    deadlocked = Integer.fromPointer (jni_getDeadlocked (getCPtr ()));
+    failed = Integer.fromPointer (jni_getFailed (getCPtr ()));
+    ok = Integer.fromPointer (jni_getOk (getCPtr ()));
+    paused = Integer.fromPointer (jni_getPaused (getCPtr ()));
+    unknown = Integer.fromPointer (jni_getUnknown (getCPtr ()));
+    waiting = Integer.fromPointer (jni_getWaiting (getCPtr ()));
   }
 
   /**
