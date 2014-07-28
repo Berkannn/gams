@@ -45,121 +45,141 @@
  **/
 
 /**
- * @file Mape_Loop.h
+ * @file Base_Controller.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the MAPE loop used to autonomously
- * control a UAS node.
+ * This file contains the preferred base controller for a GAMS control loop
  **/
 
-#ifndef   _GAMS_LOOP_H_
-#define   _GAMS_LOOP_H_
+#ifndef   _GAMS_BASE_CONTROLLER_H_
+#define   _GAMS_BASE_CONTROLLER_H_
 
 #include "gams/GAMS_Export.h"
 #include "gams/variables/Device.h"
 #include "gams/variables/Swarm.h"
 #include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
+#include "gams/variables/Algorithm.h"
+#include "gams/variables/Platform.h"
 #include "gams/algorithms/Base_Algorithm.h"
 #include "gams/platforms/Base_Platform.h"
-#include "madara/knowledge_engine/containers/Integer.h"
-#include "madara/knowledge_engine/containers/Double.h"
-#include "madara/knowledge_engine/containers/String.h"
-#include "madara/knowledge_engine/containers/Double_Vector.h"
-#include "madara/knowledge_engine/Knowledge_Base.h"
 
 namespace gams
 {
-  namespace controller
+  namespace controllers
   {
-    class GAMS_Export Mape_Loop
+    class GAMS_Export Base
     {
     public:
       /**
        * Constructor
        * @param   knowledge   The knowledge base to reference and mutate
        **/
-      Mape_Loop (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+      Base (Madara::Knowledge_Engine::Knowledge_Base & knowledge);
 
       /**
        * Destructor
        **/
-      ~Mape_Loop ();
+      ~Base ();
 
-      /**
-       * Defines the MAPE loop
-       **/
-      void define_mape (const std::string & loop =
-        "monitor (); analyze (); plan (); execute ()");
-      
       /**
        * Defines the monitor function (the M of MAPE). This function should
        * return a 0 unless the MAPE loop should stop.
-       * @param  func   the function to call
        **/
-      void define_monitor (
-        Madara::Knowledge_Record (*func) (
-          Madara::Knowledge_Engine::Function_Arguments &,
-          Madara::Knowledge_Engine::Variables &));
-      
+      virtual int monitor (void);
+
+      /**
+       * Analyzes the system to determine if platform or algorithm changes
+       * are necessary. This function should
+       * return a 0 unless the MAPE loop should stop.
+       **/
+      virtual int system_analyze (void);
+
       /**
        * Defines the analyze function (the A of MAPE). This function should
        * return a 0 unless the MAPE loop should stop.
-       * @param  func   the function to call
        **/
-      void define_analyze (
-        Madara::Knowledge_Record (*func) (
-          Madara::Knowledge_Engine::Function_Arguments &,
-          Madara::Knowledge_Engine::Variables &));
-      
+      virtual int analyze (void);
+
       /**
        * Defines the plan function (the P of MAPE). This function should
        * return a 0 unless the MAPE loop should stop.
-       * @param  func   the function to call
        **/
-      void define_plan (
-        Madara::Knowledge_Record (*func) (
-          Madara::Knowledge_Engine::Function_Arguments &,
-          Madara::Knowledge_Engine::Variables &));
-      
+      virtual int plan (void);
+
       /**
        * Defines the execute function (the E of MAPE). This function should
        * return a 0 unless the MAPE loop should stop.
-       * @param  func   the function to call
        **/
-      void define_execute (
-        Madara::Knowledge_Record (*func) (
-          Madara::Knowledge_Engine::Function_Arguments &,
-          Madara::Knowledge_Engine::Variables &));
-
-      /**
-       * Initializes global variable containers
-       * @param   id         node identifier
-       * @param   processes  processes
-       **/
-      void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const Madara::Knowledge_Record::Integer & id = 0,
-        const Madara::Knowledge_Record::Integer & processes = -1);
-
+      virtual int execute (void);
+     
       /**
        * Runs one iteration of the MAPE loop
        * @param  period       time between executions of the loop
        * @param  max_runtime  maximum runtime within the MAPE loop
        * @return  the result of the MAPE loop
        **/
-      Madara::Knowledge_Record run (double period = 0.5,
-        double max_runtime = -1);
+      int run (double period = 0.5, double max_runtime = -1);
+
+      /**
+       * Adds an accent algorithm
+       * @param  algorithm   the name of the accent algorithm to add
+       * @param  args        vector of knowledge record arguments
+       **/
+      void init_accent (const std::string & algorithm,
+        const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
+
+      /**
+       * Clears all accent algorithms
+       **/
+      void clear_accents (void);
+
+      /**
+       * Initializes an algorithm
+       * @param  algorithm   the name of the algorithm to run
+       * @param  args        vector of knowledge record arguments
+       **/
+      void init_algorithm (const std::string & algorithm,
+        const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
+      
+      /**
+       * Initializes the platform
+       * @param  platform   the name of the platform the controller is using
+       * @param  args        vector of knowledge record arguments
+       **/
+      void init_platform (const std::string & platform,
+        const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
+      
+      /**
+       * Initializes global variable containers
+       * @param   id         node identifier
+       * @param   processes  processes
+       **/
+      void init_vars (const Madara::Knowledge_Record::Integer & id = 0,
+        const Madara::Knowledge_Record::Integer & processes = -1);
 
     protected:
 
+      /// accents on the primary algorithm
+      algorithms::Algorithms accents_;
+
+      /// algorithm to perform
+      algorithms::Base * algorithm_;
+
+      /// Containers for algorithm information
+      variables::Algorithms algorithms_;
+      
       /// Containers for device-related variables
       variables::Devices devices_;
 
       /// knowledge base
       Madara::Knowledge_Engine::Knowledge_Base & knowledge_;
 
-      /// Compiled MAPE Mape_Loop
-      Madara::Knowledge_Engine::Compiled_Expression mape_loop_;
+      /// Platform on which the controller is running
+      platforms::Base * platform_;
+
+      /// Containers for platform information
+      variables::Platforms platforms_;
 
       /// Containers for self-referencing variables
       variables::Self self_;
@@ -173,4 +193,4 @@ namespace gams
   }
 }
 
-#endif // _GAMS_LOOP_H_
+#endif // _GAMS_BASE_CONTROLLER_H_

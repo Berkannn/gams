@@ -62,7 +62,7 @@ jstring JNICALL Java_com_gams_utility_GpsPosition_jni_1toString
 
   utility::Position * current = (utility::Position *) cptr;
   if (current)
-    result = env->NewStringUTF("GPS_Position");
+    result = env->NewStringUTF("GpsPosition");
 
   return result;
 }

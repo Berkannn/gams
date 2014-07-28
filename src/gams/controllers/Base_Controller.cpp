@@ -59,13 +59,13 @@ using std::endl;
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
-gams::controller::Base::Base (
+gams::controllers::Base::Base (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge)
   : algorithm_ (0), knowledge_ (knowledge), platform_ (0)
 {
 }
 
-gams::controller::Base::~Base ()
+gams::controllers::Base::~Base ()
 {
   delete algorithm_;
   delete platform_;
@@ -78,13 +78,13 @@ gams::controller::Base::~Base ()
 }
 
 int
-gams::controller::Base::monitor (void)
+gams::controllers::Base::monitor (void)
 {
   return platform_->sense ();
 }
 
 int
-gams::controller::Base::system_analyze (void)
+gams::controllers::Base::system_analyze (void)
 {
   int return_value (0);
   bool error (false);
@@ -357,7 +357,7 @@ gams::controller::Base::system_analyze (void)
 }
 
 int
-gams::controller::Base::analyze (void)
+gams::controllers::Base::analyze (void)
 {
   int return_value (0);
 
@@ -382,7 +382,7 @@ gams::controller::Base::analyze (void)
 }
 
 int
-gams::controller::Base::plan (void)
+gams::controllers::Base::plan (void)
 {
   int return_value (0);
   
@@ -402,7 +402,7 @@ gams::controller::Base::plan (void)
 }
 
 int
-gams::controller::Base::execute (void)
+gams::controllers::Base::execute (void)
 {
   int return_value (0);
   
@@ -422,7 +422,7 @@ gams::controller::Base::execute (void)
 }
 
 int
-gams::controller::Base::run (double period, double max_runtime)
+gams::controllers::Base::run (double period, double max_runtime)
 {
   // return value
   int return_value (0);
@@ -474,7 +474,7 @@ gams::controller::Base::run (double period, double max_runtime)
 }
 
 void
-gams::controller::Base::add_accent (const std::string & algorithm,
+gams::controllers::Base::init_accent (const std::string & algorithm,
   const Madara::Knowledge_Vector & args)
 {
   if (algorithm == "")
@@ -498,7 +498,7 @@ gams::controller::Base::add_accent (const std::string & algorithm,
   }
 }
 
-void gams::controller::Base::clear_accents (void)
+void gams::controllers::Base::clear_accents (void)
 {
   for (unsigned int i = 0; i < accents_.size (); ++i)
   {
@@ -508,7 +508,7 @@ void gams::controller::Base::clear_accents (void)
   accents_.clear ();
 }
 void
-gams::controller::Base::init_algorithm (
+gams::controllers::Base::init_algorithm (
 const std::string & algorithm, const Madara::Knowledge_Vector & args)
 {
   // initialize the algorithm
@@ -532,8 +532,9 @@ const std::string & algorithm, const Madara::Knowledge_Vector & args)
 }
 
 void
-gams::controller::Base::init_platform (
-  const std::string & platform)
+gams::controllers::Base::init_platform (
+  const std::string & platform,
+  const Madara::Knowledge_Vector & args)
 {
   // initialize the platform
   
@@ -557,7 +558,7 @@ gams::controller::Base::init_platform (
 }
 
 void
-gams::controller::Base::init_vars (
+gams::controllers::Base::init_vars (
   const Integer & id,
   const Integer & processes)
 {

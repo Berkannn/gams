@@ -48,20 +48,20 @@
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
-gams::controller::Mape_Loop::Mape_Loop (
+gams::controllers::Mape_Loop::Mape_Loop (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge)
   : knowledge_ (knowledge)
 {
   define_mape ();
 }
 
-gams::controller::Mape_Loop::~Mape_Loop ()
+gams::controllers::Mape_Loop::~Mape_Loop ()
 {
 
 }
 
 void
-gams::controller::Mape_Loop::define_analyze (
+gams::controllers::Mape_Loop::define_analyze (
   Madara::Knowledge_Record (*func) (
     Madara::Knowledge_Engine::Function_Arguments &,
     Madara::Knowledge_Engine::Variables &))
@@ -70,7 +70,7 @@ gams::controller::Mape_Loop::define_analyze (
   knowledge_.define_function ("analyze", func);
 }
 
-void gams::controller::Mape_Loop::define_execute (
+void gams::controllers::Mape_Loop::define_execute (
   Madara::Knowledge_Record (*func) (
     Madara::Knowledge_Engine::Function_Arguments &,
     Madara::Knowledge_Engine::Variables &))
@@ -80,14 +80,14 @@ void gams::controller::Mape_Loop::define_execute (
 }
 
 void
-gams::controller::Mape_Loop::define_mape (const std::string & loop)
+gams::controllers::Mape_Loop::define_mape (const std::string & loop)
 {
   // define the mape loop via KaRL compilation
   mape_loop_ = knowledge_.compile (loop);
 }
 
 void
-gams::controller::Mape_Loop::define_monitor (
+gams::controllers::Mape_Loop::define_monitor (
   Madara::Knowledge_Record (*func) (
     Madara::Knowledge_Engine::Function_Arguments &,
     Madara::Knowledge_Engine::Variables &))
@@ -96,7 +96,7 @@ gams::controller::Mape_Loop::define_monitor (
   knowledge_.define_function ("monitor", func);
 }
 
-void gams::controller::Mape_Loop::define_plan (
+void gams::controllers::Mape_Loop::define_plan (
   Madara::Knowledge_Record (*func) (
     Madara::Knowledge_Engine::Function_Arguments &,
     Madara::Knowledge_Engine::Variables &))
@@ -106,7 +106,7 @@ void gams::controller::Mape_Loop::define_plan (
 }
 
 void
-gams::controller::Mape_Loop::init_vars (
+gams::controllers::Mape_Loop::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
   const Integer & id,
   const Integer & processes)
@@ -118,7 +118,7 @@ gams::controller::Mape_Loop::init_vars (
 }
 
 Madara::Knowledge_Record
-gams::controller::Mape_Loop::run (double period, double max_runtime)
+gams::controllers::Mape_Loop::run (double period, double max_runtime)
 {
   // initialize wait settings
   Madara::Knowledge_Engine::Wait_Settings  settings;
