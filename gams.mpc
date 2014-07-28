@@ -96,9 +96,9 @@ project (gams_jar) : using_gams, using_madara, using_ace {
   postbuild += jar cf lib/gams.jar -C port/java/src .
   
   specific (prop:windows) {
-    prebuild += javac -classpath %MADARA_ROOT%/lib/Madara.jar -sourcepath port/java/src port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java
+    prebuild += javac -classpath %MADARA_ROOT%/lib/Madara.jar -sourcepath port/java/src port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java
   } else {
-    prebuild += javac -classpath $MADARA_ROOT/lib/Madara.jar -sourcepath port/java/src port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java
+  prebuild += javac -classpath $MADARA_ROOT/lib/Madara.jar -sourcepath port/java/src port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java
   }
 
   Documentation_Files {

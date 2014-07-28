@@ -51,7 +51,7 @@ public class Position extends GamsJNI
 {
   private native long jni_Position();
   private native long jni_Position(long cptr);
-  private native long jni_Position(long cptr, double lat, double lon, double alt);
+  private native long jni_Position(double inx, double iny, double inz);
   private static native void jni_freePosition(long cptr);
   private native java.lang.String jni_toString(long cptr);
   private native double jni_getX(long cptr);
@@ -68,9 +68,9 @@ public class Position extends GamsJNI
     setCPtr(jni_Position());
   }
 
-  public Position(double lat, double lon, double alt)                                   
+  public Position(double inx, double iny, double inz)                                   
   {
-    setCPtr(jni_Position(lat,lon,alt));
+    setCPtr(jni_Position(inx,iny,inz));
   }
 
   public Position(Position input)
@@ -84,7 +84,7 @@ public class Position extends GamsJNI
    **/
   public java.lang.String toString()
   {
-    String result;
+    String result = "";
     result += getX();
     result += ",";
     result += getY();

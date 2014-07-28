@@ -45,12 +45,12 @@
  **/
 package com.gams.utility;
 
-public class GPSPosition extends Position
+public class GpsPosition extends Position
 {	
-  private native long jni_GPSPosition();
-  private native long jni_GPSPosition(long cptr);
-  private native long jni_GPSPosition(long cptr, double lat, double lon, double alt);
-  private static native void jni_freeGPSPosition(long cptr);
+  private native long jni_GpsPosition();
+  private native long jni_GpsPosition(long cptr);
+  private native long jni_GpsPosition(double lat, double lon, double alt);
+  private static native void jni_freeGpsPosition(long cptr);
   private native java.lang.String jni_toString(long cptr);
   private native double jni_getLatitude(long cptr);
   private native double jni_getLongitude(long cptr);
@@ -61,19 +61,19 @@ public class GPSPosition extends Position
 
   private boolean manageMemory = true;
 
-  public GPSPosition()
+  public GpsPosition()
   {
-    setCPtr(jni_GPSPosition());
+    setCPtr(jni_GpsPosition());
   }
 
-  public GPSPosition(double lat, double lon, double alt)
+  public GpsPosition(double lat, double lon, double alt)
   {
-    setCPtr(jni_GPSPosition(lat,lon,alt));
+    setCPtr(jni_GpsPosition(lat,lon,alt));
   }
 
-  public GPSPosition(Position input)
+  public GpsPosition(Position input)
   {
-    setCPtr(jni_GPSPosition(input.getCPtr()));
+    setCPtr(jni_GpsPosition(input.getCPtr()));
   }
 
   /**
@@ -82,7 +82,7 @@ public class GPSPosition extends Position
    **/
   public java.lang.String toString()
   {
-    String result;
+    String result = "";
     result += getLatitude();
     result += ",";
     result += getLongitude();
@@ -154,7 +154,7 @@ public class GPSPosition extends Position
   {
     if(manageMemory)
     {
-      jni_freeGPSPosition(getCPtr());
+      jni_freeGpsPosition(getCPtr());
     }
   }                
 }
