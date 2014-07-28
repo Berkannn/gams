@@ -80,10 +80,15 @@ namespace gams
       /**
        * Constructor
        **/
-      Sensor (const std::string& name,
-        Madara::Knowledge_Engine::Knowledge_Base* knowledge,
-        const double& range = -1.0,
-        const utility::GPS_Position& origin = utility::GPS_Position (DBL_MAX));
+      Sensor ();
+
+      /**
+       * Constructor
+       **/
+      Sensor (const std::string & name,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+        const double & range = -1.0,
+        const utility::GPS_Position & origin = utility::GPS_Position (DBL_MAX));
 
       /**
        * Destructor
@@ -195,6 +200,17 @@ namespace gams
       void set_value (const utility::Position& pos, const double& val,
         const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings =
           Madara::Knowledge_Engine::Knowledge_Update_Settings());
+      /**
+       * Initializes the variables
+       * @param name      name of the sensor
+       * @param knowledge the knowledge base
+       * @param range     the range
+       * @param origin    the GPS origin
+       **/
+      void init_vars (const std::string & name,
+        Madara::Knowledge_Engine::Knowledge_Base* knowledge,
+        const double & range = -1.0,
+        const utility::GPS_Position & origin = utility::GPS_Position (DBL_MAX));
 
     protected:
       /**

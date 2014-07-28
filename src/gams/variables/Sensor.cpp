@@ -58,9 +58,14 @@ using std::vector;
 
 typedef  Madara::Knowledge_Record::Integer  Integer;
 
-gams::variables::Sensor::Sensor (const string& name,
-  Madara::Knowledge_Engine::Knowledge_Base* knowledge,
-  const double& range, const utility::GPS_Position& origin) :
+gams::variables::Sensor::Sensor () :
+  knowledge_ (0), name_ ("")
+{
+}
+
+gams::variables::Sensor::Sensor (const string & name,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  const double & range, const utility::GPS_Position & origin) :
   knowledge_ (knowledge), name_ (name)
 {
   init_vars ();
@@ -90,7 +95,7 @@ gams::variables::Sensor::operator= (const Sensor & rhs)
 
 set<gams::utility::Position>
 gams::variables::Sensor::discretize_region (
-  const utility::Region& region)
+  const utility::Region & region)
 {
   set<utility::Position> ret_val;
 
@@ -171,7 +176,7 @@ gams::variables::Sensor::discretize_region (
 
 set<gams::utility::Position>
 gams::variables::Sensor::discretize_search_area (
-  const utility::Search_Area& search)
+  const utility::Search_Area & search)
 {
   set<utility::Position> ret_val;
   const vector<utility::Prioritized_Region>& regions = search.get_regions ();
@@ -190,7 +195,8 @@ gams::variables::Sensor::get_discretization () const
 }
 
 gams::utility::GPS_Position
-gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
+gams::variables::Sensor::get_gps_from_index (
+  const utility::Position & idx)
 {
   const double discretize = get_discretization ();
   utility::Position meters (
@@ -203,7 +209,8 @@ gams::variables::Sensor::get_gps_from_index (const utility::Position& idx)
 }
 
 gams::utility::Position
-gams::variables::Sensor::get_index_from_gps (const utility::GPS_Position& pos)
+gams::variables::Sensor::get_index_from_gps (
+  const utility::GPS_Position & pos)
 {
   utility::GPS_Position origin;
   origin.from_container (origin_);
@@ -236,49 +243,49 @@ gams::variables::Sensor::get_range () const
 }
 
 double
-gams::variables::Sensor::get_value (const utility::GPS_Position& pos)
+gams::variables::Sensor::get_value (const utility::GPS_Position & pos)
 {
   return get_value (get_index_from_gps (pos));
 }
 
 double
-gams::variables::Sensor::get_value (const utility::Position& pos)
+gams::variables::Sensor::get_value (const utility::Position & pos)
 {
   return covered_[index_pos_to_index (pos)].to_double ();
 }
 
 void
-gams::variables::Sensor::set_origin (const utility::GPS_Position& origin)
+gams::variables::Sensor::set_origin (const utility::GPS_Position & origin)
 {
   origin.to_container (origin_);
 }
 
 void
-gams::variables::Sensor::set_range (const double& range)
+gams::variables::Sensor::set_range (const double & range)
 {
   range_ = range;
 }
 
 void
-gams::variables::Sensor::set_value (const utility::GPS_Position& pos,
-  const double& val,
-  const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings)
+gams::variables::Sensor::set_value (const utility::GPS_Position & pos,
+  const double & val,
+  const Madara::Knowledge_Engine::Knowledge_Update_Settings & settings)
 {
   set_value (get_index_from_gps (pos), val, settings);
 }
 
 void
-gams::variables::Sensor::set_value (const utility::Position& pos,
-  const double& val,
-  const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings)
+gams::variables::Sensor::set_value (const utility::Position & pos,
+  const double & val,
+  const Madara::Knowledge_Engine::Knowledge_Update_Settings & settings)
 {
   string idx = index_pos_to_index (pos);
   covered_.set (idx, val, settings);
-  knowledge_->send_modifieds ();
 }
 
 string
-gams::variables::Sensor::index_pos_to_index (const utility::Position& pos) const
+gams::variables::Sensor::index_pos_to_index (
+  const utility::Position & pos) const
 {
   stringstream buffer;
   buffer << (int)(pos.x) << "x" << (int)(pos.y);
@@ -298,4 +305,19 @@ gams::variables::Sensor::init_vars ()
   range_.set_name (prefix + ".range", *knowledge_);
   covered_.set_name (prefix + ".covered", *knowledge_);
   origin_.set_name (prefix + ".origin", *knowledge_, 3);
+}
+
+void
+gams::variables::Sensor::init_vars (const string & name,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  const double & range, const utility::GPS_Position & origin)
+{
+  name_ = name;
+  knowledge_ = knowledge;
+  if (range != -1.0)
+    range_ = range;
+  if (origin.latitude () != DBL_MAX)
+    origin.to_container (origin_);
+
+  init_vars ();
 }

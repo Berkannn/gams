@@ -47,31 +47,28 @@ package com.gams.variables;
 
 import com.gams.GamsJNI;
 import com.madara.KnowledgeBase;
-import com.madara.Variables;
-import com.madara.containers.Integer;
 import com.madara.containers.String;
 import com.madara.containers.Vector;
 
-public class Self extends GamsJNI
+public class Sensor extends GamsJNI
 {	
-  private native long jni_Self();
-  private native long jni_Self(long cptr);
-  private static native void jni_freeSelf(long cptr);
-  private native void jni_init(long cptr, long type, long kb, java.lang.String name);
+  private native long jni_Sensor();
+  private native long jni_Sensor(long cptr);
+  private static native void jni_freeSensor(long cptr);
+  private native java.lang.String jni_getName(long cptr);
+  private native void jni_init(long cptr, long type, long kb, java.lang.String name, double region);
   private native java.lang.String jni_toString(long cptr);
-  private native long jni_getId(long cptr);
-  private native long jni_getSelf(long cptr);
 
   private boolean manageMemory = true;
 
-  public Self()
+  public Sensor()
   {
-    setCPtr(jni_Self());
+    setCPtr(jni_Sensor());
   }
 
-  public Self(Self input)
+  public Sensor(Sensor input)
   {
-    setCPtr(jni_Self(input.getCPtr()));
+    setCPtr(jni_Sensor(input.getCPtr()));
   }
 
   /**
@@ -80,9 +77,9 @@ public class Self extends GamsJNI
    * @param cptr C pointer to the object
    * @return a new java instance of the underlying pointer
    */
-  public static Self fromPointer(long cptr)
+  public static Sensor fromPointer(long cptr)
   {
-    Self ret = new Self();
+    Sensor ret = new Sensor();
     ret.manageMemory = true;
     ret.setCPtr(cptr);
     return ret;
@@ -95,12 +92,22 @@ public class Self extends GamsJNI
    * @param shouldManage  if true, manage the pointer
    * @return a new java instance of the underlying pointer
    */
-  public static Self fromPointer(long cptr, boolean shouldManage)
+  public static Sensor fromPointer(long cptr, boolean shouldManage)
   {
-    Self ret = new Self();
+    Sensor ret = new Sensor();
     ret.manageMemory=shouldManage;
     ret.setCPtr(cptr);
     return ret;
+  }
+
+  /**
+   * Gets the name of the variable
+   *
+   * @param  name of the variable within the context
+   */
+  public java.lang.String getName()
+  {
+    return jni_getName(getCPtr());
   }
 
   /**
@@ -109,38 +116,11 @@ public class Self extends GamsJNI
    * @param  kb      the knowledge base that contains the name
    * @param  name    the variable name
    */
-  public void init(KnowledgeBase kb, java.lang.String name)
+  public void init(KnowledgeBase kb, java.lang.String name, double region)
   {
-    jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    id = Integer.fromPointer (jni_getId (getCPtr ()));
-    device = Self.fromPointer (jni_getSelf (getCPtr ()));
+    jni_init(getCPtr(), 0, kb.getCPtr (), name, region);
   }
 
-  /**
-   * Sets the name and knowledge base being referred to
-   *
-   * @param  vars    the variables facade that contains the name
-   * @param  name    the variable name
-   */
-  public void init(Variables vars, java.lang.String name)
-  {
-    jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    id = Integer.fromPointer (jni_getId (getCPtr ()));
-    device = Self.fromPointer (jni_getSelf (getCPtr ()));
-  }
-
-  /**
-   * The device id
-   */
-  public com.madara.containers.Integer id;
-
-  /**
-   * The device-specific variables
-   */
-  public Self device;
-  
   /**
    * Converts the value to a string
    *
@@ -159,7 +139,7 @@ public class Self extends GamsJNI
   {
     if (manageMemory)
     {
-      jni_freeSelf(getCPtr());
+      jni_freeSensor(getCPtr());
     }
   }
 }

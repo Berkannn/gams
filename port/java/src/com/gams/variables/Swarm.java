@@ -48,30 +48,34 @@ package com.gams.variables;
 import com.gams.GamsJNI;
 import com.madara.KnowledgeBase;
 import com.madara.Variables;
+import com.madara.containers.Double;
 import com.madara.containers.Integer;
 import com.madara.containers.String;
 import com.madara.containers.Vector;
+import com.madara.containers.NativeDoubleVector;
 
-public class Self extends GamsJNI
+public class Swarm extends GamsJNI
 {	
-  private native long jni_Self();
-  private native long jni_Self(long cptr);
-  private static native void jni_freeSelf(long cptr);
+  private native long jni_Swarm();
+  private native long jni_Swarm(long cptr);
+  private static native void jni_freeSwarm(long cptr);
   private native void jni_init(long cptr, long type, long kb, java.lang.String name);
   private native java.lang.String jni_toString(long cptr);
-  private native long jni_getId(long cptr);
-  private native long jni_getSelf(long cptr);
+  private native long jni_getCommand(long cptr);
+  private native long jni_getArgs(long cptr);
+  private native long jni_getMinAlt(long cptr);
+  private native long jni_getSize(long cptr);
 
   private boolean manageMemory = true;
 
-  public Self()
+  public Swarm()
   {
-    setCPtr(jni_Self());
+    setCPtr(jni_Swarm());
   }
 
-  public Self(Self input)
+  public Swarm(Swarm input)
   {
-    setCPtr(jni_Self(input.getCPtr()));
+    setCPtr(jni_Swarm(input.getCPtr()));
   }
 
   /**
@@ -80,9 +84,9 @@ public class Self extends GamsJNI
    * @param cptr C pointer to the object
    * @return a new java instance of the underlying pointer
    */
-  public static Self fromPointer(long cptr)
+  public static Swarm fromPointer(long cptr)
   {
-    Self ret = new Self();
+    Swarm ret = new Swarm();
     ret.manageMemory = true;
     ret.setCPtr(cptr);
     return ret;
@@ -95,9 +99,9 @@ public class Self extends GamsJNI
    * @param shouldManage  if true, manage the pointer
    * @return a new java instance of the underlying pointer
    */
-  public static Self fromPointer(long cptr, boolean shouldManage)
+  public static Swarm fromPointer(long cptr, boolean shouldManage)
   {
-    Self ret = new Self();
+    Swarm ret = new Swarm();
     ret.manageMemory=shouldManage;
     ret.setCPtr(cptr);
     return ret;
@@ -113,8 +117,14 @@ public class Self extends GamsJNI
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
     
-    id = Integer.fromPointer (jni_getId (getCPtr ()));
-    device = Self.fromPointer (jni_getSelf (getCPtr ()));
+    command = com.madara.containers.String.fromPointer (
+      jni_getCommand (getCPtr ()));
+    args = com.madara.containers.Vector.fromPointer (
+      jni_getArgs (getCPtr ()));
+    minAlt = com.madara.containers.Double.fromPointer (
+      jni_getMinAlt (getCPtr ()));
+    size = com.madara.containers.Integer.fromPointer (
+      jni_getSize (getCPtr ()));
   }
 
   /**
@@ -127,20 +137,36 @@ public class Self extends GamsJNI
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
     
-    id = Integer.fromPointer (jni_getId (getCPtr ()));
-    device = Self.fromPointer (jni_getSelf (getCPtr ()));
+    command = com.madara.containers.String.fromPointer (
+      jni_getCommand (getCPtr ()));
+    args = com.madara.containers.Vector.fromPointer (
+      jni_getArgs (getCPtr ()));
+    minAlt = com.madara.containers.Double.fromPointer (
+      jni_getMinAlt (getCPtr ()));
+    size = com.madara.containers.Integer.fromPointer (
+      jni_getSize (getCPtr ()));
   }
 
   /**
-   * The device id
+   * The current swarm command
    */
-  public com.madara.containers.Integer id;
+  public com.madara.containers.String command;
 
   /**
-   * The device-specific variables
+   * The current swarm command args
    */
-  public Self device;
-  
+  public com.madara.containers.Vector args;
+
+  /**
+   * The current swarm minimum altitude
+   */
+  public com.madara.containers.Double minAlt;
+
+  /**
+   * The current swarm size
+   */
+  public com.madara.containers.Integer size;
+
   /**
    * Converts the value to a string
    *
@@ -159,7 +185,7 @@ public class Self extends GamsJNI
   {
     if (manageMemory)
     {
-      jni_freeSelf(getCPtr());
+      jni_freeSwarm(getCPtr());
     }
   }
 }
