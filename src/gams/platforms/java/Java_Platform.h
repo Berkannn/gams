@@ -45,91 +45,71 @@
  **/
 
 /**
- * @file Base.h
+ * @file Java_Platform.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the base platform class
+ * This file contains the definition of the java platform abstraction
  **/
 
-#ifndef   _GAMS_PLATFORM_BASE_H_
-#define   _GAMS_PLATFORM_BASE_H_
-
-#include <string>
+#ifndef   _GAMS_PLATFORM_JAVA_H_
+#define   _GAMS_PLATFORM_JAVA_H_
 
 #include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
+#include "gams/platforms/Base_Platform.h"
 #include "gams/utility/GPS_Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
+
+#ifdef _GAMS_JAVA_
+#include <jni.h>
+#include "gams_jni.h"
+#endif
 
 namespace gams
 {
   namespace platforms
   {
-    /**
-     * Possible platform statuses, as returnable by analyze ()
-     **/
-    enum Status
-    {
-      UNKNOWN = 0,
-      OK  = 1,
-      WAITING = 2,
-      DEADLOCKED = 4,
-      FAILED = 8,
-      MOVING = 16,
-      REDUCED_SENSING_AVAILABLE = 128,
-      REDUCED_MOVEMENT_AVAILABLE = 256,
-      COMMUNICATION_AVAILABLE = 512,
-      SENSORS_AVAILABLE = 1024,
-      MOVEMENT_AVAILABLE = 2048
-    };
-
-    class GAMS_Export Base
+    class GAMS_Export Java_Platform : public Base
     {
     public:
       /**
        * Constructor
-       * @param  knowledge  context containing variables and values
-       * @param  sensors  map of sensor names to sensor information
+       * @param  obj        the Java object to call methods on
+       * @param  knowledge  knowledge base
+       * @param  sensors    map of sensor names to sensor information
+       * @param  platforms  map of platform names to platform information
+       * @param  self       device variables that describe self state
        **/
-      Base (Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+      Java_Platform (
+        jobject obj,
+        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
         variables::Sensors * sensors,
+        variables::Platforms & platforms,
         variables::Self & self);
 
       /**
        * Destructor
        **/
-      virtual ~Base ();
+      ~Java_Platform ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Base & rhs);
+      void operator= (const Java_Platform & rhs);
 
       /**
        * Analyzes platform information
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int analyze (void) = 0;
-
+      virtual int analyze (void);
+       
       /**
-       * Get the position accuracy in meters
-       * @return position accuracy
+       * Get the location aproximation value of what is considered close enough
+       * @return location approximation radius
        **/
-      virtual double get_gps_accuracy () const = 0;
-
-      /**
-       * Get GPS position
-       * @return GPS location of platform
-       */
-      utility::GPS_Position get_gps_position ();
-
-      /**
-       * Get sensor radius
-       * @return minimum radius of all available sensors for this platform
-       */
-      virtual double get_min_sensor_range () const;
+      virtual double get_gps_accuracy () const;
 
       /**
        * Get move speed
@@ -137,96 +117,53 @@ namespace gams
       virtual double get_move_speed () const;
 
       /**
-       * Get a sensor
-       * @param sensor  identifier of sensor to get
-       * @return Sensor object
-       */
-      virtual const variables::Sensor& get_sensor (const std::string& name) const;
-
-      /**
-       * Fills a list of sensor names with sensors available on the platform
-       * @param  sensors   list of sensors to fill
-       **/
-      virtual void get_sensor_names (variables::Sensor_Names & sensors) const;
-
-      /**
        * Instructs the device to return home
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
       virtual int home (void);
-
-      /**
-       * Instructs the device to land
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int land (void) = 0;
-
-      /**
-       * Moves the platform to a position
-       * @param   position  the coordinates to move to
-       * @param   epsilon   approximation value
-       * @return 1 if moving toward position, 0 if arrived, negative if error
-       **/
-      virtual int move (const utility::GPS_Position & position,
-        const double & epsilon = 0.1);
       
       /**
-       * Pauses movement, keeps source and dest at current values
+       * Instructs the platform to land
+       * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual void pause_move (void);
-
+      virtual int land (void);
+      
+      /**
+       * Moves the platform to a position
+       * @param   position  the coordinate to move to
+       * @param   proximity minimum required distance between current
+       *                    and target before exiting
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int move (const utility::Position & position,
+        const double & epsilon = 0.1);
+      
       /**
        * Polls the sensor environment for useful information
        * @return number of sensors updated/used
        **/
-      virtual int sense (void) = 0;
-      
-      /**
-       * Sets the knowledge base to use for the platform
-       * @param  rhs  the new knowledge base to use
-       **/
-      void set_knowledge (Madara::Knowledge_Engine::Knowledge_Base * rhs);
+      virtual int sense (void);
       
       /**
        * Set move speed
-       * @param speed new speed in meters/second
+       * @param speed new speed in meters/loop execution
        **/
       virtual void set_move_speed (const double& speed);
-      
-      /**
-       * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
-       **/
-      virtual void set_sensors (variables::Sensors * sensors);
-      
-      /**
-       * Stops movement, resetting source and dest to current location
-       **/
-      virtual void stop_move (void);
 
       /**
-       * Instructs the device to take off
+       * Instructs the platform to take off
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual int takeoff (void) = 0;
-      
+      virtual int takeoff (void);
+
     protected:
-      /// movement speed for platform in meters/second
-      double move_speed_;
+      /// the Java object with callable methods
+      jobject obj_;
 
-      /// provides access to variables and values
-      Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
-
-      /// provides access to self state
-      variables::Self self_;
-
-      /// provides access to a sensor
-      variables::Sensors * sensors_;
-
-      /// provides access to status information for this platform
-      variables::Platform status_;
+      /// the class of the Java object obj_
+      jclass class_;
     };
   }
 }
 
-#endif // _GAMS_PLATFORM_BASE_H_
+#endif // _GAMS_PLATFORM_JAVA_H_

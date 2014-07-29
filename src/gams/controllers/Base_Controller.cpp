@@ -414,7 +414,7 @@ gams::controllers::Base::execute (void)
     for (algorithms::Algorithms::iterator i = accents_.begin ();
       i != accents_.end (); ++i)
     {
-      (*i)->plan ();
+      (*i)->execute ();
     }
   }
 

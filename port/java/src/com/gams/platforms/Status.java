@@ -45,92 +45,53 @@
  **/
 package com.gams.platforms;
 
-import com.gams.utility.Position;
-
 /**
- * Interface for defining a platform to be used by GAMS. Care must be taken
- * to make all methods non-blocking, to prevent locking up the underlying
- * MADARA context.
+ * Type of {@link com.madara.KnowledgeRecord KnowledgeRecord}
  */
-public interface PlatformInterface
+public enum Status
 {
-  /**
-   * Analyzes the platform. This should be
-   * a non-blocking call.
-   * @return   status information (@see Status)
-   **/
-  public int analyze ();
-  
-  /**
-   * Returns the position accuracy in meters
-   * @return position accuracy
-   **/
-  public double getPositionAccuracy ();
+  //These are defined in platforms/Base.h
+  UNKNOWN(0),
+  OK(1),
+  WAITING(2),
+  DEADLOCKED(4),
+  FAILED(8),
+  MOVING(16),
+  REDUCED_SENSING_AVAILABLE(128),
+  REDUCED_MOVEMENT_AVAILABLE(256),
+  COMMUNICATION_AVAILABLE(512),
+  SENSORS_AVAILABLE(1024),
+  MOVEMENT_AVAILABLE(2048);
+
+  private int num;
+
+  private Status(int num)
+  {
+    this.num = num;
+  }
 
   /**
-   * Returns the current GPS position 
-   **/
-  public Position getPosition ();
-  
-  /**
-   * Returns to the home location. This should be
-   * a non-blocking call.
-   * @return   status information (@see Status)
-   **/
-  public int home ();
-  
-  /**
-   * Requests the platform to land. This should be
-   * a non-blocking call.
-   * @return   status information (@see Status)
-   **/
-  public int land ();
-  
-  /**
-   * Initializes a move to the target position. This should be
-   * a non-blocking call.
-   * @param   target     the new position to move to
-   * @param   proximity  the minimum distance between current position
-   *                   and target position that terminates the move.
-   * @return  status information (@see Status)
-   **/
-  public int move (Position target, double proximity);
-   
-  /**
-   * Get sensor radius
-   * @return minimum radius of all available sensors for this platform
+   * @return int value of this {@link com.gams.platforms.Status Status}
    */
-  public double get_min_sensor_range ();
+  public int value()
+  {
+    return num;
+  }
 
   /**
-   * Gets the movement speed
-   * @return movement speed
-   **/
-  public double get_move_speed ();
-
-  /**
-   * Gets results from the platform's sensors. This should be
-   * a non-blocking call.
-   * @return   1 if moving, 2 if arrived, 0 if an error occurred
-   **/
-  public int sense ();
-  
-  /**
-   * Sets move speed
-   * @param speed new speed in meters/second
-   **/
-  public void set_move_speed (double speed);
-      
-  /**
-   * Takes off. This should be
-   * a non-blocking call.
-   * @return   status information (@see Status)
-   **/
-  public int takeoff ();
-  
-  /**
-   * Stops moving
-   **/
-  public void stopMove ();
+   * Converts an int to a {@link com.madara.Status Status}
+   *
+   * @param val value to convert
+   * @return {@link com.gams.platforms.Status Status} or null if the int is invalid
+   */
+  public static Status getType(int val)
+  {
+    for (Status t : values())
+    {
+      if (t.value() == val)
+        return t;
+    }
+    return null;
+  }
 }
 

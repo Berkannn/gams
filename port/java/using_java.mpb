@@ -22,12 +22,14 @@ feature (java) {
   Source_Files {
     Java {
       port/java/jni
+      src/gams/platforms/java
     }
   }
   
   Header_Files {
     Java {
       port/java/jni
+      src/gams/platforms/java
     }
   }
 
