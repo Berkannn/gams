@@ -187,3 +187,9 @@ gams::algorithms::Java_Algorithm::plan (void)
 
   return result;
 }
+
+jobject
+gams::algorithms::Java_Algorithm::get_java_instance (void)
+{
+  return obj_;
+}

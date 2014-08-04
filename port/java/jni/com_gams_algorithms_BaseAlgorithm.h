@@ -33,10 +33,10 @@ JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getSelf
 
 /*
  * Class:     com_gams_algorithms_BaseAlgorithm
- * Method:    jni_getPlatform
- * Signature: (J)J
+ * Method:    jni_getPlatformObject
+ * Signature: (J)Ljava/lang/Object;
  */
-JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getPlatform
+JNIEXPORT jobject JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getPlatformObject
   (JNIEnv *, jobject, jlong);
 
 /*

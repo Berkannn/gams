@@ -562,7 +562,25 @@ gams::controllers::Base::init_platform (
       algorithm_->set_platform (platform_);
   }
 }
-    
+
+void gams::controllers::Base::init_algorithm (algorithms::Base * algorithm)
+{
+  delete algorithm_;
+  algorithm_ = algorithm;
+  init_vars (*algorithm_);
+}
+      
+
+void gams::controllers::Base::init_platform (platforms::Base * platform)
+{
+  delete platform_;
+  platform_ = platform;
+  init_vars (*platform_);
+
+  if (algorithm_)
+    algorithm_->set_platform (platform_);
+}
+
 #ifdef _GAMS_JAVA_
 
 void gams::controllers::Base::init_algorithm (jobject algorithm)

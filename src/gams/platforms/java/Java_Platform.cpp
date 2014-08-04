@@ -323,3 +323,9 @@ gams::platforms::Java_Platform::takeoff (void)
 
   return result;
 }
+
+jobject
+gams::platforms::Java_Platform::get_java_instance (void)
+{
+  return obj_;
+}

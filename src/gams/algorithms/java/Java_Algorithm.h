@@ -129,6 +129,12 @@ namespace gams
        * Gets the name of the algorithm
        **/
       virtual std::string get_name () const;
+      
+      /**
+       * Returns the Java instance that derives from
+       * BaseAlgorithm.
+       **/
+      jobject get_java_instance (void);
 
     protected:
       /// the Java object with callable methods

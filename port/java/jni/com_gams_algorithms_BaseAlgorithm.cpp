@@ -1,5 +1,6 @@
 #include "com_gams_algorithms_BaseAlgorithm.h"
 #include "gams/algorithms/java/Java_Algorithm.h"
+#include "gams/platforms/java/Java_Platform.h"
 
 namespace algorithms = gams::algorithms;
 
@@ -55,18 +56,25 @@ JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getSelf
 
 /*
  * Class:     com_gams_algorithms_BaseAlgorithm
- * Method:    jni_getPlatform
- * Signature: (J)J
+ * Method:    jni_getPlatformObject
+ * Signature: (J)Ljava/lang/Object;
  */
-JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getPlatform
-  (JNIEnv * env, jobject, jlong cptr)
+JNIEXPORT jobject JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getPlatformObject
+  (JNIEnv *, jobject, jlong cptr)
 {
-  jlong result (0);
+  jobject result (0);
 
   algorithms::Base * current = (algorithms::Base *)cptr;
   if (current)
   {
-    result = (jlong) current->get_platform ();
+    gams::platforms::Java_Platform * platform =
+      dynamic_cast <gams::platforms::Java_Platform *> (
+        current->get_platform ());
+
+    if (platform)
+    {
+      result = platform->get_java_instance ();
+    }
   }
 
   return result;

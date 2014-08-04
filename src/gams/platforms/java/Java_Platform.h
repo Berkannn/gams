@@ -168,6 +168,12 @@ namespace gams
        **/
       virtual int takeoff (void);
 
+      /**
+       * Returns the Java instance that derives from
+       * BasePlatform.
+       **/
+      jobject get_java_instance (void);
+
     protected:
       /// the Java object with callable methods
       jobject obj_;

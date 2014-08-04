@@ -147,12 +147,28 @@ namespace gams
         const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
  
       /**
+       * Initializes the controller with a user-provided algorithm. This
+       * algorithm's memory will be maintained by the controller. DO NOT
+       * DELETE THIS POINTER.
+       * @param  algorithm   the algorithm to use
+       **/
+      void init_algorithm (algorithms::Base * algorithm);
+
+      /**
        * Initializes the platform
        * @param  platform   the name of the platform the controller is using
        * @param  args        vector of knowledge record arguments
        **/
       void init_platform (const std::string & platform,
         const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
+       
+      /**
+       * Initializes the controller with a user-provided platform. This
+       * platform's memory will be maintained by the controller. DO NOT
+       * DELETE THIS POINTER.
+       * @param  platform   the platform to use
+       **/
+      void init_platform (platforms::Base * platform);
            
 #ifdef _GAMS_JAVA_
       /**

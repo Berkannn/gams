@@ -61,7 +61,7 @@ public abstract class BaseAlgorithm extends GamsJNI implements AlgorithmInterfac
   private native long jni_Base(Object sub);
   private native long jni_getKnowledgeBase(long cptr);
   private native long jni_getSelf(long cptr);
-  private native long jni_getPlatform(long cptr);
+  private native Object jni_getPlatformObject(long cptr);
   private native long jni_getAlgorithmStatus(long cptr);
 
   public BaseAlgorithm(BaseAlgorithm sub)
@@ -76,7 +76,7 @@ public abstract class BaseAlgorithm extends GamsJNI implements AlgorithmInterfac
   public void init (BaseController controller)
   {
     controller.initVars (this);
-    platform = new BasePlatform(jni_getPlatform(getCPtr()));
+    platform = (BasePlatform)jni_getPlatformObject(getCPtr());
     knowledge = KnowledgeBase.fromPointer(jni_getKnowledgeBase(getCPtr()),false);
     self = Self.fromPointer(jni_getSelf(getCPtr()),false);
     status = Algorithm.fromPointer(jni_getAlgorithmStatus(getCPtr()),false);
