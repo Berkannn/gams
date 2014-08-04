@@ -71,14 +71,18 @@ public class Platform extends GamsJNI
   private native long jni_getSensorsAvailable(long cptr);
   private native long jni_getWaiting(long cptr);
 
+  private boolean manageMemory = true;
+
   public Platform()
   {
     setCPtr(jni_Platform());
+    init();
   }
 
   public Platform(Platform input)
   {
     setCPtr(jni_Platform(input.getCPtr()));
+    init();
   }
 
   /**
@@ -92,6 +96,68 @@ public class Platform extends GamsJNI
   }
 
   /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @return a new java instance of the underlying pointer
+   */
+  public static Platform fromPointer(long cptr)
+  {
+    Platform ret = new Platform();
+    ret.manageMemory = true;
+    ret.setCPtr(cptr);
+    ret.init();
+    return ret;
+  }
+
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @param shouldManage  if true, manage the pointer
+   * @return a new java instance of the underlying pointer
+   */
+  public static Platform fromPointer(long cptr, boolean shouldManage)
+  {
+    Platform ret = new Platform();
+    ret.manageMemory=shouldManage;
+    ret.setCPtr(cptr);
+    ret.init();
+    return ret;
+  }
+
+  /**
+   * Initializes the member variables
+   **/
+  public void init()
+  {
+    communicationAvailable = Integer.fromPointer (
+      jni_getCommunicationAvailable (getCPtr ()),false);
+    deadlocked = Integer.fromPointer (
+      jni_getDeadlocked (getCPtr ()),false);
+    failed = Integer.fromPointer (
+      jni_getFailed (getCPtr ()),false);
+    gpsSpoofed = Integer.fromPointer (
+      jni_getGpsSpoofed (getCPtr ()),false);
+    movementAvailable = Integer.fromPointer (
+      jni_getMovementAvailable (getCPtr ()),false);
+    moving = Integer.fromPointer (
+      jni_getMoving (getCPtr ()),false);
+    ok = Integer.fromPointer (
+      jni_getOk (getCPtr ()),false);
+    pausedMoving = Integer.fromPointer (
+      jni_getPausedMoving (getCPtr ()),false);
+    reducedSensing = Integer.fromPointer (
+      jni_getReducedSensing (getCPtr ()),false);
+    reducedMovement = Integer.fromPointer (
+      jni_getReducedMovement (getCPtr ()),false);
+    sensorsAvailable = Integer.fromPointer (
+      jni_getSensorsAvailable (getCPtr ()),false);
+    waiting = Integer.fromPointer (
+      jni_getWaiting (getCPtr ()),false);
+  }
+  
+  /**
    * Sets the name and knowledge base being referred to
    *
    * @param  kb      the knowledge base that contains the name
@@ -100,31 +166,7 @@ public class Platform extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    communicationAvailable = com.madara.containers.Integer.fromPointer (
-      jni_getCommunicationAvailable (getCPtr ()));
-    deadlocked = com.madara.containers.Integer.fromPointer (
-      jni_getDeadlocked (getCPtr ()));
-    failed = com.madara.containers.Integer.fromPointer (
-      jni_getFailed (getCPtr ()));
-    gpsSpoofed = com.madara.containers.Integer.fromPointer (
-      jni_getGpsSpoofed (getCPtr ()));
-    movementAvailable = com.madara.containers.Integer.fromPointer (
-      jni_getMovementAvailable (getCPtr ()));
-    moving = com.madara.containers.Integer.fromPointer (
-      jni_getMoving (getCPtr ()));
-    ok = com.madara.containers.Integer.fromPointer (
-      jni_getOk (getCPtr ()));
-    pausedMoving = com.madara.containers.Integer.fromPointer (
-      jni_getPausedMoving (getCPtr ()));
-    reducedSensing = com.madara.containers.Integer.fromPointer (
-      jni_getReducedSensing (getCPtr ()));
-    reducedMovement = com.madara.containers.Integer.fromPointer (
-      jni_getReducedMovement (getCPtr ()));
-    sensorsAvailable = com.madara.containers.Integer.fromPointer (
-      jni_getSensorsAvailable (getCPtr ()));
-    waiting = com.madara.containers.Integer.fromPointer (
-      jni_getWaiting (getCPtr ()));
+    init();
   }
 
   /**
@@ -136,92 +178,68 @@ public class Platform extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    communicationAvailable = com.madara.containers.Integer.fromPointer (
-      jni_getCommunicationAvailable (getCPtr ()));
-    deadlocked = com.madara.containers.Integer.fromPointer (
-      jni_getDeadlocked (getCPtr ()));
-    failed = com.madara.containers.Integer.fromPointer (
-      jni_getFailed (getCPtr ()));
-    gpsSpoofed = com.madara.containers.Integer.fromPointer (
-      jni_getGpsSpoofed (getCPtr ()));
-    movementAvailable = com.madara.containers.Integer.fromPointer (
-      jni_getMovementAvailable (getCPtr ()));
-    moving = com.madara.containers.Integer.fromPointer (
-      jni_getMoving (getCPtr ()));
-    ok = com.madara.containers.Integer.fromPointer (
-      jni_getOk (getCPtr ()));
-    pausedMoving = com.madara.containers.Integer.fromPointer (
-      jni_getPausedMoving (getCPtr ()));
-    reducedSensing = com.madara.containers.Integer.fromPointer (
-      jni_getReducedSensing (getCPtr ()));
-    reducedMovement = com.madara.containers.Integer.fromPointer (
-      jni_getReducedMovement (getCPtr ()));
-    sensorsAvailable = com.madara.containers.Integer.fromPointer (
-      jni_getSensorsAvailable (getCPtr ()));
-    waiting = com.madara.containers.Integer.fromPointer (
-      jni_getWaiting (getCPtr ()));
+    init();
   }
 
   /**
    * Flag for whether the algorithm is deadlocked or not
    */
-  public com.madara.containers.Integer communicationAvailable;
+  public Integer communicationAvailable;
 
   /**
    * Flag for whether the algorithm is deadlocked or not
    */
-  public com.madara.containers.Integer deadlocked;
+  public Integer deadlocked;
 
   /**
    * Flag for whether the algorithm is failed or not
    */
-  public com.madara.containers.Integer failed;
+  public Integer failed;
 
   /**
    * Flag for whether the algorithm is failed or not
    */
-  public com.madara.containers.Integer gpsSpoofed;
+  public Integer gpsSpoofed;
 
   /**
    * Flag for whether the algorithm is failed or not
    */
-  public com.madara.containers.Integer movementAvailable;
+  public Integer movementAvailable;
 
   /**
    * Flag for whether the algorithm is failed or not
    */
-  public com.madara.containers.Integer moving;
+  public Integer moving;
 
   /**
    * Flag for whether the algorithm is ok or not
    */
-  public com.madara.containers.Integer ok;
+  public Integer ok;
 
   /**
    * Flag for whether the algorithm is paused or not
    */
-  public com.madara.containers.Integer pausedMoving;
+  public Integer pausedMoving;
 
   /**
    * Flag for whether the algorithm is paused or not
    */
-  public com.madara.containers.Integer reducedSensing;
+  public Integer reducedSensing;
 
   /**
    * Flag for whether the algorithm is paused or not
    */
-  public com.madara.containers.Integer reducedMovement;
+  public Integer reducedMovement;
 
   /**
    * Flag for whether the algorithm is paused or not
    */
-  public com.madara.containers.Integer sensorsAvailable;
+  public Integer sensorsAvailable;
 
   /**
    * Flag for whether the algorithm is in a waiting state or not
    */
-  public com.madara.containers.Integer waiting;
+  public Integer waiting;
 
   /**
    * Converts the value to a string
@@ -239,7 +257,10 @@ public class Platform extends GamsJNI
    */
   public void free()
   {
-    jni_freePlatform(getCPtr());
+    if (manageMemory)
+    {
+      jni_freePlatform(getCPtr());
+    }
   }
 }
 

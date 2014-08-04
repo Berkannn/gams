@@ -47,14 +47,17 @@
 
 
 gams::platforms::Printer_Platform::Printer_Platform (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
-  variables::Platforms & platforms,
-  variables::Self & self)
-  : Base (&knowledge, sensors, self)
+  variables::Platforms * platforms,
+  variables::Self * self)
+  : Base (knowledge, sensors, self)
 {
-  platforms["printer"].init_vars (knowledge, "printer");
-  status_ = platforms["printer"];
+  if (platforms && knowledge)
+  {
+    (*platforms)[get_id ()].init_vars (*knowledge, get_id ());
+    status_ = (*platforms)[get_id ()];
+  }
 }
 
 gams::platforms::Printer_Platform::~Printer_Platform ()
@@ -117,6 +120,18 @@ gams::platforms::Printer_Platform::analyze (void)
     << *status_.gps_spoofed << "\n";
   
   return 0;
+}
+
+std::string
+gams::platforms::Printer_Platform::get_id () const
+{
+  return "debug_printer";
+}
+
+std::string
+gams::platforms::Printer_Platform::get_name () const
+{
+  return "Debug Printer";
 }
 
 double

@@ -65,11 +65,13 @@ public class Accent extends GamsJNI
   public Accent()
   {
     setCPtr(jni_Accent());
+    init();
   }
 
   public Accent(Accent input)
   {
     setCPtr(jni_Accent(input.getCPtr()));
+    init();
   }
 
   /**
@@ -83,6 +85,17 @@ public class Accent extends GamsJNI
   }
 
   /**
+   * Initializes the member variables
+   **/
+  public void init()
+  {
+    command = com.madara.containers.String.fromPointer (
+      jni_getCommand (getCPtr ()),false);
+    args = com.madara.containers.Vector.fromPointer (
+      jni_getArgs (getCPtr ()),false);
+  }
+  
+  /**
    * Sets the name and knowledge base being referred to
    *
    * @param  kb      the knowledge base that contains the name
@@ -91,11 +104,7 @@ public class Accent extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    init();
   }
 
   /**
@@ -107,11 +116,7 @@ public class Accent extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
+    init();
   }
 
   /**

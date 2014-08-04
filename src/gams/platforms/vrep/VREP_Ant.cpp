@@ -68,15 +68,19 @@ using std::string;
 #include "gams/variables/Sensor.h"
 
 gams::platforms::VREP_Ant::VREP_Ant (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
-  variables::Platforms & platforms,
-  variables::Self & self)
+  variables::Platforms * platforms,
+  variables::Self * self)
   : VREP_Base (knowledge, sensors, self)
 {
-  platforms["vrep_ant"].init_vars (knowledge, "vrep_ant");
+  if (platforms && knowledge)
+  {
+    (*platforms)[get_id ()].init_vars (*knowledge, get_id ());
+    status_ = (*platforms)[get_id ()];
+  }
 
-  self.device.desired_altitude = 0.05;
+  self_->device.desired_altitude = 0.05;
   add_model_to_environment ();
   set_initial_position ();
   get_target_handle ();
@@ -100,6 +104,18 @@ gams::platforms::VREP_Ant::add_model_to_environment ()
     cerr << "invalid handle id for VREP_Ant base" << endl;
     exit (-1);
   }
+}
+
+std::string
+gams::platforms::VREP_Ant::get_id () const
+{
+  return "vrep_ant";
+}
+
+std::string
+gams::platforms::VREP_Ant::get_name () const
+{
+  return "VREP Ant";
 }
 
 void

@@ -81,11 +81,13 @@ public class Device extends GamsJNI
   public Device()
   {
     setCPtr(jni_Device());
+    init();
   }
 
   public Device(Device input)
   {
     setCPtr(jni_Device(input.getCPtr()));
+    init();
   }
 
   /**
@@ -99,6 +101,7 @@ public class Device extends GamsJNI
     Device ret = new Device();
     ret.manageMemory = true;
     ret.setCPtr(cptr);
+    ret.init();
     return ret;
   }
 
@@ -114,9 +117,45 @@ public class Device extends GamsJNI
     Device ret = new Device();
     ret.manageMemory=shouldManage;
     ret.setCPtr(cptr);
+    ret.init();
     return ret;
   }
 
+  /**
+   * Initializes the member variables
+   **/
+  public void init()
+  {
+    batteryRemaining = com.madara.containers.Integer.fromPointer (
+      jni_getBatteryRemaining (getCPtr ()),false);
+    bridgeId = com.madara.containers.Integer.fromPointer (
+      jni_getBridgeId (getCPtr ()),false);
+    command = com.madara.containers.String.fromPointer (
+      jni_getCommand (getCPtr ()),false);
+    args = com.madara.containers.Vector.fromPointer (
+      jni_getArgs (getCPtr ()),false);
+    coverageType = com.madara.containers.String.fromPointer (
+      jni_getCoverageType (getCPtr ()),false);
+    dest = com.madara.containers.NativeDoubleVector.fromPointer (
+      jni_getDest (getCPtr ()),false);
+    home = com.madara.containers.NativeDoubleVector.fromPointer (
+      jni_getHome (getCPtr ()),false);
+    isMobile = com.madara.containers.Integer.fromPointer (
+      jni_getIsMobile (getCPtr ()),false);
+    location = com.madara.containers.NativeDoubleVector.fromPointer (
+      jni_getLocation (getCPtr ()),false);
+    minAlt = com.madara.containers.Double.fromPointer (
+      jni_getMinAlt (getCPtr ()),false);
+    nextCoverageType = com.madara.containers.String.fromPointer (
+      jni_getNextCoverageType (getCPtr ()),false);
+    searchAreaId = com.madara.containers.Integer.fromPointer (
+      jni_getSearchAreaId (getCPtr ()),false);
+    source = com.madara.containers.NativeDoubleVector.fromPointer (
+      jni_getSource (getCPtr ()),false);
+    temperature = com.madara.containers.Double.fromPointer (
+      jni_getTemperature (getCPtr ()),false);
+  }
+  
   /**
    * Sets the name and knowledge base being referred to
    *
@@ -126,35 +165,7 @@ public class Device extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    batteryRemaining = com.madara.containers.Integer.fromPointer (
-      jni_getBatteryRemaining (getCPtr ()));
-    bridgeId = com.madara.containers.Integer.fromPointer (
-      jni_getBridgeId (getCPtr ()));
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
-    coverageType = com.madara.containers.String.fromPointer (
-      jni_getCoverageType (getCPtr ()));
-    dest = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getDest (getCPtr ()));
-    home = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getHome (getCPtr ()));
-    isMobile = com.madara.containers.Integer.fromPointer (
-      jni_getIsMobile (getCPtr ()));
-    location = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getLocation (getCPtr ()));
-    minAlt = com.madara.containers.Double.fromPointer (
-      jni_getMinAlt (getCPtr ()));
-    nextCoverageType = com.madara.containers.String.fromPointer (
-      jni_getNextCoverageType (getCPtr ()));
-    searchAreaId = com.madara.containers.Integer.fromPointer (
-      jni_getSearchAreaId (getCPtr ()));
-    source = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getSource (getCPtr ()));
-    temperature = com.madara.containers.Double.fromPointer (
-      jni_getTemperature (getCPtr ()));
+    init();
   }
 
   /**
@@ -166,35 +177,7 @@ public class Device extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    batteryRemaining = com.madara.containers.Integer.fromPointer (
-      jni_getBatteryRemaining (getCPtr ()));
-    bridgeId = com.madara.containers.Integer.fromPointer (
-      jni_getBridgeId (getCPtr ()));
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
-    coverageType = com.madara.containers.String.fromPointer (
-      jni_getCoverageType (getCPtr ()));
-    dest = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getDest (getCPtr ()));
-    home = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getHome (getCPtr ()));
-    isMobile = com.madara.containers.Integer.fromPointer (
-      jni_getIsMobile (getCPtr ()));
-    location = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getLocation (getCPtr ()));
-    minAlt = com.madara.containers.Double.fromPointer (
-      jni_getMinAlt (getCPtr ()));
-    nextCoverageType = com.madara.containers.String.fromPointer (
-      jni_getNextCoverageType (getCPtr ()));
-    searchAreaId = com.madara.containers.Integer.fromPointer (
-      jni_getSearchAreaId (getCPtr ()));
-    source = com.madara.containers.NativeDoubleVector.fromPointer (
-      jni_getSource (getCPtr ()));
-    temperature = com.madara.containers.Double.fromPointer (
-      jni_getTemperature (getCPtr ()));
+    init();
   }
 
   /**

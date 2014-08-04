@@ -46,6 +46,9 @@
 package com.gams.platforms;
 
 import com.gams.utility.Position;
+import com.madara.KnowledgeBase;
+import com.gams.variables.Self;
+import com.gams.variables.Platform;
 
 /**
  * Interface for defining a platform to be used by GAMS. Care must be taken
@@ -100,13 +103,27 @@ public interface PlatformInterface
    * Get sensor radius
    * @return minimum radius of all available sensors for this platform
    */
-  public double get_min_sensor_range ();
+  public double getMinSensorRange ();
 
   /**
    * Gets the movement speed
    * @return movement speed
    **/
-  public double get_move_speed ();
+  public double getMoveSpeed ();
+
+  /**
+   * Gets the unique id of the platform. This should be an alphanumeric
+   * id that can be part of a MADARA variable name. Specifically, this
+   * is used in the variable expansion of .platform.{yourid}.*
+   * @return the id of the platform (alphanumeric only: no spaces!)
+   **/
+  public java.lang.String getId ();
+
+  /**
+   * Gets the name of the platform
+   * @return the name of the platform
+   **/
+  public java.lang.String getName ();
 
   /**
    * Gets results from the platform's sensors. This should be
@@ -119,7 +136,7 @@ public interface PlatformInterface
    * Sets move speed
    * @param speed new speed in meters/second
    **/
-  public void set_move_speed (double speed);
+  public void setMoveSpeed (double speed);
       
   /**
    * Takes off. This should be

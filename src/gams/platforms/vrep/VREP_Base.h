@@ -82,9 +82,9 @@ namespace gams
        * @param  self       device variables that describe self state
        **/
       VREP_Base (
-        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
-        variables::Self & self);
+        variables::Self * self);
 
       /**
        * Destructor

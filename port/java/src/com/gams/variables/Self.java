@@ -60,18 +60,20 @@ public class Self extends GamsJNI
   private native void jni_init(long cptr, long type, long kb, java.lang.String name);
   private native java.lang.String jni_toString(long cptr);
   private native long jni_getId(long cptr);
-  private native long jni_getSelf(long cptr);
+  private native long jni_getDevice(long cptr);
 
   private boolean manageMemory = true;
 
   public Self()
   {
     setCPtr(jni_Self());
+    init();
   }
 
   public Self(Self input)
   {
     setCPtr(jni_Self(input.getCPtr()));
+    init();
   }
 
   /**
@@ -85,6 +87,7 @@ public class Self extends GamsJNI
     Self ret = new Self();
     ret.manageMemory = true;
     ret.setCPtr(cptr);
+    ret.init();
     return ret;
   }
 
@@ -100,9 +103,19 @@ public class Self extends GamsJNI
     Self ret = new Self();
     ret.manageMemory=shouldManage;
     ret.setCPtr(cptr);
+    ret.init();
     return ret;
   }
 
+  /**
+   * Initializes the member variables
+   **/
+  public void init()
+  {
+    id = Integer.fromPointer (jni_getId (getCPtr ()),false);
+    device = Device.fromPointer (jni_getDevice (getCPtr ()),false);
+  }
+  
   /**
    * Sets the name and knowledge base being referred to
    *
@@ -112,9 +125,7 @@ public class Self extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    id = Integer.fromPointer (jni_getId (getCPtr ()));
-    device = Self.fromPointer (jni_getSelf (getCPtr ()));
+    init();
   }
 
   /**
@@ -126,9 +137,7 @@ public class Self extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    id = Integer.fromPointer (jni_getId (getCPtr ()));
-    device = Self.fromPointer (jni_getSelf (getCPtr ()));
+    init();
   }
 
   /**
@@ -139,7 +148,7 @@ public class Self extends GamsJNI
   /**
    * The device-specific variables
    */
-  public Self device;
+  public Device device;
   
   /**
    * Converts the value to a string

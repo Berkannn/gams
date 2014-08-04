@@ -90,7 +90,7 @@ gams::platforms::Factory::create (const std::string & type)
         knowledge_->activate_transport ();
         knowledge_->apply_modified ();
       }
-      return new Printer_Platform (*knowledge_, sensors_, *platforms_, *self_);
+      return new Printer_Platform (knowledge_, sensors_, platforms_, self_);
     }
   }
 #ifdef _GAMS_DRONERK_
@@ -109,7 +109,7 @@ gams::platforms::Factory::create (const std::string & type)
         knowledge_->apply_modified ();
       }
 
-      return new Drone_RK (*knowledge_, sensors_, *platforms_, *self_);
+      return new Drone_RK (knowledge_, sensors_, platforms_, self_);
     }
   }
 #endif
@@ -129,7 +129,7 @@ gams::platforms::Factory::create (const std::string & type)
         knowledge_->apply_modified ();
       }
 
-      VREP_UAV* ret = new VREP_UAV (*knowledge_, sensors_, *platforms_, *self_);
+      VREP_UAV* ret = new VREP_UAV (knowledge_, sensors_, platforms_, self_);
       double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
       if (move_speed > 0)
         ret->set_move_speed (move_speed);
@@ -151,7 +151,7 @@ gams::platforms::Factory::create (const std::string & type)
         knowledge_->apply_modified ();
       }
 
-      VREP_Ant* ret = new VREP_Ant (*knowledge_, sensors_, *platforms_, *self_);
+      VREP_Ant* ret = new VREP_Ant (knowledge_, sensors_, platforms_, self_);
       return ret;
     }
   }

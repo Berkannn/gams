@@ -83,10 +83,22 @@ namespace gams
        * @param  self       device variables that describe self state
        **/
       VREP_UAV (
-        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
-        variables::Platforms & platforms,
-        variables::Self & self);
+        variables::Platforms * platforms,
+        variables::Self * self);
+      
+      /**
+       * Gets the unique identifier of the platform. This should be an
+       * alphanumeric identifier that can be used as part of a MADARA
+       * variable (e.g. vrep_ant, autonomous_snake, etc.)
+       **/
+      virtual std::string get_id () const;
+
+      /**
+       * Gets the name of the platform
+       **/
+      virtual std::string get_name () const;
 
       /**
        * Moves the platform to a position

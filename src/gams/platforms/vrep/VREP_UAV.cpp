@@ -62,19 +62,23 @@ using std::cout;
 using std::string;
 
 gams::platforms::VREP_UAV::VREP_UAV (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
-  variables::Platforms & platforms,
-  variables::Self & self)
+  variables::Platforms * platforms,
+  variables::Self * self)
   : VREP_Base (knowledge, sensors, self)
 {
-  platforms["vrep_uav"].init_vars (knowledge, "vrep_uav");
+  if (knowledge && sensors && platforms && self)
+  {
+    (*platforms)[get_id ()].init_vars (*knowledge, get_id ());
+    status_ = (*platforms)[get_id ()];
 
-  self.device.desired_altitude = self.id.to_integer () + 1;
-  add_model_to_environment ();
-  set_initial_position ();
-  get_target_handle ();
-  wait_for_go ();
+    self->device.desired_altitude = self->id.to_integer () + 1;
+    add_model_to_environment ();
+    set_initial_position ();
+    get_target_handle ();
+    wait_for_go ();
+  }
 }
 
 // TODO: handle epsilon
@@ -151,6 +155,16 @@ gams::platforms::VREP_UAV::add_model_to_environment ()
   }
 }
 
+std::string gams::platforms::VREP_UAV::get_id () const
+{
+  return "vrep_uav";
+}
+
+std::string gams::platforms::VREP_UAV::get_name () const
+{
+  return "VREP UAV";
+}
+
 void
 gams::platforms::VREP_UAV::get_target_handle ()
 {
@@ -203,7 +217,7 @@ gams::platforms::VREP_UAV::set_initial_position () const
   }
 
   // send set object position command
-  pos[2] = self_.id.to_integer () + 2;
+  pos[2] = self_->id.to_integer () + 2;
   simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,
     simx_opmode_oneshot_wait);
 }

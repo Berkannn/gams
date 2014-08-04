@@ -62,44 +62,47 @@ using std::cout;
 using std::string;
 
 gams::platforms::VREP_Base::VREP_Base (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
-  variables::Self & self)
-  : Base (&knowledge, sensors, self), airborne_ (false),
+  variables::Self * self)
+  : Base (knowledge, sensors, self), airborne_ (false),
     move_speed_ (0.8)
 {
-  // grab coverage sensor
-  variables::Sensors::iterator it = sensors->find ("coverage");
-  if (it == sensors->end ()) // create coverage sensor
+  if (sensors && knowledge)
   {
-    // get origin
-    utility::GPS_Position origin;
-    Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
-    origin_container.set_name ("sensor.coverage.origin", knowledge, 3);
-    origin.from_container (origin_container);
+    // grab coverage sensor
+    variables::Sensors::iterator it = sensors->find ("coverage");
+    if (it == sensors->end ()) // create coverage sensor
+    {
+      // get origin
+      utility::GPS_Position origin;
+      Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
+      origin_container.set_name ("sensor.coverage.origin", *knowledge, 3);
+      origin.from_container (origin_container);
 
-    // establish sensor
-    variables::Sensor* coverage_sensor =
-      new variables::Sensor ("coverage", &knowledge, 2.5, origin);
-    (*sensors)["coverage"] = coverage_sensor;
+      // establish sensor
+      variables::Sensor* coverage_sensor =
+        new variables::Sensor ("coverage", knowledge, 2.5, origin);
+      (*sensors)["coverage"] = coverage_sensor;
+    }
+    (*sensors_)["coverage"] = (*sensors)["coverage"];
+
+    // get vrep environment data
+    string sw = knowledge->get (".vrep_sw_position").to_string ();
+    double lat, lon;
+    sscanf(sw.c_str (), "%lf,%lf", &lat, &lon);
+    sw_position_.latitude (lat); sw_position_.longitude (lon);
+
+    // get client id
+    client_id_ = simxStart(knowledge->get(".vrep_host").to_string ().c_str (),
+      knowledge->get(".vrep_port").to_integer(), true, true, 2000, 5);
+    if (client_id_ == -1)
+    {
+      cerr << "couldn't connect to vrep" << endl;
+      exit (-1);
+    }
+    knowledge->wait ("vrep_ready == 1;");
   }
-  (*sensors_)["coverage"] = (*sensors)["coverage"];
-
-  // get vrep environment data
-  string sw = knowledge.get (".vrep_sw_position").to_string ();
-  double lat, lon;
-  sscanf(sw.c_str (), "%lf,%lf", &lat, &lon);
-  sw_position_.latitude (lat); sw_position_.longitude (lon);
-
-  // get client id
-  client_id_ = simxStart(knowledge.get(".vrep_host").to_string ().c_str (),
-    knowledge.get(".vrep_port").to_integer(), true, true, 2000, 5);
-  if (client_id_ == -1)
-  {
-    cerr << "couldn't connect to vrep" << endl;
-    exit (-1);
-  }
-  knowledge.wait ("vrep_ready == 1;");
 }
 
 gams::platforms::VREP_Base::~VREP_Base ()
@@ -156,7 +159,7 @@ gams::platforms::VREP_Base::sense (void)
   vrep_to_gps (vrep_pos, position);
 
   // set position in madara
-  position.to_container (self_.device.location);
+  position.to_container (self_->device.location);
 
   return 0;
 }
@@ -347,7 +350,7 @@ gams::platforms::VREP_Base::wait_for_go () const
   // sync with other nodes; wait for all processes to get up
   std::stringstream buffer, init_string;
   init_string << "S";
-  init_string << self_.id.to_integer ();
+  init_string << self_->id.to_integer ();
   init_string << ".init";
 
   buffer << "(" << init_string.str () << " = 1)";

@@ -5,6 +5,8 @@
 namespace containers = Madara::Knowledge_Engine::Containers;
 namespace engine = Madara::Knowledge_Engine;
 namespace controllers = gams::controllers;
+namespace algorithms = gams::algorithms;
+namespace platforms = gams::platforms;
 
 typedef Madara::Knowledge_Record::Integer  Integer;
 
@@ -231,6 +233,40 @@ void JNICALL Java_com_gams_controllers_BaseController_jni_1initVars
   controllers::Base * current = (controllers::Base *) cptr;
   if (current)
     current->init_vars (tempId, tempProcesses);
+}
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initVarsAlgorithm
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlgorithm
+  (JNIEnv * env, jobject, jlong cptr, jlong aptr)
+{
+  controllers::Base * current = (controllers::Base *) cptr;
+  algorithms::Base * algorithm = (algorithms::Base *) aptr;
+
+  if (current && algorithm)
+  {
+    current->init_vars (*algorithm);
+  }
+}
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initVarsPlatform
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsPlatform
+  (JNIEnv * env, jobject, jlong cptr, jlong pptr)
+{
+  controllers::Base * current = (controllers::Base *) cptr;
+  platforms::Base * platform = (platforms::Base *) pptr;
+
+  if (current && platform)
+  {
+    current->init_vars (*platform);
+  }
 }
 
 /*

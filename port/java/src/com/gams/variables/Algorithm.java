@@ -65,14 +65,49 @@ public class Algorithm extends GamsJNI
   private native long jni_getUnknown(long cptr);
   private native long jni_getWaiting(long cptr);
 
+  private boolean manageMemory = true;
+
   public Algorithm()
   {
     setCPtr(jni_Algorithm());
+    init();
   }
 
   public Algorithm(Algorithm input)
   {
     setCPtr(jni_Algorithm(input.getCPtr()));
+    init();
+  }
+
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @return a new java instance of the underlying pointer
+   */
+  public static Algorithm fromPointer(long cptr)
+  {
+    Algorithm ret = new Algorithm();
+    ret.manageMemory = true;
+    ret.setCPtr(cptr);
+    ret.init();
+    return ret;
+  }
+
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @param shouldManage  if true, manage the pointer
+   * @return a new java instance of the underlying pointer
+   */
+  public static Algorithm fromPointer(long cptr, boolean shouldManage)
+  {
+    Algorithm ret = new Algorithm();
+    ret.manageMemory=shouldManage;
+    ret.setCPtr(cptr);
+    ret.init();
+    return ret;
   }
 
   /**
@@ -86,6 +121,19 @@ public class Algorithm extends GamsJNI
   }
 
   /**
+   * Initializes the member variables
+   **/
+  public void init()
+  {
+    deadlocked = Integer.fromPointer (jni_getDeadlocked (getCPtr ()),false);
+    failed = Integer.fromPointer (jni_getFailed (getCPtr ()),false);
+    ok = Integer.fromPointer (jni_getOk (getCPtr ()),false);
+    paused = Integer.fromPointer (jni_getPaused (getCPtr ()),false);
+    unknown = Integer.fromPointer (jni_getUnknown (getCPtr ()),false);
+    waiting = Integer.fromPointer (jni_getWaiting (getCPtr ()),false);
+  }
+  
+  /**
    * Sets the name and knowledge base being referred to
    *
    * @param  kb      the knowledge base that contains the name
@@ -94,13 +142,7 @@ public class Algorithm extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    deadlocked = Integer.fromPointer (jni_getDeadlocked (getCPtr ()));
-    failed = Integer.fromPointer (jni_getFailed (getCPtr ()));
-    ok = Integer.fromPointer (jni_getOk (getCPtr ()));
-    paused = Integer.fromPointer (jni_getPaused (getCPtr ()));
-    unknown = Integer.fromPointer (jni_getUnknown (getCPtr ()));
-    waiting = Integer.fromPointer (jni_getWaiting (getCPtr ()));
+    init();
   }
 
   /**
@@ -112,13 +154,7 @@ public class Algorithm extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    deadlocked = Integer.fromPointer (jni_getDeadlocked (getCPtr ()));
-    failed = Integer.fromPointer (jni_getFailed (getCPtr ()));
-    ok = Integer.fromPointer (jni_getOk (getCPtr ()));
-    paused = Integer.fromPointer (jni_getPaused (getCPtr ()));
-    unknown = Integer.fromPointer (jni_getUnknown (getCPtr ()));
-    waiting = Integer.fromPointer (jni_getWaiting (getCPtr ()));
+    init();
   }
 
   /**
@@ -163,11 +199,14 @@ public class Algorithm extends GamsJNI
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
-   * called before an instance of WaitSettings gets garbage collected
+   * called before an instance gets garbage collected
    */
   public void free()
   {
-    jni_freeAlgorithm(getCPtr());
+    if (manageMemory)
+    {
+      jni_freeAlgorithm(getCPtr());
+    }
   }
 }
 

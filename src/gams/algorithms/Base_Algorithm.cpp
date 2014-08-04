@@ -47,6 +47,9 @@
 #include "gams/algorithms/Base_Algorithm.h"
 #include "gams/utility/Region.h"
 
+namespace variables = gams::variables;
+namespace platforms = gams::platforms;
+
 gams::algorithms::Base::Base (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
@@ -97,4 +100,40 @@ void
 gams::algorithms::Base::set_sensors (variables::Sensors * sensors)
 {
   sensors_ = sensors;
+}
+
+variables::Devices *
+gams::algorithms::Base::get_devices (void)
+{
+  return devices_;
+}
+
+Madara::Knowledge_Engine::Knowledge_Base *
+gams::algorithms::Base::get_knowledge_base (void)
+{
+  return knowledge_;
+}
+
+platforms::Base *
+gams::algorithms::Base::get_platform (void)
+{
+  return platform_;
+}
+
+variables::Self *
+gams::algorithms::Base::get_self (void)
+{
+  return self_;
+}
+
+variables::Sensors *
+gams::algorithms::Base::get_sensors (void)
+{
+  return sensors_;
+}
+
+variables::Algorithm *
+gams::algorithms::Base::get_algorithm_status (void)
+{
+  return &status_;
 }

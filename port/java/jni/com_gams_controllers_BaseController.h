@@ -89,6 +89,22 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVars
 
 /*
  * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initVarsAlgorithm
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlgorithm
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initVarsPlatform
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsPlatform
+  (JNIEnv *, jobject, jlong, jlong);
+
+/*
+ * Class:     com_gams_controllers_BaseController
  * Method:    jni_monitor
  * Signature: (J)J
  */

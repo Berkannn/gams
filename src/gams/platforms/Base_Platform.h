@@ -64,6 +64,11 @@
 
 namespace gams
 {
+  namespace controllers
+  {
+    class Base;
+  }
+
   namespace platforms
   {
     /**
@@ -87,14 +92,17 @@ namespace gams
     class GAMS_Export Base
     {
     public:
+      // allow Base controller to initialize our variables
+      friend class controllers::Base;
+
       /**
        * Constructor
        * @param  knowledge  context containing variables and values
        * @param  sensors  map of sensor names to sensor information
        **/
-      Base (Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-        variables::Sensors * sensors,
-        variables::Self & self);
+      Base (Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        variables::Sensors * sensors = 0,
+        variables::Self * self = 0);
 
       /**
        * Destructor
@@ -114,34 +122,46 @@ namespace gams
       virtual int analyze (void) = 0;
 
       /**
-       * Get the position accuracy in meters
+       * Gets the position accuracy in meters
        * @return position accuracy
        **/
       virtual double get_gps_accuracy () const = 0;
 
       /**
-       * Get GPS position
+       * Gets GPS position
        * @return GPS location of platform
        */
       utility::GPS_Position get_gps_position ();
 
       /**
-       * Get sensor radius
+       * Gets the name of the platform
+       **/
+      virtual std::string get_name () const = 0;
+
+      /**
+       * Gets the unique identifier of the platform. This should be an
+       * alphanumeric identifier that can be used as part of a MADARA
+       * variable (e.g. vrep_ant, autonomous_snake, etc.)
+       **/
+      virtual std::string get_id () const = 0;
+
+      /**
+       * Gets sensor radius
        * @return minimum radius of all available sensors for this platform
        */
       virtual double get_min_sensor_range () const;
 
       /**
-       * Get move speed
+       * Gets move speed
        **/
       virtual double get_move_speed () const;
 
       /**
-       * Get a sensor
+       * Gets a sensor
        * @param sensor  identifier of sensor to get
        * @return Sensor object
        */
-      virtual const variables::Sensor& get_sensor (const std::string& name) const;
+      virtual const variables::Sensor & get_sensor (const std::string& name) const;
 
       /**
        * Fills a list of sensor names with sensors available on the platform
@@ -210,6 +230,30 @@ namespace gams
        **/
       virtual int takeoff (void) = 0;
       
+      /**
+       * Gets the knowledge base
+       * @return the knowledge base referenced by the algorithm and platform
+       **/
+      Madara::Knowledge_Engine::Knowledge_Base * get_knowledge_base (void);
+      
+      /**
+       * Gets self-referencing variables
+       * @return self-referencing information like id and device attributes
+       **/
+      variables::Self * get_self (void);
+
+      /**
+       * Gets the available sensor information
+       * @return sensor information
+       **/
+      variables::Sensors * get_sensors (void);
+
+      /**
+       * Gets platform status information
+       * @return platform status info
+       **/
+      variables::Platform * get_platform_status (void);
+
     protected:
       /// movement speed for platform in meters/second
       double move_speed_;
@@ -218,7 +262,7 @@ namespace gams
       Madara::Knowledge_Engine::Knowledge_Base * knowledge_;
 
       /// provides access to self state
-      variables::Self self_;
+      variables::Self * self_;
 
       /// provides access to a sensor
       variables::Sensors * sensors_;

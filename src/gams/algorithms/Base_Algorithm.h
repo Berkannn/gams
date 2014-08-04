@@ -65,6 +65,11 @@
 
 namespace gams
 {
+  namespace controllers
+  {
+    class Base;
+  }
+
   namespace algorithms
   {
     /**
@@ -82,6 +87,9 @@ namespace gams
     class GAMS_Export Base
     {
     public:
+      // allow Base controller to initialize our variables
+      friend class controllers::Base;
+
       /**
        * Constructor
        * @param  knowledge    the knowledge base of variables and values
@@ -91,8 +99,10 @@ namespace gams
        **/
       Base (
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-        platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-        variables::Self * self = 0, variables::Devices * devices = 0);
+        platforms::Base * platform = 0,
+        variables::Sensors * sensors = 0,
+        variables::Self * self = 0,
+        variables::Devices * devices = 0);
 
       /**
        * Destructor
@@ -147,6 +157,36 @@ namespace gams
        **/
       virtual void set_sensors (variables::Sensors * sensors);
       
+      /**
+       * Gets the list of devices
+       **/
+      variables::Devices * get_devices (void);
+
+      /**
+       * Gets the knowledge base
+       **/
+      Madara::Knowledge_Engine::Knowledge_Base * get_knowledge_base (void);
+
+      /**
+       * Gets the platform
+       **/
+      platforms::Base * get_platform (void);
+
+      /**
+       * Gets self-defined variables
+       **/
+      variables::Self * get_self (void);
+
+      /**
+       * Gets the available sensor information
+       **/
+      variables::Sensors * get_sensors (void);
+
+      /**
+       * Gets algorithm status variables
+       **/
+      variables::Algorithm * get_algorithm_status (void);
+
     protected:
       /// the list of devices potentially participating in the algorithm
       variables::Devices * devices_;

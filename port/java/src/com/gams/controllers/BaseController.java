@@ -48,6 +48,8 @@ package com.gams.controllers;
 import com.gams.GamsJNI;
 import com.madara.KnowledgeBase;
 import com.madara.KnowledgeList;
+import com.gams.algorithms.BaseAlgorithm;
+import com.gams.platforms.BasePlatform;
 
 public class BaseController extends GamsJNI
 {	
@@ -61,6 +63,8 @@ public class BaseController extends GamsJNI
   private native void jni_initAlgorithm(long cptr, java.lang.String name, long[] args);
   private native void jni_initPlatform(long cptr, java.lang.String name, long[] args);
   private native void jni_initVars(long cptr, long id, long processes);
+  private native void jni_initVarsAlgorithm(long cptr, long algorithm);
+  private native void jni_initVarsPlatform(long cptr, long platform);
   private native long jni_monitor(long cptr);
   private native long jni_plan(long cptr);
   private native long jni_run(long cptr, double period, double max);
@@ -134,6 +138,30 @@ public class BaseController extends GamsJNI
   public void initVars(long id, long processes)
   {
     jni_initVars(getCPtr(), id, processes);
+  }
+
+  /**
+   * Initialize the variables for a platform. This function is useful
+   * for user-defined platforms and essentially shares the controller's
+   * KnowledgeBase, self-identifying variables, etc.
+   *
+   * @param  platform   the user-defined platform
+   */
+  public void initVars(BasePlatform platform)
+  {
+    jni_initVarsPlatform(getCPtr(), platform.getCPtr ());
+  }
+
+  /**
+   * Initialize the variables for an algorithm. This function is useful
+   * for user-defined algorithms and essentially shares the controller's
+   * KnowledgeBase, self-identifying variables, etc.
+   *
+   * @param  algorithm   the user-defined algorithm
+   */
+  public void initVars(BaseAlgorithm algorithm)
+  {
+    jni_initVarsAlgorithm(getCPtr(), algorithm.getCPtr ());
   }
 
   /**

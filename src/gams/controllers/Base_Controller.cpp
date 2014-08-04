@@ -54,6 +54,12 @@
 #include "gams/platforms/Platform_Factory.h"
 #include "gams/algorithms/Algorithm_Factory.h"
 
+// Java-specific header includes
+#ifdef _GAMS_JAVA_
+#include "gams/algorithms/java/Java_Algorithm.h"
+#include "gams/platforms/java/Java_Platform.h"
+#endif
+
 using std::cerr;
 using std::endl;
 
@@ -556,6 +562,28 @@ gams::controllers::Base::init_platform (
       algorithm_->set_platform (platform_);
   }
 }
+    
+#ifdef _GAMS_JAVA_
+
+void gams::controllers::Base::init_algorithm (jobject algorithm)
+{
+  delete algorithm_;
+  algorithm_ = new gams::algorithms::Java_Algorithm (algorithm);
+  init_vars (*algorithm_);
+}
+      
+
+void gams::controllers::Base::init_platform (jobject platform)
+{
+  delete platform_;
+  platform_ = new gams::platforms::Java_Platform (platform);
+  init_vars (*platform_);
+
+  if (algorithm_)
+    algorithm_->set_platform (platform_);
+}
+
+#endif
 
 void
 gams::controllers::Base::init_vars (
@@ -566,4 +594,23 @@ gams::controllers::Base::init_vars (
   variables::init_vars (devices_, knowledge_, processes);
   swarm_.init_vars (knowledge_, processes);
   self_.init_vars (knowledge_, id);
+}
+
+void
+gams::controllers::Base::init_vars (platforms::Base & platform)
+{
+  platform.knowledge_ = &knowledge_;
+  platform.self_ = &self_;
+  platform.sensors_ = &sensors_;
+}
+
+
+void
+gams::controllers::Base::init_vars (algorithms::Base & algorithm)
+{
+  algorithm.devices_ = &devices_;
+  algorithm.knowledge_ = &knowledge_;
+  algorithm.platform_ = platform_;
+  algorithm.self_ = &self_;
+  algorithm.sensors_ = &sensors_;
 }

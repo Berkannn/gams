@@ -45,19 +45,19 @@
  **/
 
 /**
- * @file Java_Platform.h
+ * @file Java_Algorithm.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the java platform abstraction
+ * This file contains the definition of the java algorithm abstraction
  **/
 
-#ifndef   _GAMS_PLATFORM_JAVA_H_
-#define   _GAMS_PLATFORM_JAVA_H_
+#ifndef   _GAMS_ALGORITHM_JAVA_H_
+#define   _GAMS_ALGORITHM_JAVA_H_
 
 #include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform.h"
-#include "gams/platforms/Base_Platform.h"
+#include "gams/algorithms/Base_Algorithm.h"
 #include "gams/utility/GPS_Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
@@ -68,9 +68,9 @@
 
 namespace gams
 {
-  namespace platforms
+  namespace algorithms
   {
-    class GAMS_Export Java_Platform : public Base
+    class GAMS_Export Java_Algorithm : public Base
     {
     public:
       /**
@@ -81,92 +81,54 @@ namespace gams
        * @param  platforms  map of platform names to platform information
        * @param  self       device variables that describe self state
        **/
-      Java_Platform (
+      Java_Algorithm (
         jobject obj,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
+        platforms::Base * platform = 0,
         variables::Sensors * sensors = 0,
-        variables::Platforms * platforms = 0,
-        variables::Self * self = 0);
+        variables::Self * self = 0,
+        variables::Devices * devices = 0);
 
       /**
        * Destructor
        **/
-      ~Java_Platform ();
+      ~Java_Algorithm ();
 
       /**
        * Assignment operator
        * @param  rhs   values to copy
        **/
-      void operator= (const Java_Platform & rhs);
-
+      void operator= (const Java_Algorithm & rhs);
+      
       /**
-       * Analyzes platform information
+       * Analyzes environment, platform, or other information
        * @return bitmask status of the platform. @see Status.
        **/
-      virtual int analyze (void);
+      virtual int analyze ();
+      
+      /**
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
+       **/
+      virtual int execute ();
 
       /**
-       * Get the location aproximation value of what is considered close enough
-       * @return location approximation radius
+       * Plans the next execution of the algorithm
+       * @return bitmask status of the platform. @see Status.
        **/
-      virtual double get_gps_accuracy () const;
-             
+      virtual int plan ();
+      
       /**
-       * Gets the unique identifier of the platform. This should be an
+       * Gets the unique identifier of the algorithm. This should be an
        * alphanumeric identifier that can be used as part of a MADARA
-       * variable (e.g. vrep_ant, autonomous_snake, etc.)
+       * variable (e.g. rac, follow_leader, etc.)
        **/
       virtual std::string get_id () const;
 
       /**
-       * Get move speed
-       **/
-      virtual double get_move_speed () const;
-      
-      /**
-       * Gets the name of the platform
+       * Gets the name of the algorithm
        **/
       virtual std::string get_name () const;
-
-      /**
-       * Instructs the device to return home
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int home (void);
-      
-      /**
-       * Instructs the platform to land
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int land (void);
-      
-      /**
-       * Moves the platform to a position
-       * @param   position  the coordinate to move to
-       * @param   proximity minimum required distance between current
-       *                    and target before exiting
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int move (const utility::Position & position,
-        const double & epsilon = 0.1);
-      
-      /**
-       * Polls the sensor environment for useful information
-       * @return number of sensors updated/used
-       **/
-      virtual int sense (void);
-      
-      /**
-       * Set move speed
-       * @param speed new speed in meters/loop execution
-       **/
-      virtual void set_move_speed (const double& speed);
-
-      /**
-       * Instructs the platform to take off
-       * @return 1 if moving, 2 if arrived, 0 if error
-       **/
-      virtual int takeoff (void);
 
     protected:
       /// the Java object with callable methods
@@ -178,4 +140,4 @@ namespace gams
   }
 }
 
-#endif // _GAMS_PLATFORM_JAVA_H_
+#endif // _GAMS_ALGORITHM_JAVA_H_

@@ -43,49 +43,44 @@
  *      This material has been approved for public release and unlimited
  *      distribution.
  **/
-#include "Java_Platform.h"
+#include "Java_Algorithm.h"
 #include "gams/utility/java/Acquire_VM.h"
 
 
-gams::platforms::Java_Platform::Java_Platform (
+gams::algorithms::Java_Algorithm::Java_Algorithm (
   jobject obj,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+  platforms::Base * platform,
   variables::Sensors * sensors,
-  variables::Platforms * platforms,
-  variables::Self * self)
-  : Base (knowledge, sensors, self)
+  variables::Self * self,
+  variables::Devices * devices)
+  : Base (knowledge, platform, sensors, self, devices)
 {
-  if (platforms && knowledge)
-  {
-    (*platforms)[get_id ()].init_vars (*knowledge, get_id ());
-    status_ = (*platforms)[get_id ()];
-  }
-  
   //We have to create a globla ref to the object or we cant call it
   JNIEnv * env = gams_jni_get_env ();
   obj_ = (jobject) env->NewGlobalRef (obj);
   class_ = (jclass) env->NewGlobalRef (env->GetObjectClass (obj_));
 }
 
-gams::platforms::Java_Platform::~Java_Platform ()
+gams::algorithms::Java_Algorithm::~Java_Algorithm ()
 {
 }
 
 void
-gams::platforms::Java_Platform::operator= (const Java_Platform & rhs)
+gams::algorithms::Java_Algorithm::operator= (const Java_Algorithm & rhs)
 {
   if (this != &rhs)
   {
-    platforms::Base * dest = dynamic_cast <platforms::Base *> (this);
-    const platforms::Base * source =
-      dynamic_cast <const platforms::Base *> (&rhs);
+    algorithms::Base * dest = dynamic_cast <algorithms::Base *> (this);
+    const algorithms::Base * source =
+      dynamic_cast <const algorithms::Base *> (&rhs);
 
     *dest = *source;
   }
 }
  
 int
-gams::platforms::Java_Platform::analyze (void)
+gams::algorithms::Java_Algorithm::analyze (void)
 {
   gams::utility::java::Acquire_VM jvm;
   jint result (0);
@@ -105,28 +100,7 @@ gams::platforms::Java_Platform::analyze (void)
   return result;
 }
 
-double
-gams::platforms::Java_Platform::get_gps_accuracy () const
-{
-  gams::utility::java::Acquire_VM jvm;
-  jdouble result (0);
-
-  jmethodID call = jvm.env->GetMethodID(class_, "getGpsAccuracy", "()D" );
-
-  if (call)
-  {
-    result = jvm.env->CallDoubleMethod (obj_, call);
-  }
-  else
-  {
-    knowledge_->print (
-      "ERROR: Unable to acquire getGpsAccuracy() from custom Java platform class.\n");
-  }
-
-  return result;
-}
-
-std::string gams::platforms::Java_Platform::get_id () const
+std::string gams::algorithms::Java_Algorithm::get_id () const
 {
   gams::utility::java::Acquire_VM jvm;
   std::string id;
@@ -149,7 +123,7 @@ std::string gams::platforms::Java_Platform::get_id () const
   return id;
 }
 
-std::string gams::platforms::Java_Platform::get_name () const
+std::string gams::algorithms::Java_Algorithm::get_name () const
 {
   gams::utility::java::Acquire_VM jvm;
   std::string name;
@@ -172,34 +146,13 @@ std::string gams::platforms::Java_Platform::get_name () const
   return name;
 }
 
-double
-gams::platforms::Java_Platform::get_move_speed () const
-{
-  gams::utility::java::Acquire_VM jvm;
-  jdouble result (0);
-
-  jmethodID call = jvm.env->GetMethodID(class_, "getGpsAccuracy", "()D" );
-
-  if (call)
-  {
-    result = jvm.env->CallDoubleMethod (obj_, call);
-  }
-  else
-  {
-    knowledge_->print (
-      "ERROR: Unable to acquire getGpsAccuracy() from custom Java platform class.\n");
-  }
-
-  return result;
-}
-
 int
-gams::platforms::Java_Platform::home (void)
+gams::algorithms::Java_Algorithm::execute (void)
 {
   gams::utility::java::Acquire_VM jvm;
   jint result (0);
 
-  jmethodID call = jvm.env->GetMethodID(class_, "home", "()I" );
+  jmethodID call = jvm.env->GetMethodID(class_, "execute", "()I" );
 
   if (call)
   {
@@ -208,19 +161,19 @@ gams::platforms::Java_Platform::home (void)
   else
   {
     knowledge_->print (
-      "ERROR: Unable to acquire home() from custom Java platform class.\n");
+      "ERROR: Unable to acquire execute() from custom Java platform class.\n");
   }
 
   return result;
 }
 
 int
-gams::platforms::Java_Platform::land (void)
+gams::algorithms::Java_Algorithm::plan (void)
 {
   gams::utility::java::Acquire_VM jvm;
   jint result (0);
 
-  jmethodID call = jvm.env->GetMethodID(class_, "land", "()I" );
+  jmethodID call = jvm.env->GetMethodID(class_, "plan", "()I" );
 
   if (call)
   {
@@ -229,96 +182,7 @@ gams::platforms::Java_Platform::land (void)
   else
   {
     knowledge_->print (
-      "ERROR: Unable to acquire land() from custom Java platform class.\n");
-  }
-
-  return result;
-}
-
-int
-gams::platforms::Java_Platform::move (const utility::Position & position,
-  const double & epsilon)
-{
-  gams::utility::java::Acquire_VM jvm;
-  jint result (0);
-
-  jmethodID move_call = jvm.env->GetMethodID(
-    class_, "move", "(Lcom.gams.utility.Position;D)I" );
-  jclass pos_class = jvm.env->FindClass ("com.gams.utility.Position");
-  jmethodID pos_const = jvm.env->GetMethodID(pos_class, "<init>", "(JJJ)V");
-
-  if (move_call)
-  {
-    jobject inpos = jvm.env->NewObject (
-      pos_class, pos_const, position.x, position.y, position.z);
-    jdouble inepsilon (epsilon);
-    result = jvm.env->CallIntMethod (obj_, move_call, inpos, inepsilon);
-  }
-  else
-  {
-    knowledge_->print (
-      "ERROR: Unable to acquire move() from custom Java platform class.\n");
-  }
-
-  return result;
-}
-
-int
-gams::platforms::Java_Platform::sense (void)
-{
-  gams::utility::java::Acquire_VM jvm;
-  jint result (0);
-
-  jmethodID call = jvm.env->GetMethodID(class_, "sense", "()I" );
-
-  if (call)
-  {
-    result = jvm.env->CallIntMethod (obj_, call);
-  }
-  else
-  {
-    knowledge_->print (
-      "ERROR: Unable to acquire sense() from custom Java platform class.\n");
-  }
-
-  return result;
-}
-
-void
-gams::platforms::Java_Platform::set_move_speed (const double & speed)
-{
-  gams::utility::java::Acquire_VM jvm;
-
-  jmethodID call = jvm.env->GetMethodID(class_, "setMoveSpeed", "(D)V" );
-
-  if (call)
-  {
-    jdouble jspeed (speed);
-    jvm.env->CallVoidMethod (obj_, call, jspeed);
-  }
-  else
-  {
-    knowledge_->print (
-      "ERROR: Unable to acquire setMoveSpeed() from custom Java platform class.\n");
-  }
-}
-
-int
-gams::platforms::Java_Platform::takeoff (void)
-{
-  gams::utility::java::Acquire_VM jvm;
-  jint result (0);
-
-  jmethodID call = jvm.env->GetMethodID(class_, "takeoff", "()I" );
-
-  if (call)
-  {
-    result = jvm.env->CallIntMethod (obj_, call);
-  }
-  else
-  {
-    knowledge_->print (
-      "ERROR: Unable to acquire takeoff() from custom Java platform class.\n");
+      "ERROR: Unable to acquire plan() from custom Java platform class.\n");
   }
 
   return result;

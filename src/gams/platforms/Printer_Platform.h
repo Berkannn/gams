@@ -76,10 +76,10 @@ namespace gams
        * @param  self       device variables that describe self state
        **/
       Printer_Platform (
-        Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
-        variables::Platforms & platforms,
-        variables::Self & self);
+        variables::Platforms * platforms,
+        variables::Self * self);
 
       /**
        * Destructor
@@ -103,11 +103,23 @@ namespace gams
        * @return location approximation radius
        **/
       virtual double get_gps_accuracy () const;
+      
+      /**
+       * Gets the unique identifier of the platform. This should be an
+       * alphanumeric identifier that can be used as part of a MADARA
+       * variable (e.g. vrep_ant, autonomous_snake, etc.)
+       **/
+      virtual std::string get_id () const;
 
       /**
        * Get move speed
        **/
       virtual double get_move_speed () const;
+      
+      /**
+       * Gets the name of the platform
+       **/
+      virtual std::string get_name () const;
 
       /**
        * Instructs the device to return home
@@ -152,9 +164,6 @@ namespace gams
 
       /// current position
       utility::GPS_Position position_;
-
-      /// provides access to variables denoting self state
-      variables::Self * self_;
     };
   }
 }

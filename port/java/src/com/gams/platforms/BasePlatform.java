@@ -43,63 +43,66 @@
  *  This material has been approved for public release and unlimited
  *  distribution.
  **/
-package com.gams.algorithms;
+package com.gams.platforms;
 
+import com.gams.GamsJNI;
 import com.madara.KnowledgeBase;
-import com.gams.platforms.PlatformInterface;
 import com.gams.variables.Self;
-import com.gams.variables.Algorithm;
+import com.gams.variables.Platform;
+import com.gams.variables.SensorMap;
+import com.gams.controllers.BaseController;
 
 /**
- * Interface for defining an algorithm to be used by GAMS. Care must be taken
- * to make all methods non-blocking, to prevent locking up the underlying
- * MADARA context.
+ * Base class that should be extended when creating a Java platform for
+ * usage in the GAMS controller
  */
-public interface AlgorithmInterface
+public abstract class BasePlatform extends GamsJNI implements PlatformInterface
 {
+  private native long jni_Base(Object sub);
+  private native long jni_getKnowledgeBase(long cptr);
+  private native long jni_getSelf(long cptr);
+  private native long jni_getPlatformStatus(long cptr);
+
+  public BasePlatform(BasePlatform sub)
+  {
+    setCPtr(jni_Base(sub));
+  }
+
   /**
-   * Analyzes the algorithm for new status information. This should be
-   * a non-blocking call.
-   * @return  status information (@see Status)
+   * Constructor for a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   */
+  public BasePlatform(long cptr)
+  {
+    setCPtr(cptr);
+  }
+
+  /**
+   * Initialize the platform with controller variables. Use this
+   * method to synchronize user-defined platforms with the controller.
    **/
-  public int analyze ();
+  public void init (BaseController controller)
+  {
+    controller.initVars (this);
+    knowledge = KnowledgeBase.fromPointer(jni_getKnowledgeBase(getCPtr()),false);
+    self = Self.fromPointer(jni_getSelf(getCPtr()),false);
+    status = com.gams.variables.Platform.fromPointer(jni_getPlatformStatus(getCPtr()),false);
+  }
   
   /**
-   * Plans next steps in the algorithm. This should be
-   * a non-blocking call.
-   * @return  status information (@see Status)
+   * The controller's current knowledge base
    **/
-  public int plan ();
+  KnowledgeBase knowledge;
   
   /**
-   * Executes next step in the algorithm. This should be
-   * a non-blocking call.
-   * @return  status information (@see Status)
+   * Self-identifying variables like id and device properties
    **/
-  public int execute ();
+  Self self;
   
   /**
-   * Gets the knowledge base
-   * @return the knowledge base referenced by the algorithm and platform
+   * The status of the platform
    **/
-  public KnowledgeBase getKnowledgeBase ();
-  
-  /**
-   * Gets the platform
-   * @return the underlying platform
-   **/
-  public PlatformInterface getPlatform ();
-  
-  /**
-   * Gets self-referencing variables related to the device and id
-   * @return Self variables
-   **/
-  public Self getSelf ();
-  
-  /**
-   * Gets algorithm status information
-   * @return algorithm status info
-   **/
-  public Algorithm getAlgorithm ();
+  Platform status;
 }
 

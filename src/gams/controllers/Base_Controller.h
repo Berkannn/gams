@@ -64,6 +64,10 @@
 #include "gams/algorithms/Base_Algorithm.h"
 #include "gams/platforms/Base_Platform.h"
 
+#ifdef _GAMS_JAVA_
+#include <jni.h>
+#endif
+
 namespace gams
 {
   namespace controllers
@@ -141,7 +145,7 @@ namespace gams
        **/
       void init_algorithm (const std::string & algorithm,
         const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
-      
+ 
       /**
        * Initializes the platform
        * @param  platform   the name of the platform the controller is using
@@ -149,7 +153,21 @@ namespace gams
        **/
       void init_platform (const std::string & platform,
         const Madara::Knowledge_Vector & args = Madara::Knowledge_Vector ());
+           
+#ifdef _GAMS_JAVA_
+      /**
+       * Initializes a Java-based algorithm
+       * @param  algorithm  the java-based algorithm to use
+       **/
+      void init_algorithm (jobject algorithm);
       
+      /**
+       * Initializes a Java-based platform
+       * @param  platform  the java-based platform to use
+       **/
+      void init_platform (jobject platform);
+#endif
+
       /**
        * Initializes global variable containers
        * @param   id         node identifier
@@ -157,6 +175,22 @@ namespace gams
        **/
       void init_vars (const Madara::Knowledge_Record::Integer & id = 0,
         const Madara::Knowledge_Record::Integer & processes = -1);
+      
+      /**
+       * Initializes containers and knowledge base in a platform
+       * This is usually the first thing a developer should do with
+       * a user-defined platform.
+       * @param   platform   the platform to initialize
+       **/
+      void init_vars (platforms::Base & platform);
+      
+      /**
+       * Initializes containers and knowledge base in an algorithm.
+       * This is usually the first thing a developer should do with
+       * a user-defined algorithm.
+       * @param   algorithm   the algorithm to initialize
+       **/
+      void init_vars (algorithms::Base & algorithm);
 
     protected:
 

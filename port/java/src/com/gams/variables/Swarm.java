@@ -71,11 +71,13 @@ public class Swarm extends GamsJNI
   public Swarm()
   {
     setCPtr(jni_Swarm());
+    init();
   }
 
   public Swarm(Swarm input)
   {
     setCPtr(jni_Swarm(input.getCPtr()));
+    init();
   }
 
   /**
@@ -89,6 +91,7 @@ public class Swarm extends GamsJNI
     Swarm ret = new Swarm();
     ret.manageMemory = true;
     ret.setCPtr(cptr);
+    ret.init();
     return ret;
   }
 
@@ -104,9 +107,25 @@ public class Swarm extends GamsJNI
     Swarm ret = new Swarm();
     ret.manageMemory=shouldManage;
     ret.setCPtr(cptr);
+    ret.init();
     return ret;
   }
 
+  /**
+   * Initializes the member variables
+   **/
+  public void init()
+  {
+    command = com.madara.containers.String.fromPointer (
+      jni_getCommand (getCPtr ()),false);
+    args = com.madara.containers.Vector.fromPointer (
+      jni_getArgs (getCPtr ()),false);
+    minAlt = com.madara.containers.Double.fromPointer (
+      jni_getMinAlt (getCPtr ()),false);
+    size = com.madara.containers.Integer.fromPointer (
+      jni_getSize (getCPtr ()),false);
+  }
+  
   /**
    * Sets the name and knowledge base being referred to
    *
@@ -116,15 +135,7 @@ public class Swarm extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
-    minAlt = com.madara.containers.Double.fromPointer (
-      jni_getMinAlt (getCPtr ()));
-    size = com.madara.containers.Integer.fromPointer (
-      jni_getSize (getCPtr ()));
+    init();
   }
 
   /**
@@ -136,15 +147,7 @@ public class Swarm extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    command = com.madara.containers.String.fromPointer (
-      jni_getCommand (getCPtr ()));
-    args = com.madara.containers.Vector.fromPointer (
-      jni_getArgs (getCPtr ()));
-    minAlt = com.madara.containers.Double.fromPointer (
-      jni_getMinAlt (getCPtr ()));
-    size = com.madara.containers.Integer.fromPointer (
-      jni_getSize (getCPtr ()));
+    init();
   }
 
   /**

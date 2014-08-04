@@ -64,11 +64,13 @@ public class Region extends GamsJNI
   public Region()
   {
     setCPtr(jni_Region());
+    init();
   }
 
   public Region(Region input)
   {
     setCPtr(jni_Region(input.getCPtr()));
+    init();
   }
 
   /**
@@ -82,6 +84,15 @@ public class Region extends GamsJNI
   }
 
   /**
+   * Initializes the member variables
+   **/
+  public void init()
+  {
+    vertices = com.madara.containers.Vector.fromPointer (
+      jni_getVertices (getCPtr ()));
+  }
+  
+  /**
    * Sets the name and knowledge base being referred to
    *
    * @param  kb      the knowledge base that contains the name
@@ -90,9 +101,7 @@ public class Region extends GamsJNI
   public void init(KnowledgeBase kb, java.lang.String name)
   {
     jni_init(getCPtr(), 0, kb.getCPtr (), name);
-    
-    vertices = com.madara.containers.Vector.fromPointer (
-      jni_getVertices (getCPtr ()));
+    init();
   }
 
   /**
@@ -104,9 +113,7 @@ public class Region extends GamsJNI
   public void init(Variables vars, java.lang.String name)
   {
     jni_init(getCPtr(), 1, vars.getCPtr (), name);
-    
-    vertices = com.madara.containers.Vector.fromPointer (
-      jni_getVertices (getCPtr ()));
+    init();
   }
 
   /**
