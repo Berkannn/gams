@@ -58,16 +58,10 @@ import com.gams.controllers.BaseController;
  */
 public abstract class BaseAlgorithm extends GamsJNI implements AlgorithmInterface
 {
-  private native long jni_Base(Object sub);
   private native long jni_getKnowledgeBase(long cptr);
   private native long jni_getSelf(long cptr);
   private native Object jni_getPlatformObject(long cptr);
   private native long jni_getAlgorithmStatus(long cptr);
-
-  public BaseAlgorithm(BaseAlgorithm sub)
-  {
-    setCPtr(jni_Base(sub));
-  }
 
   /**
    * Initialize the platform with controller variables. Use this
@@ -83,23 +77,32 @@ public abstract class BaseAlgorithm extends GamsJNI implements AlgorithmInterfac
   }
   
   /**
+   * Facade for the protected setCPtr method in GamsJNI
+   * @param cptr the C pointer for the underlying class
+   **/
+  public void assume (long cptr)
+  {
+    setCPtr(cptr);
+  }
+  
+  /**
    * The controller's current knowledge base
    **/
-  KnowledgeBase knowledge;
+  public KnowledgeBase knowledge;
   
   /**
    * The platform currently in use by the controller
    **/
-  BasePlatform platform;
+  public BasePlatform platform;
   
   /**
    * Self-identifying variables like id and device properties
    **/
-  Self self;
+  public Self self;
   
   /**
    * The status of the algorithm
    **/
-  Algorithm status;
+  public Algorithm status;
 }
 

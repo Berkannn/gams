@@ -632,3 +632,15 @@ gams::controllers::Base::init_vars (algorithms::Base & algorithm)
   algorithm.self_ = &self_;
   algorithm.sensors_ = &sensors_;
 }
+
+gams::algorithms::Base *
+gams::controllers::Base::get_algorithm (void)
+{
+  return algorithm_;
+}
+      
+gams::platforms::Base *
+gams::controllers::Base::get_platform (void)
+{
+  return platform_;
+}

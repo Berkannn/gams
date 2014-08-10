@@ -45,37 +45,46 @@
  **/
 package com.gams.algorithms;
 
-import com.madara.KnowledgeBase;
-import com.gams.platforms.PlatformInterface;
-import com.gams.variables.Self;
-import com.gams.variables.Algorithm;
-
 /**
- * Interface for defining an algorithm to be used by GAMS. Care must be taken
- * to make all methods non-blocking, to prevent locking up the underlying
- * MADARA context.
+ * Algorithm settings debugger class
  */
-public interface AlgorithmInterface
+public class DebuggerAlgorithm extends BaseAlgorithm
 {
   /**
-   * Analyzes the algorithm for new status information. This should be
-   * a non-blocking call.
-   * @return  status information (@see Status)
+   * Default constructor
    **/
-  public int analyze ();
+  public DebuggerAlgorithm()
+  {
+  }
+
+  /**
+   * Analyzes the state of the algorithm
+   **/
+  public int analyze ()
+  {
+    System.out.println("Algorithm.analyze called");
+    
+    return Status.OK.value ();
+  }
   
   /**
-   * Plans next steps in the algorithm. This should be
-   * a non-blocking call.
-   * @return  status information (@see Status)
+   * Plans the next stage of the algorithm
    **/
-  public int plan ();
+  public int plan ()
+  {
+    System.out.println("Algorithm.plan called");
+    
+    return Status.OK.value ();
+  }
   
   /**
-   * Executes next step in the algorithm. This should be
-   * a non-blocking call.
-   * @return  status information (@see Status)
+   * Executes the next stage of the algorithm
    **/
-  public int execute ();
+  public int execute ()
+  {
+    System.out.println("Algorithm.execute called");
+    
+    return Status.OK.value ();
+  }
 }
 

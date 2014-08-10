@@ -1,6 +1,8 @@
 
 #include "com_gams_controllers_BaseController.h"
 #include "gams/controllers/Base_Controller.h"
+#include "gams/platforms/java/Java_Platform.h"
+#include "gams/algorithms/java/Java_Algorithm.h"
 
 namespace containers = Madara::Knowledge_Engine::Containers;
 namespace engine = Madara::Knowledge_Engine;
@@ -218,6 +220,68 @@ void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform
     // clean up the allocated elements
     env->ReleaseLongArrayElements(argslist, elements, 0);
     env->ReleaseStringUTFChars(name, str_name);
+  }
+}
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initAlgorithm
+ * Signature: (JLjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_Object_2
+  (JNIEnv * env, jobject, jlong cptr, jobject algorithm)
+{
+  controllers::Base * current = (controllers::Base *) cptr;
+
+  if (current)
+  {
+    current->init_algorithm (algorithm);
+  }
+}
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initPlatform
+ * Signature: (JLjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_Object_2
+  (JNIEnv * env, jobject, jlong cptr, jobject platform)
+{
+  controllers::Base * current = (controllers::Base *) cptr;
+
+  if (current)
+  {
+    current->init_algorithm (platform);
+  }
+}
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_getPlatform
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatform
+  (JNIEnv *, jobject, jlong cptr)
+{
+  controllers::Base * current = (controllers::Base *) cptr;
+  if (current)
+  {
+    return (jlong) current->get_platform ();
+  }
+}
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_getAlgorithm
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorithm
+  (JNIEnv *, jobject, jlong cptr)
+{
+  controllers::Base * current = (controllers::Base *) cptr;
+  if (current)
+  {
+    return (jlong) current->get_algorithm ();
   }
 }
 

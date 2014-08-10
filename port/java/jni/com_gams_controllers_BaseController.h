@@ -57,6 +57,22 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1execute
 
 /*
  * Class:     com_gams_controllers_BaseController
+ * Method:    jni_getPlatform
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatform
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_getAlgorithm
+ * Signature: (J)J
+ */
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorithm
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_gams_controllers_BaseController
  * Method:    jni_initAccent
  * Signature: (JLjava/lang/String;[J)V
  */
@@ -68,7 +84,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAccent
  * Method:    jni_initAlgorithm
  * Signature: (JLjava/lang/String;[J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_String_2_3J
   (JNIEnv *, jobject, jlong, jstring, jlongArray);
 
 /*
@@ -76,8 +92,24 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorit
  * Method:    jni_initPlatform
  * Signature: (JLjava/lang/String;[J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_String_2_3J
   (JNIEnv *, jobject, jlong, jstring, jlongArray);
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initAlgorithm
+ * Signature: (JLjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_Object_2
+  (JNIEnv *, jobject, jlong, jobject);
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_initPlatform
+ * Signature: (JLjava/lang/Object;)V
+ */
+JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_Object_2
+  (JNIEnv *, jobject, jlong, jobject);
 
 /*
  * Class:     com_gams_controllers_BaseController

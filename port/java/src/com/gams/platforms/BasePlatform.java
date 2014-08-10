@@ -57,26 +57,10 @@ import com.gams.controllers.BaseController;
  * usage in the GAMS controller
  */
 public abstract class BasePlatform extends GamsJNI implements PlatformInterface
-{
-  private native long jni_Base(Object sub);
+{ 
   private native long jni_getKnowledgeBase(long cptr);
   private native long jni_getSelf(long cptr);
   private native long jni_getPlatformStatus(long cptr);
-
-  public BasePlatform(BasePlatform sub)
-  {
-    setCPtr(jni_Base(sub));
-  }
-
-  /**
-   * Constructor for a C/C++ pointer
-   *
-   * @param cptr C pointer to the object
-   */
-  public BasePlatform(long cptr)
-  {
-    setCPtr(cptr);
-  }
 
   /**
    * Initialize the platform with controller variables. Use this
@@ -89,20 +73,29 @@ public abstract class BasePlatform extends GamsJNI implements PlatformInterface
     self = Self.fromPointer(jni_getSelf(getCPtr()),false);
     status = com.gams.variables.Platform.fromPointer(jni_getPlatformStatus(getCPtr()),false);
   }
+   
+  /**
+   * Facade for the protected setCPtr method in GamsJNI
+   * @param cptr the C pointer for the underlying class
+   **/
+  public void assume (long cptr)
+  {
+    setCPtr(cptr);
+  }
   
   /**
    * The controller's current knowledge base
    **/
-  KnowledgeBase knowledge;
+  public KnowledgeBase knowledge;
   
   /**
    * Self-identifying variables like id and device properties
    **/
-  Self self;
+  public Self self;
   
   /**
    * The status of the platform
    **/
-  Platform status;
+  public Platform status;
 }
 

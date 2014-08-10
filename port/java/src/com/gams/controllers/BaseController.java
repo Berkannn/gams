@@ -50,6 +50,8 @@ import com.madara.KnowledgeBase;
 import com.madara.KnowledgeList;
 import com.gams.algorithms.BaseAlgorithm;
 import com.gams.platforms.BasePlatform;
+import com.gams.platforms.DebuggerPlatform;
+import com.gams.algorithms.DebuggerAlgorithm;
 
 public class BaseController extends GamsJNI
 {	
@@ -59,9 +61,13 @@ public class BaseController extends GamsJNI
   private native java.lang.String jni_toString(long cptr);
   private native long jni_analyze(long cptr);
   private native long jni_execute(long cptr);
+  private native long jni_getPlatform(long cptr);
+  private native long jni_getAlgorithm(long cptr);
   private native void jni_initAccent(long cptr, java.lang.String name, long[] args);
   private native void jni_initAlgorithm(long cptr, java.lang.String name, long[] args);
   private native void jni_initPlatform(long cptr, java.lang.String name, long[] args);
+  private native void jni_initAlgorithm(long cptr, Object algorithm);
+  private native void jni_initPlatform(long cptr, Object platform);
   private native void jni_initVars(long cptr, long id, long processes);
   private native void jni_initVarsAlgorithm(long cptr, long algorithm);
   private native void jni_initVarsPlatform(long cptr, long platform);
@@ -73,6 +79,9 @@ public class BaseController extends GamsJNI
   public BaseController(KnowledgeBase knowledge)
   {
     setCPtr(jni_BaseControllerFromKb(knowledge.getCPtr ()));
+    
+    initPlatform(new DebuggerPlatform ());
+    initAlgorithm(new DebuggerAlgorithm ());
   }
 
   public BaseController(BaseController input)
@@ -127,6 +136,31 @@ public class BaseController extends GamsJNI
   public void initPlatform(java.lang.String name, KnowledgeList args)
   {
     jni_initPlatform(getCPtr(), name, args.toPointerArray());
+  }
+
+  /**
+   * Initialize an algorithm within the controller
+   *
+   * @param  name       name of the algorithm
+   * @param  args       arguments to the algorithm initialization
+   */
+  public void initAlgorithm(BaseAlgorithm algorithm)
+  {
+    jni_initPlatform(getCPtr(), algorithm);
+    algorithm.assume(jni_getAlgorithm(getCPtr()));
+    algorithm.init(this);
+  }
+
+  /**
+   * Initialize a platform within the controller
+   *
+   * @param  platform  platform to add to the controller
+   */
+  public void initPlatform(BasePlatform platform)
+  {
+    jni_initPlatform(getCPtr(), platform);
+    platform.assume(jni_getPlatform(getCPtr()));
+    platform.init(this);
   }
 
   /**

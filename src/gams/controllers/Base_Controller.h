@@ -208,6 +208,18 @@ namespace gams
        **/
       void init_vars (algorithms::Base & algorithm);
 
+      /**
+       * Gets the current algorithm
+       * @return the algorithm
+       **/
+      algorithms::Base * get_algorithm (void);
+      
+      /**
+       * Gets the current platform
+       * @return the platform
+       **/
+      platforms::Base * get_platform (void);
+
     protected:
 
       /// accents on the primary algorithm
