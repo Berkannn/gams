@@ -5,17 +5,6 @@ namespace platforms = gams::platforms;
 
 /*
  * Class:     com_gams_platforms_BasePlatform
- * Method:    jni_Base
- * Signature: (Ljava/lang/Object;)J
- */
-JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1Base
-  (JNIEnv *, jobject, jobject subclass)
-{
-  return (jlong) new platforms::Java_Platform (subclass);
-}
-
-/*
- * Class:     com_gams_platforms_BasePlatform
  * Method:    jni_getKnowledgeBase
  * Signature: (J)J
  */

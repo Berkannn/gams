@@ -251,7 +251,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatfor
 
   if (current)
   {
-    current->init_algorithm (platform);
+    current->init_platform (platform);
   }
 }
 
@@ -263,11 +263,15 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatfor
 JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatform
   (JNIEnv *, jobject, jlong cptr)
 {
+  jlong result (0);
+
   controllers::Base * current = (controllers::Base *) cptr;
   if (current)
   {
-    return (jlong) current->get_platform ();
+    result = (jlong) current->get_platform ();
   }
+
+  return result;
 }
 
 /*
@@ -278,11 +282,15 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatfor
 JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorithm
   (JNIEnv *, jobject, jlong cptr)
 {
+  jlong result (0);
+
   controllers::Base * current = (controllers::Base *) cptr;
   if (current)
   {
-    return (jlong) current->get_algorithm ();
+    result = (jlong) current->get_algorithm ();
   }
+
+  return result;
 }
 
 /*

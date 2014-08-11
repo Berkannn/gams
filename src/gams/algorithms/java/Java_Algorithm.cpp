@@ -58,12 +58,21 @@ gams::algorithms::Java_Algorithm::Java_Algorithm (
 {
   //We have to create a globla ref to the object or we cant call it
   JNIEnv * env = gams_jni_get_env ();
-  obj_ = (jobject) env->NewGlobalRef (obj);
-  class_ = (jclass) env->NewGlobalRef (env->GetObjectClass (obj_));
+  if (env)
+  {
+    obj_ = (jobject) env->NewGlobalRef (obj);
+    class_ = (jclass) env->NewGlobalRef (env->GetObjectClass (obj_));
+  }
 }
 
 gams::algorithms::Java_Algorithm::~Java_Algorithm ()
 {
+  gams::utility::java::Acquire_VM jvm;
+  if (jvm.env)
+  {
+    jvm.env->DeleteGlobalRef (obj_);
+    jvm.env->DeleteGlobalRef (class_);
+  }
 }
 
 void
@@ -71,11 +80,21 @@ gams::algorithms::Java_Algorithm::operator= (const Java_Algorithm & rhs)
 {
   if (this != &rhs)
   {
+    gams::utility::java::Acquire_VM jvm;
     algorithms::Base * dest = dynamic_cast <algorithms::Base *> (this);
     const algorithms::Base * source =
       dynamic_cast <const algorithms::Base *> (&rhs);
 
     *dest = *source;
+
+    if (jvm.env)
+    {
+      jvm.env->DeleteGlobalRef (obj_);
+      jvm.env->DeleteGlobalRef (class_);
+
+      obj_ = jvm.env->NewGlobalRef (rhs.obj_);
+      class_ = (jclass) jvm.env->NewGlobalRef (rhs.class_);
+    }
   }
 }
  

@@ -6,18 +6,6 @@ namespace algorithms = gams::algorithms;
 
 /*
  * Class:     com_gams_algorithms_BaseAlgorithm
- * Method:    jni_Base
- * Signature: (Ljava/lang/Object;)J
- */
-JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1Base
-  (JNIEnv *, jobject, jobject subclass)
-{
-  return (jlong) new algorithms::Java_Algorithm (subclass);
-}
-
-
-/*
- * Class:     com_gams_algorithms_BaseAlgorithm
  * Method:    jni_getKnowledgeBase
  * Signature: (J)J
  */

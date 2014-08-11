@@ -7,13 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     com_gams_algorithms_BaseAlgorithm
- * Method:    jni_Base
- * Signature: (Ljava/lang/Object;)J
- */
-JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1Base
-  (JNIEnv *, jobject, jobject);
+
 
 /*
  * Class:     com_gams_algorithms_BaseAlgorithm

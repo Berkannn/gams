@@ -13,7 +13,7 @@ jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
     return JNI_ERR;
   }
 
-  gams_JNI = (jclass)env->NewGlobalRef(env->FindClass("com/gams/MadaraJNI"));
+  gams_JNI = (jclass)env->NewGlobalRef(env->FindClass("com/gams/GamsJNI"));
   jni_string = (jclass)env->NewGlobalRef(env->FindClass("java/lang/String"));
 
   gams_JVM = vm;

@@ -55,32 +55,55 @@ gams::platforms::Java_Platform::Java_Platform (
   variables::Self * self)
   : Base (knowledge, sensors, self)
 {
+  cerr << "Java Platform: constructor: initializing vars\n";
+
   if (platforms && knowledge)
   {
     (*platforms)[get_id ()].init_vars (*knowledge, get_id ());
     status_ = (*platforms)[get_id ()];
   }
   
+  cerr << "Java Platform: constructor: getting environment\n";
+
   //We have to create a globla ref to the object or we cant call it
   JNIEnv * env = gams_jni_get_env ();
+
+  cerr << "Java Platform: constructor: getting object and class\n";
   obj_ = (jobject) env->NewGlobalRef (obj);
-  class_ = (jclass) env->NewGlobalRef (env->GetObjectClass (obj_));
+  if (obj_)
+    class_ = (jclass) env->NewGlobalRef (env->GetObjectClass (obj_));
 }
 
 gams::platforms::Java_Platform::~Java_Platform ()
 {
+  gams::utility::java::Acquire_VM jvm;
+  if (jvm.env)
+  {
+    jvm.env->DeleteGlobalRef (obj_);
+    jvm.env->DeleteGlobalRef (class_);
+  }
 }
 
 void
 gams::platforms::Java_Platform::operator= (const Java_Platform & rhs)
 {
-  if (this != &rhs)
+  if (this != &rhs && obj_ != rhs.obj_)
   {
+    gams::utility::java::Acquire_VM jvm;
     platforms::Base * dest = dynamic_cast <platforms::Base *> (this);
     const platforms::Base * source =
       dynamic_cast <const platforms::Base *> (&rhs);
 
     *dest = *source;
+
+    if (jvm.env)
+    {
+      jvm.env->DeleteGlobalRef (obj_);
+      jvm.env->DeleteGlobalRef (class_);
+
+      obj_ = jvm.env->NewGlobalRef (rhs.obj_);
+      class_ = (jclass) jvm.env->NewGlobalRef (rhs.class_);
+    }
   }
 }
  
@@ -99,7 +122,7 @@ gams::platforms::Java_Platform::analyze (void)
   else
   {
     knowledge_->print (
-      "ERROR: Unable to acquire land() from custom Java platform class.\n");
+      "ERROR: Unable to acquire analyze() from custom Java platform class.\n");
   }
 
   return result;
@@ -277,8 +300,23 @@ gams::platforms::Java_Platform::sense (void)
   }
   else
   {
-    knowledge_->print (
-      "ERROR: Unable to acquire sense() from custom Java platform class.\n");
+    std::stringstream buffer;
+    if (class_)
+    {
+      jmethodID getName = jvm.env->GetMethodID(class_, "getName", "()Ljava/lang/String;");
+      jstring name = (jstring) jvm.env->CallObjectMethod(class_, getName);
+      const char * name_chars = jvm.env->GetStringUTFChars(name, 0);
+
+      buffer << "ERROR: Unable to acquire sense() from custom Java platform class (";
+      buffer << name_chars;
+      buffer << ")\n";
+    }
+    else
+    {
+      buffer << "ERROR: Unable to locate Java platform class definition.\n";
+    }
+
+    knowledge_->print (buffer.str ());
   }
 
   return result;
@@ -327,5 +365,9 @@ gams::platforms::Java_Platform::takeoff (void)
 jobject
 gams::platforms::Java_Platform::get_java_instance (void)
 {
-  return obj_;
+  gams::utility::java::Acquire_VM jvm;
+  jobject result (0);
+
+  result = jvm.env->NewLocalRef (obj_);
+  return result;
 }

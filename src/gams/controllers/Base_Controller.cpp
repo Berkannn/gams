@@ -47,6 +47,7 @@
 #include "Base_Controller.h"
 
 #include <iostream>
+#include <sstream>
 
 #include "ace/High_Res_Timer.h"
 #include "ace/OS_NS_sys_time.h"
@@ -86,7 +87,10 @@ gams::controllers::Base::~Base ()
 int
 gams::controllers::Base::monitor (void)
 {
-  return platform_->sense ();
+  int result (0);
+  if (platform_)
+    result = platform_->sense ();
+  return result;
 }
 
 int
@@ -150,23 +154,26 @@ gams::controllers::Base::system_analyze (void)
 
     if (error)
     {
-      std::cerr << "ERROR: Area coverage requested with improper args.\n";
+      knowledge_.print ("ERROR: Area coverage requested with improper args.\n");
     }
     else
     {
+      std::stringstream error_buffer;
       if (!type.is_string_type ())
       {
-        std::cerr << "ERROR: Area coverage type (first arg) == "
+        error_buffer << "ERROR: Area coverage type (first arg) == "
           << type <<
           ". Type should be a string.\n";
         error = true;
+        knowledge_.print (error_buffer.str ());
       }
       if (!area.is_string_type ())
       {
-        std::cerr << "ERROR: Area coverage area (second arg) == "
+        error_buffer << "ERROR: Area coverage area (second arg) == "
           << area <<
           ". Area should be a string.\n";
         error = true;
+        knowledge_.print (error_buffer.str ());
       }
 
       knowledge_.print ();
@@ -237,7 +244,7 @@ gams::controllers::Base::system_analyze (void)
 
     if (error)
     {
-      std::cerr << "ERROR: Move requested with improper args.\n";
+      knowledge_.print ("ERROR: Move requested with improper args.\n");
     }
     else
     {
@@ -292,7 +299,7 @@ gams::controllers::Base::system_analyze (void)
 
     if (error)
     {
-      std::cerr << "ERROR: Formation requested with improper args.\n";
+      knowledge_.print ("ERROR: Formation requested with improper args.\n");
     }
     else
     {
@@ -338,7 +345,7 @@ gams::controllers::Base::system_analyze (void)
 
     if (error)
     {
-      std::cerr << "ERROR: Formation requested with improper args.\n";
+      knowledge_.print ("ERROR: Formation requested with improper args.\n");
     }
     else
     {
@@ -449,8 +456,6 @@ gams::controllers::Base::run (double period, double max_runtime)
     unsigned int iterations = 0;
     while (current < max_wait)
     {
-      cerr << "iteration: " << iterations << endl;
-
       // some debug output, just not every iteration
       if ((++iterations) % 15 == 0)
         knowledge_.print();
@@ -485,8 +490,8 @@ gams::controllers::Base::init_accent (const std::string & algorithm,
 {
   if (algorithm == "")
   {
-    std::cerr << "Accent is empty. ";
-    std::cerr << "Please provide a supported accent algorithm.\n\n";
+    knowledge_.print("Accent is empty. " \
+      "Please provide a supported accent algorithm.\n\n");
   }
   else
   {
@@ -521,12 +526,11 @@ const std::string & algorithm, const Madara::Knowledge_Vector & args)
   
   if (algorithm == "")
   {
-    std::cerr << "Algorithm is empty. Here is a list of supported algorithms.";
-    std::cerr << "\n\n";
-    std::cerr << "SUPPORTED ALGORITHMS:\n";
-    std::cerr << "  bridge | bridging\n";
-    std::cerr << "  random area coverage\n";
-    std::cerr << "  priotized area coverage\n";
+    knowledge_.print ("Algorithm is empty. Here is a list of supported algorithms.\n\n");
+    knowledge_.print ("SUPPORTED ALGORITHMS:\n");
+    knowledge_.print ("  bridge | bridging\n");
+    knowledge_.print ("  random area coverage\n");
+    knowledge_.print ("  priotized area coverage\n");
   }
   else
   {
@@ -546,11 +550,11 @@ gams::controllers::Base::init_platform (
   
   if (platform == "")
   {
-    std::cerr << "Platform is empty. Here is a list of supported platforms.";
-    std::cerr << "\n\n";
-    std::cerr << "SUPPORTED PLATFORMS:\n";
-    std::cerr << "  drone-rk\n";
-    std::cerr << "  vrep\n";
+    knowledge_.print ("Platform is empty. Here is a list of supported platforms.");
+    knowledge_.print ("\n\n");
+    knowledge_.print ("SUPPORTED PLATFORMS:\n");
+    knowledge_.print ("  drone-rk\n");
+    knowledge_.print ("  vrep\n");
   }
   else
   {
@@ -595,7 +599,9 @@ void gams::controllers::Base::init_platform (jobject platform)
 {
   delete platform_;
   platform_ = new gams::platforms::Java_Platform (platform);
-  init_vars (*platform_);
+
+  if (platform_)
+    init_vars (*platform_);
 
   if (algorithm_)
     algorithm_->set_platform (platform_);
