@@ -77,7 +77,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public double getPositionAccuracy ()
   {
-    System.out.println("Platform.getPositionAccuracy called");
+    System.out.println("  Platform.getPositionAccuracy called");
     return 0.0;
   }
 
@@ -87,7 +87,7 @@ public class DebuggerPlatform extends BasePlatform
   public Position getPosition ()
   {
     Position position = new Position (0.0, 0.0, 0.0);
-    System.out.println("Platform.getPosition called");
+    System.out.println("  Platform.getPosition called");
     return position;
   }
   
@@ -98,7 +98,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public int home ()
   {
-    System.out.println("Platform.home called");
+    System.out.println("  Platform.home called");
     return Status.OK.value ();
   }
   
@@ -109,7 +109,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public int land ()
   {
-    System.out.println("Platform.land called");
+    System.out.println("  Platform.land called");
     return Status.OK.value ();
   }
   
@@ -123,7 +123,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public int move (Position target, double proximity)
   {
-    System.out.println("Platform.move called");
+    System.out.println("  Platform.move called");
     return Status.OK.value ();
   }
    
@@ -133,7 +133,7 @@ public class DebuggerPlatform extends BasePlatform
    */
   public double getMinSensorRange ()
   {
-    System.out.println("Platform.getMinSensorRange called");
+    System.out.println("  Platform.getMinSensorRange called");
     return 0.0;
   }
 
@@ -143,7 +143,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public double getMoveSpeed ()
   {
-    System.out.println("Platform.getMoveSpeed called");
+    System.out.println("  Platform.getMoveSpeed called");
     return 0.0;
   }
 
@@ -184,7 +184,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public void setMoveSpeed (double speed)
   {
-    System.out.println("Platform.setMoveSpeed called with " + speed);
+    System.out.println("  Platform.setMoveSpeed called with " + speed);
   }
       
   /**
@@ -194,7 +194,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public int takeoff ()
   {
-    System.out.println("Platform.takeoff called");
+    System.out.println("  Platform.takeoff called");
     return Status.OK.value ();
   }
   
@@ -203,7 +203,7 @@ public class DebuggerPlatform extends BasePlatform
    **/
   public void stopMove ()
   {
-    System.out.println("Platform.stopMove called");
+    System.out.println("  Platform.stopMove called");
   }
 }
 

@@ -80,11 +80,8 @@ public class BaseController extends GamsJNI
   {
     setCPtr(jni_BaseControllerFromKb(knowledge.getCPtr ()));
     
-    
-    BasePlatform tempPlatform = new DebuggerPlatform ();
-    BaseAlgorithm tempAlgorithm = new DebuggerAlgorithm ();
-    initPlatform(tempPlatform);
-    initAlgorithm(tempAlgorithm);
+    initPlatform(new DebuggerPlatform ());
+    initAlgorithm(new DebuggerAlgorithm ());
   }
 
   public BaseController(BaseController input)
@@ -149,7 +146,7 @@ public class BaseController extends GamsJNI
    */
   public void initAlgorithm(BaseAlgorithm algorithm)
   {
-    jni_initPlatform(getCPtr(), algorithm);
+    jni_initAlgorithm(getCPtr(), algorithm);
     algorithm.assume(jni_getAlgorithm(getCPtr()));
     algorithm.init(this);
   }

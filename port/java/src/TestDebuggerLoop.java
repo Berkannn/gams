@@ -12,12 +12,15 @@ import java.util.List;
 
 import com.madara.KnowledgeBase;
 import com.gams.controllers.BaseController;
-
+import com.gams.utility.Logging;
 
 public class TestDebuggerLoop
 { 
   public static void main (String...args) throws Exception
   {
+    //Logging logger = new Logging();
+    //Logging.setLevel(10);
+  	  
     System.out.println("Creating knowledge base...");
     KnowledgeBase knowledge = new KnowledgeBase();
     System.out.println("Passing knowledge base to base controller...");

@@ -44,6 +44,7 @@
  *      distribution.
  **/
 #include "Printer_Platform.h"
+#include "gams/utility/Logging.h"
 
 
 gams::platforms::Printer_Platform::Printer_Platform (
