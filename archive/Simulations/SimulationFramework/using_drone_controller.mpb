@@ -1,7 +1,0 @@
-project {
-  includes += ../../DroneController
-
-  Build_Files {
-    using_drone_controller.mpb
-  }  
-}
