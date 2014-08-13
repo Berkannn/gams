@@ -1,8 +1,8 @@
 /*********************************************************************
- * Usage of this software requires acceptance of the SMASH-CMU License,
+ * Usage of this software requires acceptance of the GAMS-CMU License,
  * which can be found at the following URL:
  *
- * https://code.google.com/p/smash-cmu/wiki/License
+ * https://code.google.com/p/gams-cmu/wiki/License
  *********************************************************************/
 
 import java.io.BufferedReader;
