@@ -2,6 +2,8 @@ project (dynamic_simulation) : using_gams, using_madara, using_ace, using_vrep {
   exeout = $(GAMS_ROOT)/bin
   exename = dynamic_simulation
 
+  requires += vrep
+
   macros +=  _USE_MATH_DEFINES
 
   Documentation_Files {

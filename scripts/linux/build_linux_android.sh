@@ -11,14 +11,23 @@
 #   $GAMS_ROOT    - location of this GAMS git repository
 #   $NDK_BIN      - This should be the path to the Java NDK binaries for the
 #                   platform you are trying to deploy (e.g. the arm toolchain)
+#   $VREP_ROOT    - location of VREP installation, if applicable
 #   
 
 TESTS=0
+VREP=0
 
-if [ "$#" = 1 ]; then
-	TESTS=1
+echo "Arguments can be \"tests\" or \"vrep\" to enable these features"
+echo "Arg 1 is $1"
+echo "Arg 2 is $2"
+
+if [ "$1" = "tests" -o "$2" = "tests" ]; then
+  TESTS=1
 fi
 
+if [ "$1" = "vrep" -o "$2" = "vrep" ]; then
+  VREP=1
+fi
 
 # echo build information
 echo "Using $CORES build jobs"
@@ -28,6 +37,12 @@ echo "GAMS will be built from $GAMS_ROOT"
 echo "JAVA_HOME is referencing $JAVA_HOME"
 echo "NDK_BIN is referencing $NDK_BIN"
 echo "TESTS has been set to $TESTS"
+echo "VREP has been set to $VREP"
+
+if [ $VREP -eq 1 ]; then
+  echo "VREP_ROOT is referencing $VREP_ROOT"
+fi
+
 echo ""
 
 # build ACE
@@ -49,7 +64,7 @@ make java=1 android=1 tests=$TESTS -j $CORES
 # build GAMS
 echo "Building GAMS"
 cd $GAMS_ROOT
-perl $ACE_ROOT/bin/mwc.pl -type gnuace -features java=1,android=1,tests=$TESTS gams.mwc
+perl $ACE_ROOT/bin/mwc.pl -type gnuace -features vrep=$VREP,java=1,android=1,tests=$TESTS gams.mwc
 make realclean -j $CORES
-make java=1 android=1 tests=$TESTS -j $CORES
+make vrep=$VREP java=1 android=1 tests=$TESTS -j $CORES
 
