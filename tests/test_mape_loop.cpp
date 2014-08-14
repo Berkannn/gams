@@ -48,15 +48,15 @@
  * @file test_control_loop.cpp
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains a test driver for the GAMS controller loop.
+ * This file contains a test driver for the GAMS controllers loop.
  **/
 
 #include "madara/knowledge_engine/Knowledge_Base.h"
-#include "gams/controller/Mape_Loop.h"
+#include "gams/controllers/Mape_Loop.h"
 
 // create shortcuts to MADARA classes and namespaces
 namespace engine = Madara::Knowledge_Engine;
-namespace controller = gams::controller;
+namespace controllers = gams::controllers;
 typedef Madara::Knowledge_Record   Record;
 typedef Record::Integer Integer;
 
@@ -113,7 +113,7 @@ int main (int argc, char ** argv)
 {
   // create knowledge base and a control loop
   engine::Knowledge_Base knowledge;
-  controller::Mape_Loop loop (knowledge);
+  controllers::Mape_Loop loop (knowledge);
 
   // initialize variables and function stubs
   loop.init_vars (knowledge, 0, 4);

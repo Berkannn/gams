@@ -48,11 +48,11 @@
  * @file test_control_loop.cpp
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains a test driver for the GAMS controller loop.
+ * This file contains a test driver for the GAMS controllers loop.
  **/
 
 #include "madara/knowledge_engine/Knowledge_Base.h"
-#include "gams/controller/Base_Controller.h"
+#include "gams/controllers/Base_controllers.h"
 
 // default transport settings
 std::string host ("");
@@ -61,7 +61,7 @@ Madara::Transport::QoS_Transport_Settings settings;
 
 // create shortcuts to MADARA classes and namespaces
 namespace engine = Madara::Knowledge_Engine;
-namespace controller = gams::controller;
+namespace controllers = gams::controllers;
 typedef Madara::Knowledge_Record   Record;
 typedef Record::Integer Integer;
 
@@ -69,7 +69,7 @@ std::string platform ("debug");
 std::string algorithm ("debug");
 std::vector <std::string> accents;
 
-// controller variables
+// controllers variables
 double period = 1.0;
 double max_wait = 50.0;
 
@@ -268,7 +268,7 @@ int main (int argc, char ** argv)
 {
   // create knowledge base and a control loop
   engine::Knowledge_Base knowledge;
-  controller::Base loop (knowledge);
+  controllers::Base loop (knowledge);
 
   // initialize variables and function stubs
   loop.init_vars (0, 4);
