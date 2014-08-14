@@ -38,7 +38,7 @@ echo "Building MADARA"
 cd $MADARA_ROOT
 perl $ACE_ROOT/bin/mwc.pl -type gnuace -features tests=$TESTS MADARA.mwc
 make realclean -j $CORES
-make -j tests=$TESTS $CORES
+make tests=$TESTS -j $CORES
 
 # build GAMS
 echo "Building GAMS"
