@@ -43,7 +43,7 @@ make -j tests=$TESTS $CORES
 # build GAMS
 echo "Building GAMS"
 cd $GAMS_ROOT
-perl $ACE_ROOT/bin/mwc.pl -type gnuace tests=$TESTS gams.mwc
+perl $ACE_ROOT/bin/mwc.pl -type gnuace -features tests=$TESTS gams.mwc
 make realclean -j $CORES
 make vrep=1 tests=$TESTS -j $CORES
 
