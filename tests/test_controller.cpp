@@ -52,7 +52,7 @@
  **/
 
 #include "madara/knowledge_engine/Knowledge_Base.h"
-#include "gams/controllers/Base_controllers.h"
+#include "gams/controllers/Base_Controller.h"
 
 // default transport settings
 std::string host ("");
