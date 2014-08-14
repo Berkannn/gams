@@ -12,8 +12,7 @@
 
 TESTS=0
 
-if [$# > 1]
-then
+if [ "$#" = 1 ]; then
   TESTS=1
 fi
 
@@ -22,6 +21,7 @@ echo "Using $CORES build jobs"
 echo "MADARA will be built from $MADARA_ROOT"
 echo "ACE will be built from $ACE_ROOT"
 echo "GAMS will be built from $GAMS_ROOT"
+echo "TESTS has been set to $TESTS"
 echo ""
 
 # build ACE

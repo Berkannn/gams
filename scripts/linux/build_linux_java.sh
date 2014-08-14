@@ -12,9 +12,8 @@
 
 TESTS=0
 
-if [$# > 1]
-then
-  TESTS=1
+if [ "$#" = 1 ]; then
+	TESTS=1
 fi
 
 # echo build information
