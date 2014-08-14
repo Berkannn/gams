@@ -9,6 +9,9 @@
 #   $MADARA_ROOT  - location of local copy of MADARA git repository from
 #                   http://madara.googlecode.com/svn/trunk/
 #   $GAMS_ROOT    - location of this GAMS git repository
+#   $NDK_BIN      - This should be the path to the Java NDK binaries for the
+#                   platform you are trying to deploy (e.g. the arm toolchain)
+#   
 
 TESTS=0
 
@@ -22,12 +25,15 @@ echo "Using $CORES build jobs"
 echo "MADARA will be built from $MADARA_ROOT"
 echo "ACE will be built from $ACE_ROOT"
 echo "GAMS will be built from $GAMS_ROOT"
+echo "JAVA_HOME is referencing $JAVA_HOME"
+echo "NDK_BIN is referencing $NDK_BIN"
+echo "TESTS has been set to $TESTS"
 echo ""
 
 # build ACE
 echo "Building ACE"
-echo "#include \"ace/config-linux.h\"" > $ACE_ROOT/ace/config.h
-echo "include \$(ACE_ROOT)/include/makeinclude/platform_linux.GNU" > $ACE_ROOT/include/makeinclude/platform_macros.GNU
+echo "#include \"ace/config-android.h\"" > $ACE_ROOT/ace/config.h
+echo "include \$(ACE_ROOT)/include/makeinclude/platform_android.GNU" > $ACE_ROOT/include/makeinclude/platform_macros.GNU
 cd $ACE_ROOT/ace
 perl $ACE_ROOT/bin/mwc.pl -type gnuace ace.mwc
 make realclean -j $CORES
@@ -36,14 +42,14 @@ make -j $CORES
 # build MADARA
 echo "Building MADARA"
 cd $MADARA_ROOT
-perl $ACE_ROOT/bin/mwc.pl -type gnuace -features tests=$TESTS MADARA.mwc
+perl $ACE_ROOT/bin/mwc.pl -type gnuace -features java=1,android=1,tests=$TESTS MADARA.mwc
 make realclean -j $CORES
-make -j tests=$TESTS $CORES
+make java=1 android=1 tests=$TESTS -j $CORES
 
 # build GAMS
 echo "Building GAMS"
 cd $GAMS_ROOT
-perl $ACE_ROOT/bin/mwc.pl -type gnuace tests=$TESTS gams.mwc
+perl $ACE_ROOT/bin/mwc.pl -type gnuace -features java=1,android=1,tests=$TESTS gams.mwc
 make realclean -j $CORES
-make vrep=1 tests=$TESTS -j $CORES
+make java=1 android=1 tests=$TESTS -j $CORES
 

@@ -22,6 +22,8 @@ echo "Using $CORES build jobs"
 echo "MADARA will be built from $MADARA_ROOT"
 echo "ACE will be built from $ACE_ROOT"
 echo "GAMS will be built from $GAMS_ROOT"
+echo "JAVA_HOME is referencing $JAVA_HOME"
+echo "TESTS has been set to $TESTS"
 echo ""
 
 # build ACE
@@ -36,14 +38,14 @@ make -j $CORES
 # build MADARA
 echo "Building MADARA"
 cd $MADARA_ROOT
-perl $ACE_ROOT/bin/mwc.pl -type gnuace -features tests=$TESTS MADARA.mwc
+perl $ACE_ROOT/bin/mwc.pl -type gnuace -features java=1,tests=$TESTS MADARA.mwc
 make realclean -j $CORES
-make -j tests=$TESTS $CORES
+make java=1 tests=$TESTS -j $CORES
 
 # build GAMS
 echo "Building GAMS"
 cd $GAMS_ROOT
-perl $ACE_ROOT/bin/mwc.pl -type gnuace tests=$TESTS gams.mwc
+perl $ACE_ROOT/bin/mwc.pl -type gnuace -features java=1,tests=$TESTS gams.mwc
 make realclean -j $CORES
-make vrep=1 tests=$TESTS -j $CORES
+make java=1 tests=$TESTS -j $CORES
 
