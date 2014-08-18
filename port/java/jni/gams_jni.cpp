@@ -35,7 +35,11 @@ JNIEnv* gams_jni_get_env()
   gams_JVM->GetEnv((void**)&env, JNI_VERSION_1_6);
   if (env == 0) //Thread is not attached
   {
-    gams_JVM->AttachCurrentThread((void**)&env, NULL);
+#ifndef _USING_OPENJDK_
+    gams_JVM->AttachCurrentThread((void **)&env, NULL);
+#else
+    jvm->AttachCurrentThread(&env, NULL);
+#endif
   }
   return env;
 }

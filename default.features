@@ -27,6 +27,9 @@ vrep                      = 1
 java                      = 0
 
 /// @feature vrep
-/// Enable this feature if you want to support Android (must have java enabled)
+/// Enable this feature if you want to support Android (requires java=1)
 android                      = 0
 
+/// @feature openjdk
+/// Enable this feature if you want to compile with OpenJDK (requires java=1)
+openjdk                 = 0

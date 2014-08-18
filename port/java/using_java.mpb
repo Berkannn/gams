@@ -10,6 +10,7 @@ feature (java) {
   Build_Files {
     port/java/using_android.mpb
     port/java/using_java.mpb
+    port/java/using_openjdk.mpb
   }
   
   specific (prop:windows) {
