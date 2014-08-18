@@ -118,7 +118,7 @@ namespace gams
         const utility::Search_Area & search);
       
       /**
-       * Gets discretization value
+       * Get the length of the side of each discretized cell
        * @return discretization value
        */
       double get_discretization () const;
