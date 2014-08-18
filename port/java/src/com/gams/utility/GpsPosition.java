@@ -106,7 +106,36 @@ public class GpsPosition extends Position
   {
     jni_setAltitude(getCPtr(),input);
   }
+    
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @return a new java instance of the underlying pointer
+   */
+  public static GpsPosition fromPointer(long cptr)
+  {
+    GpsPosition ret = new GpsPosition();
+    ret.manageMemory = true;
+    ret.setCPtr(cptr);
+    return ret;
+  }
   
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @param shouldManage  if true, manage the pointer
+   * @return a new java instance of the underlying pointer
+   */
+  public static GpsPosition fromPointer(long cptr, boolean shouldManage)
+  {
+    GpsPosition ret = new GpsPosition();
+    ret.manageMemory=shouldManage;
+    ret.setCPtr(cptr);
+    return ret;
+  }
+
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
    * called before an instance of WaitSettings gets garbage collected

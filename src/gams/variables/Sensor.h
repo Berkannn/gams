@@ -106,83 +106,83 @@ namespace gams
        * @param search  Search_Area to discretize
        * @return set of index positions considered inside search area
        **/
-      set<utility::Position> discretize_region (
-        const utility::Region& region);
+      set<utility::Position> discretize (
+        const utility::Region & region);
 
       /**
        * Discretize a search area into index positions inside search area
        * @param search  Search_Area to discretize
        * @return set of index positions considered inside search area
        **/
-      set<utility::Position> discretize_search_area (
-        const utility::Search_Area& search);
+      set<utility::Position> discretize (
+        const utility::Search_Area & search);
       
       /**
-       * Get discretization value
+       * Gets discretization value
        * @return discretization value
        */
       double get_discretization () const;
 
       /**
-       * Get GPS position from index position
+       * Gets GPS position from index position
        * @param index position
        * @return GPS_Position of index position
        **/
-      utility::GPS_Position get_gps_from_index (const utility::Position& idx);
+      utility::GPS_Position get_gps_from_index (const utility::Position & idx);
 
       /**
-       * Get current location on sensor map
+       * Gets current location on sensor map
        * @param gps current GPS location
        * @return current location in cartesian location on sensor map
        **/
-      utility::Position get_index_from_gps (const utility::GPS_Position& pos);
+      utility::Position get_index_from_gps (const utility::GPS_Position & pos);
 
       /**
-       * Get name
+       * Gets name
        * @return name of sensor
        **/
       std::string get_name () const;
 
       /**
-       * Get origin
+       * Gets origin
        * @return GPS origin
        **/
       utility::GPS_Position get_origin();
 
       /**
-       * Get range
+       * Gets range
        * @return sensor range
        **/
       double get_range () const;
 
       /**
-       * Get value at gps location
+       * Gets value at gps location
        * @param pos   position to get
        * @return sensor value at pos
        **/
       double get_value (const utility::GPS_Position& pos);
 
       /**
-       * Get value at index position
+       * Gets value at index position
        * @param pos position to get
        * @return sensor value at position
        **/
       double get_value (const utility::Position& pos);
 
       /**
-       * Set origin
+       * Sets origin
        * @param origin  new origin
        **/
       void set_origin (const utility::GPS_Position& origin);
 
       /**
-       * Set range
+       * Sets range
        * @param range new range
        **/
       void set_range (const double& range);
 
       /**
-       * Set value at a point with gps position
+       * Sets value at a point with gps position
        * @param pos     position to set
        * @param val     value to set at position
        * @param bcast   true to transport value, false otherwise
@@ -192,7 +192,7 @@ namespace gams
           Madara::Knowledge_Engine::Knowledge_Update_Settings());
 
       /**
-       * Set value at a point with index position
+       * Sets value at a point with index position
        * @param pos     index of position to set
        * @param val     value to set at position
        * @param bcast   true to transport value, false otherwise

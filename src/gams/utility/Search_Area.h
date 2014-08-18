@@ -117,14 +117,22 @@ namespace gams
        * @param pos   position to get priority of
        * @return priority of position
        */
-      unsigned int get_priority (const GPS_Position& pos) const;
+      Madara::Knowledge_Record::Integer get_priority (const GPS_Position& pos) const;
       
       /**
        * Determine if GPS_Position is in region
        * @param   p   point to check if in region
-       * @return  true if point is in one of the regions or on border, false otherwise
+       * @return  true if point is in the search area, false otherwise
        **/
-      bool is_in_search_area (const GPS_Position& p) const;
+      bool contains (const GPS_Position& p) const;
+      
+      /**
+       * Initializes search area from knowledge base information
+       * @param knowledge   knowledge base to draw from
+       * @param prefix   prefix for the search area (e.g., "search_area.0")
+       **/
+      void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const std::string & search_area_id);
 
       /**
        * Create string representation of Search_Area
@@ -159,12 +167,12 @@ namespace gams
     /**
      * Create Search Area from knowledge base information
      * @param knowledge   knowledge base to draw from
-     * @param region_id   identifier for region
+     * @param prefix   prefix for the search area (e.g., "search_area.0")
      * @return Region object created from knowledge base
      **/
     GAMS_Export Search_Area parse_search_area (
-      Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const std::string& search_area_id);
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const std::string & prefix);
   } // namespace utility
 } // namespace gams
 

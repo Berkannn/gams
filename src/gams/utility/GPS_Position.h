@@ -76,6 +76,14 @@ namespace gams
       GPS_Position (
         double init_lat = 0.0, double init_lon = 0.0, double init_alt = 0.0);
 
+      /**
+       * Constructor
+       **/
+      GPS_Position (const GPS_Position & position);
+
+      /**
+       * Destructor
+       **/
       virtual ~GPS_Position ();
 
       /**

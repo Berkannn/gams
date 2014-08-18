@@ -103,11 +103,11 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::compute_waypoints (
   utility::Region region  = utility::parse_region (*knowledge_, region_id);
 
   // convert to equirectangular projection coordinates
-  const size_t num_edges = region.points.size ();
+  const size_t num_edges = region.vertices.size ();
   vector<utility::Position> positions;
-  const utility::GPS_Position reference = region.points[0];
-  for (size_t i = 0; i < region.points.size (); ++i)
-    positions.push_back (region.points[i].to_position (reference));
+  const utility::GPS_Position reference = region.vertices[0];
+  for (size_t i = 0; i < region.vertices.size (); ++i)
+    positions.push_back (region.vertices[i].to_position (reference));
 
   // find longest edge
   size_t longest_edge = 0;

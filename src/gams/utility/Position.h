@@ -77,6 +77,12 @@ namespace gams
         double init_x = 0.0, double init_y = 0.0, double init_z = 0.0);
 
       /**
+       * Copy constructor
+       * @param source  the source to copy
+       **/
+      Position(const Position & source);
+
+      /**
        * Destructor
        **/
       virtual ~Position ();

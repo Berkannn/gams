@@ -6,10 +6,14 @@
  *********************************************************************/
 package com.gams.variables;
 
+import java.util.HashSet;
+
 import com.gams.GamsJNI;
 import com.madara.KnowledgeBase;
 import com.madara.containers.String;
 import com.madara.containers.Vector;
+import com.gams.utility.Position;
+import com.gams.utility.GpsPosition;
 
 public class Sensor extends GamsJNI
 {	
@@ -19,6 +23,19 @@ public class Sensor extends GamsJNI
   private native java.lang.String jni_getName(long cptr);
   private native void jni_init(long cptr, long type, long kb, java.lang.String name, double region);
   private native java.lang.String jni_toString(long cptr);
+  private native double jni_getPositionValue(long cptr, long pos);
+  private native double jni_getGpsValue(long cptr, long pos);
+  private native long jni_getOrigin(long cptr);
+  private native double jni_getRange(long cptr);
+  private native void jni_setOrigin(long cptr, long origin);
+  private native void jni_setRange(long cptr, double range);
+  private native void jni_setPositionValue(long cptr, long pos, double value);
+  private native void jni_setGpsValue(long cptr, long pos, double value);
+  private native long jni_getGpsFromIndex(long cptr, long index);
+  private native long jni_getIndexFromGps(long cptr, long position);
+  private native double jni_getDiscretization(long cptr);
+  private native long[] jni_discretizeRegion(long cptr, long region);
+  private native long[] jni_discretizeSearchArea(long cptr, long area);
 
   private boolean manageMemory = true;
 
@@ -32,6 +49,136 @@ public class Sensor extends GamsJNI
     setCPtr(jni_Sensor(input.getCPtr()));
   }
 
+  /**
+   * Gets the sensor range in meters.
+   * @return range in meters
+   **/
+  public GpsPosition getOrigin()
+  {
+    return GpsPosition.fromPointer (jni_getOrigin(getCPtr()));
+  }
+  
+  /**
+   * Gets the sensor range in meters.
+   * @return range in meters
+   **/
+  public double getRange()
+  {
+    return jni_getRange(getCPtr());
+  }
+  
+  /**
+   * Gets a GPS coordinate from an index
+   * @param index 
+   * @return the position at the specified index
+   **/
+  public GpsPosition getGpsFromIndex(Position index)
+  {
+    return GpsPosition.fromPointer(
+      jni_getGpsFromIndex(getCPtr(),index.getCPtr()));
+  }
+    
+  /**
+   * Gets a GPS coordinate from an index
+   * @param position coordinate to convert to an index 
+   * @return the position at the specified index
+   **/
+  public Position getIndexFromGps(GpsPosition coord)
+  {
+    return Position.fromPointer(
+      jni_getIndexFromGps(getCPtr(),coord.getCPtr()));
+  }
+  
+  /**
+   * Gets the value stored at a particular location
+   * @param  position  the location to check
+   * @return value at the location
+   **/
+  public double getValue(GpsPosition position)
+  {
+    return jni_getGpsValue(getCPtr(), position.getCPtr());
+  }
+    
+  /**
+   * Gets the value stored at a particular location
+   * @param  position  the location to check
+   * @return value at the location
+   **/
+  public double getValue(Position position)
+  {
+    return jni_getPositionValue(getCPtr(), position.getCPtr());
+  }
+       
+  /**
+   * Gets the discretization value for the sensor
+   * @return the discretization value for the sensor
+   **/
+  public double getDiscretization()
+  {
+    return jni_getDiscretization(getCPtr());
+  }
+        
+  /**
+   * Sets the range of the sensor
+   * @param  range  the range of the sensor in meters
+   **/
+  public void setRange(double range)
+  {
+    jni_setRange(getCPtr(), range);
+  }
+        
+  /**
+   * Sets a value at a location
+   * @param  location  the position the value will be at
+   * @param  value     the value to set
+   **/
+  public void setValue(Position location, double value)
+  {
+    jni_setPositionValue(getCPtr(), location.getCPtr(), value);
+  }
+          
+  /**
+   * Sets a value at a location
+   * @param  location  the position the value will be at
+   * @param  value     the value to set
+   **/
+  public void setValue(GpsPosition location, double value)
+  {
+    jni_setPositionValue(getCPtr(), location.getCPtr(), value);
+  }
+            
+  /**
+   * Discretizes the region into individual positions
+   * @param  region  the region to discretize
+   * @return individual positions within the region
+   **/
+  public HashSet<Position> discretize(com.gams.utility.Region region)
+  {
+    long[] indices = jni_discretizeRegion(getCPtr(), region.getCPtr());
+
+    HashSet<Position> hash = new HashSet<Position> ();
+    for (int i = 0; i < indices.length; ++i)
+      hash.add(Position.fromPointer(indices[i]));
+
+    return hash;
+  }
+              
+  /**
+   * Discretizes the area into individual positions
+   * @param  area  the area to discretize
+   * @return individual positions within the area
+   **/
+  public HashSet<Position> discretize(com.gams.utility.SearchArea area)
+  {
+    long[] indices = jni_discretizeSearchArea(getCPtr(), area.getCPtr());
+
+    HashSet<Position> hash = new HashSet<Position> ();
+    for (int i = 0; i < indices.length; ++i)
+      hash.add(Position.fromPointer(indices[i]));
+
+    return hash;
+  }
+  
   /**
    * Creates a java object instance from a C/C++ pointer
    *

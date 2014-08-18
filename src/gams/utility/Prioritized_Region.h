@@ -81,6 +81,15 @@ namespace gams
        * @param priority  associated priority
        **/
       Prioritized_Region (const Region& region, const unsigned int p = 1);
+      
+    /**
+     * Initialize prioritized region from knowledge base
+     * @param knowledge   knowledge base to draw from
+     * @param prefix      prefix for the region (e.g. "region.0")
+     * @return Prioritized_Region object created from knowledge base
+     **/
+      void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const std::string & prefix);
 
       /**
        * Assignment operator
@@ -89,18 +98,18 @@ namespace gams
       void operator= (const Prioritized_Region& rhs);
 
       /// priority
-      unsigned int priority;
+      Madara::Knowledge_Record::Integer priority;
     }; // class Prioritized_Region
 
     /**
      * Create prioritized region from knowledge base information
      * @param knowledge   knowledge base to draw from
-     * @param region_id   identifier for region
+     * @param prefix      prefix for the region (e.g. "region.0")
      * @return Prioritized_Region object created from knowledge base
      **/
     Prioritized_Region parse_prioritized_region (
-      Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const std::string& prioritized_region_id);
+      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+      const std::string & prefix);
   } // namespace utility
 } // namespace gams
 

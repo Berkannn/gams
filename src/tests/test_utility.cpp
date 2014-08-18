@@ -244,13 +244,13 @@ test_Region ()
     "40.443285,-79.940242,0";
   assert (r.to_string () == expected);
 
-  // test is_in_region
-  testing_output ("is_in_region", 1);
-  assert (r.is_in_region (p));
+  // test contains
+  testing_output ("contains", 1);
+  assert (r.contains (p));
   GPS_Position p2 (40.4432, -79.9401);
-  assert (r.is_in_region (p2));
+  assert (r.contains (p2));
   GPS_Position empty;
-  assert (!r.is_in_region (empty));
+  assert (!r.contains (empty));
 
   // bounding box
   testing_output ("get_bounding_box", 1);

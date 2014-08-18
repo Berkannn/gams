@@ -126,7 +126,7 @@ gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
     next_position_.altitude (Madara::Utility::rand_double (selected_region->min_alt_,
       selected_region->max_alt_));
   }
-  while (!selected_region->is_in_region (next_position_));
+  while (!selected_region->contains (next_position_));
 
   // found an acceptable position, so set it as next
   utility::GPS_Position current;

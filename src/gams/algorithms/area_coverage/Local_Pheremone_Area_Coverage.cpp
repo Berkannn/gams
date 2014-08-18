@@ -151,7 +151,7 @@ gams::algorithms::area_coverage::Local_Pheremone_Area_Coverage::
     {
       utility::GPS_Position possible_gps =
         pheremone_.get_gps_from_index (possible[index]);
-      if (search_area_.is_in_search_area (possible_gps))
+      if (search_area_.contains (possible_gps))
       {
         {
           concentration = my_concentration;

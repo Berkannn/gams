@@ -97,7 +97,7 @@ gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::
     next_position_.altitude (Madara::Utility::rand_double (region_.min_alt_,
       region_.max_alt_));
   }
-  while (!region_.is_in_region (next_position_));
+  while (!region_.contains (next_position_));
 
   // found an acceptable position, so set it as next
   utility::GPS_Position current;

@@ -56,6 +56,11 @@ gams::utility::Position::Position (
 {
 }
 
+gams::utility::Position::Position (const Position & source)
+: x (source.x), y (source.y), z (source.z)
+{
+}
+
 gams::utility::Position::~Position ()
 {
 }

@@ -91,7 +91,7 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   min_time_.set_range (2.5); // balance this between resolution and performance
 
   // perform setup
-  valid_positions_ = min_time_.discretize_search_area (search_area_);
+  valid_positions_ = min_time_.discretize (search_area_);
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
   knowledge_->lock ();

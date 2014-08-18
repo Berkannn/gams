@@ -40,6 +40,28 @@ public class Position extends GamsJNI
   }
 
   /**
+   * Checks two instances for equality
+   * @param other  other position to check against
+   * @return true if equal, false otherwise
+   **/
+  public boolean equals (Position other)
+  {
+    return getX() == other.getX() &&
+           getY() == other.getY() &&
+           getZ() == other.getZ();
+  }
+  
+  /**
+   * Gets a unique hashcode for this instance
+   * @return hashcode for this object instance
+   **/
+  @Override
+  public int hashCode()
+  {
+    return (int)getCPtr();
+  }
+  
+  /**
    * Converts the position into a string
    * @return position as a string
    **/
@@ -108,7 +130,36 @@ public class Position extends GamsJNI
   {
     jni_setZ(getCPtr(),input);
   }
+      
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @return a new java instance of the underlying pointer
+   */
+  public static Position fromPointer(long cptr)
+  {
+    Position ret = new Position();
+    ret.manageMemory = true;
+    ret.setCPtr(cptr);
+    return ret;
+  }
   
+  /**
+   * Creates a java object instance from a C/C++ pointer
+   *
+   * @param cptr C pointer to the object
+   * @param shouldManage  if true, manage the pointer
+   * @return a new java instance of the underlying pointer
+   */
+  public static Position fromPointer(long cptr, boolean shouldManage)
+  {
+    Position ret = new Position();
+    ret.manageMemory=shouldManage;
+    ret.setCPtr(cptr);
+    return ret;
+  }
+
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
    * called before an instance of WaitSettings gets garbage collected

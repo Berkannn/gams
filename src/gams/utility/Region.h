@@ -71,9 +71,9 @@ namespace gams
     public:
       /**
        * Constructor
-       * @param  init_points  the vertices of the region
+       * @param  init_vertices  the vertices of the region
        **/
-      Region (const std::vector <GPS_Position> & init_points =
+      Region (const std::vector <GPS_Position> & init_vertices =
         std::vector<GPS_Position> ());
 
       /**
@@ -98,7 +98,7 @@ namespace gams
        * @param   p   point to check if in region
        * @return  true if point is in region or on border, false otherwise
        **/
-      bool is_in_region (const GPS_Position & p) const;
+      bool contains (const GPS_Position & p) const;
 
       /**
        * Determine if GPS_Position is in region
@@ -106,7 +106,7 @@ namespace gams
        * @param   ref   gps reference for point p
        * @return  true if point is in region or on border, false otherwise
        **/
-      bool is_in_region (const Position & p, const GPS_Position& ref) const;
+      bool contains (const Position & p, const GPS_Position& ref) const;
 
       /**
        * Get distance from any point in this region
@@ -134,26 +134,35 @@ namespace gams
       std::string to_string (const std::string & delimiter = ":") const;
 
       /**
-       * Helper function for copying values to a MADARA double array
+       * Helper function for copying values to a MADARA string array
        * @param target     target container to copy values to
        **/
       void to_container (
         Madara::Knowledge_Engine::Containers::String_Array & target) const;
       
       /**
-       * Helper function for copying values from a MADARA double array
-       * @param target     target container to copy values from
+       * Helper function for copying values from a MADARA string array
+       * @param source     source container to copy values from
        **/
       void from_container (
-        Madara::Knowledge_Engine::Containers::String_Array & target);
+        Madara::Knowledge_Engine::Containers::String_Array & source);
 
       /// the vertices of the region
-      std::vector <GPS_Position> points;
+      std::vector <GPS_Position> vertices;
 
       /// bounding box
       double min_lat_, max_lat_;
       double min_lon_, max_lon_;
       double min_alt_, max_alt_;
+      
+      /**
+       * Initialize region from knowledge base information
+       * @param knowledge   knowledge base to draw from
+       * @param prefix      complete prefix for region (e.g., "region.0")
+       * @return Region object created from knowledge base
+       **/
+      void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+        const std::string & prefix);
 
     protected:
       /**
@@ -165,11 +174,12 @@ namespace gams
     /**
      * Create region from knowledge base information
      * @param knowledge   knowledge base to draw from
-     * @param region_id   identifier for region
+     * @param prefix      complete prefix for region (e.g., "region.0")
      * @return Region object created from knowledge base
      **/
-    GAMS_Export Region parse_region (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const std::string& region_id);
+    GAMS_Export Region parse_region (
+      Madara::Knowledge_Engine::Knowledge_Base& knowledge,
+      const std::string & prefix);
   } // namespace utility
 } // namespace gams
 

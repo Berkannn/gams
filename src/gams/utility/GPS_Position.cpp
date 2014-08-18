@@ -59,6 +59,11 @@ gams::utility::GPS_Position::GPS_Position (double init_lat, double init_lon, dou
 {
 }
 
+gams::utility::GPS_Position::GPS_Position (const GPS_Position & rhs)
+: Position (rhs.x, rhs.y, rhs.z)
+{
+}
+
 gams::utility::GPS_Position::~GPS_Position ()
 {
 }

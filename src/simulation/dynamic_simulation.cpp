@@ -484,7 +484,7 @@ time_to_full_coverage (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
   origin_container.set_name ("sensor.coverage.origin", knowledge, 3);
   origin.from_container (origin_container);
   Sensor coverage_sensor ("coverage", &knowledge, 2.5, origin);
-  const set<Position> valid_positions = coverage_sensor.discretize_search_area (
+  const set<Position> valid_positions = coverage_sensor.discretize (
     search);
 
   // record start time

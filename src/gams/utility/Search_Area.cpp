@@ -64,6 +64,7 @@
 
 #include "gams/utility/Region.h"
 #include "gams/utility/GPS_Position.h"
+#include "madara/utility/Utility.h"
 
 using std::cerr;
 using std::copy;
@@ -75,6 +76,9 @@ using std::string;
 using std::stringstream;
 using std::swap;
 using std::vector;
+
+namespace mutility = Madara::Utility;
+typedef Madara::Knowledge_Record::Integer Integer;
 
 gams::utility::Search_Area::Search_Area ()
 {
@@ -158,8 +162,8 @@ gams::utility::Search_Area::get_convex_hull () const
   // get all points, filter out duplicates
   set<GPS_Position> s_points;
   for (size_t i = 0; i < regions_.size (); ++i)
-    for (size_t j = 0; j < regions_[i].points.size (); ++j)
-      s_points.insert (regions_[i].points[j]);
+    for (size_t j = 0; j < regions_[i].vertices.size (); ++j)
+      s_points.insert (regions_[i].vertices[j]);
   const size_t N = s_points.size ();
 
   // create array of points
@@ -225,14 +229,14 @@ gams::utility::Search_Area::get_regions () const
   return regions_;
 }
 
-unsigned int
+Madara::Knowledge_Record::Integer
 gams::utility::Search_Area::get_priority (const GPS_Position& pos) const
 {
-  unsigned int priority = 0;
+  Madara::Knowledge_Record::Integer priority = 0;
   for (vector<Prioritized_Region>::const_iterator it = regions_.begin ();
     it != regions_.end (); ++it)
   {
-    if (it->is_in_region (pos))
+    if (it->contains (pos))
       priority = max (priority, it->priority);
   }
 
@@ -240,10 +244,10 @@ gams::utility::Search_Area::get_priority (const GPS_Position& pos) const
 }
 
 bool
-gams::utility::Search_Area::is_in_search_area (const GPS_Position & p) const
+gams::utility::Search_Area::contains (const GPS_Position & p) const
 {
   for (unsigned int i = 0; i < regions_.size(); ++i)
-    if (regions_[i].is_in_region (p))
+    if (regions_[i].contains (p))
       return true;
   return false;
 }
@@ -285,34 +289,44 @@ gams::utility::Search_Area::cross (const GPS_Position& gp1, const GPS_Position& 
     (p2.x- p1.x) * (0 - p1.y);
 }
 
-gams::utility::Search_Area
-gams::utility::parse_search_area (
-  Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-  const string& search_area_id)
+void
+gams::utility::Search_Area::init (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const string & prefix)
 {
-  Search_Area ret;
-
   // get size of search_area in number of regions
-  if (search_area_id.find ("search_area") != std::string::npos)
+  if (mutility::begins_with (prefix, "search_area"))
   {
-    char expr[512];
-    sprintf (expr, "%s.size", search_area_id.c_str ());
-    const unsigned int num_regions = knowledge.get (expr).to_integer ();
+    string search_area_prefix (prefix + ".");
+    string size_key (prefix + ".size");
+
+    Integer num_regions = knowledge.get (size_key).to_integer ();
   
     // parse each region
     for (unsigned int i = 0; i < num_regions; ++i)
     {
+      std::stringstream region (search_area_prefix);
+      region << i;
+
       // get prioritized region and add to search area
-      sprintf (expr, "%s.%u", search_area_id.c_str (), i);
-      ret.add_prioritized_region (
-        parse_prioritized_region (knowledge, knowledge.get (expr).to_string ()));
+      add_prioritized_region (
+        parse_prioritized_region (knowledge,
+          knowledge.get (region.str ()).to_string ()));
     }
   }
   else // this is just a region
   {
-    ret.add_prioritized_region (
-      parse_prioritized_region (knowledge, search_area_id));
+    add_prioritized_region (
+      parse_prioritized_region (knowledge, prefix));
   }
+}
 
-  return ret;
+gams::utility::Search_Area
+gams::utility::parse_search_area (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const string & prefix)
+{
+  Search_Area result;
+  result.init (knowledge, prefix);
+  return result;
 }

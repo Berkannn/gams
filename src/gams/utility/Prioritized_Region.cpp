@@ -81,16 +81,24 @@ gams::utility::Prioritized_Region::operator= (const Prioritized_Region & rhs)
   }
 }
 
+void
+gams::utility::Prioritized_Region::init (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const string & prefix)
+{
+  // initialize super class variables
+  ((Region *)(this))->init (knowledge, prefix);
+
+  // get priority
+  priority = knowledge.get (prefix + ".priority").to_integer ();
+}
+
 gams::utility::Prioritized_Region
 gams::utility::parse_prioritized_region (
-  Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-  const string& prioritized_region_id)
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
+  const string & prefix)
 {
-  // get priority
-  char expr[512];
-  sprintf (expr, "%s.priority", prioritized_region_id.c_str ());
-  int priority = knowledge.get (expr).to_integer ();
-
-  return Prioritized_Region (
-    parse_region (knowledge, prioritized_region_id), priority);
+  Prioritized_Region result;
+  result.init (knowledge, prefix);
+  return result;
 }
