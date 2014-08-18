@@ -305,8 +305,8 @@ gams::utility::Search_Area::init (
     // parse each region
     for (unsigned int i = 0; i < num_regions; ++i)
     {
-      std::stringstream region (search_area_prefix);
-      region << i;
+      std::stringstream region;
+      region << search_area_prefix << i;
 
       // get prioritized region and add to search area
       add_prioritized_region (

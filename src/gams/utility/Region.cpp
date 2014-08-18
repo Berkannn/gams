@@ -343,14 +343,22 @@ gams::utility::Region::init (
       const Integer num_vertices = knowledge.get (region_size).to_integer ();
       for (Integer i = 0; i < num_vertices; ++i) // get the vertices
       {
-        std::stringstream vertex_name (region_prefix);
-        vertex_name << i;
+        std::stringstream vertex_name;
+        vertex_name << region_prefix << i;
 
         Madara::Knowledge_Record record = knowledge.get (vertex_name.str ());
 
         std::vector <double> coords = record.to_doubles ();
 
-        if (vertices.size () == 3)
+        if (coords.size () == 2)
+        {
+          GAMS_DEBUG (gams::utility::LOG_EVENT_TRACE, (LM_DEBUG, 
+            DLINFO "gams::utility::Region::init:" \
+            " Adding coordinate (%d, %d).\n",
+            coords[0], coords[1]));
+          vertices.push_back (GPS_Position(coords[0], coords[1]));
+        }
+        else if (coords.size () == 3)
         {
           GAMS_DEBUG (gams::utility::LOG_EVENT_TRACE, (LM_DEBUG, 
             DLINFO "gams::utility::Region::init:" \

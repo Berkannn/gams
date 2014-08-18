@@ -310,17 +310,17 @@ void put_plants (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
   string model_file = getenv ("VREP_ROOT");
   model_file += "/models/furniture/plants/indoorPlant.ttm";
 
-  for (size_t j = 0; j < reg.points.size (); ++j)
+  for (size_t j = 0; j < reg.vertices.size (); ++j)
   {
-    size_t next = (j + 1) % reg.points.size ();
+    size_t next = (j + 1) % reg.vertices.size ();
     string sw_position = knowledge.get (".vrep_sw_position").to_string ();
     gams::utility::GPS_Position origin;
     double latitude, longitude;
     sscanf (sw_position.c_str (), "%lf,%lf", &latitude, &longitude);
     origin.latitude (latitude); origin.longitude (longitude);
 
-    const gams::utility::GPS_Position gps_pos_1 = reg.points[j];
-    const gams::utility::GPS_Position gps_pos_2 = reg.points[next];
+    const gams::utility::GPS_Position gps_pos_1 = reg.vertices[j];
+    const gams::utility::GPS_Position gps_pos_2 = reg.vertices[next];
     const gams::utility::Position pos_1 = gps_pos_1.to_position (origin);
     const gams::utility::Position pos_2 = gps_pos_2.to_position (origin);
     const double delta_x = pos_2.x - pos_1.x;
