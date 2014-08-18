@@ -56,7 +56,7 @@ using std::cerr;
 using std::endl;
 
 #include "madara/knowledge_engine/Knowledge_Base.h"
-#include "gams/controller/Base_Controller.h"
+#include "gams/controllers/Base_Controller.h"
 
 const std::string default_broadcast ("192.168.1.255:15000");
 // default transport settings
@@ -66,7 +66,7 @@ Madara::Transport::QoS_Transport_Settings settings;
 
 // create shortcuts to MADARA classes and namespaces
 namespace engine = Madara::Knowledge_Engine;
-namespace controller = gams::controller;
+namespace controllers = gams::controllers;
 typedef Madara::Knowledge_Record   Record;
 typedef Record::Integer Integer;
 
@@ -345,7 +345,7 @@ int main (int argc, char ** argv)
   
   // create knowledge base and a control loop
   Madara::Knowledge_Engine::Knowledge_Base knowledge (host, settings);
-  controller::Base loop (knowledge);
+  controllers::Base loop (knowledge);
 
   // initialize variables and function stubs
   loop.init_vars (settings.id, num_agents);
@@ -364,7 +364,7 @@ int main (int argc, char ** argv)
   // add any accents
   for (unsigned int i = 0; i < accents.size (); ++i)
   {
-    loop.add_accent (accents[i]);
+    loop.init_accent (accents[i]);
   }
 
   // run a mape loop every 1s for 50s
