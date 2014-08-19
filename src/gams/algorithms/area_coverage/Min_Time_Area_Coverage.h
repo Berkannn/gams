@@ -47,7 +47,12 @@
 /**
  * @file Min_Time_Area_Coverage.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
- **/
+ *
+ * The original use of this class was for time based coverage where agents would
+ * select their destination based on how long it had been since it was last 
+ * visited. It should probably be slightly modified to easily accept custom 
+ * utility calculation functions.
+ */
 
 #ifndef _GAMS_ALGORITHMS_AREA_COVERAGE_MIN_TIME_AREA_COVERAGE_H_
 #define _GAMS_ALGORITHMS_AREA_COVERAGE_MIN_TIME_AREA_COVERAGE_H_
@@ -75,10 +80,12 @@ namespace gams
       public:
         /**
          * Constructor
+         * @param  search_id    the region or search area to be covered
          * @param  knowledge    the context containing variables and values
          * @param  platform     the underlying platform the algorithm will use
          * @param  sensors      map of sensor names to sensor information
          * @param  self         self-referencing variables
+         * @param  algo_name    name to use in Sensor for differentiation
          **/
         Min_Time_Area_Coverage (
           const Madara::Knowledge_Record& search_id, 
@@ -101,6 +108,10 @@ namespace gams
         /// generate new next position
         virtual void generate_new_position ();
   
+        /**
+         * A better way to manage this would probably be to take a function
+         * pointer to handle utility calculation.
+         */
         /// get utility of moving from one index position to another
         virtual double get_utility (const utility::Position& start,
           const utility::Position& end, std::set<utility::Position>& online);

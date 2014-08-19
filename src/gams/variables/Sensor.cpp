@@ -70,7 +70,7 @@ gams::variables::Sensor::Sensor (const string & name,
 {
   init_vars ();
 
-  if (range != -1.0)
+  if (range_ == 0.0 && range != 0.0)
     range_ = range;
   if (origin.latitude () != DBL_MAX)
     origin.to_container (origin_);
@@ -86,7 +86,7 @@ gams::variables::Sensor::operator= (const Sensor & rhs)
   if (this != &rhs)
   {
     this->range_ = rhs.range_;
-    this->covered_ = rhs.covered_;
+    this->value_ = rhs.value_;
     this->origin_ = rhs.origin_;
     this->knowledge_ = rhs.knowledge_;
     this->name_ = rhs.name_;
@@ -251,7 +251,7 @@ gams::variables::Sensor::get_value (const utility::GPS_Position & pos)
 double
 gams::variables::Sensor::get_value (const utility::Position & pos)
 {
-  return covered_[index_pos_to_index (pos)].to_double ();
+  return value_[index_pos_to_index (pos)].to_double ();
 }
 
 void
@@ -280,7 +280,7 @@ gams::variables::Sensor::set_value (const utility::Position & pos,
   const Madara::Knowledge_Engine::Knowledge_Update_Settings & settings)
 {
   string idx = index_pos_to_index (pos);
-  covered_.set (idx, val, settings);
+  value_.set (idx, val, settings);
 }
 
 string
@@ -303,7 +303,7 @@ gams::variables::Sensor::init_vars ()
 
   // initialize the variable containers
   range_.set_name (prefix + ".range", *knowledge_);
-  covered_.set_name (prefix + ".covered", *knowledge_);
+  value_.set_name (prefix + ".covered", *knowledge_);
   origin_.set_name (prefix + ".origin", *knowledge_, 3);
 }
 
@@ -314,9 +314,25 @@ gams::variables::Sensor::init_vars (const string & name,
 {
   name_ = name;
   knowledge_ = knowledge;
-  if (range != -1.0)
+
+  /**
+   * We only want to update range if it has not yet been set. This could result 
+   * in inconsistencies if multiple agents try to set different ranges. In the 
+   * best case, there is a round of sensor values that are inconsistent. 
+   * Depending on the actual data that is being collected, this might not be an
+   * issue.
+   */
+  if (range_ != 0.0)
     range_ = range;
-  if (origin.latitude () != DBL_MAX)
+
+  /**
+   * Similar to range, origin could be set incorrectly by multiple agents. The
+   * best option would be to have the controller set it when initializing the
+   * system.
+   */
+  GPS_Position cur_origin;
+  cur_origin.from_container (origin_);
+  if (cur_origin.latitude () != 0.0 && origin.latitude () != DBL_MAX)
     origin.to_container (origin_);
 
   init_vars ();

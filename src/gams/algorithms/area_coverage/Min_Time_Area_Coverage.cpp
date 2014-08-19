@@ -82,7 +82,12 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   status_.init_vars (*knowledge, algo_name);
 
   // fill out min_time_ sensor
-  // TODO: fix sensor setup to be programatically consistent across users
+  /**
+   * The sensor origin and radius should be setup by the human controller and
+   * not by the individual agents. As we do not currently have a human 
+   * controller infrastructure yet, this will have to do. When the controller
+   * is in place, the set_range, set_origin should not be called by the agents.
+   */
   utility::GPS_Position origin;
   Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
   origin_container.set_name ("sensor.coverage.origin", *knowledge, 3);
@@ -91,6 +96,10 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   min_time_.set_range (2.5); // balance this between resolution and performance
 
   // perform setup
+  /**
+   * In this algorithm, individual agents will increment their local copies of
+   * the sensor map to limit the amount of communication required.
+   */
   valid_positions_ = min_time_.discretize (search_area_);
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
@@ -125,6 +134,10 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::analyze ()
   ++executions_;
 
   // increment time since last seen for all cells
+  /**
+   * As with the initial setup, we don't broadcast our sensor map updates to
+   * limit the communications.
+   */
   static const Madara::Knowledge_Engine::Knowledge_Update_Settings
     NO_BROADCAST (true, false);
   knowledge_->lock ();
@@ -138,6 +151,12 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::analyze ()
   // mark current position as seen
   utility::GPS_Position current;
   current.from_container (self_->device.location);
+  /**
+   * However, we do need to communicate when we reset a time value for out
+   * current location. Note that due to lack of synchronization, this value 
+   * could be changed to 1 on other agents before it is actually considered for
+   * utility calculations. This is inconsequential.
+   */
   min_time_.set_value (current, 0);
   position_value_map_.erase (min_time_.get_index_from_gps (current));
   
@@ -148,6 +167,7 @@ void
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::
   generate_new_position ()
 {
+  // perform check for actually hitting cells
   review_last_move ();
   last_generation_ = executions_;
 
@@ -172,7 +192,12 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::
     }
   }
 
-  // 0 out the cells along line
+  /**
+   * Here we 0 out the cells along the line from our current cell to our
+   * destination cell. Importantly, we also store the values that we are 
+   * clearing. Once the move is complete, we will check if we actually hit the 
+   * cells and update them if we did not.
+   */
   for (std::set<utility::Position>::iterator it = online.begin ();
     it != online.end (); ++it)
   {
@@ -212,6 +237,12 @@ gams::algorithms::area_coverage::Min_Time_Area_Coverage::get_utility (
 void
 gams::algorithms::area_coverage::Min_Time_Area_Coverage::review_last_move ()
 {
+  /**
+   * We need to check that we actually hit the cells we said we would hit. If we
+   * did not, then we reset the map to what it would have been had it not been
+   * reset. We also allow for the possibility that other agents coincidentally 
+   * observed a cell that we were going to.
+   */
   double expected = executions_ - last_generation_;
   for (std::map<utility::Position, double>::const_iterator it = 
     position_value_map_.begin (); it != position_value_map_.end ();

@@ -87,7 +87,7 @@ namespace gams
        **/
       Sensor (const std::string & name,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-        const double & range = -1.0,
+        const double & range = 0.0,
         const utility::GPS_Position & origin = utility::GPS_Position (DBL_MAX));
 
       /**
@@ -209,7 +209,7 @@ namespace gams
        **/
       void init_vars (const std::string & name,
         Madara::Knowledge_Engine::Knowledge_Base* knowledge,
-        const double & range = -1.0,
+        const double & range = 0.0,
         const utility::GPS_Position & origin = utility::GPS_Position (DBL_MAX));
 
     protected:
@@ -225,8 +225,8 @@ namespace gams
        */
       void init_vars ();
 
-      /// the map area that has been covered by the sensor
-      Madara::Knowledge_Engine::Containers::Map covered_;
+      /// the map of locations to sensor value
+      Madara::Knowledge_Engine::Containers::Map value_;
 
       /// knowledge base
       Madara::Knowledge_Engine::Knowledge_Base* knowledge_;

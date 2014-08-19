@@ -78,6 +78,9 @@ Local_Pheremone_Area_Coverage (
   status_.init_vars (*knowledge, "lpac");
 
   // fill out pheremone sensor
+  /**
+   * See Min_Time_Area_Coverage.cpp for why this needs to be updated later
+   */
   utility::GPS_Position origin;
   Madara::Knowledge_Engine::Containers::Native_Double_Array origin_container;
   origin_container.set_name ("sensor.coverage.origin", *knowledge, 3);
@@ -127,6 +130,14 @@ gams::algorithms::area_coverage::Local_Pheremone_Area_Coverage::
   --possible[5].x;
   --possible[6].x; ++possible[6].y;
   ++possible[7].y;
+
+  /**
+   * We consider the possibility that the agent drifts outside the actual area
+   * of operation. A more robust way to do this would be to find the closest 
+   * cell in the area and go to that, however, this is simpler and has not
+   * failed in simulation. Real-world experiments are likely to differ and may 
+   * require the more robust solution. 
+   */
   possible[8].x += 2;
   possible[9].y += 2;
   possible[10].x -= 2;
