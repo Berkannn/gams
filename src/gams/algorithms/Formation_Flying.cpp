@@ -45,11 +45,9 @@
  **/
 
 /**
- * @file Formation_Flying.h
+ * @file Formation_Flying.cpp
  * @author Anton Dukeman <anton.dukeman@gmail.com>
- *
- * Declaration of Formation_Flying class
- **/
+ */
 
 #include "gams/algorithms/Formation_Flying.h"
 
@@ -64,6 +62,14 @@ using std::stringstream;
 #include "gams/utility/Position.h"
 #include "gams/utility/GPS_Position.h"
 
+/**
+ * Formation flying has several parameters. The head of the formation is what 
+ * the other agents key off of to determine their location. Offset is the 
+ * agent's specified location (in cylindrical coordinates) relative to the head
+ * agent. Destination is the final position for the head agent. Members is the 
+ * number of members in the formation, used to synchronize starting. Modifier
+ * is either NONE or ROTATE (rotate the formation).
+ */
 gams::algorithms::Formation_Flying::Formation_Flying (
   const Madara::Knowledge_Record & head_id,
   const Madara::Knowledge_Record & offset,
@@ -190,6 +196,10 @@ gams::algorithms::Formation_Flying::operator= (
   }
 }
 
+/**
+ * The analyze function determines if an agent is in formation and ready to 
+ * begin moving and changes behavior based on distance from destination
+ */
 int
 gams::algorithms::Formation_Flying::analyze (void)
 {
@@ -240,6 +250,9 @@ gams::algorithms::Formation_Flying::analyze (void)
   return 0;
 }
 
+/**
+ * Execute moves to next location if needed
+ */
 int
 gams::algorithms::Formation_Flying::execute (void)
 {
@@ -248,6 +261,11 @@ gams::algorithms::Formation_Flying::execute (void)
   return 0;
 }
 
+/**
+ * The head agent simply moves to the destination. Other agents determine their
+ * next position based on whether or not the formation is moving and the current
+ * position of the head agent.
+ */
 int
 gams::algorithms::Formation_Flying::plan (void)
 {

@@ -63,6 +63,10 @@ using std::endl;
 
 using std::stringstream;
 
+/**
+ * Sets the Madara container for the target location. Delay is the number of 
+ * timesteps to remain behind the follow target.
+ */
 gams::algorithms::Follow::Follow (
   const Madara::Knowledge_Record& id,
   const Madara::Knowledge_Record& delay,
@@ -94,6 +98,10 @@ gams::algorithms::Follow::operator= (const Follow & rhs)
   }
 }
 
+/**
+ * The agent gets the target's location from the database and adds it to the
+ * queue of positions being stored.
+ */
 int
 gams::algorithms::Follow::analyze (void)
 {
@@ -112,6 +120,9 @@ gams::algorithms::Follow::analyze (void)
   return 0;
 }
       
+/**
+ * Move to next location if next_position_ is valid
+ */
 int
 gams::algorithms::Follow::execute (void)
 {
@@ -121,6 +132,9 @@ gams::algorithms::Follow::execute (void)
   return 0;
 }
 
+/**
+ * Store locations in the queue up to the delay amount
+ */
 int
 gams::algorithms::Follow::plan (void)
 {
