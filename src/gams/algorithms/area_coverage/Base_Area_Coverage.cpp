@@ -80,6 +80,11 @@ gams::algorithms::area_coverage::Base_Area_Coverage::operator= (
   }
 }
 
+/**
+ * Many of the area coverage algorithms need only increment the execution
+ * counter in their analyze phase. Algorithms using sensors will override this
+ * with sensor analysis.
+ */
 int
 gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
 {
@@ -87,6 +92,10 @@ gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
   return 0;
 }
 
+/**
+ * All of the area coverage algorithms have simple execution steps of just
+ * moving to their destination.
+ */
 int
 gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
 {
@@ -94,6 +103,10 @@ gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
   return 0;
 }
 
+/**
+ * All of the area coverage algorithms just check if they have reached close
+ * enough to their destination. If so, they generate a new destination.
+ */
 int
 gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
 {

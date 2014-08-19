@@ -60,6 +60,11 @@ using std::endl;
 #include <vector>
 using std::vector;
 
+/**
+ * We precompute the total priority of the search area as this is a constant.
+ * The total priority is calculated based on the priority and area of each 
+ * individual region.
+ */
 gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
 Priority_Weighted_Random_Area_Coverage (
   const Madara::Knowledge_Record& search_id,
@@ -100,6 +105,11 @@ gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
   }
 }
 
+/**
+ * A new position is selected by selecting a random region based on the 
+ * weighting of the region and the total search area priority. A random position
+ * is then selected from that region.
+ */
 void
 gams::algorithms::area_coverage::Priority_Weighted_Random_Area_Coverage::
   generate_new_position ()

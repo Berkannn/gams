@@ -83,11 +83,17 @@ gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::operator= (
   }
 }
 
+/**
+ * Random positions are generated in the bounding rectangle of the region and
+ * checked if it is actually in the region. In theory this could never happen
+ * when given any arbitrary region. The average selection time is 
+ * area(bounding_box) / area(region). In practice, this finds a valid position
+ * quickly enough to not affect the system.
+ */
 void
 gams::algorithms::area_coverage::Uniform_Random_Area_Coverage::
   generate_new_position ()
 {
-  // average selection time is area(bounding_box) / area(region)
   do
   {
     next_position_.latitude (Madara::Utility::rand_double (region_.min_lat_,

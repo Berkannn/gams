@@ -56,6 +56,10 @@ using std::vector;
 #include "gams/utility/Region.h"
 #include "gams/utility/Position.h"
 
+/**
+ * Snake_Area_Coverage is a precomputed area coverage algorithm. The agent
+ * traverses parallel lines in the region starting with the longest edge.
+ */
 gams::algorithms::area_coverage::Snake_Area_Coverage::Snake_Area_Coverage (
   const Madara::Knowledge_Record& region_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -88,6 +92,9 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::operator= (
   }
 }
 
+/**
+ * The next destination is simply the next point in the list
+ */
 void
 gams::algorithms::area_coverage::Snake_Area_Coverage::generate_new_position ()
 {
@@ -95,6 +102,9 @@ gams::algorithms::area_coverage::Snake_Area_Coverage::generate_new_position ()
   cur_waypoint_ = (cur_waypoint_ + 1) % waypoints_.size ();
 }
 
+/**
+ * The endpoints of each parallel lines are found and stored in order.
+ */
 void
 gams::algorithms::area_coverage::Snake_Area_Coverage::compute_waypoints (
   const string& region_id)

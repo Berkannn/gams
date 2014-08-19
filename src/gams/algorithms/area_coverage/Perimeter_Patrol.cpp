@@ -64,6 +64,10 @@
 
 using std::vector;
 
+/**
+ * Perimeter patrol is a precomputed algorithm. The agent traverses the vertices
+ * of the region in order
+ */
 gams::algorithms::area_coverage::Perimeter_Patrol::Perimeter_Patrol (
   const Madara::Knowledge_Record& region_id,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
@@ -135,6 +139,9 @@ gams::algorithms::area_coverage::Perimeter_Patrol::operator= (
   }
 }
 
+/**
+ * The next destination is the next vertex in the list
+ */
 void
 gams::algorithms::area_coverage::Perimeter_Patrol::generate_new_position ()
 {

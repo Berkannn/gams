@@ -82,6 +82,10 @@ gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::operator= (
   }
 }
 
+/**
+ * An edge is selected at uniform random and then a point on that edge is
+ * selected at uniform random.
+ */
 void
 gams::algorithms::area_coverage::Uniform_Random_Edge_Coverage::generate_new_position ()
 {
