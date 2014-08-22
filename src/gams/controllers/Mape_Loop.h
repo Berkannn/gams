@@ -134,6 +134,7 @@ namespace gams
 
       /**
        * Initializes global variable containers
+       * @param   knowledge  the knowledge base to reference
        * @param   id         node identifier
        * @param   processes  processes
        **/

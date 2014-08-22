@@ -68,6 +68,7 @@ namespace gams
         /**
          * Constructor
          * @param  knowledge    the context containing variables and values
+         * @param  search_id    the identifier of the search area
          * @param  platform     the underlying platform the algorithm will use
          * @param  sensors      map of sensor names to sensor information
          * @param  self         self-referencing variables
@@ -75,7 +76,8 @@ namespace gams
         Local_Pheremone_Area_Coverage (
           const Madara::Knowledge_Record& search_id, 
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          platforms::Base * platform = 0,
+          variables::Sensors * sensors = 0,
           variables::Self * self = 0);
   
         /**

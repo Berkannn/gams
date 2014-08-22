@@ -74,13 +74,14 @@ namespace gams
       public:
         /**
          * Constructor
+         * @param  prefix       the search area prefix (e.g. search_area.0)
          * @param  knowledge    the context containing variables and values
          * @param  platform     the underlying platform the algorithm will use
          * @param  sensors      map of sensor names to sensor information
          * @param  self         self-referencing variables
          **/
         Uniform_Random_Edge_Coverage (
-          const Madara::Knowledge_Record& search_area_id,
+          const Madara::Knowledge_Record& prefix,
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
           platforms::Base * platform = 0, variables::Sensors * sensors = 0,
           variables::Self * self = 0);

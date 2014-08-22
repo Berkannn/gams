@@ -99,6 +99,7 @@ namespace gams
        * Constructor
        * @param  knowledge  context containing variables and values
        * @param  sensors  map of sensor names to sensor information
+       * @param  self     self referencing variables for the device
        **/
       Base (Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
         variables::Sensors * sensors = 0,
@@ -158,7 +159,7 @@ namespace gams
 
       /**
        * Gets a sensor
-       * @param sensor  identifier of sensor to get
+       * @param name  identifier of sensor to get
        * @return Sensor object
        */
       virtual const variables::Sensor & get_sensor (const std::string& name) const;

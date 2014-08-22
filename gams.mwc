@@ -5,4 +5,5 @@ workspace {
   gams.mpc
   tests.mpc
   simulation.mpc
+  docs/Documentation.mpc
 }

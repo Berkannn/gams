@@ -107,7 +107,7 @@ namespace gams
     
     /**
       * Initializes a self containers
-      * @param   variables  the variables to initialize
+      * @param   container  the variables to initialize
       * @param   knowledge  the knowledge base that houses the variables
       * @param   id         node identifier
       **/

@@ -110,7 +110,7 @@ namespace gams
       
       /**
        * Sets the map of platform names to platform information
-       * @param  algorithms   map of platform names to platform information
+       * @param  platform   the platform to use
        **/
       void set_platform (platforms::Base * platform);
       

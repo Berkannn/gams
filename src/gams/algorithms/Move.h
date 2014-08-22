@@ -96,6 +96,7 @@ namespace gams
       /**
        * Constructor
        * @param  type         the type of move
+       * @param  target       the target of the move
        * @param  knowledge    the context containing variables and values
        * @param  platform     the underlying platform the algorithm will use
        * @param  sensors      map of sensor names to sensor information

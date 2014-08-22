@@ -68,7 +68,6 @@ namespace gams
     public:
       /**
        * Constructor
-       * @param  sensor_name  name of the sensor
        **/
       Search_Area ();
 

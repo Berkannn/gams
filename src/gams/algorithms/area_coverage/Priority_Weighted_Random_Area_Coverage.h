@@ -72,6 +72,7 @@ namespace gams
       public:
         /**
          * Constructor
+         * @param  search_id    search area identifier
          * @param  knowledge    the context containing variables and values
          * @param  platform     the underlying platform the algorithm will use
          * @param  sensors      map of sensor names to sensor information
@@ -80,7 +81,8 @@ namespace gams
         Priority_Weighted_Random_Area_Coverage (
           const Madara::Knowledge_Record& search_id, 
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
+          platforms::Base * platform = 0,
+          variables::Sensors * sensors = 0,
           variables::Self * self = 0);
   
         /**

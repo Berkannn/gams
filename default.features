@@ -33,3 +33,8 @@ android                      = 0
 /// @feature openjdk
 /// Enable this feature if you want to compile with OpenJDK (requires java=1)
 openjdk                 = 0
+
+/// @feature docs
+/// Enable this feature if you want to generate documentation
+docs                    = 0
+

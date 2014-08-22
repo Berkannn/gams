@@ -148,7 +148,7 @@ namespace gams
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
       virtual int move (const utility::Position & position,
-        const double & epsilon = 0.1);
+        const double & proximity = 0.1);
       
       /**
        * Polls the sensor environment for useful information

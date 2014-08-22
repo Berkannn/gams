@@ -177,6 +177,7 @@ namespace gams
       * Initializes a self containers
       * @param   variables  the variables to initialize
       * @param   knowledge  the knowledge base that houses the variables
+      * @param   processes  the number of processes in the device swarm
       **/
     GAMS_Export void init_vars (Devices & variables,
       Madara::Knowledge_Engine::Knowledge_Base & knowledge,

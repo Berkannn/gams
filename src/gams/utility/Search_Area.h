@@ -132,7 +132,7 @@ namespace gams
        * @param prefix   prefix for the search area (e.g., "search_area.0")
        **/
       void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const std::string & search_area_id);
+        const std::string & prefix);
 
       /**
        * Create string representation of Search_Area
@@ -153,9 +153,9 @@ namespace gams
 
       /**
        * Helper function for convex hull calculations
-       * @param p1  start point
-       * @param p2  pivot point
-       * @param p3  end point
+       * @param gp1  start point
+       * @param gp2  pivot point
+       * @param gp3  end point
        */
       double cross (const GPS_Position& gp1, const GPS_Position& gp2, 
         const GPS_Position& gp3) const;

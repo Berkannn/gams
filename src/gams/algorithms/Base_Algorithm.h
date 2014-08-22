@@ -95,6 +95,7 @@ namespace gams
        * @param  knowledge    the knowledge base of variables and values
        * @param  platform     the underlying platform the algorithm will use
        * @param  sensors      map of sensor names to sensor information
+       * @param  self         self-referencing variables for this device
        * @param  devices      list of devices in the swarm
        **/
       Base (
@@ -147,7 +148,7 @@ namespace gams
 
       /**
        * Sets the map of sensor names to sensor information
-       * @param  sensors      map of sensor names to sensor information
+       * @param  self      pointer to self-referencing variables container
        **/
       virtual void set_self (variables::Self * self);
       

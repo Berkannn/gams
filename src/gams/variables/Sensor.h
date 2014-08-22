@@ -103,7 +103,7 @@ namespace gams
 
       /**
        * Discretize a search area into index positions inside search area
-       * @param search  Search_Area to discretize
+       * @param region  region to discretize
        * @return set of index positions considered inside search area
        **/
       set<utility::Position> discretize (
@@ -111,11 +111,11 @@ namespace gams
 
       /**
        * Discretize a search area into index positions inside search area
-       * @param search  Search_Area to discretize
+       * @param area  area to discretize
        * @return set of index positions considered inside search area
        **/
       set<utility::Position> discretize (
-        const utility::Search_Area & search);
+        const utility::Search_Area & area);
       
       /**
        * Get the length of the side of each discretized cell
@@ -125,17 +125,19 @@ namespace gams
 
       /**
        * Gets GPS position from index position
-       * @param index position
+       * @param index   index location in cartesian location on sensor map
        * @return GPS_Position of index position
        **/
-      utility::GPS_Position get_gps_from_index (const utility::Position & idx);
+      utility::GPS_Position get_gps_from_index (
+        const utility::Position & index);
 
       /**
        * Gets current location on sensor map
-       * @param gps current GPS location
+       * @param pos current GPS location
        * @return current location in cartesian location on sensor map
        **/
-      utility::Position get_index_from_gps (const utility::GPS_Position & pos);
+      utility::Position get_index_from_gps (
+        const utility::GPS_Position & pos);
 
       /**
        * Gets name
@@ -185,7 +187,7 @@ namespace gams
        * Sets value at a point with gps position
        * @param pos     position to set
        * @param val     value to set at position
-       * @param bcast   true to transport value, false otherwise
+       * @param settings  settings to use for mutating value
        **/
       void set_value (const utility::GPS_Position& pos, const double& val,
         const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings =
@@ -195,7 +197,7 @@ namespace gams
        * Sets value at a point with index position
        * @param pos     index of position to set
        * @param val     value to set at position
-       * @param bcast   true to transport value, false otherwise
+       * @param settings  settings to use for mutating value
        **/
       void set_value (const utility::Position& pos, const double& val,
         const Madara::Knowledge_Engine::Knowledge_Update_Settings& settings =

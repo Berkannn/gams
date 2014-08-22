@@ -89,8 +89,7 @@ namespace gams
 
       /**
        * Initializes variable containers
-       * @param   id         node identifier
-       * @param   processes  processes
+       * @param   knowledge  the variable context
        * @param   swarm_size size of the swarm
        **/
       void init_vars (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
@@ -99,7 +98,6 @@ namespace gams
       /**
        * Initializes variable containers
        * @param   knowledge  the variable context
-       * @param   processes  processes
        * @param   swarm_size size of the swarm
        **/
       void init_vars (Madara::Knowledge_Engine::Variables & knowledge,
@@ -132,6 +130,7 @@ namespace gams
 
       /**
        * Variable setup
+       * @param  swarm_size   number of participating devices
        */
       void init_vars (const Madara::Knowledge_Record::Integer& swarm_size);
     };

@@ -48,7 +48,7 @@
 
 gams::algorithms::area_coverage::
 Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
-  const Madara::Knowledge_Record& search_area_id,
+  const Madara::Knowledge_Record& prefix,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   platforms::Base * platform,
   variables::Sensors * sensors,
@@ -60,7 +60,7 @@ Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
 
   // generate search region
   utility::Search_Area search = utility::parse_search_area (
-    *knowledge, search_area_id.to_string ());
+    *knowledge, prefix.to_string ());
   region_ = search.get_convex_hull ();
 
   // generate initial waypoint

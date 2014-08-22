@@ -69,24 +69,23 @@ namespace gams
     public:
       /**
        * Constructor
-       * @param points    vector of points representing boundary polygon of region
-       * @param priority  associated priority
+       * @param init_points vector of points representing boundary polygon of region
+       * @param new_priority  associated priority
        **/
       Prioritized_Region (const std::vector <GPS_Position>& init_points =
-        std::vector<GPS_Position> (), const unsigned int p = 1);
+        std::vector<GPS_Position> (), const unsigned int new_priority = 1);
 
       /**
        * Constructor
        * @param region    associated region
-       * @param priority  associated priority
+       * @param new_priority  associated priority
        **/
-      Prioritized_Region (const Region& region, const unsigned int p = 1);
+      Prioritized_Region (const Region& region, const unsigned int new_priority = 1);
       
     /**
      * Initialize prioritized region from knowledge base
      * @param knowledge   knowledge base to draw from
      * @param prefix      prefix for the region (e.g. "region.0")
-     * @return Prioritized_Region object created from knowledge base
      **/
       void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
         const std::string & prefix);

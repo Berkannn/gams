@@ -77,9 +77,10 @@ namespace gams
        * Constructor
        * @param  obj        the Java object to call methods on
        * @param  knowledge  knowledge base
+       * @param  platform   the platform to use
        * @param  sensors    map of sensor names to sensor information
-       * @param  platforms  map of platform names to platform information
        * @param  self       device variables that describe self state
+       * @param  devices    list of participating devices
        **/
       Java_Algorithm (
         jobject obj,

@@ -72,12 +72,15 @@ namespace gams
          * @param  knowledge    the knowledge base of variables and values
          * @param  platform     the underlying platform the algorithm will use
          * @param  sensors      map of sensor names to sensor information
+         * @param  self         self-referencing variables of this device
          * @param  devices      list of devices in the swarm
          **/
         Base_Area_Coverage (
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-          variables::Self * self = 0, variables::Devices * devices = 0);
+          platforms::Base * platform = 0,
+          variables::Sensors * sensors = 0,
+          variables::Self * self = 0,
+          variables::Devices * devices = 0);
   
         /**
          * Destructor

@@ -72,15 +72,19 @@ namespace gams
         /**
          * Constructor
          * @param  knowledge    the context containing variables and values
+         * @param  search_id    search area identifier
          * @param  platform     the underlying platform the algorithm will use
          * @param  sensors      map of sensor names to sensor information
          * @param  self         self-referencing variables
+         * @param  algo_name    algorithm name
          **/
         Prioritized_Min_Time_Area_Coverage (
           const Madara::Knowledge_Record& search_id, 
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
-          platforms::Base * platform = 0, variables::Sensors * sensors = 0,
-          variables::Self * self = 0, const std::string& algo_name = "pmtac");
+          platforms::Base * platform = 0,
+          variables::Sensors * sensors = 0,
+          variables::Self * self = 0,
+          const std::string& algo_name = "pmtac");
 
         /**
          * Assignment operator
