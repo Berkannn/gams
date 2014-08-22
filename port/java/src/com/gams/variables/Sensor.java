@@ -21,7 +21,7 @@ public class Sensor extends GamsJNI
   private native long jni_Sensor(long cptr);
   private static native void jni_freeSensor(long cptr);
   private native java.lang.String jni_getName(long cptr);
-  private native void jni_init(long cptr, long type, long kb, java.lang.String name, double region);
+  private native void jni_init(long cptr, long type, long kb, java.lang.String name, double range);
   private native java.lang.String jni_toString(long cptr);
   private native double jni_getPositionValue(long cptr, long pos);
   private native double jni_getGpsValue(long cptr, long pos);
@@ -126,7 +126,16 @@ public class Sensor extends GamsJNI
   {
     jni_setRange(getCPtr(), range);
   }
-        
+          
+  /**
+   * Sets the range of the sensor
+   * @param  range  the range of the sensor in meters
+   **/
+  public void setOrigin(GpsPosition origin)
+  {
+    jni_setOrigin(getCPtr(), origin.getCPtr());
+  }
+         
   /**
    * Sets a value at a location
    * @param  location  the position the value will be at
@@ -224,9 +233,9 @@ public class Sensor extends GamsJNI
    * @param  kb      the knowledge base that contains the name
    * @param  name    the variable name
    */
-  public void init(KnowledgeBase kb, java.lang.String name, double region)
+  public void init(KnowledgeBase kb, java.lang.String name, double range)
   {
-    jni_init(getCPtr(), 0, kb.getCPtr (), name, region);
+    jni_init(getCPtr(), 0, kb.getCPtr (), name, range);
   }
 
   /**
