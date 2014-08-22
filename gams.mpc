@@ -98,7 +98,7 @@ project (gams_jar) : using_gams, using_madara, using_ace {
   specific (prop:windows) {
     prebuild += javac -classpath %MADARA_ROOT%/lib/madara.jar -sourcepath port/java/src port/java/src/*.java port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java port/java/src/com/gams/controllers/*.java
   } else {
-    prebuild += javac -classpath $MADARA_ROOT/lib/madara.jar -sourcepath port/java/src port/java/src/*.java port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java port/java/src/com/gams/controllers/*.java
+    prebuild += javac -classpath $(MADARA_ROOT)/lib/madara.jar -sourcepath port/java/src port/java/src/*.java port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java port/java/src/com/gams/controllers/*.java
   }
 
   Documentation_Files {
