@@ -329,8 +329,8 @@ gams::variables::Sensor::init_vars (const string & name,
    * Similar to range, origin could be set incorrectly by multiple agents. The
    * best option would be to have the controller set it when initializing the
    * system.
-   */
-  GPS_Position cur_origin;
+   **/
+  utility::GPS_Position cur_origin;
   cur_origin.from_container (origin_);
   if (cur_origin.latitude () != 0.0 && origin.latitude () != DBL_MAX)
     origin.to_container (origin_);
