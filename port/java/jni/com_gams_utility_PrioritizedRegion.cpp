@@ -37,7 +37,7 @@ jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1getPriority
 {
   utility::Prioritized_Region * current = (utility::Prioritized_Region *) cptr;
 
-  return (jint) current;
+  return (jlong) current;
 }
 
 /*
