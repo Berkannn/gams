@@ -150,7 +150,7 @@ namespace gams
       utility::GPS_Position get_origin();
 
       /**
-       * Gets range
+       * Gets range in meters
        * @return sensor range
        **/
       double get_range () const;
@@ -176,7 +176,7 @@ namespace gams
       void set_origin (const utility::GPS_Position& origin);
 
       /**
-       * Sets range
+       * Sets range in meters
        * @param range new range
        **/
       void set_range (const double& range);
