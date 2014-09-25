@@ -1,4 +1,4 @@
-project (Test_Mape_Loop) : using_gams, using_madara, using_ace {
+project (test_mape_loop) : using_gams, using_madara, using_ace {
   exeout = $(GAMS_ROOT)/bin
   exename = test_mape_loop
   
@@ -23,7 +23,7 @@ project (Test_Mape_Loop) : using_gams, using_madara, using_ace {
 }
 
 
-project (Test_Controller) : using_gams, using_madara, using_ace {
+project (test_controller) : using_gams, using_madara, using_ace {
   exeout = $(GAMS_ROOT)/bin
   exename = test_controller
   
@@ -47,7 +47,33 @@ project (Test_Controller) : using_gams, using_madara, using_ace {
   }
 }
 
-project (Test_Utility) : using_gams, using_madara, using_ace {
+project (test_controller_run) : using_gams, using_madara, using_ace {
+  exeout = $(GAMS_ROOT)/bin
+  exename = test_controller_run
+  
+  macros +=  _USE_MATH_DEFINES
+
+  requires += tests
+
+  Documentation_Files {
+  }
+  
+  Build_Files {
+    using_gams.mpb
+    tests.mpc
+  }
+
+  Header_Files {
+    tests/helper
+  }
+
+  Source_Files {
+    tests/helper
+    tests/test_controller_run.cpp
+  }
+}
+
+project (test_utility) : using_gams, using_madara, using_ace {
   exeout = $(GAMS_ROOT)/bin
   exename = test_utility
 
@@ -71,7 +97,7 @@ project (Test_Utility) : using_gams, using_madara, using_ace {
   }
 }
 
-project (Test_Variables) : using_gams, using_madara, using_ace {
+project (test_variables) : using_gams, using_madara, using_ace {
   exeout = $(GAMS_ROOT)/bin
   exename = test_variables
 

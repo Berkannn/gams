@@ -1,4 +1,4 @@
-project (Documentation_GAMS_Java) : build_files {
+project (documentation_gams_java) : build_files {
 
   requires += docs java
 
@@ -11,7 +11,7 @@ project (Documentation_GAMS_Java) : build_files {
   }
 }
 
-project (Documentation_GAMS) : doxygen_help_gen, build_files {
+project (documentation_gams) : doxygen_help_gen, build_files {
 
   requires += docs
 

@@ -35,6 +35,8 @@ public class BaseController extends GamsJNI
   private native long jni_monitor(long cptr);
   private native long jni_plan(long cptr);
   private native long jni_run(long cptr, double period, double max);
+  private native long jni_run(long cptr, double loopPeriod, double max, double sendPeriod);
+  private native long jni_runHz(long cptr, double loopHz, double max, double sendHz);
   private native long jni_systemAnalyze(long cptr);
 
   public BaseController(KnowledgeBase knowledge)
@@ -178,10 +180,44 @@ public class BaseController extends GamsJNI
   /**
    * Runs the monitor, analyze, plan and execute loop with a
    * specific period and duration
+   * @param  period   the time in between executions of the loop in seconds
+   * @param  duration the duration of the loop in seconds
    **/
   public long run (double period, double duration)
   {
     return jni_run(getCPtr(), period, duration);
+  }
+   
+  /**
+   * Runs iterations of the MAPE loop with specified periods between loops
+   * @param  loopPeriod time in seconds between executions of the loop. 0
+   *                    means run as fast as possible (no sleeps).
+   * @param  duration   the duration of time spent running the loop in seconds.
+   *                    Negative duration means run loop forever. 0 duration
+   *                    means run once.
+   * @param  sendPeriod time in seconds between sending updates over network.
+   *                    If sendPeriod <= 0, loopPeriod is used.
+   **/
+  public long run (double loopPeriod, double duration, double sendPeriod)
+  {
+    return jni_run(getCPtr(), loopPeriod, duration, sendPeriod);
+  }
+   
+  /**
+   * Runs iterations of the MAPE loop with specified hertz
+   * @param  loopHz   the intended hz at which the loop should execute.
+   *                  anything non-negative is valid. 0hz is treated as
+   *                  as infinite hertz (i.e., run as fast as possible).
+   * @param  duration the duration of time spent running the loop in seconds.
+   *                  Negative duration means run loop forever. 0 duration means
+   *                  run once.
+   * @param  sendHz   the intended hz at which updates should be sent. If
+   *                  non-positive, loopHz is used.
+   * @return  the result of the MAPE loop
+   **/
+  public long runHz (double loopHz, double duration, double sendHz)
+  {
+    return jni_runHz(getCPtr(), loopHz, duration, sendHz);
   }
    
   /**

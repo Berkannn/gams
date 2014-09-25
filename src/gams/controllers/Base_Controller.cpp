@@ -572,77 +572,103 @@ gams::controllers::Base::execute (void)
 }
 
 int
-gams::controllers::Base::run (double period, double max_runtime)
+gams::controllers::Base::run (double loop_period,
+  double max_runtime, double send_period)
 {
   // return value
   int return_value (0);
+  bool first_execute (true);
+
+  // if user specified non-positive, then we are to use loop_period
+  if (send_period <= 0)
+  {
+    send_period = loop_period;
+  }
 
   // loop every period until a max run time has been reached
   ACE_Time_Value current = ACE_OS::gettimeofday ();  
   ACE_Time_Value max_wait, sleep_time, next_epoch;
-  ACE_Time_Value poll_frequency, last = current;
+  ACE_Time_Value send_sleep_time, send_next_epoch;
+  ACE_Time_Value poll_frequency, send_poll_frequency;
+  ACE_Time_Value last (current), last_send (current);
   
   GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
     DLINFO "gams::controllers::Base::run:" \
-    " period: %ds, max_runtime: %ds\n", period, max_runtime));
+    " loop_period: %ds, max_runtime: %ds, send_period: %ds\n",
+    loop_period, max_runtime, send_period));
 
-  if (period > 0)
+  if (loop_period >= 0.0)
   {
     max_wait.set (max_runtime);
     max_wait = current + max_wait;
     
-    poll_frequency.set (period);
+    poll_frequency.set (loop_period);
+    send_poll_frequency.set (send_period);
     next_epoch = current + poll_frequency;
+    send_next_epoch = current;
 
     unsigned int iterations = 0;
-    while (current < max_wait)
+    while (first_execute || max_runtime < 0 || current < max_wait)
     {
-      // some debug output, just not every iteration
-      if ((++iterations) % 15 == 0)
-        knowledge_.print();
-
-      // send modified values through network
-      knowledge_.send_modifieds();
-
       // return value should be last return value of mape loop
       return_value = 0;
       
       GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
         DLINFO "gams::controllers::Base::run:" \
-        " calling monitor ()\n", period, max_runtime));
+        " calling monitor ()\n"));
 
       return_value |= monitor ();
 
       GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
         DLINFO "gams::controllers::Base::run:" \
-        " calling analyze ()\n", period, max_runtime));
+        " calling analyze ()\n"));
 
       return_value |= analyze ();
 
       GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
         DLINFO "gams::controllers::Base::run:" \
-        " calling plan ()\n", period, max_runtime));
+        " calling plan ()\n"));
 
       return_value |= plan ();
 
       GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
         DLINFO "gams::controllers::Base::run:" \
-        " calling execute ()\n", period, max_runtime));
+        " calling execute ()\n"));
 
       return_value |= execute ();
     
       current = ACE_OS::gettimeofday ();
+      
+      // run will always try to send at least once
+      if (first_execute || current < send_next_epoch)
+      {
+        GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
+          DLINFO "gams::controllers::Base::run:" \
+          " sending updates\n"));
 
-      if (current < next_epoch)
+        // send modified values through network
+        knowledge_.send_modifieds();
+
+        // setup the next send epoch
+        send_next_epoch += send_poll_frequency;
+      }
+
+      // check to see if we need to sleep for next loop epoch
+      if (loop_period > 0.0 && current < next_epoch)
       {
         GAMS_DEBUG (gams::utility::LOG_MINOR_EVENT, (LM_DEBUG, 
           DLINFO "gams::controllers::Base::run:" \
-          " sleeping until next epoch\n", period, max_runtime));
+          " sleeping until next epoch\n"));
 
         Madara::Utility::sleep (next_epoch - current);  
       }
+      
+      // setup the next 
+      next_epoch += poll_frequency;
 
-      next_epoch = next_epoch + poll_frequency;
+      // run will always execute at least one time. Update flag for execution.
+      if (first_execute)
+        first_execute = false;
     }
   }
 

@@ -118,12 +118,52 @@ namespace gams
       virtual int execute (void);
      
       /**
-       * Runs one iteration of the MAPE loop
-       * @param  period       time between executions of the loop
-       * @param  max_runtime  maximum runtime within the MAPE loop
+       * Runs iterations of the MAPE loop with specified periods
+       * @param  loop_period  time (in seconds) between executions of the loop.
+       *                      0 period is meant to run loop iterations as fast
+       *                      as possible. Negative loop periods are invalid.
+       * @param  max_runtime  maximum total runtime to execute the MAPE loops
+       * @param  send_period  time (in seconds) between sending data.
+       *                      If send_period <= 0, send period will use the
+       *                      loop period.
        * @return  the result of the MAPE loop
        **/
-      int run (double period = 0.5, double max_runtime = -1);
+      int run (double loop_period = 0.0,
+        double max_runtime = -1,
+        double send_period = -1.0);
+      
+      /**
+       * Runs iterations of the MAPE loop with specified hertz
+       * @param  loop_hz  the intended hz at which the loop should execute.
+       *                  anything non-negative is valid. 0hz is treated as
+       *                  as infinite hertz
+       * @param  max_runtime  maximum total runtime to execute the MAPE loops
+       * @param  send_hz  the intended hz at which updates should be sent. If
+       *                  non-positive, loop_hz is used.
+       * @return  the result of the MAPE loop
+       **/
+      inline int run_hz (double loop_hz = 0.0,
+        double max_runtime = -1,
+        double send_hz = -1.0)
+      {
+        double loop_rate, send_rate;
+
+        // check for bad data
+        if (loop_hz <= 0.0)
+          loop_rate = 0.0;
+        // otherwise, set rate to 1s divided by the intended hz
+        else
+          loop_rate = 1.0 / loop_hz;
+
+        // copy from loop hz if send hz is non-positive
+        if (send_hz <= 0)
+          send_rate = loop_rate;
+        // otherwise, set rate to 1s divided by the intended hz
+        else
+          send_hz = 1.0 / send_hz;
+
+        return run (loop_rate, max_runtime, send_rate);
+      }
 
       /**
        * Adds an accent algorithm

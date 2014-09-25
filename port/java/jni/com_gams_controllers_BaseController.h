@@ -156,8 +156,24 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1plan
  * Method:    jni_run
  * Signature: (JDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
   (JNIEnv *, jobject, jlong, jdouble, jdouble);
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_run
+ * Signature: (JDDD)J
+ */
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
+  (JNIEnv *, jobject, jlong, jdouble, jdouble, jdouble);
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_runHz
+ * Signature: (JDDD)J
+ */
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1runHz
+  (JNIEnv *, jobject, jlong, jdouble, jdouble, jdouble);
 
 /*
  * Class:     com_gams_controllers_BaseController
