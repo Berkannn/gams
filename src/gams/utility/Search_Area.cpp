@@ -147,7 +147,10 @@ struct sort_by_angle
     double angle1 = atan2 (p1.x, p1.y) + 2 * M_PI;
     double angle2 = atan2 (p2.x, p2.y) + 2 * M_PI;
     
-    return angle1 < angle2;
+    if (angle1 == angle2)
+      return (anchor.distance_to(gp1) < anchor.distance_to(gp2));
+    else
+      return (angle1 < angle2);
   }
 };
 
@@ -167,14 +170,12 @@ gams::utility::Search_Area::get_convex_hull () const
   const size_t N = s_points.size ();
 
   // create array of points
-
-  std::vector <GPS_Position> points (N + 1);
-  size_t index = 1;
-  for (set<GPS_Position>::const_iterator it = s_points.begin ();
-    it != s_points.end(); ++it)
-  {
-    points[index++] = *it;
-  }
+  vector <GPS_Position> points (N + 1);
+  vector <GPS_Position>::iterator start = points.begin ();
+  ++start;
+  copy (s_points.begin (), s_points.end (), start);
+  for (int i = 0; i < N+1; ++i)
+    cerr << std::setprecision(10) << points[i].latitude() << " " << points[i].longitude() << endl;
 
   // find point with lowest y/lat coord...
   size_t lowest = 1;
@@ -186,13 +187,23 @@ gams::utility::Search_Area::get_convex_hull () const
       lowest = i;
       min_lat = points[i].latitude ();
     }
+    else if (points[i].latitude () == min_lat)
+    {
+      // select western-most point
+      if (points[i].longitude () < points[lowest].longitude ())
+        lowest = i;
+    }
   }
 
   // ...and swap with points[1]
   swap (points[lowest], points[1]);
+  cerr << "selected " << points[1].latitude() << " " << points[1].longitude() << " as lowest" << endl;
 
   // sort positions
   sort (&points[2], &points[N + 1], sort_by_angle (points[1]));
+  cerr << "sorting points" << endl;
+  for (int i = 0; i < N+1; ++i)
+    cerr << points[i].latitude() << " " << points[i].longitude() << endl;
 
   // copy sentinel point
   points[0] = points[N];
@@ -220,6 +231,8 @@ gams::utility::Search_Area::get_convex_hull () const
   // fill vector of points
   vector<GPS_Position> temp (M);
   copy (&points[1], &points[M + 1], temp.begin ());
+  for (vector<GPS_Position>::iterator it = temp.begin(); it != temp.end(); ++it)
+    cerr << "\t" << it->latitude () << " " << it->longitude () << endl;
   return Region (temp);
 }
 
@@ -285,6 +298,7 @@ gams::utility::Search_Area::cross (const GPS_Position& gp1, const GPS_Position& 
 {
   Position p1 = gp1.to_position (gp3);
   Position p2 = gp2.to_position (gp3);
+  // p3 is (0,0) as it is the reference for p1 and p2
   return (p2.y - p1.y) * (0 - p1.x) -
     (p2.x- p1.x) * (0 - p1.y);
 }
