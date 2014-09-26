@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Device
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1Device__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1Device__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1Device__
  * Method:    jni_Device
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1Device__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1Device__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1Device__J
  * Method:    jni_freeDevice
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Device_jni_1freeDevice
+GAMS_Export void JNICALL Java_com_gams_variables_Device_jni_1freeDevice
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Device_jni_1freeDevice
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Device_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Device_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jstring);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Device_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Device_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Device_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Device_jni_1toString
  * Method:    jni_getBatteryRemaining
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getBatteryRemaining
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getBatteryRemaining
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getBatteryRemaining
  * Method:    jni_getBridgeId
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getBridgeId
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getBridgeId
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getBridgeId
  * Method:    jni_getCommand
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getCommand
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getCommand
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getCommand
  * Method:    jni_getArgs
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getArgs
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getArgs
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getArgs
  * Method:    jni_getCoverageType
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getCoverageType
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getCoverageType
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getCoverageType
  * Method:    jni_getDest
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getDest
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getDest
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getDest
  * Method:    jni_getHome
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getHome
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getHome
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -108,7 +108,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getHome
  * Method:    jni_getIsMobile
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getIsMobile
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getIsMobile
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -116,7 +116,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getIsMobile
  * Method:    jni_getLocation
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getLocation
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getLocation
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -124,7 +124,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getLocation
  * Method:    jni_getMinAlt
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getMinAlt
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getMinAlt
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -132,7 +132,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getMinAlt
  * Method:    jni_getNextCoverageType
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getNextCoverageType
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getNextCoverageType
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -140,7 +140,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getNextCoverageType
  * Method:    jni_getSearchAreaId
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getSearchAreaId
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getSearchAreaId
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -148,7 +148,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getSearchAreaId
  * Method:    jni_getSource
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getSource
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getSource
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -156,7 +156,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getSource
  * Method:    jni_getTemperature
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Device_jni_1getTemperature
+GAMS_Export jlong JNICALL Java_com_gams_variables_Device_jni_1getTemperature
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

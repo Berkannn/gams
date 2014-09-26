@@ -13,7 +13,7 @@ extern "C" {
  * Method:    jni_getKnowledgeBase
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getKnowledgeBase
+GAMS_Export jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getKnowledgeBase
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -21,7 +21,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getKnowledgeBa
  * Method:    jni_getSelf
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getSelf
+GAMS_Export jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getSelf
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -29,7 +29,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getSelf
  * Method:    jni_getPlatformStatus
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getPlatformStatus
+GAMS_Export jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getPlatformStatus
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

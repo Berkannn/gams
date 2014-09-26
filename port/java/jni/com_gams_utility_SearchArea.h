@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_SearchArea
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_SearchArea_jni_1SearchArea
+GAMS_Export jlong JNICALL Java_com_gams_utility_SearchArea_jni_1SearchArea
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_SearchArea_jni_1SearchArea
  * Method:    jni_freeSearchArea
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_SearchArea_jni_1freeSearchArea
+GAMS_Export void JNICALL Java_com_gams_utility_SearchArea_jni_1freeSearchArea
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_SearchArea_jni_1freeSearchArea
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_utility_SearchArea_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_utility_SearchArea_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_utility_SearchArea_jni_1toString
  * Method:    jni_addPrioritizedRegion
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_SearchArea_jni_1addPrioritizedRegion
+GAMS_Export void JNICALL Java_com_gams_utility_SearchArea_jni_1addPrioritizedRegion
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_SearchArea_jni_1addPrioritizedRegio
  * Method:    jni_getConvexHull
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_SearchArea_jni_1getConvexHull
+GAMS_Export jlong JNICALL Java_com_gams_utility_SearchArea_jni_1getConvexHull
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_SearchArea_jni_1getConvexHull
  * Method:    jni_containsGps
  * Signature: (JJ)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_gams_utility_SearchArea_jni_1containsGps
+GAMS_Export jboolean JNICALL Java_com_gams_utility_SearchArea_jni_1containsGps
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jboolean JNICALL Java_com_gams_utility_SearchArea_jni_1containsGps
  * Method:    jni_getMaxAlt
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxAlt
+GAMS_Export jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxAlt
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxAlt
  * Method:    jni_getMinAlt
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinAlt
+GAMS_Export jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinAlt
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinAlt
  * Method:    jni_getMaxLat
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxLat
+GAMS_Export jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxLat
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxLat
  * Method:    jni_getMinLat
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinLat
+GAMS_Export jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinLat
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinLat
  * Method:    jni_getMaxLong
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxLong
+GAMS_Export jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxLong
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMaxLong
  * Method:    jni_getMinLong
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinLong
+GAMS_Export jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinLong
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -108,7 +108,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_SearchArea_jni_1getMinLong
  * Method:    jni_getGpsPriority
  * Signature: (JJ)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_SearchArea_jni_1getGpsPriority
+GAMS_Export jlong JNICALL Java_com_gams_utility_SearchArea_jni_1getGpsPriority
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -116,7 +116,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_SearchArea_jni_1getGpsPriority
  * Method:    jni_getRegions
  * Signature: (J)[J
  */
-JNIEXPORT jlongArray JNICALL Java_com_gams_utility_SearchArea_jni_1getRegions
+GAMS_Export jlongArray JNICALL Java_com_gams_utility_SearchArea_jni_1getRegions
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

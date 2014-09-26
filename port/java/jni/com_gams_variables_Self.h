@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Self
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Self_jni_1Self__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Self_jni_1Self__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Self_jni_1Self__
  * Method:    jni_Self
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Self_jni_1Self__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Self_jni_1Self__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Self_jni_1Self__J
  * Method:    jni_freeSelf
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Self_jni_1freeSelf
+GAMS_Export void JNICALL Java_com_gams_variables_Self_jni_1freeSelf
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Self_jni_1freeSelf
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Self_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Self_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Self_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Self_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Self_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Self_jni_1toString
  * Method:    jni_getId
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Self_jni_1getId
+GAMS_Export jlong JNICALL Java_com_gams_variables_Self_jni_1getId
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Self_jni_1getId
  * Method:    jni_getDevice
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Self_jni_1getDevice
+GAMS_Export jlong JNICALL Java_com_gams_variables_Self_jni_1getDevice
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

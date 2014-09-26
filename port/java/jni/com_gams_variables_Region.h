@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Region
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Region_jni_1Region__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Region_jni_1Region__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Region_jni_1Region__
  * Method:    jni_Region
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Region_jni_1Region__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Region_jni_1Region__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Region_jni_1Region__J
  * Method:    jni_freeRegion
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Region_jni_1freeRegion
+GAMS_Export void JNICALL Java_com_gams_variables_Region_jni_1freeRegion
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Region_jni_1freeRegion
  * Method:    jni_getName
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Region_jni_1getName
+GAMS_Export jstring JNICALL Java_com_gams_variables_Region_jni_1getName
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Region_jni_1getName
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Region_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Region_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jstring);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Region_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Region_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Region_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Region_jni_1toString
  * Method:    jni_getVertices
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Region_jni_1getVertices
+GAMS_Export jlong JNICALL Java_com_gams_variables_Region_jni_1getVertices
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

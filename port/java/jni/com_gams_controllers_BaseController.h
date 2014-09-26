@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_BaseControllerFromKb
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1BaseControllerFromKb
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1BaseControllerFromKb
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1BaseContro
  * Method:    jni_BaseController
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1BaseController
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1BaseController
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1BaseContro
  * Method:    jni_freeBaseController
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1freeBaseController
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1freeBaseController
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1freeBaseCon
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_controllers_BaseController_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_controllers_BaseController_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_controllers_BaseController_jni_1toString
  * Method:    jni_analyze
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1analyze
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1analyze
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1analyze
  * Method:    jni_execute
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1execute
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1execute
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1execute
  * Method:    jni_getPlatform
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatform
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatform
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatfor
  * Method:    jni_getAlgorithm
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorithm
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorithm
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorit
  * Method:    jni_initAccent
  * Signature: (JLjava/lang/String;[J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAccent
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initAccent
   (JNIEnv *, jobject, jlong, jstring, jlongArray);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAccent
  * Method:    jni_initAlgorithm
  * Signature: (JLjava/lang/String;[J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_String_2_3J
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_String_2_3J
   (JNIEnv *, jobject, jlong, jstring, jlongArray);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorit
  * Method:    jni_initPlatform
  * Signature: (JLjava/lang/String;[J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_String_2_3J
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_String_2_3J
   (JNIEnv *, jobject, jlong, jstring, jlongArray);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatfor
  * Method:    jni_initAlgorithm
  * Signature: (JLjava/lang/Object;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_Object_2
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_Object_2
   (JNIEnv *, jobject, jlong, jobject);
 
 /*
@@ -108,7 +108,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorit
  * Method:    jni_initPlatform
  * Signature: (JLjava/lang/Object;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_Object_2
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_Object_2
   (JNIEnv *, jobject, jlong, jobject);
 
 /*
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatfor
  * Method:    jni_initVars
  * Signature: (JJJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVars
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initVars
   (JNIEnv *, jobject, jlong, jlong, jlong);
 
 /*
@@ -124,7 +124,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVars
  * Method:    jni_initVarsAlgorithm
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlgorithm
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlgorithm
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -132,7 +132,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlg
  * Method:    jni_initVarsPlatform
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsPlatform
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsPlatform
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -140,7 +140,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsPla
  * Method:    jni_monitor
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1monitor
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1monitor
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -148,7 +148,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1monitor
  * Method:    jni_plan
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1plan
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1plan
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -156,7 +156,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1plan
  * Method:    jni_run
  * Signature: (JDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
   (JNIEnv *, jobject, jlong, jdouble, jdouble);
 
 /*
@@ -164,7 +164,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
  * Method:    jni_run
  * Signature: (JDDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
   (JNIEnv *, jobject, jlong, jdouble, jdouble, jdouble);
 
 /*
@@ -172,7 +172,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
  * Method:    jni_runHz
  * Signature: (JDDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1runHz
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1runHz
   (JNIEnv *, jobject, jlong, jdouble, jdouble, jdouble);
 
 /*
@@ -180,7 +180,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1runHz
  * Method:    jni_systemAnalyze
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1systemAnalyze
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1systemAnalyze
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

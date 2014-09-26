@@ -8,7 +8,7 @@ namespace platforms = gams::platforms;
  * Method:    jni_getKnowledgeBase
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getKnowledgeBase
+GAMS_Export jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getKnowledgeBase
   (JNIEnv * env, jobject, jlong cptr)
 {
   jlong result (0);
@@ -27,7 +27,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getKnowledgeBa
  * Method:    jni_getSelf
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getSelf
+GAMS_Export jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getSelf
   (JNIEnv * env, jobject, jlong cptr)
 {
   jlong result (0);
@@ -46,7 +46,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getSelf
  * Method:    jni_getPlatformStatus
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getPlatformStatus
+GAMS_Export jlong JNICALL Java_com_gams_platforms_BasePlatform_jni_1getPlatformStatus
   (JNIEnv * env, jobject, jlong cptr)
 {
   jlong result (0);

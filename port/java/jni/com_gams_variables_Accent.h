@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Accent
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Accent_jni_1Accent__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Accent_jni_1Accent__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Accent_jni_1Accent__
  * Method:    jni_Accent
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Accent_jni_1Accent__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Accent_jni_1Accent__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Accent_jni_1Accent__J
  * Method:    jni_freeAccent
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Accent_jni_1freeAccent
+GAMS_Export void JNICALL Java_com_gams_variables_Accent_jni_1freeAccent
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Accent_jni_1freeAccent
  * Method:    jni_getName
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Accent_jni_1getName
+GAMS_Export jstring JNICALL Java_com_gams_variables_Accent_jni_1getName
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Accent_jni_1getName
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Accent_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Accent_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jstring);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Accent_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Accent_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Accent_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Accent_jni_1toString
  * Method:    jni_getArgs
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Accent_jni_1getArgs
+GAMS_Export jlong JNICALL Java_com_gams_variables_Accent_jni_1getArgs
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Accent_jni_1getArgs
  * Method:    jni_getCommand
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Accent_jni_1getCommand
+GAMS_Export jlong JNICALL Java_com_gams_variables_Accent_jni_1getCommand
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

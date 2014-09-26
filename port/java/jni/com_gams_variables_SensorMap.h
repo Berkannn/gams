@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_freeSensorMap
  * Signature: ([JI)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_SensorMap_jni_1freeSensorMap
+GAMS_Export void JNICALL Java_com_gams_variables_SensorMap_jni_1freeSensorMap
   (JNIEnv *, jobject, jlongArray, jint);
 
 #ifdef __cplusplus

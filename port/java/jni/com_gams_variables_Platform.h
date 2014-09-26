@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Platform
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1Platform__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1Platform__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1Platform__
  * Method:    jni_Platform
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1Platform__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1Platform__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1Platform__J
  * Method:    jni_freePlatform
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Platform_jni_1freePlatform
+GAMS_Export void JNICALL Java_com_gams_variables_Platform_jni_1freePlatform
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Platform_jni_1freePlatform
  * Method:    jni_getName
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Platform_jni_1getName
+GAMS_Export jstring JNICALL Java_com_gams_variables_Platform_jni_1getName
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Platform_jni_1getName
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Platform_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Platform_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jstring);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Platform_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Platform_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Platform_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Platform_jni_1toString
  * Method:    jni_getCommunicationAvailable
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getCommunicationAvailable
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getCommunicationAvailable
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getCommunicationAv
  * Method:    jni_getDeadlocked
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getDeadlocked
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getDeadlocked
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getDeadlocked
  * Method:    jni_getFailed
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getFailed
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getFailed
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getFailed
  * Method:    jni_getGpsSpoofed
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getGpsSpoofed
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getGpsSpoofed
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getGpsSpoofed
  * Method:    jni_getMovementAvailable
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getMovementAvailable
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getMovementAvailable
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getMovementAvailab
  * Method:    jni_getMoving
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getMoving
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getMoving
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -108,7 +108,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getMoving
  * Method:    jni_getOk
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getOk
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getOk
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -116,7 +116,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getOk
  * Method:    jni_getPausedMoving
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getPausedMoving
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getPausedMoving
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -124,7 +124,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getPausedMoving
  * Method:    jni_getReducedSensing
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getReducedSensing
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getReducedSensing
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -132,7 +132,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getReducedSensing
  * Method:    jni_getReducedMovement
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getReducedMovement
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getReducedMovement
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -140,7 +140,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getReducedMovement
  * Method:    jni_getSensorsAvailable
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getSensorsAvailable
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getSensorsAvailable
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -148,7 +148,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getSensorsAvailabl
  * Method:    jni_getWaiting
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Platform_jni_1getWaiting
+GAMS_Export jlong JNICALL Java_com_gams_variables_Platform_jni_1getWaiting
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

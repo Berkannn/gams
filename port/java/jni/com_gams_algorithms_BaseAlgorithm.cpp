@@ -9,7 +9,7 @@ namespace algorithms = gams::algorithms;
  * Method:    jni_getKnowledgeBase
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getKnowledgeBase
+GAMS_Export jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getKnowledgeBase
   (JNIEnv * env, jobject, jlong cptr)
 {
   jlong result (0);
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getKnowledge
  * Method:    jni_getSelf
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getSelf
+GAMS_Export jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getSelf
   (JNIEnv * env, jobject, jlong cptr)
 {
   jlong result (0);
@@ -47,7 +47,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getSelf
  * Method:    jni_getPlatformObject
  * Signature: (J)Ljava/lang/Object;
  */
-JNIEXPORT jobject JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getPlatformObject
+GAMS_Export jobject JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getPlatformObject
   (JNIEnv *, jobject, jlong cptr)
 {
   jobject result (0);
@@ -73,7 +73,7 @@ JNIEXPORT jobject JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getPlatfor
  * Method:    jni_getAlgorithmStatus
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getAlgorithmStatus
+GAMS_Export jlong JNICALL Java_com_gams_algorithms_BaseAlgorithm_jni_1getAlgorithmStatus
   (JNIEnv * env, jobject, jlong cptr)
 {
   jlong result (0);

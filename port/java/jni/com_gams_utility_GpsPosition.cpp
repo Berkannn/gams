@@ -33,7 +33,7 @@ jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__J
  * Method:    jni_GpsPosition
  * Signature: (DDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__DDD
+GAMS_Export jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__DDD
   (JNIEnv * env, jobject, jdouble lat, jdouble lon, jdouble alt)
 {
   return (jlong) new utility::GPS_Position (lat, lon, alt);

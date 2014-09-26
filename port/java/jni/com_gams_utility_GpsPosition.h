@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_GpsPosition
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__
+GAMS_Export jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__
  * Method:    jni_GpsPosition
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__J
+GAMS_Export jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__J
  * Method:    jni_GpsPosition
  * Signature: (DDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__DDD
+GAMS_Export jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__DDD
   (JNIEnv *, jobject, jdouble, jdouble, jdouble);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_GpsPosition_jni_1GpsPosition__DDD
  * Method:    jni_freeGpsPosition
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_GpsPosition_jni_1freeGpsPosition
+GAMS_Export void JNICALL Java_com_gams_utility_GpsPosition_jni_1freeGpsPosition
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_GpsPosition_jni_1freeGpsPosition
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_utility_GpsPosition_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_utility_GpsPosition_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_utility_GpsPosition_jni_1toString
  * Method:    jni_getLatitude
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getLatitude
+GAMS_Export jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getLatitude
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getLatitude
  * Method:    jni_getLongitude
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getLongitude
+GAMS_Export jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getLongitude
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getLongitude
  * Method:    jni_getAltitude
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getAltitude
+GAMS_Export jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getAltitude
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_GpsPosition_jni_1getAltitude
  * Method:    jni_setLatitude
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_GpsPosition_jni_1setLatitude
+GAMS_Export void JNICALL Java_com_gams_utility_GpsPosition_jni_1setLatitude
   (JNIEnv *, jobject, jlong, jdouble);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_GpsPosition_jni_1setLatitude
  * Method:    jni_setLongitude
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_GpsPosition_jni_1setLongitude
+GAMS_Export void JNICALL Java_com_gams_utility_GpsPosition_jni_1setLongitude
   (JNIEnv *, jobject, jlong, jdouble);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_GpsPosition_jni_1setLongitude
  * Method:    jni_setAltitude
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_GpsPosition_jni_1setAltitude
+GAMS_Export void JNICALL Java_com_gams_utility_GpsPosition_jni_1setAltitude
   (JNIEnv *, jobject, jlong, jdouble);
 
 #ifdef __cplusplus

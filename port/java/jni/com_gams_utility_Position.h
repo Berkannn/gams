@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Position
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_Position_jni_1Position__
+GAMS_Export jlong JNICALL Java_com_gams_utility_Position_jni_1Position__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_Position_jni_1Position__
  * Method:    jni_Position
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_Position_jni_1Position__J
+GAMS_Export jlong JNICALL Java_com_gams_utility_Position_jni_1Position__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_Position_jni_1Position__J
  * Method:    jni_Position
  * Signature: (DDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_Position_jni_1Position__DDD
+GAMS_Export jlong JNICALL Java_com_gams_utility_Position_jni_1Position__DDD
   (JNIEnv *, jobject, jdouble, jdouble, jdouble);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_Position_jni_1Position__DDD
  * Method:    jni_freePosition
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Position_jni_1freePosition
+GAMS_Export void JNICALL Java_com_gams_utility_Position_jni_1freePosition
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_Position_jni_1freePosition
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_utility_Position_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_utility_Position_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_utility_Position_jni_1toString
  * Method:    jni_getX
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Position_jni_1getX
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Position_jni_1getX
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Position_jni_1getX
  * Method:    jni_getY
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Position_jni_1getY
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Position_jni_1getY
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Position_jni_1getY
  * Method:    jni_getZ
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Position_jni_1getZ
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Position_jni_1getZ
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Position_jni_1getZ
  * Method:    jni_setX
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Position_jni_1setX
+GAMS_Export void JNICALL Java_com_gams_utility_Position_jni_1setX
   (JNIEnv *, jobject, jlong, jdouble);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_Position_jni_1setX
  * Method:    jni_setY
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Position_jni_1setY
+GAMS_Export void JNICALL Java_com_gams_utility_Position_jni_1setY
   (JNIEnv *, jobject, jlong, jdouble);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_Position_jni_1setY
  * Method:    jni_setZ
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Position_jni_1setZ
+GAMS_Export void JNICALL Java_com_gams_utility_Position_jni_1setZ
   (JNIEnv *, jobject, jlong, jdouble);
 
 #ifdef __cplusplus

@@ -228,7 +228,7 @@ void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform
  * Method:    jni_initAlgorithm
  * Signature: (JLjava/lang/Object;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_Object_2
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorithm__JLjava_lang_Object_2
   (JNIEnv *, jobject, jlong cptr, jobject algorithm)
 {
   controllers::Base * current = (controllers::Base *) cptr;
@@ -244,7 +244,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initAlgorit
  * Method:    jni_initPlatform
  * Signature: (JLjava/lang/Object;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_Object_2
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatform__JLjava_lang_Object_2
   (JNIEnv *, jobject, jlong cptr, jobject platform)
 {
   controllers::Base * current = (controllers::Base *) cptr;
@@ -260,7 +260,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initPlatfor
  * Method:    jni_getPlatform
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatform
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatform
   (JNIEnv *, jobject, jlong cptr)
 {
   jlong result (0);
@@ -279,7 +279,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getPlatfor
  * Method:    jni_getAlgorithm
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorithm
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1getAlgorithm
   (JNIEnv *, jobject, jlong cptr)
 {
   jlong result (0);
@@ -312,7 +312,7 @@ void JNICALL Java_com_gams_controllers_BaseController_jni_1initVars
  * Method:    jni_initVarsAlgorithm
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlgorithm
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlgorithm
   (JNIEnv *, jobject, jlong cptr, jlong aptr)
 {
   controllers::Base * current = (controllers::Base *) cptr;
@@ -329,7 +329,7 @@ JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsAlg
  * Method:    jni_initVarsPlatform
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsPlatform
+GAMS_Export void JNICALL Java_com_gams_controllers_BaseController_jni_1initVarsPlatform
   (JNIEnv *, jobject, jlong cptr, jlong pptr)
 {
   controllers::Base * current = (controllers::Base *) cptr;
@@ -397,7 +397,7 @@ jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run
  * Method:    jni_run
  * Signature: (JDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
   (JNIEnv *, jobject, jlong cptr, jdouble loop_period, jdouble duration)
 {
   jlong result (0);
@@ -414,7 +414,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
  * Method:    jni_run
  * Signature: (JDDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
   (JNIEnv *, jobject, jlong cptr, jdouble loop_period, jdouble duration, jdouble send_period)
 {
   jlong result (0);
@@ -431,7 +431,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
  * Method:    jni_runHz
  * Signature: (JDDD)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1runHz
+GAMS_Export jlong JNICALL Java_com_gams_controllers_BaseController_jni_1runHz
   (JNIEnv *, jobject, jlong cptr, jdouble loop_hz, jdouble duration, jdouble send_hz)
 {
   jlong result (0);

@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Region
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_Region_jni_1Region
+GAMS_Export jlong JNICALL Java_com_gams_utility_Region_jni_1Region
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_Region_jni_1Region
  * Method:    jni_freeRegion
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Region_jni_1freeRegion
+GAMS_Export void JNICALL Java_com_gams_utility_Region_jni_1freeRegion
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_Region_jni_1freeRegion
  * Method:    jni_fromContainer
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Region_jni_1fromContainer
+GAMS_Export void JNICALL Java_com_gams_utility_Region_jni_1fromContainer
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_Region_jni_1fromContainer
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_utility_Region_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_utility_Region_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_utility_Region_jni_1toString
  * Method:    jni_addGpsVertex
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Region_jni_1addGpsVertex
+GAMS_Export void JNICALL Java_com_gams_utility_Region_jni_1addGpsVertex
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_Region_jni_1addGpsVertex
  * Method:    jni_getVertices
  * Signature: (J)[J
  */
-JNIEXPORT jlongArray JNICALL Java_com_gams_utility_Region_jni_1getVertices
+GAMS_Export jlongArray JNICALL Java_com_gams_utility_Region_jni_1getVertices
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jlongArray JNICALL Java_com_gams_utility_Region_jni_1getVertices
  * Method:    jni_getArea
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getArea
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getArea
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getArea
  * Method:    jni_getBoundingBox
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_Region_jni_1getBoundingBox
+GAMS_Export jlong JNICALL Java_com_gams_utility_Region_jni_1getBoundingBox
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_Region_jni_1getBoundingBox
  * Method:    jni_containsGps
  * Signature: (JJ)Z
  */
-JNIEXPORT jboolean JNICALL Java_com_gams_utility_Region_jni_1containsGps
+GAMS_Export jboolean JNICALL Java_com_gams_utility_Region_jni_1containsGps
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jboolean JNICALL Java_com_gams_utility_Region_jni_1containsGps
  * Method:    jni_getGpsDistance
  * Signature: (JJ)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getGpsDistance
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getGpsDistance
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getGpsDistance
  * Method:    jni_getMaxAlt
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxAlt
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxAlt
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxAlt
  * Method:    jni_getMinAlt
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinAlt
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinAlt
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -108,7 +108,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinAlt
  * Method:    jni_getMaxLat
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxLat
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxLat
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -116,7 +116,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxLat
  * Method:    jni_getMinLat
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinLat
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinLat
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -124,7 +124,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinLat
  * Method:    jni_getMaxLong
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxLong
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxLong
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -132,7 +132,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMaxLong
  * Method:    jni_getMinLong
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinLong
+GAMS_Export jdouble JNICALL Java_com_gams_utility_Region_jni_1getMinLong
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

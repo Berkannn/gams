@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Swarm
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1Swarm__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Swarm_jni_1Swarm__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1Swarm__
  * Method:    jni_Swarm
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1Swarm__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Swarm_jni_1Swarm__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1Swarm__J
  * Method:    jni_freeSwarm
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Swarm_jni_1freeSwarm
+GAMS_Export void JNICALL Java_com_gams_variables_Swarm_jni_1freeSwarm
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Swarm_jni_1freeSwarm
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Swarm_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Swarm_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jstring);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Swarm_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Swarm_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Swarm_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Swarm_jni_1toString
  * Method:    jni_getCommand
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1getCommand
+GAMS_Export jlong JNICALL Java_com_gams_variables_Swarm_jni_1getCommand
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1getCommand
  * Method:    jni_getArgs
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1getArgs
+GAMS_Export jlong JNICALL Java_com_gams_variables_Swarm_jni_1getArgs
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1getArgs
  * Method:    jni_getMinAlt
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1getMinAlt
+GAMS_Export jlong JNICALL Java_com_gams_variables_Swarm_jni_1getMinAlt
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1getMinAlt
  * Method:    jni_getSize
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Swarm_jni_1getSize
+GAMS_Export jlong JNICALL Java_com_gams_variables_Swarm_jni_1getSize
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

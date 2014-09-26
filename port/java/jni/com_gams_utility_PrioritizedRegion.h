@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_PrioritizedRegion
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1PrioritizedRegion
+GAMS_Export jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1PrioritizedRegion
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1Prioritized
  * Method:    jni_freePrioritizedRegion
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1freePrioritizedRegion
+GAMS_Export void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1freePrioritizedRegion
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1freePrioriti
  * Method:    jni_getPriority
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1getPriority
+GAMS_Export jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1getPriority
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1getPriority
  * Method:    jni_setPriority
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1setPriority
+GAMS_Export void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1setPriority
   (JNIEnv *, jobject, jlong, jlong);
 
 #ifdef __cplusplus

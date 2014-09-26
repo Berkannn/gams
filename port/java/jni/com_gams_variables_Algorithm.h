@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Algorithm
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1Algorithm__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1Algorithm__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1Algorithm__
  * Method:    jni_Algorithm
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1Algorithm__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1Algorithm__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1Algorithm__J
  * Method:    jni_freeAlgorithm
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Algorithm_jni_1freeAlgorithm
+GAMS_Export void JNICALL Java_com_gams_variables_Algorithm_jni_1freeAlgorithm
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Algorithm_jni_1freeAlgorithm
  * Method:    jni_getName
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Algorithm_jni_1getName
+GAMS_Export jstring JNICALL Java_com_gams_variables_Algorithm_jni_1getName
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Algorithm_jni_1getName
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Algorithm_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Algorithm_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jstring);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Algorithm_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Algorithm_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Algorithm_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Algorithm_jni_1toString
  * Method:    jni_getDeadlocked
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getDeadlocked
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getDeadlocked
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getDeadlocked
  * Method:    jni_getFailed
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getFailed
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getFailed
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getFailed
  * Method:    jni_getOk
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getOk
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getOk
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getOk
  * Method:    jni_getPaused
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getPaused
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getPaused
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getPaused
  * Method:    jni_getUnknown
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getUnknown
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getUnknown
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getUnknown
  * Method:    jni_getWaiting
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getWaiting
+GAMS_Export jlong JNICALL Java_com_gams_variables_Algorithm_jni_1getWaiting
   (JNIEnv *, jobject, jlong);
 
 #ifdef __cplusplus

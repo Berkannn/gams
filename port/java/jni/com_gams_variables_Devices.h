@@ -14,7 +14,7 @@ extern "C" {
  * Method:    jni_freeDevices
  * Signature: ([JI)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Devices_jni_1freeDevices
+GAMS_Export void JNICALL Java_com_gams_variables_Devices_jni_1freeDevices
   (JNIEnv *, jobject, jlongArray, jint);
 
 #ifdef __cplusplus

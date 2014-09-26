@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_set_level
  * Signature: (I)V
  */
-JNIEXPORT void JNICALL Java_com_gams_utility_Logging_jni_1set_1level
+GAMS_Export void JNICALL Java_com_gams_utility_Logging_jni_1set_1level
   (JNIEnv *, jclass, jint);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT void JNICALL Java_com_gams_utility_Logging_jni_1set_1level
  * Method:    jni_get_level
  * Signature: ()I
  */
-JNIEXPORT jint JNICALL Java_com_gams_utility_Logging_jni_1get_1level
+GAMS_Export jint JNICALL Java_com_gams_utility_Logging_jni_1get_1level
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus

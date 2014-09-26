@@ -12,7 +12,7 @@ extern "C" {
  * Method:    jni_Sensor
  * Signature: ()J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1Sensor__
+GAMS_Export jlong JNICALL Java_com_gams_variables_Sensor_jni_1Sensor__
   (JNIEnv *, jobject);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1Sensor__
  * Method:    jni_Sensor
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1Sensor__J
+GAMS_Export jlong JNICALL Java_com_gams_variables_Sensor_jni_1Sensor__J
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -28,7 +28,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1Sensor__J
  * Method:    jni_freeSensor
  * Signature: (J)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1freeSensor
+GAMS_Export void JNICALL Java_com_gams_variables_Sensor_jni_1freeSensor
   (JNIEnv *, jclass, jlong);
 
 /*
@@ -36,7 +36,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1freeSensor
  * Method:    jni_getName
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Sensor_jni_1getName
+GAMS_Export jstring JNICALL Java_com_gams_variables_Sensor_jni_1getName
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -44,7 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Sensor_jni_1getName
  * Method:    jni_init
  * Signature: (JJJLjava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1init
+GAMS_Export void JNICALL Java_com_gams_variables_Sensor_jni_1init
   (JNIEnv *, jobject, jlong, jlong, jlong, jstring, jdouble);
 
 /*
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1init
  * Method:    jni_toString
  * Signature: (J)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_com_gams_variables_Sensor_jni_1toString
+GAMS_Export jstring JNICALL Java_com_gams_variables_Sensor_jni_1toString
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jstring JNICALL Java_com_gams_variables_Sensor_jni_1toString
  * Method:    jni_getPositionValue
  * Signature: (JJ)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getPositionValue
+GAMS_Export jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getPositionValue
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -68,7 +68,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getPositionValue
  * Method:    jni_getGpsValue
  * Signature: (JJ)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getGpsValue
+GAMS_Export jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getGpsValue
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getGpsValue
  * Method:    jni_getOrigin
  * Signature: (J)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1getOrigin
+GAMS_Export jlong JNICALL Java_com_gams_variables_Sensor_jni_1getOrigin
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -84,7 +84,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1getOrigin
  * Method:    jni_getRange
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getRange
+GAMS_Export jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getRange
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -92,7 +92,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getRange
  * Method:    jni_setOrigin
  * Signature: (JJ)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setOrigin
+GAMS_Export void JNICALL Java_com_gams_variables_Sensor_jni_1setOrigin
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -100,7 +100,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setOrigin
  * Method:    jni_setRange
  * Signature: (JD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setRange
+GAMS_Export void JNICALL Java_com_gams_variables_Sensor_jni_1setRange
   (JNIEnv *, jobject, jlong, jdouble);
 
 /*
@@ -108,7 +108,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setRange
  * Method:    jni_setPositionValue
  * Signature: (JJD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setPositionValue
+GAMS_Export void JNICALL Java_com_gams_variables_Sensor_jni_1setPositionValue
   (JNIEnv *, jobject, jlong, jlong, jdouble);
 
 /*
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setPositionValue
  * Method:    jni_setGpsValue
  * Signature: (JJD)V
  */
-JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setGpsValue
+GAMS_Export void JNICALL Java_com_gams_variables_Sensor_jni_1setGpsValue
   (JNIEnv *, jobject, jlong, jlong, jdouble);
 
 /*
@@ -124,7 +124,7 @@ JNIEXPORT void JNICALL Java_com_gams_variables_Sensor_jni_1setGpsValue
  * Method:    jni_getGpsFromIndex
  * Signature: (JJ)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1getGpsFromIndex
+GAMS_Export jlong JNICALL Java_com_gams_variables_Sensor_jni_1getGpsFromIndex
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -132,7 +132,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1getGpsFromIndex
  * Method:    jni_getIndexFromGps
  * Signature: (JJ)J
  */
-JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1getIndexFromGps
+GAMS_Export jlong JNICALL Java_com_gams_variables_Sensor_jni_1getIndexFromGps
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -140,7 +140,7 @@ JNIEXPORT jlong JNICALL Java_com_gams_variables_Sensor_jni_1getIndexFromGps
  * Method:    jni_getDiscretization
  * Signature: (J)D
  */
-JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getDiscretization
+GAMS_Export jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getDiscretization
   (JNIEnv *, jobject, jlong);
 
 /*
@@ -148,7 +148,7 @@ JNIEXPORT jdouble JNICALL Java_com_gams_variables_Sensor_jni_1getDiscretization
  * Method:    jni_discretizeRegion
  * Signature: (JJ)[J
  */
-JNIEXPORT jlongArray JNICALL Java_com_gams_variables_Sensor_jni_1discretizeRegion
+GAMS_Export jlongArray JNICALL Java_com_gams_variables_Sensor_jni_1discretizeRegion
   (JNIEnv *, jobject, jlong, jlong);
 
 /*
@@ -156,7 +156,7 @@ JNIEXPORT jlongArray JNICALL Java_com_gams_variables_Sensor_jni_1discretizeRegio
  * Method:    jni_discretizeSearchArea
  * Signature: (JJ)[J
  */
-JNIEXPORT jlongArray JNICALL Java_com_gams_variables_Sensor_jni_1discretizeSearchArea
+GAMS_Export jlongArray JNICALL Java_com_gams_variables_Sensor_jni_1discretizeSearchArea
   (JNIEnv *, jobject, jlong, jlong);
 
 #ifdef __cplusplus
