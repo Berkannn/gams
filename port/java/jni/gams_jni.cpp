@@ -38,7 +38,7 @@ JNIEnv* gams_jni_get_env()
 #ifndef _USING_OPENJDK_
     gams_JVM->AttachCurrentThread((void **)&env, NULL);
 #else
-    jvm->AttachCurrentThread(&env, NULL);
+    gams_JVM->AttachCurrentThread(&env, NULL);
 #endif
   }
   return env;
