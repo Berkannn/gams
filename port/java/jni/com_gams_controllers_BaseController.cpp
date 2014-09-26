@@ -395,6 +395,23 @@ jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run
 /*
  * Class:     com_gams_controllers_BaseController
  * Method:    jni_run
+ * Signature: (JDD)J
+ */
+JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDD
+  (JNIEnv *, jobject, jlong cptr, jdouble loop_period, jdouble duration)
+{
+  jlong result (0);
+
+  controllers::Base * current = (controllers::Base *) cptr;
+  if (current)
+    result = current->run (loop_period, duration);
+
+  return result;
+}
+
+/*
+ * Class:     com_gams_controllers_BaseController
+ * Method:    jni_run
  * Signature: (JDDD)J
  */
 JNIEXPORT jlong JNICALL Java_com_gams_controllers_BaseController_jni_1run__JDDD
