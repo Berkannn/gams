@@ -92,14 +92,9 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib, port/java/usi
 
 project (gams_jar) : using_gams, using_madara, using_ace {
   requires += java
-  
+
+  prebuild += javac -classpath $(MADARA_ROOT)/lib/madara.jar -sourcepath port/java/src port/java/src/com/gams/tests/*.java port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java port/java/src/com/gams/controllers/*.java
   postbuild += jar cf lib/gams.jar -C port/java/src .
-  
-  specific (prop:windows) {
-    prebuild += javac -classpath %MADARA_ROOT%/lib/madara.jar -sourcepath port/java/src port/java/src/*.java port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java port/java/src/com/gams/controllers/*.java
-  } else {
-    prebuild += javac -classpath $(MADARA_ROOT)/lib/madara.jar -sourcepath port/java/src port/java/src/*.java port/java/src/com/gams/*.java port/java/src/com/gams/variables/*.java port/java/src/com/gams/utility/*.java port/java/src/com/gams/platforms/*.java port/java/src/com/gams/algorithms/*.java port/java/src/com/gams/controllers/*.java
-  }
 
   Documentation_Files {
     port/java/src/*.java

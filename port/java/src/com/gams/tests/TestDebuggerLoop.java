@@ -5,6 +5,8 @@
  * https://code.google.com/p/gams-cmu/wiki/License
  *********************************************************************/
 
+package com.gams.tests;
+ 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
