@@ -3,4 +3,9 @@ project {
   libpaths += $(GAMS_ROOT)/lib
   after += gams  
   libs += GAMS
+
+  verbatim (gnuace, local) {
+    CPPFLAGS += -w
+  }
+  
 }

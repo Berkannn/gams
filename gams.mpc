@@ -4,6 +4,10 @@ project (gams) : using_madara, using_ace, using_dronerk, vrep_lib, port/java/usi
   includes += src
   dynamicflags += GAMS_BUILD_DLL _USE_MATH_DEFINES
   
+  verbatim (gnuace, local) {
+    CPPFLAGS += -w
+  }
+  
   Documentation_Files {
     INSTALL.txt
     LICENSE.txt
@@ -120,8 +124,7 @@ project (gams_jar) : using_gams, using_madara, using_ace {
 project (gams_controller) : using_gams, using_madara, using_ace, using_dronerk, using_vrep {
   exeout = $(GAMS_ROOT)/bin
   exename = gams_controller
-
-
+  
   macros +=  _USE_MATH_DEFINES
 
   Documentation_Files {
