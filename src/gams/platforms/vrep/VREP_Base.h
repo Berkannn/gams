@@ -113,7 +113,7 @@ namespace gams
        * Get the position accuracy in meters
        * @return position accuracy
        **/
-      virtual double get_gps_accuracy () const;
+      virtual double get_accuracy () const;
 
       /**
        * Get move speed
@@ -132,7 +132,7 @@ namespace gams
        * @param   epsilon   approximation value
        * @return 1 if moving, 2 if arrived, 0 if error
        **/
-      virtual int move (const utility::GPS_Position & position,
+      virtual int move (const utility::Position & position,
         const double & epsilon = 0.1);
       
       /**

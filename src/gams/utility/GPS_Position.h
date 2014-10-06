@@ -80,6 +80,11 @@ namespace gams
        * Constructor
        **/
       GPS_Position (const GPS_Position & position);
+      
+      /**
+       * Constructor
+       **/
+      GPS_Position (const Position & position);
 
       /**
        * Destructor

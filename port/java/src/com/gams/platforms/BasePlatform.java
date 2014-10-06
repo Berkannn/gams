@@ -26,6 +26,7 @@ public abstract class BasePlatform extends GamsJNI implements PlatformInterface
   /**
    * Initialize the platform with controller variables. Use this
    * method to synchronize user-defined platforms with the controller.
+   * @param  controller the controller that will be running the platform loop
    **/
   public void init (BaseController controller)
   {

@@ -33,6 +33,9 @@ public class Region extends GamsJNI
   
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Region()
   {
     setCPtr(jni_Region());
@@ -51,7 +54,6 @@ public class Region extends GamsJNI
   /**
    * Adds a GPS vertex to this region
    * @param   point     point to check
-   * @return 0 if in region, otherwise distance from region
    **/
   public void addVertex(GpsPosition point)
   {

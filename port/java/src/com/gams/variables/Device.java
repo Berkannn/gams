@@ -39,12 +39,19 @@ public class Device extends GamsJNI
 
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Device()
   {
     setCPtr(jni_Device());
     init();
   }
 
+  /**
+   * Copy constructor
+   * @param input  the device to copy
+   **/
   public Device(Device input)
   {
     setCPtr(jni_Device(input.getCPtr()));
@@ -223,7 +230,7 @@ public class Device extends GamsJNI
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
-   * called before an instance of WaitSettings gets garbage collected
+   * called before an instance gets garbage collected
    */
   public void free()
   {

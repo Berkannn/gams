@@ -54,6 +54,8 @@ public class BaseController extends GamsJNI
 
   /**
    * Analyzes the platform, algorithm and accents
+   * @return status of analyze. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long analyze ()
   {
@@ -62,6 +64,8 @@ public class BaseController extends GamsJNI
   
   /**
    * Executes the algorithm and accents
+   * @return status of execute. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long execute ()
   {
@@ -104,8 +108,7 @@ public class BaseController extends GamsJNI
   /**
    * Initialize an algorithm within the controller
    *
-   * @param  name       name of the algorithm
-   * @param  args       arguments to the algorithm initialization
+   * @param  algorithm  the algorithm to add to the controller
    */
   public void initAlgorithm(BaseAlgorithm algorithm)
   {
@@ -163,6 +166,8 @@ public class BaseController extends GamsJNI
 
   /**
    * Monitors the platform's sensors
+   * @return status of monitor. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long monitor ()
   {
@@ -171,6 +176,8 @@ public class BaseController extends GamsJNI
   
   /**
    * Plans the algorithm and accents
+   * @return status of plan. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long plan ()
   {
@@ -182,6 +189,8 @@ public class BaseController extends GamsJNI
    * specific period and duration
    * @param  period   the time in between executions of the loop in seconds
    * @param  duration the duration of the loop in seconds
+   * @return status of run. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long run (double period, double duration)
   {
@@ -196,7 +205,9 @@ public class BaseController extends GamsJNI
    *                    Negative duration means run loop forever. 0 duration
    *                    means run once.
    * @param  sendPeriod time in seconds between sending updates over network.
-   *                    If sendPeriod <= 0, loopPeriod is used.
+   *                    If sendPeriod is non-positive, loopPeriod is used.
+   * @return status of run. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long run (double loopPeriod, double duration, double sendPeriod)
   {
@@ -214,6 +225,8 @@ public class BaseController extends GamsJNI
    * @param  sendHz   the intended hz at which updates should be sent. If
    *                  non-positive, loopHz is used.
    * @return  the result of the MAPE loop
+   * @return status of run. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long runHz (double loopHz, double duration, double sendHz)
   {
@@ -222,6 +235,8 @@ public class BaseController extends GamsJNI
    
   /**
    * Analyzes the controller and system
+   * @return status of analyze. 0 is full success, though this is not
+   *         currently checked.
    **/
   public long systemAnalyze ()
   {

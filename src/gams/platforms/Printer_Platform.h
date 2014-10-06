@@ -102,7 +102,7 @@ namespace gams
        * Get the location aproximation value of what is considered close enough
        * @return location approximation radius
        **/
-      virtual double get_gps_accuracy () const;
+      virtual double get_accuracy () const;
       
       /**
        * Gets the unique identifier of the platform. This should be an

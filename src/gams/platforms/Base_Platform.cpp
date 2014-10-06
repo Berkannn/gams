@@ -77,11 +77,11 @@ gams::platforms::Base::operator= (const Base & rhs)
   }
 }
 
-gams::utility::GPS_Position
-gams::platforms::Base::get_gps_position ()
+gams::utility::Position *
+gams::platforms::Base::get_position ()
 {
-  utility::GPS_Position position;
-  position.from_container (self_->device.location);
+  utility::Position * position = new utility::Position ();
+  position->from_container (self_->device.location);
   return position;
 }
 
@@ -145,7 +145,7 @@ gams::platforms::Base::home (void)
 }
 
 int
-gams::platforms::Base::move (const utility::GPS_Position & target,
+gams::platforms::Base::move (const utility::Position & target,
   const double & epsilon)
 {
   int result = 0;

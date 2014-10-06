@@ -17,13 +17,19 @@ public class Devices extends AbstractList<Device>
 
   private long[] devices;
 
+  /**
+   * Constructor
+   * @param input list of C pointers to the underlying devices
+   **/
   public Devices(long[] input)
   {
     devices = input;
   }
 
   /**
+   * Gets the device at the specified index
    * @see java.util.AbstractList#get (int)
+   * @param index the element of the device list to retrieve
    */
   @Override
   public Device get(int index)
@@ -32,7 +38,9 @@ public class Devices extends AbstractList<Device>
   }
 
   /**
+   * Returns the size of the device list
    * @see java.util.AbstractCollection#size ()
+   * @return the size of the device list
    */
   @Override
   public int size()
@@ -43,7 +51,7 @@ public class Devices extends AbstractList<Device>
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be called
-   * before an instance of {@link com.madara.Devices Devices} gets garbage collected
+   * before an instance gets garbage collected
    */
   public void free()
   {

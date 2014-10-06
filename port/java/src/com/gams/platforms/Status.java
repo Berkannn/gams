@@ -7,7 +7,7 @@
 package com.gams.platforms;
 
 /**
- * Type of {@link com.madara.KnowledgeRecord KnowledgeRecord}
+ * Status of the platform
  */
 public enum Status
 {
@@ -40,7 +40,7 @@ public enum Status
   }
 
   /**
-   * Converts an int to a {@link com.madara.Status Status}
+   * Converts an int to a {@link com.gams.platforms.Status Status}
    *
    * @param val value to convert
    * @return {@link com.gams.platforms.Status Status} or null if the int is invalid

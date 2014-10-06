@@ -8,6 +8,9 @@ package com.gams.utility;
 
 import com.gams.GamsJNI;
 
+/**
+ * Position of a device/agent
+ **/
 public class Position extends GamsJNI
 {
   private native long jni_Position();
@@ -24,16 +27,29 @@ public class Position extends GamsJNI
 
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Position()
   {
     setCPtr(jni_Position());
   }
 
+  /**
+   * Constructor for a provided x,y,z coordinate
+   * @param inx the x coordinate
+   * @param iny the y coordinate
+   * @param inz the z coordinate
+   **/
   public Position(double inx, double iny, double inz)                                   
   {
     setCPtr(jni_Position(inx,iny,inz));
   }
 
+  /**
+   * Copy constructor
+   * @param input the position to copy
+   **/
   public Position(Position input)
   {
     setCPtr(jni_Position(input.getCPtr()));
@@ -105,8 +121,8 @@ public class Position extends GamsJNI
   }
   
   /**
-   * Sets the latitude
-   * @return latitude
+   * Sets the latitude/x coord
+   * @param  input  the new coord
    **/
   public void setX(double input)
   {
@@ -114,8 +130,8 @@ public class Position extends GamsJNI
   }
   
   /**
-   * Sets the longitude
-   * @return longitude
+   * Sets the longitude/y coord
+   * @param  input  the new coord
    **/
   public void setY(double input)
   {
@@ -123,8 +139,8 @@ public class Position extends GamsJNI
   }
 
   /**
-   * Sets the altitude
-   * @return altitude
+   * Sets the altitude/z coord
+   * @param  input  the new coord
    **/
   public void setZ(double input)
   {

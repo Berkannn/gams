@@ -168,14 +168,15 @@ int
 gams::platforms::VREP_Base::analyze (void)
 {
   // set position on coverage map
-  (*sensors_)["coverage"]->set_value (get_gps_position(),
+  (*sensors_)["coverage"]->set_value (
+    *(utility::GPS_Position *)get_position(),
     knowledge_->get_context ().get_clock ());
 
   return 0;
 }
 
 double
-gams::platforms::VREP_Base::get_gps_accuracy () const
+gams::platforms::VREP_Base::get_accuracy () const
 {
   return 1.0;
 }
@@ -198,7 +199,7 @@ gams::platforms::VREP_Base::land (void)
 }
 
 int
-gams::platforms::VREP_Base::move (const utility::GPS_Position & position,
+gams::platforms::VREP_Base::move (const utility::Position & position,
   const double & epsilon)
 {
   // update variables

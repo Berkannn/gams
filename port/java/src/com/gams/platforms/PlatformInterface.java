@@ -32,7 +32,8 @@ public interface PlatformInterface
   public double getPositionAccuracy ();
 
   /**
-   * Returns the current GPS position 
+   * Returns the current position 
+   * @return the current position of the device/agent
    **/
   public Position getPosition ();
   

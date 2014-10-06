@@ -28,12 +28,19 @@ public class Algorithm extends GamsJNI
 
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Algorithm()
   {
     setCPtr(jni_Algorithm());
     init();
   }
 
+  /**
+   * Copy constructor
+   * @param input the algorithm to copy
+   **/
   public Algorithm(Algorithm input)
   {
     setCPtr(jni_Algorithm(input.getCPtr()));
@@ -74,7 +81,7 @@ public class Algorithm extends GamsJNI
   /**
    * Gets the name of the variable
    *
-   * @param  name of the variable within the context
+   * @return  name of the variable within the context
    */
   public java.lang.String getName()
   {

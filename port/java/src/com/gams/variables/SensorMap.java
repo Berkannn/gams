@@ -18,11 +18,22 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
   private Set<Map.Entry<java.lang.String, Sensor>> mySet;
   private final boolean freeable;
 
+  /**
+   * Base constructor for a sensor map
+   * @param keys  list of keys
+   * @param vals  list of values
+   **/
   public SensorMap(java.lang.String[] keys, long[] vals)
   {
     this(keys, vals, true);
   }
 
+  /**
+   * Constructor for a sensor map
+   * @param keys  list of keys
+   * @param vals  list of values
+   * @param freeable if true, indicates that the list is able to be freed
+   **/
   public SensorMap(java.lang.String[] keys, long[] vals, boolean freeable)
   {
     this.freeable = freeable;
@@ -39,7 +50,9 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
   }
 
   /**
+   * Returns an entry set for iteration
    * @see java.util.AbstractMap#entrySet ()
+   * @return  the iterable entry set
    */
   @Override
   public Set<Map.Entry<java.lang.String, Sensor>> entrySet()
@@ -49,7 +62,7 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be called
-   * before an instance of {@link com.madara.SensorMap SensorMap} gets garbage collected
+   * before an instance of gets garbage collected
    */
   public void free()
   {
@@ -70,11 +83,17 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
 
   }
 
+  /**
+   * Map entry for iteration of entry set
+   **/
   private static class SensorMapEntry implements Map.Entry<java.lang.String, Sensor>
   {
     private java.lang.String key;
     private Sensor record;
 
+    /**
+     * Can only be called from SensorMap
+     **/
     private SensorMapEntry(java.lang.String key, long val, boolean isNew)
     {
       this.key = key;
@@ -82,7 +101,9 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
     }
 
     /**
+     * Gets the key of the entry
      * @see java.util.Map.Entry#getKey ()
+     * @return the key
      */
     public java.lang.String getKey()
     {
@@ -90,7 +111,9 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
     }
 
     /**
+     * Gets the value of the entry
      * @see java.util.Map.Entry#getValue ()
+     * @return the sensor object (value)
      */
     public Sensor getValue()
     {
@@ -98,11 +121,15 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
     }
 
     /**
+     * Set value is unsupported. This is a read-only entry.
      * @see java.util.Map.Entry#setValue (java.lang.Object)
+     * @param value the value, if this were settable
+     * @return the value
      */
     public Sensor setValue(Sensor value)
     {
       throw new UnsupportedOperationException("This map does not allow modification");
+      return record;
     }
   }
 }

@@ -22,12 +22,19 @@ public class Region extends GamsJNI
   private native java.lang.String jni_toString(long cptr);
   private native long jni_getVertices(long cptr);
 
+  /**
+   * Default constructor
+   **/
   public Region()
   {
     setCPtr(jni_Region());
     init();
   }
 
+  /**
+   * Copy constructor
+   * @param  input   the region to copy
+   **/
   public Region(Region input)
   {
     setCPtr(jni_Region(input.getCPtr()));
@@ -37,7 +44,7 @@ public class Region extends GamsJNI
   /**
    * Gets the name of the variable
    *
-   * @param  name of the variable within the context
+   * @return  name of the variable within the context
    */
   public java.lang.String getName()
   {

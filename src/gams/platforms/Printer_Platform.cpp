@@ -136,7 +136,7 @@ gams::platforms::Printer_Platform::get_name () const
 }
 
 double
-gams::platforms::Printer_Platform::get_gps_accuracy () const
+gams::platforms::Printer_Platform::get_accuracy () const
 {
   return 0.0;
 }

@@ -617,6 +617,9 @@ gams::controllers::Base::run (double loop_period,
         DLINFO "gams::controllers::Base::run:" \
         " calling monitor ()\n"));
 
+      // lock the context from any external updates
+      knowledge_.lock ();
+
       return_value |= monitor ();
 
       GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
@@ -637,6 +640,10 @@ gams::controllers::Base::run (double loop_period,
 
       return_value |= execute ();
     
+      // unlock the context to allow external updates
+      knowledge_.unlock ();
+
+      // grab current time
       current = ACE_OS::gettimeofday ();
       
       // run will always try to send at least once

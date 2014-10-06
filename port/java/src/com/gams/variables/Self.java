@@ -25,12 +25,19 @@ public class Self extends GamsJNI
 
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Self()
   {
     setCPtr(jni_Self());
     init();
   }
 
+  /**
+   * Copy constructor
+   * @param input the Self variable to copy
+   **/
   public Self(Self input)
   {
     setCPtr(jni_Self(input.getCPtr()));
@@ -123,7 +130,7 @@ public class Self extends GamsJNI
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
-   * called before an instance of WaitSettings gets garbage collected
+   * called before an instance gets garbage collected
    */
   public void free()
   {

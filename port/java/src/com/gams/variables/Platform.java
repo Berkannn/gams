@@ -34,12 +34,19 @@ public class Platform extends GamsJNI
 
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Platform()
   {
     setCPtr(jni_Platform());
     init();
   }
 
+  /**
+   * Copy constructor
+   * @param  input the platform to copy
+   **/
   public Platform(Platform input)
   {
     setCPtr(jni_Platform(input.getCPtr()));
@@ -49,7 +56,7 @@ public class Platform extends GamsJNI
   /**
    * Gets the name of the variable
    *
-   * @param  name of the variable within the context
+   * @return  name of the variable within the context
    */
   public java.lang.String getName()
   {
@@ -214,7 +221,7 @@ public class Platform extends GamsJNI
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
-   * called before an instance of WaitSettings gets garbage collected
+   * called before an instance gets garbage collected
    */
   public void free()
   {

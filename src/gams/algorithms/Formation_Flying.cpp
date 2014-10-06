@@ -227,7 +227,7 @@ gams::algorithms::Formation_Flying::analyze (void)
 
       // check if in formation
       if (location.approximately_equal (next_position_,
-        platform_->get_gps_accuracy ()))
+        platform_->get_accuracy ()))
       {
         in_formation_ = 1; // inform in formation
       }

@@ -39,11 +39,18 @@ public class Sensor extends GamsJNI
 
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Sensor()
   {
     setCPtr(jni_Sensor());
   }
 
+  /**
+   * Copy constructor
+   * @param input the sensor value to copy
+   **/
   public Sensor(Sensor input)
   {
     setCPtr(jni_Sensor(input.getCPtr()));
@@ -69,7 +76,7 @@ public class Sensor extends GamsJNI
   
   /**
    * Gets a GPS coordinate from an index
-   * @param index 
+   * @param index the cartesian position
    * @return the position at the specified index
    **/
   public GpsPosition getGpsFromIndex(Position index)
@@ -80,7 +87,7 @@ public class Sensor extends GamsJNI
     
   /**
    * Gets a GPS coordinate from an index
-   * @param position coordinate to convert to an index 
+   * @param coord coordinate to convert to an index 
    * @return the position at the specified index
    **/
   public Position getIndexFromGps(GpsPosition coord)
@@ -128,8 +135,8 @@ public class Sensor extends GamsJNI
   }
           
   /**
-   * Sets the range of the sensor
-   * @param  range  the range of the sensor in meters
+   * Sets the origin for coverage information and discretization
+   * @param  origin  the origin for coverage information
    **/
   public void setOrigin(GpsPosition origin)
   {
@@ -220,7 +227,7 @@ public class Sensor extends GamsJNI
   /**
    * Gets the name of the variable
    *
-   * @param  name of the variable within the context
+   * @return  name of the variable within the context
    */
   public java.lang.String getName()
   {
@@ -232,6 +239,7 @@ public class Sensor extends GamsJNI
    *
    * @param  kb      the knowledge base that contains the name
    * @param  name    the variable name
+   * @param  range   the range of the sensor in meters or appropriate unit
    */
   public void init(KnowledgeBase kb, java.lang.String name, double range)
   {
@@ -250,7 +258,7 @@ public class Sensor extends GamsJNI
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
-   * called before an instance of WaitSettings gets garbage collected
+   * called before an instance gets garbage collected
    */
   public void free()
   {

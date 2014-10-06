@@ -23,12 +23,19 @@ public class Accent extends GamsJNI
   private native long jni_getCommand(long cptr);
   private native long jni_getArgs(long cptr);
 
+  /**
+   * Default constructor
+   **/
   public Accent()
   {
     setCPtr(jni_Accent());
     init();
   }
 
+  /**
+   * Copy constructor
+   * @param input  the accent to copy
+   **/
   public Accent(Accent input)
   {
     setCPtr(jni_Accent(input.getCPtr()));
@@ -38,7 +45,7 @@ public class Accent extends GamsJNI
   /**
    * Gets the name of the variable
    *
-   * @param  name of the variable within the context
+   * @return  name of the variable within the context
    */
   public java.lang.String getName()
   {
@@ -102,7 +109,7 @@ public class Accent extends GamsJNI
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
-   * called before an instance of WaitSettings gets garbage collected
+   * called before an instance gets garbage collected
    */
   public void free()
   {

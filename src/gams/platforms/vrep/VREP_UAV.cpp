@@ -105,7 +105,8 @@ gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
   //set current position of node target
   simxFloat curr_arr[3];
   utility::Position vrep_pos;
-  gps_to_vrep (get_gps_position (), vrep_pos);
+  utility::GPS_Position gps_pos (*get_position ());
+  gps_to_vrep (gps_pos, vrep_pos);
   position_to_array (vrep_pos, curr_arr);
 
   // get distance to target

@@ -29,12 +29,19 @@ public class Swarm extends GamsJNI
 
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public Swarm()
   {
     setCPtr(jni_Swarm());
     init();
   }
 
+  /**
+   * Copy constructor
+   * @param input the swarm object to copy
+   **/
   public Swarm(Swarm input)
   {
     setCPtr(jni_Swarm(input.getCPtr()));
@@ -143,7 +150,7 @@ public class Swarm extends GamsJNI
 
   /**
    * Deletes the C instantiation. To prevent memory leaks, this <b>must</b> be
-   * called before an instance of WaitSettings gets garbage collected
+   * called before an instance gets garbage collected
    */
   public void free()
   {

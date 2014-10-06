@@ -183,7 +183,7 @@ gams::platforms::Java_Platform::analyze (void)
 }
 
 double
-gams::platforms::Java_Platform::get_gps_accuracy () const
+gams::platforms::Java_Platform::get_accuracy () const
 {
   gams::utility::java::Acquire_VM jvm;
   jdouble result (0);

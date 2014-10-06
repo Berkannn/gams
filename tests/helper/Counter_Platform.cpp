@@ -109,7 +109,7 @@ gams::platforms::Counter_Platform::get_name () const
 }
 
 double
-gams::platforms::Counter_Platform::get_gps_accuracy () const
+gams::platforms::Counter_Platform::get_accuracy () const
 {
   //++get_gps_accuracy_counter_;
   

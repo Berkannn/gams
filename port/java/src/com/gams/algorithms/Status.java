@@ -7,7 +7,7 @@
 package com.gams.algorithms;
 
 /**
- * Type of {@link com.madara.KnowledgeRecord KnowledgeRecord}
+ * Status of the algorithm
  */
 public enum Status
 {
@@ -32,7 +32,7 @@ public enum Status
   }
 
   /**
-   * @return int value of this {@link com.gams.platforms.Status Status}
+   * @return int value of this enum
    */
   public int value()
   {
@@ -40,10 +40,10 @@ public enum Status
   }
 
   /**
-   * Converts an int to a {@link com.madara.Status Status}
+   * Converts an int to an enum
    *
    * @param val value to convert
-   * @return {@link com.gams.platforms.Status Status} or null if the int is invalid
+   * @return unum or null if the int is invalid
    */
   public static Status getType(int val)
   {

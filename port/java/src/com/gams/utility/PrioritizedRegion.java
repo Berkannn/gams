@@ -18,6 +18,9 @@ public class PrioritizedRegion extends Region
   
   private boolean manageMemory = true;
 
+  /**
+   * Default constructor
+   **/
   public PrioritizedRegion()
   {
     setCPtr(jni_PrioritizedRegion());

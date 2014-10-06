@@ -27,6 +27,7 @@ public abstract class BaseAlgorithm extends GamsJNI implements AlgorithmInterfac
   /**
    * Initialize the platform with controller variables. Use this
    * method to synchronize user-defined algorithms with the controller.
+   * @param  controller   controller which will be using the algorithm
    **/
   public void init (BaseController controller)
   {
