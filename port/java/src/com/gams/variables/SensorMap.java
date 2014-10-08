@@ -129,7 +129,6 @@ public class SensorMap extends AbstractMap<java.lang.String, Sensor>
     public Sensor setValue(Sensor value)
     {
       throw new UnsupportedOperationException("This map does not allow modification");
-      return record;
     }
   }
 }
