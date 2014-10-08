@@ -647,7 +647,7 @@ gams::controllers::Base::run (double loop_period,
       current = ACE_OS::gettimeofday ();
       
       // run will always try to send at least once
-      if (first_execute || current < send_next_epoch)
+      if (first_execute || current > send_next_epoch)
       {
         GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
           DLINFO "gams::controllers::Base::run:" \
@@ -657,7 +657,8 @@ gams::controllers::Base::run (double loop_period,
         knowledge_.send_modifieds();
 
         // setup the next send epoch
-        send_next_epoch += send_poll_frequency;
+        while (send_next_epoch < current)
+          send_next_epoch += send_poll_frequency;
       }
 
       // check to see if we need to sleep for next loop epoch
