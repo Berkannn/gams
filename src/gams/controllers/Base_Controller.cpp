@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names ï¿½Carnegie Mellon University,ï¿½ "SEIï¿½ and/or ï¿½Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN ï¿½AS-ISï¿½ BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -572,6 +572,55 @@ gams::controllers::Base::execute (void)
 }
 
 int
+gams::controllers::Base::_run_once (void)
+{
+  int return_value (0);
+  // return value should be last return value of mape loop
+  return_value = 0;
+  
+  GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
+    DLINFO "gams::controllers::Base::run:" \
+    " calling monitor ()\n"));
+
+  return_value |= monitor ();
+
+  GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
+    DLINFO "gams::controllers::Base::run:" \
+    " calling analyze ()\n"));
+
+  return_value |= analyze ();
+
+  GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
+    DLINFO "gams::controllers::Base::run:" \
+    " calling plan ()\n"));
+
+  return_value |= plan ();
+
+  GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
+    DLINFO "gams::controllers::Base::run:" \
+    " calling execute ()\n"));
+
+  return_value |= execute ();
+
+  return return_value;
+}
+
+int
+gams::controllers::Base::run_once (void)
+{
+    int return_value (_run_once());
+
+    GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
+      DLINFO "gams::controllers::Base::run:" \
+      " sending updates\n"));
+
+    // send modified values through network
+    knowledge_.send_modifieds();
+
+    return return_value;
+}
+
+int
 gams::controllers::Base::run (double loop_period,
   double max_runtime, double send_period)
 {
@@ -611,7 +660,7 @@ gams::controllers::Base::run (double loop_period,
     while (first_execute || max_runtime < 0 || current < max_wait)
     {
       // return value should be last return value of mape loop
-      return_value = 0;
+      return_value = run_once();
       
       GAMS_DEBUG (gams::utility::LOG_MAJOR_EVENT, (LM_DEBUG, 
         DLINFO "gams::controllers::Base::run:" \
@@ -681,6 +730,38 @@ gams::controllers::Base::run (double loop_period,
   }
 
   return return_value;
+}
+
+int
+gams::controllers::Base::run_barrier (Madara::Knowledge_Engine::Compiled_Expression &barrier_logic,
+  const std::map <std::string, bool>  &barrier_send_list,
+  Madara::Knowledge_Engine::Wait_Settings &wait_settings)
+{
+  int ret(0);
+  for(;;)
+  {
+    // Pre-round barrier increment
+    wait_settings.delay_sending_modifieds = true;
+    knowledge_.evaluate ("++mbarrier.{.id}", wait_settings);
+
+    // remodify our globals and send all updates
+    wait_settings.send_list.clear ();
+    wait_settings.delay_sending_modifieds = false;
+    // first barrier for new data from previous round
+    knowledge_.wait (barrier_logic, wait_settings);
+
+    // Send only barrier information
+    wait_settings.send_list = barrier_send_list;
+    // Execute main user logic
+    wait_settings.delay_sending_modifieds = true;
+    ret = run_once();
+
+    // second barrier for waiting on others to finish round
+    // Increment barrier and only send barrier update
+    wait_settings.delay_sending_modifieds = false;
+    knowledge_.wait (barrier_logic, wait_settings);
+  }
+  return ret;
 }
 
 void

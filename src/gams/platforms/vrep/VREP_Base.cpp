@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names ï¿½Carnegie Mellon University,ï¿½ "SEIï¿½ and/or ï¿½Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN ï¿½AS-ISï¿½ BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -84,8 +84,8 @@ gams::platforms::VREP_Base::VREP_Base (
       variables::Sensor* coverage_sensor =
         new variables::Sensor ("coverage", knowledge, 2.5, origin);
       (*sensors)["coverage"] = coverage_sensor;
+      (*sensors_)["coverage"] = (*sensors)["coverage"];
     }
-    (*sensors_)["coverage"] = (*sensors)["coverage"];
 
     // get vrep environment data
     string sw = knowledge->get (".vrep_sw_position").to_string ();
@@ -94,11 +94,12 @@ gams::platforms::VREP_Base::VREP_Base (
     sw_position_.latitude (lat); sw_position_.longitude (lon);
 
     // get client id
-    client_id_ = simxStart(knowledge->get(".vrep_host").to_string ().c_str (),
-      knowledge->get(".vrep_port").to_integer(), true, true, 2000, 5);
+    string host(knowledge->get(".vrep_host").to_string ());
+    int port = knowledge->get(".vrep_port").to_integer();
+    client_id_ = simxStart(host.c_str (), port , true, true, 2000, 5);
     if (client_id_ == -1)
     {
-      cerr << "couldn't connect to vrep" << endl;
+      cerr << "couldn't connect to vrep at " << host << ":" << port << endl;
       exit (-1);
     }
     knowledge->wait ("vrep_ready == 1;");
@@ -168,9 +169,10 @@ int
 gams::platforms::VREP_Base::analyze (void)
 {
   // set position on coverage map
-  (*sensors_)["coverage"]->set_value (
-    *(utility::GPS_Position *)get_position(),
-    knowledge_->get_context ().get_clock ());
+  if(sensors_->count("coverage") == 1)
+    (*sensors_)["coverage"]->set_value (
+      *(utility::GPS_Position *)get_position(),
+      knowledge_->get_context ().get_clock ());
 
   return 0;
 }
@@ -203,12 +205,12 @@ gams::platforms::VREP_Base::move (const utility::Position & position,
   const double & epsilon)
 {
   // update variables
-  Base::move (position);
+  Base::move (position, epsilon);
 
   // convert form gps reference frame to vrep reference frame
   simxFloat dest_arr[3];
   utility::Position dest_pos;
-  gps_to_vrep (position, dest_pos);
+  gps_to_vrep (gams::utility::GPS_Position(position.x, position.y, position.z), dest_pos);
   position_to_array (dest_pos, dest_arr);
   if (dest_arr[2] == 0)
     dest_arr[2] = (simxFloat)0.08;

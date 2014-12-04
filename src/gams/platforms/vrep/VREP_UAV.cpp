@@ -11,7 +11,7 @@
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
  * 
- * 3. The names “Carnegie Mellon University,” "SEI” and/or “Software
+ * 3. The names ï¿½Carnegie Mellon University,ï¿½ "SEIï¿½ and/or ï¿½Software
  *    Engineering Institute" shall not be used to endorse or promote products
  *    derived from this software without prior written permission. For written
  *    permission, please contact permission@sei.cmu.edu.
@@ -32,7 +32,7 @@
  *      the United States Department of Defense.
  * 
  *      NO WARRANTY. THIS CARNEGIE MELLON UNIVERSITY AND SOFTWARE ENGINEERING
- *      INSTITUTE MATERIAL IS FURNISHED ON AN “AS-IS” BASIS. CARNEGIE MELLON
+ *      INSTITUTE MATERIAL IS FURNISHED ON AN ï¿½AS-ISï¿½ BASIS. CARNEGIE MELLON
  *      UNIVERSITY MAKES NO WARRANTIES OF ANY KIND, EITHER EXPRESSED OR
  *      IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF
  *      FITNESS FOR PURPOSE OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS
@@ -50,6 +50,7 @@
 
 
 #include <iostream>
+#include <iomanip>
 #include <cmath>
 
 #include "madara/knowledge_engine/containers/Double_Vector.h"
@@ -76,6 +77,7 @@ gams::platforms::VREP_UAV::VREP_UAV (
     self->device.desired_altitude = self->id.to_integer () + 1;
     add_model_to_environment ();
     set_initial_position ();
+    set_move_speed(knowledge_->get(".move_speed").to_double());
     get_target_handle ();
     wait_for_go ();
   }
@@ -83,14 +85,14 @@ gams::platforms::VREP_UAV::VREP_UAV (
 
 // TODO: handle epsilon
 int
-gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
-  const double & /*epsilon*/)
+gams::platforms::VREP_UAV::move (const utility::Position & position,
+  const double & epsilon)
 {
   /**
    * VREP_UAV requires iterative movements for proper movement
    */
   // update variables
-  Base::move (position);
+  Base::move (position, epsilon);
 
   // check if not airborne and takeoff if appropriate
   if (!airborne_)
@@ -98,9 +100,18 @@ gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
 
   // convert form gps reference frame to vrep reference frame
   simxFloat dest_arr[3];
+  const utility::GPS_Position *dest_gps_pos = dynamic_cast<const utility::GPS_Position *>(&position);
   utility::Position dest_pos;
-  gps_to_vrep (position, dest_pos);
-  position_to_array (dest_pos, dest_arr);
+  if(dest_gps_pos != NULL)
+  {
+    gps_to_vrep (*dest_gps_pos, dest_pos);
+    position_to_array (dest_pos, dest_arr);
+  }
+  else
+  {
+    dest_pos = position;
+    position_to_array (position, dest_arr);
+  }
 
   //set current position of node target
   simxFloat curr_arr[3];
@@ -113,6 +124,8 @@ gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
   double distance_to_target = dest_pos.distance_to_2d (vrep_pos);
 
   // move quadrotor target closer to the desired position
+  if(distance_to_target < epsilon)
+    return 2;
   if(distance_to_target < move_speed_) // we can get to target in one step
   {
     curr_arr[0] = dest_arr[0];
@@ -137,10 +150,10 @@ gams::platforms::VREP_UAV::move (const utility::GPS_Position & position,
   }
 
   // send movement command
-  simxSetObjectPosition (client_id_, node_target_, sim_handle_parent, curr_arr,
+  simxSetObjectPosition (client_id_, node_target_, -1, curr_arr,
                         simx_opmode_oneshot_wait);
 
-  return 0;
+  return 1;
 }
 
 void
@@ -148,12 +161,15 @@ gams::platforms::VREP_UAV::add_model_to_environment ()
 {
   string modelFile (getenv ("GAMS_ROOT"));
   modelFile += "/resources/vrep/Quadricopter_NoCamera.ttm";
-  if (simxLoadModel (client_id_, modelFile.c_str (), 0, &node_id_,
-    simx_opmode_oneshot_wait) != simx_error_noerror)
+  long ret;
+  if ((ret = simxLoadModel (client_id_, modelFile.c_str (), 0, &node_id_,
+    simx_opmode_oneshot_wait)) != simx_error_noerror)
   {
-    cerr << "error loading VREP_UAV model in vrep" << endl;
+    cerr << "error loading VREP_UAV model in vrep: " << std::hex << ret << std::dec << endl;
     exit (-1);
   }
+  else
+    cerr << "loaded VREP_UAV model in vrep" << endl;
 }
 
 std::string gams::platforms::VREP_UAV::get_id () const
@@ -218,9 +234,13 @@ gams::platforms::VREP_UAV::set_initial_position () const
   }
 
   // send set object position command
-  pos[2] = self_->id.to_integer () + 2;
-  simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,
+  pos[2] = knowledge_->get (".initial_alt").to_double ();
+
+  //pos[2] = self_->id.to_integer () + 2;
+  simxSetObjectPosition (client_id_, node_id_, -1, pos,
     simx_opmode_oneshot_wait);
+  //simxSetObjectPosition (client_id_, node_target_, -1, pos,
+    //simx_opmode_oneshot_wait);
 }
 
 #endif // _GAMS_VREP_

@@ -117,6 +117,8 @@ namespace gams
        **/
       virtual int execute (void);
      
+      int run_once (void);
+
       /**
        * Runs iterations of the MAPE loop with specified periods
        * @param  loop_period  time (in seconds) between executions of the loop.
@@ -131,6 +133,10 @@ namespace gams
       int run (double loop_period = 0.0,
         double max_runtime = -1,
         double send_period = -1.0);
+      
+      int run_barrier (Madara::Knowledge_Engine::Compiled_Expression &barrier_logic,
+        const std::map <std::string, bool> &barrier_send_list,
+        Madara::Knowledge_Engine::Wait_Settings &wait_settings);
       
       /**
        * Runs iterations of the MAPE loop with specified hertz
@@ -291,6 +297,8 @@ namespace gams
 
       /// Containers for swarm-related variables
       variables::Swarm swarm_;
+     
+      int _run_once (void);
     };
   }
 }
