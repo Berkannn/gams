@@ -147,6 +147,8 @@ namespace gams
        **/
       virtual int takeoff (void);
 
+      virtual utility::Position get_vrep_position();
+
     protected:
       /**
        * Get float array from position
@@ -217,6 +219,8 @@ namespace gams
 
       /// gps coordinates corresponding to (0, 0) in vrep
       utility::GPS_Position sw_position_;
+
+      utility::Position vrep_position_;
     }; // class VREP_Base
   } // namespace platform
 } // namespace gams

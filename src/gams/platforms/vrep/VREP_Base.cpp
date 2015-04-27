@@ -150,14 +150,14 @@ int
 gams::platforms::VREP_Base::sense (void)
 {
   // get position
+  std::cerr << "Sensing...\n";
   simxFloat curr_arr[3];
   simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
                         simx_opmode_oneshot_wait);
 
-  utility::Position vrep_pos;
-  array_to_position (curr_arr, vrep_pos);
+  array_to_position (curr_arr, vrep_position_);
   utility::GPS_Position position;
-  vrep_to_gps (vrep_pos, position);
+  vrep_to_gps (vrep_position_, position);
 
   // set position in madara
   position.to_container (self_->device.location);
@@ -223,14 +223,37 @@ gams::platforms::VREP_Base::move (const utility::Position & position,
   simxFloat curr_arr[3];
   simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
                         simx_opmode_oneshot_wait);
-  utility::Position vrep_pos;
-  array_to_position (curr_arr, vrep_pos);
+  array_to_position (curr_arr, vrep_position_);
 
   // return code
-  if (vrep_pos.distance_to (dest_pos) < epsilon)
+  if (vrep_position_.distance_to (dest_pos) < epsilon)
     return 2;
   else
     return 1;
+}
+
+gams::utility::Position
+gams::platforms::VREP_Base::get_vrep_position()
+{
+  return vrep_position_;
+  /*
+  simxFloat curr_arr[3];
+
+  if(node_id_ == 0)
+  {
+    curr_arr[0] = NAN;
+    curr_arr[1] = NAN;
+    curr_arr[2] = NAN;
+  }
+  else
+  {
+    simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
+                          simx_opmode_oneshot_wait);
+  }
+  utility::Position vrep_pos;
+  array_to_position (curr_arr, vrep_pos);
+  return vrep_pos;
+  */
 }
 
 void
