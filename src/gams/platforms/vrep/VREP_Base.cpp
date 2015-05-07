@@ -70,6 +70,7 @@ gams::platforms::VREP_Base::VREP_Base (
 {
   if (sensors && knowledge)
   {
+#if 0
     // grab coverage sensor
     variables::Sensors::iterator it = sensors->find ("coverage");
     if (it == sensors->end ()) // create coverage sensor
@@ -86,6 +87,7 @@ gams::platforms::VREP_Base::VREP_Base (
       (*sensors)["coverage"] = coverage_sensor;
       (*sensors_)["coverage"] = (*sensors)["coverage"];
     }
+#endif
 
     // get vrep environment data
     string sw = knowledge->get (".vrep_sw_position").to_string ();
@@ -169,10 +171,12 @@ int
 gams::platforms::VREP_Base::analyze (void)
 {
   // set position on coverage map
+#if 0
   if(sensors_->count("coverage") == 1)
     (*sensors_)["coverage"]->set_value (
       *(utility::GPS_Position *)get_position(),
       knowledge_->get_context ().get_clock ());
+#endif
 
   return 0;
 }
