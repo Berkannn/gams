@@ -52,6 +52,7 @@
 
 #ifdef _GAMS_VREP_
 #include "gams/platforms/vrep/VREP_UAV.h"
+#include "gams/platforms/vrep/VREP_SpaceTile.h"
 #include "gams/platforms/vrep/VREP_Helicopter.h"
 #include "gams/platforms/vrep/VREP_Ant.h"
 #endif
@@ -131,6 +132,28 @@ gams::platforms::Factory::create (const std::string & type)
       }
 
       VREP_UAV* ret = new VREP_UAV (knowledge_, sensors_, platforms_, self_);
+      double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
+      if (move_speed > 0)
+        ret->set_move_speed (move_speed);
+      return ret;
+    }
+  }
+  else if (type == "vrep-spacetile")
+  {
+    if (knowledge_ && sensors_ && platforms_ && self_)
+    {
+      // add transport to knowledge base if necessary
+      Madara::Transport::Settings settings = knowledge_->transport_settings ();
+      if (settings.type == Madara::Transport::NO_TRANSPORT)
+      {
+        settings.type = Madara::Transport::MULTICAST;
+        settings.hosts.push_back (default_multicast);
+        knowledge_->attach_transport ("", settings);
+        knowledge_->activate_transport ();
+        knowledge_->apply_modified ();
+      }
+
+      VREP_SpaceTile* ret = new VREP_SpaceTile (knowledge_, sensors_, platforms_, self_);
       double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
       if (move_speed > 0)
         ret->set_move_speed (move_speed);
