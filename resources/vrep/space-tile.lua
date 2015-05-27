@@ -7,6 +7,12 @@ if (simGetScriptExecutionCount()==0) then
   simSetObjectParent(targetObj, -1, true)
 
   selfObj=simGetObjectHandle('SpaceTile')
+  Magnets = {
+    simGetObjectHandle("MagnetXP"),
+    simGetObjectHandle("MagnetXN"),
+    simGetObjectHandle("MagnetYP"),
+    simGetObjectHandle("MagnetYN"),
+  }
   MagFields = {
     simGetObjectHandle("MagFieldXP"),
     simGetObjectHandle("MagFieldXN"),
@@ -16,6 +22,11 @@ if (simGetScriptExecutionCount()==0) then
 
   magnetsOn = false
   magSigName = "MagnetControl" .. tostring(selfObj)
+
+  selfID = simGetNameSuffix(nil) + 1
+  if selfID == 0 then
+    magnetsOn = true
+  end
 end
 
 simHandleChildScript(sim_handle_all_except_explicit)
@@ -32,6 +43,15 @@ magDat = simGetIntegerSignal(magSigName)
 if magDat ~= nil then
   simClearStringSignal(magSigName)
   magnetsOn = (magDat == 1)
+end
+
+for key, magnet in ipairs(Magnets) do
+  prop = simGetObjectSpecialProperty(magnet)
+  isActive = (simBoolAnd16(prop, sim_objectspecialproperty_detectable_inductive)) ~= 0
+  if (magnetsOn and not isActive) or (not magnetsOn and isActive) then
+    prop = simBoolXor16(prop, sim_objectspecialproperty_detectable_inductive)
+    simSetObjectSpecialProperty(magnet, prop)
+  end
 end
 
 if magnetsOn then
