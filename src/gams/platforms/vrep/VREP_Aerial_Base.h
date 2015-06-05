@@ -45,18 +45,18 @@
  **/
 
 /**
- * @file VREP_UAV.h
+ * @file VREP_Aerial_Base.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the VREP_UAV simulator uav class
+ * This file contains the definition of the VREP_Aerial_Base base class for
+ * VREP models that follow a target object, and have full 3-D movement capabilities
  **/
 
-#ifndef   _GAMS_PLATFORM_VREP_UAV_H_
-#define   _GAMS_PLATFORM_VREP_UAV_H_
+#ifndef   _GAMS_PLATFORM_VREP_AERIAL_BASE
+#define   _GAMS_PLATFORM_VREP_AERIAL_BASE_H_
 
 #include "gams/platforms/Platform_Factory.h"
 #include "gams/platforms/vrep/VREP_Base.h"
-#include "gams/platforms/vrep/VREP_Aerial_Base.h"
 #include "gams/variables/Self.h"
 #include "gams/variables/Sensor.h"
 #include "gams/variables/Platform_Status.h"
@@ -74,7 +74,7 @@ namespace gams
 {
   namespace platforms
   {
-    class GAMS_Export VREP_UAV : public VREP_Aerial_Base
+    class GAMS_Export VREP_Aerial_Base : public VREP_Base
     {
     protected:
       /**
@@ -84,54 +84,95 @@ namespace gams
        * @param  platforms  map of platform names to platform information
        * @param  self       device variables that describe self state
        **/
-      VREP_UAV (
+      VREP_Aerial_Base (
         Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
         variables::Platforms * platforms,
         variables::Self * self);
+
     public:
       /**
        * Gets the unique identifier of the platform. This should be an
        * alphanumeric identifier that can be used as part of a MADARA
        * variable (e.g. vrep_ant, autonomous_snake, etc.)
        **/
-      virtual std::string get_id () const;
+      virtual std::string get_id () const = 0;
 
       /**
        * Gets the name of the platform
        **/
-      virtual std::string get_name () const;
+      virtual std::string get_name () const = 0;
 
       /**
        * Gets the filename of the VREP model (includ e.ttm extension)
        * Assumed to be stored in ${GAMS_ROOT}/resources/vrep/
        **/
-      virtual std::string get_model_filename () const;
+      virtual std::string get_model_filename () const = 0;
+
+      /**
+       * Moves the platform to a position
+       * @param   position  the coordinate to move to
+       * @param   epsilon   approximation value
+       * @return 1 if moving, 2 if arrived, 0 if error
+       **/
+      virtual int move (const utility::Position & position,
+        const double & epsilon = 0.1);
 
     protected:
       /**
+       * Add model to environment
+       */
+      virtual void add_model_to_environment ();
+
+      /**
        * Get node target handle
        */
-      virtual void get_target_handle ();
+      virtual void get_target_handle () = 0;
+
+      /**
+       * Set initial position for agent
+       */
+      virtual void set_initial_position () const;
+
     public:
-      friend class VREP_UAV_Factory;
-    }; // class VREP_UAV
+      friend class VREP_Aerial_Base_Factory;
+    }; // class VREP_Aerial_Base
 
     /**
-     * A factory class for creating VREP UAV platforms
+     * A factory class for creating VREP Aerial platforms
      **/
-    class GAMS_Export VREP_UAV_Factory : public VREP_Aerial_Base_Factory
+    class GAMS_Export VREP_Aerial_Base_Factory : public Platform_Factory
     {
+    public:
+
+      /**
+       * Creates a VREP UAV platform.
+       * @param   args      no arguments are necessary for this platform
+       * @param   knowledge the knowledge base. This will be set by the
+       *                    controller in init_vars.
+       * @param   sensors   the sensor info. This will be set by the
+       *                    controller in init_vars.
+       * @param   platforms status inform for all known devices. This
+       *                    will be set by the controller in init_vars
+       * @param   self      self-referencing variables. This will be
+       *                    set by the controller in init_vars
+       **/
+      virtual VREP_Aerial_Base * create (
+        const Madara::Knowledge_Vector & args,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+        variables::Sensors * sensors,
+        variables::Platforms * platforms,
+        variables::Self * self);
 
     protected:
       /**
        * Override to construct a new object of the derived type
        **/
-      virtual VREP_UAV * make_new (
+      virtual VREP_Aerial_Base * make_new (
         Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
         variables::Platforms * platforms,
-        variables::Self * self);
+        variables::Self * self) = 0;
     };
   } // namespace platform
 } // namespace gams

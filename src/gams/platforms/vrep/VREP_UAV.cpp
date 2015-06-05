@@ -61,33 +61,14 @@ using std::endl;
 using std::cout;
 using std::string;
 
-gams::platforms::Base_Platform *
-gams::platforms::VREP_UAV_Factory::create (
-        const Madara::Knowledge_Vector & args,
+gams::platforms::VREP_UAV *
+gams::platforms::VREP_UAV_Factory::make_new (
         Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
         variables::Platforms * platforms,
         variables::Self * self)
 {
-  Base_Platform * result (0);
-  
-  if (knowledge && sensors && platforms && self)
-  {
-    if (knowledge->get_num_transports () == 0)
-    {
-      Madara::Transport::QoS_Transport_Settings settings;
-
-      settings.type = Madara::Transport::MULTICAST;
-      settings.hosts.push_back ("239.255.0.1:4150");
-
-      knowledge_->attach_transport ("", settings);
-      knowledge_->activate_transport ();
-    }
-
-    result = new VREP_UAV (knowledge, sensors, platforms, self);
-  }
-
-  return result;
+  return new VREP_UAV (knowledge, sensors, platforms, self);
 }
 
 gams::platforms::VREP_UAV::VREP_UAV (
@@ -95,113 +76,8 @@ gams::platforms::VREP_UAV::VREP_UAV (
   variables::Sensors * sensors,
   variables::Platforms * platforms,
   variables::Self * self)
-  : VREP_Base (knowledge, sensors, self)
-{
-  if (knowledge && sensors && platforms && self)
-  {
-    (*platforms)[get_id ()].init_vars (*knowledge, get_id ());
-    status_ = (*platforms)[get_id ()];
-
-    self->device.desired_altitude = self->id.to_integer () + 1;
-    add_model_to_environment ();
-    set_initial_position ();
-    get_target_handle ();
-    wait_for_go ();
-    double move_speed = knowledge_->get (".vrep_uav_move_speed").to_double ();
-    if (move_speed > 0)
-    {
-      set_move_speed (move_speed);
-    }
-  }
-}
-
-int
-gams::platforms::VREP_UAV::move (const utility::Position & position, const double & epsilon)
-{
-  /**
-   * VREP_UAV requires iterative movements for proper movement
-   */
-  // update variables
-  Base_Platform::move (position);
-
-  // check if not airborne and takeoff if appropriate
-  if (!airborne_)
-    takeoff ();
-
-  // convert form gps reference frame to vrep reference frame
-  simxFloat dest_arr[3];
-  const utility::GPS_Position *dest_gps_pos = dynamic_cast<const utility::GPS_Position *>(&position);
-  utility::Position dest_pos;
-  if(dest_gps_pos != NULL)
-  {
-    gps_to_vrep (*dest_gps_pos, dest_pos);
-    position_to_array (dest_pos, dest_arr);
-  }
-  else
-  {
-    dest_pos = position;
-    position_to_array (position, dest_arr);
-  }
-
-  //set current position of node target
-  simxFloat curr_arr[3];
-  utility::Position vrep_pos;
-  utility::GPS_Position gps_pos (*get_position ());
-  gps_to_vrep (gps_pos, vrep_pos);
-  position_to_array (vrep_pos, curr_arr);
-
-  // get distance to target
-  double distance_to_target = dest_pos.distance_to_2d (vrep_pos);
-
-  // check if quadrotor has reached target (within epsilon)
-  if(distance_to_target <= epsilon)
-  {
-    return 2;
-  }
-
-  // move quadrotor target closer to the desired position
-  if(distance_to_target < move_speed_) // we can get to target in one step
-  {
-    curr_arr[0] = dest_arr[0];
-    curr_arr[1] = dest_arr[1];
-    curr_arr[2] = dest_arr[2];
-  }
-  else // we cannot reach target in this step
-  {
-    // how far do we have to go in each dimension
-    double dist[3];
-    for (int i = 0; i < 3; ++i)
-      dist[i] = fabs (curr_arr[i] - dest_arr[i]);
-
-    // update target position
-    for (int i = 0; i < 3; ++i)
-    {
-      if(curr_arr[i] < dest_arr[i])
-        curr_arr[i] += dist[i] * move_speed_ / distance_to_target;
-      else
-        curr_arr[i] -= dist[i] * move_speed_ / distance_to_target;
-    }
-  }
-
-  // send movement command
-  simxSetObjectPosition (client_id_, node_target_, -1, curr_arr,
-                        simx_opmode_oneshot_wait);
-
-  return 1;
-}
-
-void
-gams::platforms::VREP_UAV::add_model_to_environment ()
-{
-  string modelFile (getenv ("GAMS_ROOT"));
-  modelFile += "/resources/vrep/Quadricopter_NoCamera.ttm";
-  if (simxLoadModel (client_id_, modelFile.c_str (), 0, &node_id_,
-    simx_opmode_oneshot_wait) != simx_error_noerror)
-  {
-    cerr << "error loading VREP_UAV model in vrep" << endl;
-    exit (-1);
-  }
-}
+  : VREP_Aerial_Base (knowledge, sensors, platforms, self)
+{ }
 
 std::string gams::platforms::VREP_UAV::get_id () const
 {
@@ -211,6 +87,11 @@ std::string gams::platforms::VREP_UAV::get_id () const
 std::string gams::platforms::VREP_UAV::get_name () const
 {
   return "VREP UAV";
+}
+
+std::string gams::platforms::VREP_UAV::get_model_filename () const
+{
+  return "Quadricopter_NoCamera.ttm";
 }
 
 void
@@ -237,36 +118,6 @@ gams::platforms::VREP_UAV::get_target_handle ()
   // find the target sub-object of the base sub-object
   node_target_ = -1;
   simxGetObjectChild (client_id_, nodeBase, 0, &node_target_,
-    simx_opmode_oneshot_wait);
-}
-
-void
-gams::platforms::VREP_UAV::set_initial_position () const
-{
-  // get initial position
-  simxFloat pos[3];
-  if (knowledge_->get (".initial_lat").to_double () != 0)
-  {
-    // get gps coords
-    utility::GPS_Position gps_coord;
-    gps_coord.latitude (knowledge_->get (".initial_lat").to_double ());
-    gps_coord.longitude (knowledge_->get (".initial_lon").to_double ());
-
-    // convert to vrep
-    utility::Position vrep_coord;
-    gps_to_vrep (gps_coord, vrep_coord);
-    position_to_array (vrep_coord, pos);
-  }
-  else
-  {
-    // get vrep coords
-    pos[0] = knowledge_->get (".initial_x").to_double ();
-    pos[1] = knowledge_->get (".initial_y").to_double ();
-  }
-
-  // send set object position command
-  pos[2] = knowledge_->get (".initial_alt").to_double ();
-  simxSetObjectPosition (client_id_, node_id_, -1, pos,
     simx_opmode_oneshot_wait);
 }
 
