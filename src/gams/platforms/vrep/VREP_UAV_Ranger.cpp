@@ -46,7 +46,7 @@
 
 #ifdef _GAMS_VREP_ // only compile this if we are simulating in VREP
 
-#include "VREP_UAV.h"
+#include "VREP_UAV_Ranger.h"
 
 
 #include <iostream>
@@ -61,18 +61,33 @@ using std::endl;
 using std::cout;
 using std::string;
 
-gams::platforms::VREP_UAV *
-gams::platforms::VREP_UAV_Factory::make_new (
+gams::platforms::VREP_UAV_Ranger *
+gams::platforms::VREP_UAV_Ranger_Factory::make_new (
   const Madara::Knowledge_Vector & /*args*/,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
   variables::Platforms * platforms,
   variables::Self * self)
 {
-  return new VREP_UAV(knowledge, sensors, platforms, self);
+  return new VREP_UAV_Ranger(knowledge, sensors, platforms, self);
 }
 
-gams::platforms::VREP_UAV::VREP_UAV (
+gams::platforms::VREP_UAV_Ranger *
+gams::platforms::VREP_UAV_Ranger_Factory::create (
+        const Madara::Knowledge_Vector & args,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+        variables::Sensors * sensors,
+        variables::Platforms * platforms,
+        variables::Self * self)
+{
+  VREP_UAV_Ranger * result (dynamic_cast<VREP_UAV_Ranger*>(
+     VREP_Aerial_Base_Factory::create(args, knowledge, sensors, platforms, self)));
+  if(result)
+    result->get_laser_sensor_handle();
+  return result;
+}
+
+gams::platforms::VREP_UAV_Ranger::VREP_UAV_Ranger (
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
   variables::Platforms * platforms,
@@ -80,23 +95,37 @@ gams::platforms::VREP_UAV::VREP_UAV (
   : VREP_Aerial_Base (knowledge, sensors, platforms, self)
 { }
 
-std::string gams::platforms::VREP_UAV::get_id () const
+std::string gams::platforms::VREP_UAV_Ranger::get_id () const
 {
-  return "vrep_uav";
+  return "vrep_uav_ranger";
 }
 
-std::string gams::platforms::VREP_UAV::get_name () const
+std::string gams::platforms::VREP_UAV_Ranger::get_name () const
 {
-  return "VREP UAV";
+  return "VREP UAV Ranger";
 }
 
-std::string gams::platforms::VREP_UAV::get_model_filename () const
+std::string gams::platforms::VREP_UAV_Ranger::get_model_filename () const
 {
-  return "Quadricopter_NoCamera.ttm";
+  return "Quadricopter_Laser.ttm";
+}
+
+double gams::platforms::VREP_UAV_Ranger::get_range() const
+{
+  simxUChar detectionState;
+  simxFloat detectedPoint[3];
+  simxInt ret = simxReadProximitySensor(client_id_, laser_sensor_,
+    &detectionState, detectedPoint, NULL, NULL, simx_opmode_oneshot_wait);
+  if(detectionState == 0)
+    return -2;
+  else
+    return sqrt(detectedPoint[0] * detectedPoint[0] +
+                detectedPoint[1] * detectedPoint[1] +
+                detectedPoint[2] * detectedPoint[2]);
 }
 
 void
-gams::platforms::VREP_UAV::get_target_handle ()
+gams::platforms::VREP_UAV_Ranger::get_target_handle ()
 {
   //find the dummy base sub-object
   simxInt handlesCount = 0,*handles = NULL;
@@ -124,8 +153,29 @@ gams::platforms::VREP_UAV::get_target_handle ()
   if (node_target_ < 0)
   {
     GAMS_DEBUG (gams::utility::LOG_EMERGENCY, (LM_DEBUG, 
-      DLINFO "gams::platforms::VREP_UAV::get_target_handle:" \
+      DLINFO "gams::platforms::VREP_UAV_Ranger::get_target_handle:" \
       " invalid target handle id\n"));
+  }
+}
+
+void
+gams::platforms::VREP_UAV_Ranger::get_laser_sensor_handle ()
+{
+  //find the dummy base sub-object
+  simxInt handlesCount = 0,*handles = NULL;
+  simxInt parentsCount = 0,*parents = NULL;
+  simxGetObjectGroupData (client_id_, sim_object_proximitysensor_type, 2, &handlesCount,
+    &handles, &parentsCount, &parents, NULL, NULL, NULL, NULL,
+    simx_opmode_oneshot_wait);
+
+  // find sensor
+  for(simxInt i = 0; i < handlesCount; ++i)
+  {
+    if(parents[i] == node_id_)
+    {
+      laser_sensor_ = handles[i];
+      break;
+    }
   }
 }
 

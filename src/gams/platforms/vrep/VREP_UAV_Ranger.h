@@ -45,14 +45,14 @@
  **/
 
 /**
- * @file VREP_UAV.h
+ * @file VREP_UAV_Ranger.h
  * @author James Edmondson <jedmondson@gmail.com>
  *
- * This file contains the definition of the VREP_UAV simulator uav class
+ * This file contains the definition of the VREP_UAV_Ranger simulator uav class
  **/
 
-#ifndef   _GAMS_PLATFORM_VREP_UAV_H_
-#define   _GAMS_PLATFORM_VREP_UAV_H_
+#ifndef   _GAMS_PLATFORM_VREP_UAV_RANGER_H_
+#define   _GAMS_PLATFORM_VREP_UAV_RANGER_H_
 
 #include "gams/platforms/Platform_Factory.h"
 #include "gams/platforms/vrep/VREP_Base.h"
@@ -74,7 +74,13 @@ namespace gams
 {
   namespace platforms
   {
-    class GAMS_Export VREP_UAV : public VREP_Aerial_Base
+    class GAMS_Export Has_Range_Sensor
+    {
+    public:
+      virtual double get_range() const = 0;
+    };
+
+    class GAMS_Export VREP_UAV_Ranger : public VREP_Aerial_Base, public Has_Range_Sensor
     {
     protected:
       /**
@@ -84,7 +90,7 @@ namespace gams
        * @param  platforms  map of platform names to platform information
        * @param  self       device variables that describe self state
        **/
-      VREP_UAV (
+      VREP_UAV_Ranger (
         Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
         variables::Platforms * platforms,
@@ -108,26 +114,38 @@ namespace gams
        **/
       virtual std::string get_model_filename () const;
 
+      virtual double get_range () const;
+
     protected:
       /**
        * Get node target handle
        */
       virtual void get_target_handle ();
+
+      void get_laser_sensor_handle ();
+
+      simxInt laser_sensor_;
     public:
-      friend class VREP_UAV_Factory;
-    }; // class VREP_UAV
+      friend class VREP_UAV_Ranger_Factory;
+    }; // class VREP_UAV_Ranger
 
     /**
      * A factory class for creating VREP UAV platforms
      **/
-    class GAMS_Export VREP_UAV_Factory : public VREP_Aerial_Base_Factory
+    class GAMS_Export VREP_UAV_Ranger_Factory : public VREP_Aerial_Base_Factory
     {
+      virtual VREP_UAV_Ranger * create (
+        const Madara::Knowledge_Vector & args,
+        Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+        variables::Sensors * sensors,
+        variables::Platforms * platforms,
+        variables::Self * self);
 
     protected:
       /**
        * Override to construct a new object of the derived type
        **/
-      virtual VREP_UAV * make_new (
+      virtual VREP_UAV_Ranger * make_new (
         const Madara::Knowledge_Vector & /*args*/,
         Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
@@ -139,4 +157,4 @@ namespace gams
 
 #endif // _GAMS_VREP_
 
-#endif // _GAMS_PLATFORM_VREP_UAV_H_
+#endif // _GAMS_PLATFORM_VREP_UAV_Ranger_H_

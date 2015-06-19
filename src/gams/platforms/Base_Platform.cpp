@@ -187,6 +187,7 @@ gams::platforms::Base_Platform::move (const utility::Position & target,
 int
 gams::platforms::Base_Platform::rotate (const utility::Axes &)
 {
+  std::cout << "Base Rotation" << std::endl;
   return 0;
 }
 

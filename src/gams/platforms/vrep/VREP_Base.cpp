@@ -233,6 +233,19 @@ gams::platforms::VREP_Base::move (const utility::Position & position,
     return 1;
 }
 
+int
+gams::platforms::VREP_Base::rotate (const utility::Axes &axes)
+{
+  simxFloat dest_arr[3];
+  dest_arr[0] = 0;
+  dest_arr[1] = 0;
+  dest_arr[2] = (axes.z / 360) * 2 * M_PI;
+  simxInt ret = simxSetObjectOrientation(client_id_, node_target_, sim_handle_parent,
+    dest_arr, simx_opmode_oneshot_wait);
+  std::cout << "Rotation: " << node_target_ << "  " << ret << std::endl;
+  return 1;
+}
+
 void
 gams::platforms::VREP_Base::set_move_speed (const double& speed)
 {

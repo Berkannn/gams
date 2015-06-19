@@ -138,6 +138,13 @@ namespace gams
         const double & epsilon = 0.1);
       
       /**
+      * Rotates the platform an angle on a 3D axis
+      * @param   axes  the coordinates to move to
+      * @return 1 if currently rotating, 2 if arrived, 0 if error
+      **/
+      virtual int rotate (const utility::Axes & axes);
+
+      /**
        * Set move speed
        * @param speed new speed in meters/loop execution
        **/
