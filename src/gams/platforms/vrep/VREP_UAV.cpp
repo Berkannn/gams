@@ -63,6 +63,7 @@ using std::string;
 
 gams::platforms::VREP_UAV *
 gams::platforms::VREP_UAV_Factory::make_new (
+<<<<<<< HEAD
   const Madara::Knowledge_Vector & /*args*/,
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
