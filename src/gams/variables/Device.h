@@ -135,6 +135,12 @@ namespace gams
       /// the location, usually encoded in GPS, for this device
       Madara::Knowledge_Engine::Containers::Native_Double_Array location;
       
+      /// the orientation: angular displacement about x, y, z axes
+      Madara::Knowledge_Engine::Containers::Native_Double_Array orientation;
+      
+      /// the angular velocity: rate of change of angle about x, y, z axes
+      Madara::Knowledge_Engine::Containers::Native_Double_Array angular_velocity;
+      
       /// the minimum altitude for this device
       Madara::Knowledge_Engine::Containers::Double min_alt;
       

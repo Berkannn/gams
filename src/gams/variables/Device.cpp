@@ -67,6 +67,8 @@ gams::variables::Device::operator= (const Device & device)
     this->coverage_type = device.coverage_type;
     this->is_mobile = device.is_mobile;
     this->location = device.location;
+    this->orientation = device.orientation;
+    this->angular_velocity = device.angular_velocity;
     this->desired_altitude = device.desired_altitude;
     this->source = device.source;
     this->dest = device.dest;
@@ -93,6 +95,8 @@ gams::variables::Device::init_vars (
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
   location.set_name (device_name + ".location", knowledge);
+  orientation.set_name (device_name + ".orientation", knowledge);
+  angular_velocity.set_name (device_name + ".angular_velocity", knowledge);
   desired_altitude.set_name (device_name + ".desired_altitude", knowledge);
   is_mobile.set_name (device_name + ".mobile", knowledge);
   battery_remaining.set_name (device_name + ".battery", knowledge);
@@ -125,6 +129,8 @@ gams::variables::Device::init_vars (
   // initialize the variable containers
   min_alt.set_name (device_name + ".min_alt", knowledge);
   location.set_name (device_name + ".location", knowledge, 3);
+  orientation.set_name (device_name + ".orientation", knowledge, 3);
+  angular_velocity.set_name (device_name + ".angular_velocity", knowledge, 3);
   desired_altitude.set_name (device_name + ".desired_altitude", knowledge);
   is_mobile.set_name (device_name + ".mobile", knowledge);
   battery_remaining.set_name (device_name + ".battery", knowledge);
