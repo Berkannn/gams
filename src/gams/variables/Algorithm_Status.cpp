@@ -71,15 +71,16 @@ gams::variables::Algorithm_Status::operator= (const Algorithm_Status & rhs)
     this->deadlocked = rhs.deadlocked;
     this->failed = rhs.failed;
     this->unknown = rhs.unknown;
+    this->finished = rhs.finished;
   }
 }
-
 
 void
 gams::variables::Algorithm_Status::init_vars (
   Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const std::string & new_name)
+  const std::string & new_name, int i)
 {
+  id = i;
   name = new_name;
   std::string prefix (make_variable_prefix ());
 
@@ -90,15 +91,15 @@ gams::variables::Algorithm_Status::init_vars (
   this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
   this->failed.set_name (prefix + ".failed", knowledge);
   this->unknown.set_name (prefix + ".unknown", knowledge);
-
-  init_variable_values ();
+  this->finished.set_name (prefix + ".finished", knowledge);
 }
 
 void
 gams::variables::Algorithm_Status::init_vars (
   Madara::Knowledge_Engine::Variables & knowledge,
-  const std::string & new_name)
+  const std::string & new_name, int i)
 {
+  id = i;
   name = new_name;
   std::string prefix (make_variable_prefix ());
 
@@ -109,15 +110,13 @@ gams::variables::Algorithm_Status::init_vars (
   this->deadlocked.set_name (prefix + ".deadlocked", knowledge);
   this->failed.set_name (prefix + ".failed", knowledge);
   this->unknown.set_name (prefix + ".unknown", knowledge);
-
-  init_variable_values ();
 }
 
 string
 gams::variables::Algorithm_Status::make_variable_prefix () const
 {
   std::stringstream buffer;
-  buffer << "algorithm.";
+  buffer << "device." << id << ".algorithm.";
   buffer << name;
 
   return buffer.str ();
@@ -132,4 +131,5 @@ gams::variables::Algorithm_Status::init_variable_values ()
   deadlocked = 0;
   failed = 0;
   unknown = 0;
+  finished = 0;
 }

@@ -94,6 +94,9 @@ int
 gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
 {
   ++executions_;
+  int ret_val = check_if_finished (OK);
+  if (ret_val == FINISHED)
+    status_.finished = 1;
   return check_if_finished (OK);
 }
 

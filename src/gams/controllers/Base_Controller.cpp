@@ -563,7 +563,7 @@ const std::string & algorithm, const Madara::Knowledge_Vector & args)
   {
     madara_logger_ptr_log (gams::loggers::global_logger.get (),
       gams::loggers::LOG_MAJOR,
-      "gams::controllers::Base_Controller::init_platform:" \
+      "gams::controllers::Base_Controller::init_algorithm:" \
       " deleting old algorithm\n");
 
     delete algorithm_;
@@ -594,8 +594,8 @@ const std::string & algorithm, const Madara::Knowledge_Vector & args)
 
 void
 gams::controllers::Base_Controller::init_platform (
-const std::string & platform,
-const Madara::Knowledge_Vector & /*args*/)
+  const std::string & platform,
+  const Madara::Knowledge_Vector & args)
 {
   // initialize the platform
 
@@ -629,7 +629,7 @@ const Madara::Knowledge_Vector & /*args*/)
       "gams::controllers::Base_Controller::init_platform:" \
       " factory is creating platform %s\n", platform.c_str ());
 
-    platform_ = factory.create (platform);
+    platform_ = factory.create (platform, args);
 
     init_vars (*platform_);
 

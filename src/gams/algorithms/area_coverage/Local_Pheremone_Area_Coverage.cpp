@@ -154,7 +154,8 @@ Local_Pheremone_Area_Coverage (
   pheremone_ (search_id + ".pheremone", knowledge)
 {
   // init status vars
-  status_.init_vars (*knowledge, "lpac");
+  status_.init_vars (*knowledge, "lpac", self->id.to_integer ());
+  status_.init_variable_values ();
 
   // fill out pheremone sensor
   /**

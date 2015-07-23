@@ -136,7 +136,8 @@ Uniform_Random_Edge_Coverage::Uniform_Random_Edge_Coverage (
   Base_Area_Coverage (knowledge, platform, sensors, self, devices, e_time)
 {
   // init status vars
-  status_.init_vars (*knowledge, "urec");
+  status_.init_vars (*knowledge, "urec", self->id.to_integer ());
+  status_.init_variable_values ();
 
   // generate search region
   utility::Search_Area search = utility::parse_search_area (*knowledge, prefix);

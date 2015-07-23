@@ -156,7 +156,8 @@ Priority_Weighted_Random_Area_Coverage (
   total_priority_ (0.0)
 {
   // init status vars
-  status_.init_vars (*knowledge, "pwrac");
+  status_.init_vars (*knowledge, "pwrac", self->id.to_integer ());
+  status_.init_variable_values ();
 
   // calculate total priority
   const vector<utility::Prioritized_Region>& regions =

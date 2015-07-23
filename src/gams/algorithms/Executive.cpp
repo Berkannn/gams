@@ -111,7 +111,9 @@ gams::algorithms::Executive::Executive (
   plan_index_ (-1), plan_ (),
   algo_factory_ (knowledge, sensors, platform, self, devices)
 {
-  knowledge->print ();
+  status_.init_vars (*knowledge, "executive", self->id.to_integer ());
+  status_.init_variable_values ();
+
   plan_.reserve (args.size () / 2);
   for (size_t i = 0; i < args.size(); i += 2)
   {
@@ -199,6 +201,7 @@ gams::algorithms::Executive::analyze (void)
       --plan_index_;  // to prevent plan_index_ from overflowing 
                       // and being a valid index again
       ret_val = FINISHED;
+      status_.finished = 1;
     }
   }
    
