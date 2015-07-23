@@ -6,7 +6,7 @@ use strict;
   
 # get arguments
 my ($start_port, $num_ports) = @ARGV;
-print("creating $num_ports starting at port $start_port\n");
+print("creating $num_ports ports starting at port $start_port\n");
 my $osname = $^O;
 my $vrep_root = $ENV{"VREP_ROOT"};
 

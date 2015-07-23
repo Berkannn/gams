@@ -119,14 +119,14 @@ namespace gams
       /**
        * Inequality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if x, y, z are not equal in both objects, false otherwise
        **/
       bool operator!= (const Position & rhs) const;
       
       /**
        * Inequality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if x, y, z are not equal in both objects, false otherwise
        **/
       bool operator!= (const
         Madara::Knowledge_Engine::Containers::Double_Array & rhs) const;
@@ -134,7 +134,7 @@ namespace gams
       /**
        * Inequality operator
        * @param  rhs   value to compare
-       * @return true if x, y, z are equal in both objects, false otherwise
+       * @return true if x, y, z are not equal in both objects, false otherwise
        **/
       bool operator!= (const
         Madara::Knowledge_Engine::Containers::Native_Double_Array & rhs) const;
