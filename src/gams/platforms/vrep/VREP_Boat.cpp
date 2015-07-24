@@ -135,7 +135,7 @@ gams::platforms::VREP_Boat::VREP_Boat (
     status_ = (*platforms)[get_id ()];
   }
 
-  self_->device.desired_altitude = 0.05;
+  self_->device.desired_altitude = 0.0;
   add_model_to_environment (file, client_side);
   set_initial_position ();
   get_target_handle ();
@@ -222,7 +222,7 @@ gams::platforms::VREP_Boat::set_initial_position () const
     pos[0] = knowledge_->get (".initial_x").to_double ();
     pos[1] = knowledge_->get (".initial_y").to_double ();
   }
-  pos[2] = (simxFloat) 0.3;
+  pos[2] = (simxFloat) 0.0;
 
   // send set object position command
   simxSetObjectPosition (client_id_, node_id_, sim_handle_parent, pos,
