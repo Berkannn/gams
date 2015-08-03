@@ -46,11 +46,11 @@
 
 /**
  * @file VREP_Boat_EXT.h
- * @author Anton Dukeman <anton.dukeman@gmail.com>
+ * @author Cormac O'Meadhra <cormac.omeadhra@gmail.com>
  *
- * This file contains the declaration of the VREP_Boat_EXT simulator autonomous boat class
- * which should be used when the boat is to be externally controlled by directly setting 
- * motor commands  
+ * This file contains the declaration of the VREP_Boat_EXT simulator autonomous 
+ * boat class which should be used when the boat is to be externally controlled 
+ * by directly setting motor commands  
  **/
 
 #ifndef   _GAMS_PLATFORM_VREP_BOAT_EXT_H_
@@ -65,10 +65,12 @@
 #include "gams/utility/GPS_Position.h"
 #include "madara/knowledge_engine/Knowledge_Base.h"
 
+#include "madara/threads/Base_Thread.h"
+#include "madara/threads/Threader.h"
+
 extern "C" {
 #include "extApi.h"
 }
-
 
 #ifdef _GAMS_VREP_
 
@@ -80,13 +82,22 @@ namespace gams
     {
     public:
       /**
+       * Default Boat_EXT model
+       */
+      const static std::string DEFAULT_BOAT_EXT_MODEL;
+
+      /**
        * Constructor
-       * @param  knowledge  knowledge base
-       * @param  sensors    map of sensor names to sensor information
-       * @param  platforms  map of platform names to platform information
-       * @param  self       device variables that describe self state
+       * @param  file         model file to load
+       * @param  client_side  0 if model is server side, 1 if client side
+       * @param  knowledge    knowledge base
+       * @param  sensors      map of sensor names to sensor information
+       * @param  platforms    map of platform names to platform information
+       * @param  self         device variables that describe self state
        **/
       VREP_Boat_EXT (
+        std::string model_file, 
+        simxUChar is_client_side, 
         Madara::Knowledge_Engine::Knowledge_Base * knowledge,
         variables::Sensors * sensors,
         variables::Platforms * platforms,
@@ -108,19 +119,25 @@ namespace gams
        * Gets the name of the platform
        **/
       virtual std::string get_name () const;
+
+      /**
+       * Polls the sensor environment for useful information
+       * @return number of sensors updated/used
+       **/
+      virtual int sense ();
       
       /**
        * Override base class move 
        */
-      int
-      gams::platforms::VREP_Base::move (const utility::Position & position,
+      virtual int move (const utility::Position & position,
         const double & epsilon);
 
     protected:
       /**
        * Add model to environment
        */
-      virtual void add_model_to_environment ();
+      virtual void add_model_to_environment (const std::string& file, 
+        const simxUChar client_side);
 
       /**
        * Get target handle
@@ -131,79 +148,41 @@ namespace gams
        * Set initial position
        */
       virtual void set_initial_position () const;
-    /**
-     * A class to run on a seperate thread to query the knowledge base and 
-     * update motor commands
-     **/
-     class Motor_Updater: public threads::Base_Thread{
-        
-        public:
-          void init(Madara::Knowledge_Engine::Knowledge_Base & knowledge)
-          {
-            lknowledge_ = knowledge;
-            //Get boat name to create motor signals
-            simxInt num_handles;
-            simxInt * handles;
-            simxInt num_names;
-            simxChar * names;
-            
-            //VREP remote API has no function to directly retrieve an object
-            //name. Instead all object names are retrieved and the correct
-            //name is matached with the handle of the correct object 
-            simxGetObjectGroupData(client_id_, sim_appobj_object_type, 0,
-                                   num_handles, &handles, NULL, NULL,NULL, 
-                                   NULL, num_names, &names, 
-                                   simx_opmode_oneshot_wait);
-            //Compare each handle to the stored handle
-            int i = 0;
-            for(i = 0;  i < num_handles; i++)
-            {
-              boat_name = names;
-              names += boat_name.length() + 1;
-              if(handles[i] == node_id_)
-              {
-                break;  
-              }
-            }
-            //Extract boat number from name
-            //Boats are numbered as follows: no_number, #0, #1, ... 
-            ssize_t pos = boat_name.find("#");
-            int id;
-            if(pos == std::npos)
-              id = 0;
-            else
-              id = atoi( boat_name.substr(pos+1).c_str() ) + 1;
-            
-            //Generate signal names
-            std::stringstream lss;
-            lss << "left_motor_" << id;
-            left_motor_sig = lss.str();
 
-            std::stringstream rss;
-            rss << "right_motor_" << id;
-            right_motor_sig = rss.str();
+      /// Threader for starting/stopping threads created through MADARA
+      Madara::Threads::Threader threader_;
 
-          }
-          void run(void )
-          {
-            //Query knowledge base for motor speeds
-            left_speed = lknowledge.get(left_motor_sig);
-            right_speed = lknowledge.get(right_motor_sig);
-            
-            //Pass motor speeds to vrep
-            simxSetFloatSignal(client_id_, left_motor_sig.c_str() ,  left_speed, simx_opmode_oneshot);
-            simxSetFloatSignal(client_id_, right_motor_sig.c_str(), right_speed, simx_opmode_oneshot);
-          }
-          void cleanup(void){};
-        private:
-          Madara::Knowledge_Engine::Knowledge_Base lknowledge_;
-          double left_motor_speed = 0;
-          double right_motor_speed = 0;
-          std::string right_motor_sig;
-          std::string left_motor_sig;
-          };
-                        
-      }
+      /**
+       * A class to run on a seperate thread to query the knowledge base and 
+       * update motor commands
+       **/
+      class Motor_Updater: public Madara::Threads::Base_Thread
+      {
+      public:
+        Motor_Updater (simxInt c, simxInt n);
+
+        void init(Madara::Knowledge_Engine::Knowledge_Base & knowledge);
+  
+        void run();
+  
+        void cleanup();
+
+      private:
+        Madara::Knowledge_Engine::Knowledge_Base* lknowledge_;
+        simxFloat left_motor_speed_;
+        simxFloat right_motor_speed_;
+        std::string right_motor_sig_;
+        std::string left_motor_sig_;
+
+        /// client id for remote API connection
+        simxInt client_id_;
+
+        /// id of boat to control
+        simxInt node_id_;
+      };
+
+      /// Motor updater thread
+      Motor_Updater* updater_thread_;
     }; // class VREP_Boat
 
     /**
@@ -212,9 +191,8 @@ namespace gams
     class GAMS_Export VREP_Boat_EXT_Factory : public Platform_Factory
     {
     public:
-        
       /**
-       * Creates a VREP ant platform.
+       * Creates a VREP_Boat_EXT platform.
        * @param   args      no arguments are necessary for this platform
        * @param   knowledge the knowledge base. This will be set by the
        *                    controller in init_vars.
@@ -232,7 +210,6 @@ namespace gams
         variables::Platforms * platforms,
         variables::Self * self);
     };
-    
   } // namespace platform
 } // namespace gams
 

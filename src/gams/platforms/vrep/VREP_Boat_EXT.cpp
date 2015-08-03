@@ -46,26 +46,34 @@
 
 /**
  * @file VREP_Boat_EXT.cpp
- * @author Anton Dukeman <anton.dukeman@gmail.com>
+ * @author Cormac O'Meadhra <cormac.omeadhra@gmail.com>
  *
- * This file contains the definition of the VREP_Boat_EXT simulator ant robot class
+ * This file contains the definition of the VREP_Boat_EXT simulator class
  */
 
 #ifdef _GAMS_VREP_ // only compile this if we are simulating in VREP
 
 #include "gams/platforms/vrep/VREP_Boat_EXT.h"
 
+#include <iostream>
+#include <cmath>
+#include <cstring>
+
+#include "madara/knowledge_engine/containers/Double_Vector.h"
+#include "gams/utility/Angular_Velocity.h"
+#include "gams/utility/Orientation.h"
+
 #define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
 
-#include <iostream>
 using std::endl;
 using std::cout;
 using std::string;
-#include <cmath>
 
-#include "madara/knowledge_engine/containers/Double_Vector.h"
-
-#include "gams/variables/Sensor.h"
+const std::string gams::platforms::VREP_Boat_EXT::DEFAULT_BOAT_EXT_MODEL (
+  (getenv ("GAMS_ROOT") == 0) ? 
+  "" : // if GAMS_ROOT is not defined, then just leave this as empty string
+  (string (getenv ("GAMS_ROOT")) + "/resources/vrep/boat_ext.ttm")
+  );
 
 gams::platforms::Base_Platform *
 gams::platforms::VREP_Boat_EXT_Factory::create (
@@ -75,8 +83,12 @@ gams::platforms::VREP_Boat_EXT_Factory::create (
         variables::Platforms * platforms,
         variables::Self * self)
 {
+  madara_logger_ptr_log (gams::loggers::global_logger.get (),
+    gams::loggers::LOG_MINOR,
+    "entering gams::platforms::VREP_Boat_EXT_Factory::create\n");
+
   Base_Platform * result (0);
-  
+
   if (knowledge && sensors && platforms && self)
   {
     if (knowledge->get_num_transports () == 0)
@@ -88,22 +100,63 @@ gams::platforms::VREP_Boat_EXT_Factory::create (
 
       knowledge_->attach_transport ("", settings);
       knowledge_->activate_transport ();
+
+      madara_logger_ptr_log (gams::loggers::global_logger.get (),
+        gams::loggers::LOG_MINOR,
+         "gams::platforms::VREP_Boat_EXT_Factory::create:" \
+        " no transports found, attaching multicast\n");
     }
 
-    cerr << "Creating VREP_Boat_EXT object" << endl;
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_MAJOR,
+       "gams::platforms::VREP_Boat_EXT_Factory::create:" \
+      " creating VREP_Boat_EXT object\n");
 
-    result = new VREP_Boat_EXT (knowledge, sensors, platforms, self);
+    // specify the model file
+    string model_file;
+    simxUChar is_client_side; // file is on server
+    if (args.size () >= 1)
+    {
+      model_file = args[0].to_string ();
+      is_client_side = 1;
+    }
+    else
+    {
+      model_file = VREP_Boat_EXT::DEFAULT_BOAT_EXT_MODEL;
+      is_client_side = 0;
+    }
+
+    result = new VREP_Boat_EXT (model_file, is_client_side, knowledge, sensors, 
+      platforms, self);
+  }
+  else
+  {
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_ERROR,
+       "gams::platforms::VREP_Boat_EXT_Factory::create:" \
+      " invalid knowledge, sensors, platforms, or self\n");
+  }
+
+  if (result == 0)
+  {
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_MAJOR,
+       "gams::platforms::VREP_Boat_EXT_Factory::create:" \
+      " error creating VREP_Boat_EXT object\n");
   }
 
   return result;
 }
 
-gams::platforms::VREP_Boat_EXT::VREP_Boat (
+gams::platforms::VREP_Boat_EXT::VREP_Boat_EXT (
+  std::string model_file, 
+  simxUChar is_client_side, 
   Madara::Knowledge_Engine::Knowledge_Base * knowledge,
   variables::Sensors * sensors,
   variables::Platforms * platforms,
-  variables::Self * self)
-  : VREP_Base (knowledge, sensors, self)
+  variables::Self * self) :
+  VREP_Base (knowledge, sensors, self), threader_ (*knowledge), 
+  updater_thread_ (0)
 {
   if (platforms && knowledge)
   {
@@ -112,30 +165,29 @@ gams::platforms::VREP_Boat_EXT::VREP_Boat (
   }
 
   self_->device.desired_altitude = 0.05;
-  add_model_to_environment ();
+  add_model_to_environment (model_file, is_client_side);
   set_initial_position ();
   get_target_handle ();
   wait_for_go ();
-  //launch thread to handle motor commands
-  Threads::Threader threader(knowledge);
+
   //run thread at 100Hz
-  threader.run(100.0, "Motor updater", new Motor_Updater());
-   
+  updater_thread_ = new Motor_Updater (client_id_, node_id_);
+  threader_.run (100.0, "Motor updater", updater_thread_);
 }
 
 gams::platforms::VREP_Boat_EXT::~VREP_Boat_EXT()
 {
-  Threads::Treader::terminate("Motor updater"); 
-  ~VREP_Base();
+  threader_.terminate("Motor updater"); 
+  delete updater_thread_;
 }
 
 int
-gams::platforms::VREP_Boat_EXT::sense(void)
+gams::platforms::VREP_Boat_EXT::sense ()
 {
   // get angular velocity
   simxFloat curr_arr[3];
   simxGetObjectVelocity (client_id_, node_id_,  NULL, curr_arr,
-                        simx_opmode_oneshot_wait);
+    simx_opmode_oneshot_wait);
 
   utility::Angular_Velocity vrep_angv;
   array_to_position (curr_arr, vrep_angv);
@@ -144,9 +196,9 @@ gams::platforms::VREP_Boat_EXT::sense(void)
   vrep_angv.to_container (self_->device.angular_velocity);
 
   //Get orientation
-  simxGetObjectOrientation(client_id_, node_id_, sim_handle_parent, curr_arr  
-                           simx_opmode_oneshot_wait);
-  
+  simxGetObjectOrientation(client_id_, node_id_, sim_handle_parent, curr_arr,
+    simx_opmode_oneshot_wait);
+
   utility::Orientation orientation;
   array_to_position (curr_arr, orientation);
 
@@ -155,22 +207,30 @@ gams::platforms::VREP_Boat_EXT::sense(void)
   return 0;
 }
 
-
 void
-gams::platforms::VREP_Boat_EXT::add_model_to_environment ()
+gams::platforms::VREP_Boat_EXT::add_model_to_environment (
+  const std::string& file, const simxUChar client_side)
 {
-  string modelFile (getenv ("GAMS_ROOT"));
-  modelFile += "/resources/vrep/boat.ttm";
-  if (simxLoadModel (client_id_, modelFile.c_str (), 0, &node_id_,
+  madara_logger_ptr_log (gams::loggers::global_logger.get (),
+    gams::loggers::LOG_ERROR,
+    "gams::platforms::VREP_Boat_EXT::add_model_to_environment(" \
+    "%s, %u)\n", file.c_str (), client_side);
+  if (simxLoadModel (client_id_, file.c_str (), client_side, &node_id_,
     simx_opmode_oneshot_wait) != simx_error_noerror)
   {
-    cerr << "error loading VREP_Boat_EXT model in vrep" << endl;
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_ERROR,
+       "gams::platforms::VREP_Boat_EXT::add_model_to_environment:" \
+      " error loading model in vrep\n");
     exit (-1);
   }
 
   if (node_id_ < 0)
   {
-    cerr << "invalid handle id for VREP_Boat_EXT base" << endl;
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_ERROR,
+       "gams::platforms::VREP_Boat_EXT::add_model_to_environment:" \
+      " invalid handle id\n");
     exit (-1);
   }
 }
@@ -245,7 +305,87 @@ gams::platforms::VREP_Boat_EXT::set_initial_position () const
 }
 
 int
-gams::platforms::VREP_Boat::move (const utility::Position & position,
-  const double & epsilon)
-{}
+gams::platforms::VREP_Boat_EXT::move (const utility::Position & /*position*/,
+  const double & /*epsilon*/)
+{
+  return OK;
+}
+
+gams::platforms::VREP_Boat_EXT::Motor_Updater::Motor_Updater (simxInt c, 
+  simxInt n) :
+  lknowledge_(0), left_motor_speed_ (0), right_motor_speed_ (0), 
+  client_id_ (c), node_id_ (n)
+{
+}
+
+void
+gams::platforms::VREP_Boat_EXT::Motor_Updater::init (
+  Madara::Knowledge_Engine::Knowledge_Base & knowledge)
+{
+  lknowledge_ = &knowledge;
+  //Get boat name to create motor signals
+  simxInt num_handles;
+  simxInt * handles;
+  simxInt num_names;
+  simxChar * names;
+  
+  //VREP remote API has no function to directly retrieve an object
+  //name. Instead all object names are retrieved and the correct
+  //name is matached with the handle of the correct object 
+  simxGetObjectGroupData(client_id_, sim_appobj_object_type, 0, 
+    &num_handles, &handles, 
+    NULL, NULL, 
+    NULL, NULL, 
+    &num_names, &names, 
+    simx_opmode_oneshot_wait);
+
+  //Compare each handle to the stored handle
+  simxChar* boat_name_cstr;
+  for(int i = 0; i < num_handles; i++)
+  {
+    boat_name_cstr = names;
+    names += strlen (boat_name_cstr) + 1;
+    if(handles[i] == node_id_)
+      break;  
+  }
+
+  //Extract boat number from name
+  //Boats are numbered as follows: no_number, #0, #1, ... 
+  std::string boat_name (boat_name_cstr);
+  size_t pos = boat_name.find("#");
+  int id;
+  if(pos == std::string::npos)
+    id = 0;
+  else
+    id = atoi( boat_name.substr(pos+1).c_str() ) + 1;
+
+  //Generate signal names
+  std::stringstream lss;
+  lss << "left_motor_" << id;
+  left_motor_sig_ = lss.str();
+
+  std::stringstream rss;
+  rss << "right_motor_" << id;
+  right_motor_sig_ = rss.str();
+}
+
+void
+gams::platforms::VREP_Boat_EXT::Motor_Updater::run()
+{
+  //Query knowledge base for motor speeds
+  left_motor_speed_ = lknowledge_->get (left_motor_sig_).to_double ();
+  right_motor_speed_ = lknowledge_->get (right_motor_sig_).to_double ();
+            
+  //Pass motor speeds to vrep
+  simxSetFloatSignal(client_id_, left_motor_sig_.c_str(), left_motor_speed_, 
+    simx_opmode_oneshot);
+  simxSetFloatSignal(client_id_, right_motor_sig_.c_str(), right_motor_speed_, 
+    simx_opmode_oneshot);
+}
+
+void
+gams::platforms::VREP_Boat_EXT::Motor_Updater::cleanup()
+{
+}
+
 #endif // _GAMS_VREP_
