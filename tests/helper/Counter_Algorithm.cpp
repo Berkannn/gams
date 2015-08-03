@@ -56,7 +56,7 @@ gams::algorithms::Counter_Algorithm::Counter_Algorithm (
   enable_plan_counter (false)
 {
   status_.init_vars (knowledge, "counter",
-    knowledge->get (".id"). to_integer ());
+    knowledge.get (".id"). to_integer ());
   analyze_counter.set_name (".algorithm_analyzes", knowledge);
   execute_counter.set_name (".algorithm_executes", knowledge);
   plan_counter.set_name (".algorithm_plans", knowledge);
