@@ -42,51 +42,65 @@
  * This material has been approved for public release and unlimited
  * distribution.
  * 
- * @author James Edmondson <jedmondson@gmail.com>
+ * @author Anton Dukeman <anton.dukeman@gmail.com>
  *********************************************************************/
 
 package com.gams.tests;
  
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.madara.KnowledgeBase;
-import com.gams.controllers.BaseController;
-import com.gams.utility.Logging;
-import com.madara.KnowledgeList;
+import com.gams.utility.Region;
+import com.gams.utility.PrioritizedRegion;
+import com.gams.utility.GpsPosition;
 
-import com.gams.algorithms.DebugAlgorithmFactory;
-
-public class TestDebuggerLoop
+public class TestUtility
 { 
-  public static void main (String...args) throws Exception
+  public static void testRegion()
   {
-    Logging.setLevel(6);
-  	  
-    System.out.println("Creating knowledge base...");
-    KnowledgeBase knowledge = new KnowledgeBase();
-    System.out.println("Passing knowledge base to base controller...");
-    BaseController controller = new BaseController(knowledge);
-    
-    System.out.println("Creating debug algorithm factory...");
-    DebugAlgorithmFactory debugFactory = new DebugAlgorithmFactory();
-    
-    System.out.println("Adding debug algorithm factory as 'java-debug'...");
-    controller.addAlgorithmFactory("java-debug", debugFactory);
- 
-    KnowledgeList list = new KnowledgeList();
-    
-    System.out.println("Initializing 'java-debug' algorithm...");
-    controller.initAlgorithm("java-debug", list);
-    
-    System.out.println("Running controller every 1s for 10s...");
-    controller.run(1.0, 200.0);
-    
-    controller.free();
-    knowledge.free();
+    com.madara.KnowledgeBase kb = new com.madara.KnowledgeBase();
+    com.gams.utility.Region reg1 = new com.gams.utility.Region();
+    com.gams.utility.Region reg2 = new com.gams.utility.Region();
+
+    reg1.addVertex(new GpsPosition(0,0,0));
+    reg1.addVertex(new GpsPosition(0,4,0));
+    reg1.addVertex(new GpsPosition(3,0,0));
+
+    reg1.toContainer(kb, "test");
+    reg2.fromContainer(kb, "test");
+
+    System.err.println(kb.toString());
+    System.err.println("reg1: ");
+    System.err.println(reg1.toString());
+    System.err.println();
+    System.err.println("reg2: ");
+    System.err.println(reg2.toString());
   }
-  
-  
+
+  public static void testPrioritizedRegion()
+  {
+    com.madara.KnowledgeBase kb = new com.madara.KnowledgeBase();
+    com.gams.utility.PrioritizedRegion reg1 = new com.gams.utility.PrioritizedRegion();
+    com.gams.utility.PrioritizedRegion reg2 = new com.gams.utility.PrioritizedRegion();
+
+    reg1.addVertex(new GpsPosition(0,0,0));
+    reg1.addVertex(new GpsPosition(0,4,0));
+    reg1.addVertex(new GpsPosition(3,0,0));
+    reg1.setPriority(5);
+
+    reg1.toContainer(kb, "test");
+    reg2.fromContainer(kb, "test");
+
+    System.err.println(kb.toString());
+    System.err.println("reg1: ");
+    System.err.println(reg1.toString());
+    System.err.println();
+    System.err.println("reg2: ");
+    System.err.println(reg2.toString());
+  }
+
+  public static void main (String[] args)
+  {
+    testRegion();
+    System.err.println();
+    testPrioritizedRegion();
+  }
 }

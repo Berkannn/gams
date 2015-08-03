@@ -76,7 +76,7 @@ namespace gams
       public:
         /**
          * Constructor
-         * @param  args       points to be traversed
+         * @param  waypoints  list of waypoints to traverse
          * @param  knowledge  the context containing variables and values
          * @param  platform   the underlying platform the algorithm will use
          * @param  sensors    map of sensor names to sensor information
@@ -84,7 +84,7 @@ namespace gams
          * @param  devices    variables referencing devices
          **/
         Waypoints_Coverage (
-          const Madara::Knowledge_Vector & args,
+          const std::vector<utility::Position>& waypoints,
           Madara::Knowledge_Engine::Knowledge_Base * knowledge = 0,
           platforms::Base_Platform * platform = 0,
           variables::Sensors * sensors = 0,

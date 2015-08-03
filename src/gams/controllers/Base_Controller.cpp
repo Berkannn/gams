@@ -60,6 +60,7 @@
 #ifdef _GAMS_JAVA_
 #include "gams/algorithms/java/Java_Algorithm.h"
 #include "gams/platforms/java/Java_Platform.h"
+#include "gams/utility/java/Acquire_VM.h"
 #endif
 
 using std::cerr;
@@ -147,7 +148,7 @@ int
 gams::controllers::Base_Controller::system_analyze (void)
 {
   int return_value (0);
-  bool error (false);
+  //bool error (false);
 
   /**
    * Note that certain device variables like command are kept local only.
@@ -411,7 +412,7 @@ gams::controllers::Base_Controller::run (double loop_period,
   madara_logger_ptr_log (gams::loggers::global_logger.get (),
     gams::loggers::LOG_MAJOR,
     "gams::controllers::Base_Controller::run:" \
-    " loop_period: %ds, max_runtime: %ds, send_period: %ds\n",
+    " loop_period: %fs, max_runtime: %fs, send_period: %fs\n",
     loop_period, max_runtime, send_period);
 
   if (loop_period >= 0.0)
@@ -424,7 +425,7 @@ gams::controllers::Base_Controller::run (double loop_period,
     next_epoch = current + poll_frequency;
     send_next_epoch = current;
 
-    unsigned int iterations = 0;
+    //unsigned int iterations = 0;
     while (first_execute || max_runtime < 0 || current < max_wait)
     {
       // return value should be last return value of mape loop
@@ -587,7 +588,54 @@ const std::string & algorithm, const Madara::Knowledge_Vector & args)
     }
     else
     {
+#ifdef _GAMS_JAVA_
+      algorithms::Java_Algorithm * jalg =
+        dynamic_cast <algorithms::Java_Algorithm *> (algorithm_);
+
+      if (jalg)
+      {
+        // Acquire the Java virtual machine
+        gams::utility::java::Acquire_VM jvm;
+
+        jclass controllerClass = gams::utility::java::find_class (
+          jvm.env, "com/gams/controllers/BaseController");
+        jobject alg = jalg->get_java_instance ();
+        jclass algClass = jvm.env->GetObjectClass (alg);
+        
+        jmethodID initCall = jvm.env->GetMethodID (algClass,
+          "init", "(Lcom/gams/controllers/BaseController;)V");
+        jmethodID controllerFromPointerCall = jvm.env->GetStaticMethodID (
+          controllerClass,
+          "fromPointer", "(JZ)Lcom/gams/controllers/BaseController;");
+
+        if (initCall && controllerFromPointerCall)
+        {
+          madara_logger_ptr_log (gams::loggers::global_logger.get (),
+            gams::loggers::LOG_MAJOR,
+            "gams::controllers::Base_Controller::init_algorithm:" \
+            " Calling BaseAlgorithm init method.\n");
+          /*jobject controller =*/ jvm.env->CallStaticObjectMethod (controllerClass,
+            controllerFromPointerCall, (jlong)this, (jboolean)false);
+
+          jvm.env->CallVoidMethod (
+            alg, initCall, jlong (this));
+        }
+        else
+        {
+          madara_logger_ptr_log (gams::loggers::global_logger.get (),
+            gams::loggers::LOG_ERROR,
+            "gams::controllers::Base_Controller::init_algorithm:" \
+            " ERROR. Could not locate init and fromPointer calls in "
+            "BaseController. Unable to initialize algorithm.\n");
+        }
+      }
+      else
+      {
+        init_vars (*algorithm_);
+      }
+#else
       init_vars (*algorithm_);
+#endif
     }
   }
 }

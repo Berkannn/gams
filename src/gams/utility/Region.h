@@ -61,25 +61,27 @@
 #include "madara/knowledge_engine/containers/String_Vector.h"
 #include "gams/utility/Position.h"
 #include "gams/utility/GPS_Position.h"
+#include "gams/utility/Containerize.h"
 
 namespace gams
 {
   namespace utility
   {
-    class GAMS_Export Region
+    class GAMS_Export Region : public Containerize
     {
     public:
       /**
        * Constructor
        * @param  init_vertices  the vertices of the region
        **/
-      Region (const std::vector <GPS_Position> & init_vertices =
-        std::vector<GPS_Position> ());
+      Region (const std::vector <GPS_Position> & init_vertices = 
+        std::vector<GPS_Position> (), unsigned int t = 0, 
+        const std::string& name = "");
 
       /**
        * Destructor
        **/
-      ~Region ();
+      virtual ~Region ();
 
       /**
        * Assignment operator
@@ -88,10 +90,28 @@ namespace gams
       void operator= (const Region& rhs);
 
       /**
-       * Equality operator
+       * Equality operator. Only checks if the vertices are the same
        * @param rhs   Region to compare with
        */
       bool operator== (const Region& rhs) const;
+
+      /**
+       * Inequality operator. Calls operator== and inverses result
+       * @param rhs   Region to compare with
+       */
+      bool operator!= (const Region& rhs) const;
+
+      /**
+       * Get name of region
+       * @return name of the region
+       */
+      std::string get_name () const;
+
+      /**
+       * Set name of region
+       * @param n   new name of the region
+       */
+      void set_name (const std::string& n);
       
       /**
        * Determine if GPS_Position is in region
@@ -130,22 +150,9 @@ namespace gams
       /**
        * Helper function for converting the position to a string
        * @param delimiter characters to insert between position components
+       * @return string representation of this Region
        **/
       std::string to_string (const std::string & delimiter = ":") const;
-
-      /**
-       * Helper function for copying values to a MADARA string array
-       * @param target     target container to copy values to
-       **/
-      void to_container (
-        Madara::Knowledge_Engine::Containers::String_Array & target) const;
-      
-      /**
-       * Helper function for copying values from a MADARA string array
-       * @param source     source container to copy values from
-       **/
-      void from_container (
-        Madara::Knowledge_Engine::Containers::String_Array & source);
 
       /// the vertices of the region
       std::vector <GPS_Position> vertices;
@@ -154,32 +161,44 @@ namespace gams
       double min_lat_, max_lat_;
       double min_lon_, max_lon_;
       double min_alt_, max_alt_;
-      
-      /**
-       * Initialize region from knowledge base information
-       * @param knowledge   knowledge base to draw from
-       * @param prefix      complete prefix for region (e.g., "region.0")
-       * @return Region object created from knowledge base
-       **/
-      void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const std::string & prefix);
 
     protected:
       /**
        * populate bounding box values
        **/
       void calculate_bounding_box ();
-    }; // class Region
 
-    /**
-     * Create region from knowledge base information
-     * @param knowledge   knowledge base to draw from
-     * @param prefix      complete prefix for region (e.g., "region.0")
-     * @return Region object created from knowledge base
-     **/
-    GAMS_Export Region parse_region (
-      Madara::Knowledge_Engine::Knowledge_Base& knowledge,
-      const std::string & prefix);
+      /// type for this region
+      unsigned int type_;
+
+    private:
+      /**
+       * Check if object is of correct type
+       * @param kb        Knowledge Base with object
+       * @param name      Name of object in the KB
+       * @return true if name is a valid object in kb, false otherwise
+       */
+      virtual bool check_valid_type (Madara::Knowledge_Engine::Knowledge_Base& kb,
+        const std::string& name) const;
+
+      /**
+       * Store object in knowledge base
+       * @param kb        Knowledge Base to store object in
+       * @param name      location of object in Knowlege Base
+       **/
+      virtual void to_container_impl (
+        Madara::Knowledge_Engine::Knowledge_Base& kb, 
+        const std::string& name);
+
+      /**
+       * Load object from knowledge base
+       * @param kb        Knowledge Base with object
+       * @param name      location of object in Knowlege Base
+       **/
+      virtual bool from_container_impl (
+        Madara::Knowledge_Engine::Knowledge_Base& kb, 
+        const std::string& name);
+    }; // class Region
   } // namespace utility
 } // namespace gams
 

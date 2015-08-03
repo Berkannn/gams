@@ -55,19 +55,30 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
+
+#include "madara/knowledge_engine/containers/Integer.h"
+
+#include "gams/loggers/Global_Logger.h"
 
 using std::string;
 using std::vector;
 
 gams::utility::Prioritized_Region::Prioritized_Region (
-  const vector <GPS_Position> & init_points, const unsigned int p) :
-  Region (init_points), priority (p)
+  const vector <GPS_Position> & init_points, const unsigned int p, 
+  const std::string& name) :
+  Region (init_points, 0, name), priority (p)
 {
 }
 
 gams::utility::Prioritized_Region::Prioritized_Region (const Region & region,
-  const unsigned int p) :
+  const unsigned int p, const std::string& name) :
   Region (region), priority (p)
+{
+  set_name (name);
+}
+
+gams::utility::Prioritized_Region::~Prioritized_Region ()
 {
 }
 
@@ -81,24 +92,88 @@ gams::utility::Prioritized_Region::operator= (const Prioritized_Region & rhs)
   }
 }
 
-void
-gams::utility::Prioritized_Region::init (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const string & prefix)
+bool
+gams::utility::Prioritized_Region::operator== (const Prioritized_Region& rhs) const
 {
-  // initialize super class variables
-  ((Region *)(this))->init (knowledge, prefix);
-
-  // get priority
-  priority = knowledge.get (prefix + ".priority").to_integer ();
+  return (this == &rhs) || 
+    (((Region*)this)->operator==(rhs) && (priority == rhs.priority));
 }
 
-gams::utility::Prioritized_Region
-gams::utility::parse_prioritized_region (
-  Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-  const string & prefix)
+bool
+gams::utility::Prioritized_Region::operator!= (const Prioritized_Region& rhs) const
 {
-  Prioritized_Region result;
-  result.init (knowledge, prefix);
-  return result;
+  return !(*this == rhs);
+}
+
+std::string
+gams::utility::Prioritized_Region::to_string (const std::string & delimiter)
+  const
+{
+  std::stringstream ret_val;
+  ret_val << this->Region::to_string (delimiter) << std::endl;
+  ret_val << "\tpriority: " << priority << std::endl;
+  return ret_val.str ();
+}
+
+bool
+gams::utility::Prioritized_Region::check_valid_type (
+  Madara::Knowledge_Engine::Knowledge_Base& kb, const std::string& name) const
+{
+  const static Class_ID valid = 
+    (Class_ID) (REGION_TYPE_ID | PRIORITIZED_REGION_TYPE_ID);
+  return Containerize::is_valid_type (kb, name, valid);
+}
+
+void
+gams::utility::Prioritized_Region::to_container_impl (
+  Madara::Knowledge_Engine::Knowledge_Base& kb, const std::string& name)
+{
+  Region temp (*this);
+  temp.to_container (kb, name);
+
+  Madara::Knowledge_Engine::Containers::Integer object_type;
+  object_type.set_name (name + object_type_suffix_, kb);
+  object_type = PRIORITIZED_REGION_TYPE_ID;
+
+  Madara::Knowledge_Engine::Containers::Integer priority_container;
+  priority_container.set_name (name + ".priority", kb);
+  priority_container = priority;
+}
+
+bool
+gams::utility::Prioritized_Region::from_container_impl (
+  Madara::Knowledge_Engine::Knowledge_Base& kb, const std::string& name)
+{
+  bool ret_val (false);
+  if (!check_valid_type (kb, name))
+  {
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_ERROR,
+      "gams::utility::Prioritized_Region::from_container:" \
+      " \"%s\" is not a valid Region\n", name.c_str ());
+    ret_val = false;
+  }
+  else
+  {
+    Region temp_reg;
+    if (ret_val = temp_reg.from_container (kb, name))
+    {
+      Madara::Knowledge_Engine::Containers::Integer priority_container;
+      priority_container.set_name (name + ".priority", kb);
+      if (!priority_container.exists ())
+      {
+        madara_logger_ptr_log (gams::loggers::global_logger.get (),
+          gams::loggers::LOG_ERROR,
+          "gams::utility::Prioritized_Region::from_container:" \
+          " \"%s\" is missing priority value\n", name.c_str ());
+        ret_val = false;
+      }
+      else
+      {
+        operator= (
+          Prioritized_Region (temp_reg, priority_container.to_integer ()));
+      }
+    }
+  }
+  return ret_val;
 }

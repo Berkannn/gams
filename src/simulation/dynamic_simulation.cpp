@@ -362,8 +362,8 @@ void put_border (Madara::Knowledge_Engine::Knowledge_Base& knowledge,
       if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
         simx_opmode_oneshot_wait) != simx_error_noerror)
       {
-        cerr << "failure loading plant model" << endl;
-        exit (0);
+        cerr << "failure loading border model" << endl;
+        exit (-1);
       }
   
       // move object
@@ -427,13 +427,15 @@ struct surface_type
 {
   string file;
   double size;
-  function<void(const int&, Madara::Knowledge_Engine::Knowledge_Base&)> type_fix;
+  function<void(const int&, Madara::Knowledge_Engine::Knowledge_Base&)> pre_function;
+  function<void(const int&, Madara::Knowledge_Engine::Knowledge_Base&)> post_function;
 
-  surface_type () : file (""), size (0), type_fix (empty_fix) {}
+  surface_type () : file (""), size (0), pre_function (empty_fix), post_function (empty_fix) {}
 
   surface_type (string f, double s, 
-    function<void(const int&, Madara::Knowledge_Engine::Knowledge_Base&)> t) :
-    file (f), size (s), type_fix (t) {}
+    function<void(const int&, Madara::Knowledge_Engine::Knowledge_Base&)> pre = empty_fix, 
+    function<void(const int&, Madara::Knowledge_Engine::Knowledge_Base&)> post = empty_fix) :
+    file (f), size (s), pre_function (pre), post_function (post) {}
 };
 
 /**
@@ -481,6 +483,9 @@ void create_environment (const int& client_id,
   cout << "creating environment of size " << max_x << " x " << max_y << "...";
   int num_x = max_x / floor_size + 2;
   int num_y = max_y / floor_size + 2;
+
+  // pre loading fix
+  surface_info.pre_function (client_id, knowledge);
   
   // load floor models
   string model_file (surface_info.file);
@@ -506,8 +511,8 @@ void create_environment (const int& client_id,
       simx_opmode_oneshot_wait);
   }
 
-  // other stuff for each type
-  surface_info.type_fix (client_id, knowledge);
+  // post loading fix
+  surface_info.post_function (client_id, knowledge);
 
   cout << "done" << endl;
 
@@ -516,19 +521,19 @@ void create_environment (const int& client_id,
   {
     cout << "placing border models as markers...";
 
-    // paint each vertex
+    // paint each selected region
     for (size_t i = 0; i < regions.size (); ++i)
     {
       if (regions[i].find ("region") != std::string::npos)
       {
-        gams::utility::Region reg =
-          gams::utility::parse_region (knowledge, regions[i]);
+        gams::utility::Region reg;
+        reg.from_container (knowledge, regions[i]);
         put_border (knowledge, reg, client_id);
       }
       else // search_area
       {
-        gams::utility::Search_Area search =
-          gams::utility::parse_search_area (knowledge, regions[i]);
+        Search_Area search;
+        search.from_container (knowledge, regions[i]);
         vector<Prioritized_Region> search_regions = search.get_regions ();
         for (size_t j = 0; j < search_regions.size (); ++j)
           put_border (knowledge, search_regions[j], client_id);
@@ -668,7 +673,8 @@ int main (int argc, char ** argv)
   cout << "done" << endl;
 
   // data collection
-  Search_Area search = gams::utility::parse_search_area (knowledge, search_area_id);
+  Search_Area search;
+  search.from_container (knowledge, search_area_id);
   time_to_full_coverage (knowledge, search);
 
   // exit

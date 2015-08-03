@@ -18,6 +18,82 @@ jlong JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1PrioritizedRegion
 
 /*
  * Class:     com_gams_utility_PrioritizedRegion
+ * Method:    jni_toString
+ * Signature: (J)Ljava/lang/String;
+ */
+jstring JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1toString
+  (JNIEnv * env, jobject, jlong cptr)
+{
+  jstring ret_val;
+
+  utility::Prioritized_Region * current = (utility::Prioritized_Region *) cptr;
+  if (current)
+  {
+    std::string result = current->to_string();
+    ret_val = env->NewStringUTF(result.c_str());
+  }
+
+  return ret_val;
+}
+
+/*
+ * Class:     com_gams_utility_PrioritizedRegion
+ * Method:    jni_fromContainer
+ * Signature: (JJLjava/lang/String;)V
+ */
+void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1fromContainer
+  (JNIEnv * env, jobject, jlong cptr, jlong kb_ptr, jstring name)
+{
+  utility::Prioritized_Region * current = (utility::Prioritized_Region *) cptr;
+  const char * str_name = env->GetStringUTFChars (name, 0);
+  engine::Knowledge_Base * kb = (engine::Knowledge_Base *) kb_ptr;
+
+  if (current && str_name && kb)
+  {
+    current->from_container (*kb, str_name);
+  }
+
+  env->ReleaseStringUTFChars (name, str_name);
+}
+
+/*
+ * Class:     com_gams_utility_PrioritizedRegion
+ * Method:    jni_toContainer
+ * Signature: (JJLjava/lang/String;)V
+ */
+void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1toContainer
+  (JNIEnv * env, jobject, jlong cptr, jlong kb_ptr, jstring name)
+{
+  utility::Prioritized_Region * current = (utility::Prioritized_Region *) cptr;
+  const char * str_name = env->GetStringUTFChars (name, 0);
+  engine::Knowledge_Base * kb = (engine::Knowledge_Base *) kb_ptr;
+
+  if (current && str_name && kb)
+  {
+    current->to_container (*kb, str_name);
+  }
+
+  env->ReleaseStringUTFChars (name, str_name);
+}
+
+/*
+ * Class:     com_gams_utility_PrioritizedRegion
+ * Method:    jni_modify
+ * Signature: (J)V
+ */
+void JNICALL Java_com_gams_utility_PrioritizedRegion_jni_1modify
+  (JNIEnv *, jobject, jlong cptr)
+{
+  utility::Prioritized_Region * current = (utility::Prioritized_Region *) cptr;
+
+  if (current)
+  {
+    current->modify();
+  }
+}
+
+/*
+ * Class:     com_gams_utility_PrioritizedRegion
  * Method:    jni_freePrioritizedRegion
  * Signature: (J)V
  */

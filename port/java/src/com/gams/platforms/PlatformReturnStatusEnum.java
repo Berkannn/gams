@@ -44,49 +44,51 @@
  * 
  * @author James Edmondson <jedmondson@gmail.com>
  *********************************************************************/
+package com.gams.platforms;
 
-package com.gams.tests;
- 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * An enumeration of possible return values from functions like move, home,
+ * and other methods defined in @see PlatformInterface
+ */
+public enum PlatformReturnStatusEnum
+{
+  //These are defined in platforms/Base.h
+  PLATFORM_ERROR(0),
+  PLATFORM_IN_PROGRESS(1),
+  PLATFORM_MOVING(1),
+  PLATFORM_ARRIVED(2);
 
-import com.madara.KnowledgeBase;
-import com.gams.controllers.BaseController;
-import com.gams.utility.Logging;
-import com.madara.KnowledgeList;
+  private int num;
 
-import com.gams.algorithms.DebugAlgorithmFactory;
-
-public class TestDebuggerLoop
-{ 
-  public static void main (String...args) throws Exception
+  private PlatformReturnStatusEnum(int num)
   {
-    Logging.setLevel(6);
-  	  
-    System.out.println("Creating knowledge base...");
-    KnowledgeBase knowledge = new KnowledgeBase();
-    System.out.println("Passing knowledge base to base controller...");
-    BaseController controller = new BaseController(knowledge);
-    
-    System.out.println("Creating debug algorithm factory...");
-    DebugAlgorithmFactory debugFactory = new DebugAlgorithmFactory();
-    
-    System.out.println("Adding debug algorithm factory as 'java-debug'...");
-    controller.addAlgorithmFactory("java-debug", debugFactory);
- 
-    KnowledgeList list = new KnowledgeList();
-    
-    System.out.println("Initializing 'java-debug' algorithm...");
-    controller.initAlgorithm("java-debug", list);
-    
-    System.out.println("Running controller every 1s for 10s...");
-    controller.run(1.0, 200.0);
-    
-    controller.free();
-    knowledge.free();
+    this.num = num;
   }
-  
-  
+
+  /**
+   * @return int value of this {@link com.gams.platforms.PlatformReturnStatusEnum PlatformReturnStatusEnum}
+   */
+  public int value()
+  {
+    return num;
+  }
+
+  /**
+   * Converts an int to a {@link com.gams.platforms.PlatformReturnStatusEnum
+   * PlatformReturnStatusEnum}
+   *
+   * @param val value to convert
+   * @return {@link com.gams.platforms.PlatformReturnStatusEnum
+   *         PlatformReturnStatusEnum} or null if the int is invalid
+   */
+  public static PlatformReturnStatusEnum getType(int val)
+  {
+    for (PlatformReturnStatusEnum t : values())
+    {
+      if (t.value() == val)
+        return t;
+    }
+    return null;
+  }
 }
+

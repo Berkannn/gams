@@ -63,7 +63,7 @@ namespace gams
 {
   namespace utility
   {
-    class GAMS_Export Search_Area
+    class GAMS_Export Search_Area : public Containerize
     {
     public:
       /**
@@ -73,20 +73,38 @@ namespace gams
 
       /**
        * Constructor
-       * @param  region   the initial region of the search area
+       * @param region  the initial region of the search area
+       * @param name    name for this search area
        **/
-      Search_Area (const Prioritized_Region& region);
+      Search_Area (const Prioritized_Region& region, 
+        const std::string& name = "");
 
       /**
        * Constructor
-       * @param regions   regions in this search area
+       * @param regions regions in this search area
+       * @param name    name for this search area
        */
-      Search_Area (const std::vector<Prioritized_Region>& regions);
+      Search_Area (const std::vector<Prioritized_Region>& regions,
+        const std::string& name = "");
 
       /**
        * Destructor
        **/
       ~Search_Area ();
+
+      /**
+       * Equality operator
+       * @param rhs   Search_Area to compare against
+       * @return true if Search_Areas have same Prioritized_Region, false otherwise
+       **/
+      bool operator== (const Search_Area& rhs) const;
+
+      /**
+       * Inequality operator, uses Equality operator and inverses it
+       * @param rhs   Search_Area to compare against
+       * @return false if Search_Areas have same Prioritized_Region, true otherwise
+       **/
+      bool operator!= (const Search_Area& rhs) const;
 
       /**
        * Assignment operator
@@ -127,14 +145,6 @@ namespace gams
       bool contains (const GPS_Position& p) const;
       
       /**
-       * Initializes search area from knowledge base information
-       * @param knowledge   knowledge base to draw from
-       * @param prefix   prefix for the search area (e.g., "search_area.0")
-       **/
-      void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const std::string & prefix);
-
-      /**
        * Create string representation of Search_Area
        * @return string representation of this object
        **/
@@ -156,23 +166,41 @@ namespace gams
        * @param gp1  start point
        * @param gp2  pivot point
        * @param gp3  end point
-       */
+       * @return cross product of the points
+       **/
       double cross (const GPS_Position& gp1, const GPS_Position& gp2, 
         const GPS_Position& gp3) const;
 
       /// collection of prioritized regions
       std::vector<Prioritized_Region> regions_;
-    }; // class Search_Area
 
-    /**
-     * Create Search Area from knowledge base information
-     * @param knowledge   knowledge base to draw from
-     * @param prefix   prefix for the search area (e.g., "search_area.0")
-     * @return Region object created from knowledge base
-     **/
-    GAMS_Export Search_Area parse_search_area (
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-      const std::string & prefix);
+    private:
+      /**
+       * Check if object is of correct type
+       * @param kb        Knowledge Base with object
+       * @param prefix    Prefix of object in the KB
+       */
+      virtual bool check_valid_type (Madara::Knowledge_Engine::Knowledge_Base& kb,
+        const std::string& name) const;
+
+      /**
+       * Store object in knowledge base
+       * @param kb        Knowledge Base to store object in
+       * @param name      location of object in Knowlege Base
+       **/
+      virtual void to_container_impl (
+        Madara::Knowledge_Engine::Knowledge_Base& kb, 
+        const std::string& name);
+
+      /**
+       * Load object from knowledge base
+       * @param kb        Knowledge Base with object
+       * @param name      location of object in Knowlege Base
+       **/
+      virtual bool from_container_impl (
+        Madara::Knowledge_Engine::Knowledge_Base& kb, 
+        const std::string& name);
+    }; // class Search_Area
   } // namespace utility
 } // namespace gams
 

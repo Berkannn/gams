@@ -61,21 +61,21 @@ public interface AlgorithmInterface
   /**
    * Analyzes the algorithm for new status information. This should be
    * a non-blocking call.
-   * @return  status information (@see Status)
+   * @return  status information (@see AlgorithmStatusEnum)
    **/
   public int analyze ();
   
   /**
    * Plans next steps in the algorithm. This should be
    * a non-blocking call.
-   * @return  status information (@see Status)
+   * @return  status information (@see AlgorithmStatusEnum)
    **/
   public int plan ();
   
   /**
    * Executes next step in the algorithm. This should be
    * a non-blocking call.
-   * @return  status information (@see Status)
+   * @return  status information (@see AlgorithmStatusEnum)
    **/
   public int execute ();
 }
