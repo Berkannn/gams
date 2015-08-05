@@ -167,10 +167,21 @@ gams::platforms::VREP_Base::sense (void)
   simxGetObjectPosition (client_id_, node_id_, sim_handle_parent, curr_arr,
                         simx_opmode_oneshot_wait);
 
+  madara_logger_ptr_log (gams::loggers::global_logger.get (),
+    gams::loggers::LOG_DETAILED,
+    "gams::algorithms::platforms::VREP_Base:" \
+    " vrep position: %f,%f,%f\n", curr_arr[0], curr_arr[1], curr_arr[2]);
+
   utility::Position vrep_pos;
   array_to_position (curr_arr, vrep_pos);
   utility::GPS_Position position;
   vrep_to_gps (vrep_pos, position);
+
+  madara_logger_ptr_log (gams::loggers::global_logger.get (),
+    gams::loggers::LOG_DETAILED,
+    "gams::algorithms::platforms::VREP_Base:" \
+    " gps position: %f,%f,%f\n", 
+    position.latitude (), position.longitude (), position.altitude ());
 
   // set position in madara
   position.to_container (self_->device.location);
@@ -194,7 +205,7 @@ gams::platforms::VREP_Base::analyze (void)
 double
 gams::platforms::VREP_Base::get_accuracy () const
 {
-  return 1.0;
+  return 0.5;
 }
 
 double
@@ -271,7 +282,7 @@ gams::platforms::VREP_Base::get_target_handle ()
 
 void
 gams::platforms::VREP_Base::array_to_position(const simxFloat (&arr)[3],
-  utility::Position & pos) const
+  utility::Position & pos)
 {
   pos.x = arr[0];
   pos.y = arr[1];
@@ -301,7 +312,7 @@ gams::platforms::VREP_Base::gps_to_vrep (const utility::GPS_Position & position,
 
 void
 gams::platforms::VREP_Base::position_to_array (const utility::Position & pos,
-  simxFloat (&arr)[3]) const
+  simxFloat (&arr)[3])
 {
   arr[0] = pos.x;
   arr[1] = pos.y;

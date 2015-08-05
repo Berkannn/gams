@@ -52,6 +52,10 @@ package com.gams.utility;
 public class PrioritizedRegion extends Region
 {
   private native long jni_PrioritizedRegion();
+  private native String jni_toString(long cptr);
+  private native void jni_fromContainer(long cptr, long kb, String name);
+  private native void jni_toContainer(long cptr, long kb, String name);
+  private native void jni_modify(long cptr);
   private static native void jni_freePrioritizedRegion(long cptr);
   private native long jni_getPriority(long cptr); 
   private native void jni_setPriority(long cptr, long priority); 
@@ -64,6 +68,15 @@ public class PrioritizedRegion extends Region
   public PrioritizedRegion()
   {
     setCPtr(jni_PrioritizedRegion());
+  }
+
+  /**
+   * Get String representation of the PrioritizedRegion
+   * @return String representation of this PrioritizedRegion
+   **/
+  public String toString()
+  {
+    return jni_toString(getCPtr());
   }
 
   /**
@@ -111,6 +124,52 @@ public class PrioritizedRegion extends Region
     ret.manageMemory=shouldManage;
     ret.setCPtr(cptr);
     return ret;
+  }
+
+  /**
+   * Helper function for copying values from a MADARA knowledge base
+   * @param kb      KnowledgeBase to copy region infomration to
+   **/
+  public void fromContainer(com.madara.KnowledgeBase kb)
+  {
+    fromContainer(kb, getName());
+  }
+
+  /**
+   * Helper function for copying values from a MADARA knowledge base
+   * @param kb      KnowledgeBase to copy region infomration to
+   * @param name    name of the prioritized region
+   **/
+  public void fromContainer(com.madara.KnowledgeBase kb, String name)
+  {
+    jni_fromContainer(getCPtr(), kb.getCPtr(), name); 
+  }
+
+  /**
+   * Helper function for copying values to a MADARA knowledge base
+   * @param kb      KnowledgeBase with region information
+   **/
+  public void toContainer(com.madara.KnowledgeBase kb)
+  {
+    toContainer(kb, getName());
+  }
+
+  /**
+   * Helper function for copying values to a MADARA knowledge base
+   * @param kb      KnowledgeBase with region information
+   * @param name    name of the prioritized region
+   **/
+  public void toContainer(com.madara.KnowledgeBase kb, String name)
+  {
+    jni_toContainer(getCPtr(), kb.getCPtr(), name);
+  }
+
+  /**
+   * Resends Prioritized_Region over KB
+   **/
+  public void modify()
+  {
+    jni_modify(getCPtr());
   }
 
   /**

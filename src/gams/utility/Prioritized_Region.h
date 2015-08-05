@@ -73,22 +73,40 @@ namespace gams
        * @param new_priority  associated priority
        **/
       Prioritized_Region (const std::vector <GPS_Position>& init_points =
-        std::vector<GPS_Position> (), const unsigned int new_priority = 1);
+        std::vector<GPS_Position> (), const unsigned int new_priority = 1, const std::string& name = "");
 
       /**
        * Constructor
        * @param region    associated region
        * @param new_priority  associated priority
        **/
-      Prioritized_Region (const Region& region, const unsigned int new_priority = 1);
-      
-    /**
-     * Initialize prioritized region from knowledge base
-     * @param knowledge   knowledge base to draw from
-     * @param prefix      prefix for the region (e.g. "region.0")
-     **/
-      void init (Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-        const std::string & prefix);
+      Prioritized_Region (const Region& region, const unsigned int new_priority = 1, const std::string& name = "");
+
+      /**
+       * Destructor
+       **/
+      virtual ~Prioritized_Region ();
+
+      /**
+       * Equality operator. Uses Region::operator== and checks if priority are equal
+       * @param rhs   Prioritized_Region to compare to
+       * @return true if same vertices and same priority, false otherwise
+       **/
+      bool operator== (const Prioritized_Region& rhs) const;
+
+      /**
+       * Inequality operator. Uses operator== and inverses result
+       * @param rhs   Prioritized_Region to compare to
+       * @return false if same vertices and same priority, true otherwise
+       **/
+      bool operator!= (const Prioritized_Region& rhs) const;
+
+      /**
+       * Helper function for converting the position to a string
+       * @param delimiter characters to insert between position components
+       * @return string representation of this Prioritized_Region
+       **/
+      std::string to_string (const std::string & delimiter = ":") const;
 
       /**
        * Assignment operator
@@ -98,17 +116,34 @@ namespace gams
 
       /// priority
       Madara::Knowledge_Record::Integer priority;
-    }; // class Prioritized_Region
 
-    /**
-     * Create prioritized region from knowledge base information
-     * @param knowledge   knowledge base to draw from
-     * @param prefix      prefix for the region (e.g. "region.0")
-     * @return Prioritized_Region object created from knowledge base
-     **/
-    Prioritized_Region parse_prioritized_region (
-      Madara::Knowledge_Engine::Knowledge_Base & knowledge,
-      const std::string & prefix);
+    private:
+      /**
+       * Check if object is of correct type
+       * @param kb        Knowledge Base with object
+       * @param prefix    Prefix of object in the KB
+       */
+      virtual bool check_valid_type (Madara::Knowledge_Engine::Knowledge_Base& kb,
+        const std::string& name) const;
+
+      /**
+       * Store object in knowledge base
+       * @param kb        Knowledge Base to store object in
+       * @param name      location of object in Knowlege Base
+       **/
+      virtual void to_container_impl (
+        Madara::Knowledge_Engine::Knowledge_Base& kb, 
+        const std::string& name);
+
+      /**
+       * Load object from knowledge base
+       * @param kb        Knowledge Base with object
+       * @param name      location of object in Knowlege Base
+       **/
+      virtual bool from_container_impl (
+        Madara::Knowledge_Engine::Knowledge_Base& kb, 
+        const std::string& name);
+    }; // class Prioritized_Region
   } // namespace utility
 } // namespace gams
 

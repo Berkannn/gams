@@ -64,6 +64,8 @@
 #include "gams/utility/Prioritized_Region.h"
 #include "gams/utility/Search_Area.h"
 
+#include "gams/loggers/Global_Logger.h"
+
 using gams::utility::GPS_Position;
 using gams::utility::Position;
 using gams::utility::Prioritized_Region;
@@ -264,6 +266,15 @@ test_Region ()
   testing_output ("get_area", 1);
   assert (r.get_area () < 525.8 && r.get_area() > 525.7);
   assert (bound.get_area () < 681.3 && bound.get_area() > 681.2);
+
+  // check to/from container
+  Madara::Knowledge_Engine::Knowledge_Base kb;
+  r.to_container (kb, "test");
+  Region from;
+  from.from_container (kb, "test");
+  assert (from == r);
+  Region nullRegion;
+  assert (from != nullRegion);
 }
 
 void
@@ -299,14 +310,44 @@ test_Search_Area ()
   p.latitude (40.443337);
   p.longitude (-79.940298);
   points.push_back (p);
-  Prioritized_Region pr2 (points, 1);
+  Prioritized_Region pr2 (points, 5);
   search.add_prioritized_region (pr2);
   assert (search.get_convex_hull () == convex1);
+
+  // test to/from container
+  Madara::Knowledge_Engine::Knowledge_Base kb;
+  pr.to_container (kb, "test");
+  Prioritized_Region from;
+  from.from_container (kb, "test");
+  assert (from == pr);
+  from.to_container (kb, "test2");
+  pr.from_container (kb, "test2");
+  assert (from == pr);
+  Prioritized_Region nullPR;
+  assert (nullPR != from);
+  Search_Area cont1;
+  cont1.add_prioritized_region (pr);
+  cont1.add_prioritized_region (nullPR);
+  Search_Area cont2;
+  cont1.to_container (kb, "sa_test");
+  cont2.from_container (kb, "sa_test");
+  assert (cont1 == cont2);
+  Search_Area nullSA;
+  nullSA.to_container (kb, "nullSA");
+  assert (cont1 != nullSA);
+  cont1.from_container (kb, "nullSA");
+  assert (cont1 == nullSA);
+
+  // try to get region from search area
+  Region fail_region;
+  assert (!fail_region.from_container (kb, "nullSA"));
+  assert (!fail_region.from_container (kb, "sa_test"));
 }
 
 int
 main (int /*argc*/, char ** /*argv*/)
 {
+  gams::loggers::global_logger->set_level (-1);
   test_Position ();
   test_GPS_Position ();
   test_Region ();

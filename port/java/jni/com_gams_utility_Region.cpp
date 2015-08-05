@@ -1,4 +1,7 @@
 #include "com_gams_utility_Region.h"
+
+#include <string>
+
 #include "gams/utility/Region.h"
 
 namespace containers = Madara::Knowledge_Engine::Containers;
@@ -29,19 +32,94 @@ void JNICALL Java_com_gams_utility_Region_jni_1freeRegion
 
 /*
  * Class:     com_gams_utility_Region
- * Method:    jni_fromContainer
- * Signature: (JJ)V
+ * Method:    jni_getName
+ * Signature: (J)Ljava/lang/String;
  */
-void JNICALL Java_com_gams_utility_Region_jni_1fromContainer
-  (JNIEnv *, jobject, jlong cptr, jlong container_ptr)
+jstring JNICALL Java_com_gams_utility_Region_jni_1getName
+  (JNIEnv * env, jobject, jlong cptr)
+{
+  const utility::Region * current = (const utility::Region *) cptr;
+  jstring result;
+
+  if (current)
+  {
+    result = env->NewStringUTF (current->get_name ().c_str ());
+  }
+
+  return result;
+}
+
+/*
+ * Class:     com_gams_utility_Region
+ * Method:    jni_setName
+ * Signature: (JLjava/lang/String;)V
+ */
+void JNICALL Java_com_gams_utility_Region_jni_1setName
+  (JNIEnv * env, jobject, jlong cptr, jstring new_name)
 {
   utility::Region * current = (utility::Region *) cptr;
-  containers::String_Vector * container =
-    (containers::String_Vector *) container_ptr;
+  const char * str_name = env->GetStringUTFChars (new_name, 0);
 
-  if (current && container)
+  if (current && str_name)
   {
-    current->from_container (*container);
+    current->set_name (str_name);
+  }
+
+  env->ReleaseStringUTFChars (new_name, str_name);
+}
+
+/*
+ * Class:     com_gams_utility_Region
+ * Method:    jni_fromContainer
+ * Signature: (JJLjava/lang/String;)V
+ */
+void JNICALL Java_com_gams_utility_Region_jni_1fromContainer
+  (JNIEnv * env, jobject, jlong cptr, jlong kb_ptr, jstring name)
+{
+  utility::Region * current = (utility::Region *) cptr;
+  const char * str_name = env->GetStringUTFChars (name, 0);
+  engine::Knowledge_Base * kb = (engine::Knowledge_Base *) kb_ptr;
+
+  if (current && str_name && kb)
+  {
+    current->from_container (*kb, str_name);
+  }
+
+  env->ReleaseStringUTFChars (name, str_name);
+}
+
+/*
+ * Class:     com_gams_utility_Region
+ * Method:    jni_toContainer
+ * Signature: (JJLjava/lang/String;)V
+ */
+void JNICALL Java_com_gams_utility_Region_jni_1toContainer
+  (JNIEnv * env, jobject, jlong cptr, jlong kb_ptr, jstring name)
+{
+  utility::Region * current = (utility::Region *) cptr;
+  const char * str_name = env->GetStringUTFChars (name, 0);
+  engine::Knowledge_Base * kb = (engine::Knowledge_Base *) kb_ptr;
+
+  if (current && str_name && kb)
+  {
+    current->to_container (*kb, str_name);
+  }
+
+  env->ReleaseStringUTFChars (name, str_name);
+}
+
+/*
+ * Class:     com_gams_utility_Region
+ * Method:    jni_modify
+ * Signature: (J)V
+ */
+GAMS_Export void JNICALL Java_com_gams_utility_Region_jni_1modify
+  (JNIEnv *, jobject, jlong cptr)
+{
+  utility::Region * current = (utility::Region *) cptr;
+  if (current)
+  {
+    current->modify();
   }
 }
 
@@ -53,13 +131,16 @@ void JNICALL Java_com_gams_utility_Region_jni_1fromContainer
 jstring JNICALL Java_com_gams_utility_Region_jni_1toString
   (JNIEnv * env, jobject, jlong cptr)
 {
-  jstring result;
+  jstring ret_val;
 
   utility::Region * current = (utility::Region *) cptr;
   if (current)
-    result = env->NewStringUTF ("Region");
+  {
+    std::string result = current->to_string();
+    ret_val = env->NewStringUTF(result.c_str());
+  }
 
-  return result;
+  return ret_val;
 }
 
 /*

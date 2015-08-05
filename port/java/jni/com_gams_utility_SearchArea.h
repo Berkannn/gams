@@ -18,6 +18,46 @@ GAMS_Export jlong JNICALL Java_com_gams_utility_SearchArea_jni_1SearchArea
 
 /*
  * Class:     com_gams_utility_SearchArea
+ * Method:    jni_getName
+ * Signature: (J)Ljava/lang/String;
+ */
+GAMS_Export jstring JNICALL Java_com_gams_utility_SearchArea_jni_1getName
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_gams_utility_SearchArea
+ * Method:    jni_setName
+ * Signature: (JLjava/lang/String;)V
+ */
+GAMS_Export void JNICALL Java_com_gams_utility_SearchArea_jni_1setName
+  (JNIEnv *, jobject, jlong, jstring);
+
+/*
+ * Class:     com_gams_utility_SearchArea
+ * Method:    jni_fromContainer
+ * Signature: (JJLjava/lang/String;)V
+ */
+GAMS_Export void JNICALL Java_com_gams_utility_SearchArea_jni_1fromContainer
+  (JNIEnv *, jobject, jlong, jlong, jstring);
+
+/*
+ * Class:     com_gams_utility_SearchArea
+ * Method:    jni_toContainer
+ * Signature: (JJLjava/lang/String;)V
+ */
+GAMS_Export void JNICALL Java_com_gams_utility_SearchArea_jni_1toContainer
+  (JNIEnv *, jobject, jlong, jlong, jstring);
+
+/*
+ * Class:     com_gams_utility_SearchArea
+ * Method:    jni_modify
+ * Signature: (J)V
+ */
+GAMS_Export void JNICALL Java_com_gams_utility_SearchArea_jni_1modify
+  (JNIEnv *, jobject, jlong);
+
+/*
+ * Class:     com_gams_utility_SearchArea
  * Method:    jni_freeSearchArea
  * Signature: (J)V
  */

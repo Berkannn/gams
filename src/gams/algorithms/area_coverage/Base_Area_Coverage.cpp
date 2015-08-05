@@ -100,7 +100,13 @@ gams::algorithms::area_coverage::Base_Area_Coverage::analyze ()
   ++executions_;
   int ret_val = check_if_finished (OK);
   if (ret_val == FINISHED)
+  {
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_MAJOR,
+      "gams::algorithms::area_coverage::Base_Area_Coverage::analyze:" \
+      " setting finished\n");
     status_.finished = 1;
+  }
   return check_if_finished (OK);
 }
 
@@ -116,9 +122,15 @@ gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
     madara_logger_ptr_log (gams::loggers::global_logger.get (),
       gams::loggers::LOG_DETAILED,
       "gams::algorithms::area_coverage::Base_Area_Coverage::execute:" \
-      " platform_->move(\"%s\")\n", next_position_.to_string ().c_str ());
-
+      " calling platform->move(\"%s\")\n", next_position_.to_string ().c_str ());
     platform_->move(next_position_);
+  }
+  else
+  {
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_DETAILED,
+      "gams::algorithms::area_coverage::Base_Area_Coverage::execute:" \
+      " algorithm is finished\n");
   }
   return 0;
 }
@@ -136,7 +148,7 @@ gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
   {
     madara_logger_ptr_log (gams::loggers::global_logger.get (),
       gams::loggers::LOG_DETAILED,
-      "gams::algorithms::area_coverage::Base_Area_Coverage:" \
+      "gams::algorithms::area_coverage::Base_Area_Coverage::plan:" \
       " generating new position\n");
     generate_new_position();
   }
@@ -154,7 +166,10 @@ int
 gams::algorithms::area_coverage::Base_Area_Coverage::check_if_finished (
   int ret_val) const
 {
-  if (exec_time_ != ACE_Time_Value (0.0) && ret_val == OK && (ACE_OS::gettimeofday () > end_time_))
+  if (exec_time_ != ACE_Time_Value (0.0) && ret_val == OK && 
+    (ACE_OS::gettimeofday () > end_time_))
+  {
     ret_val = FINISHED;
+  }
   return ret_val;
 }
