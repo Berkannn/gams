@@ -142,19 +142,9 @@ gams::algorithms::area_coverage::Base_Area_Coverage::execute ()
 int
 gams::algorithms::area_coverage::Base_Area_Coverage::plan ()
 {
-  double dist = platform_->get_position()->distance_to(next_position_);
-  madara_logger_ptr_log (gams::loggers::global_logger.get (),
-    gams::loggers::LOG_DETAILED,
-    "gams::algorithms::area_coverage::Base_Area_Coverage::plan:" \
-    " distance between points is %f (need %f accuracy)\n", dist, platform_->get_accuracy());
-
-  utility::Position* position_ptr = platform_->get_position ();
-
-  utility::Position* test = dynamic_cast<utility::GPS_Position*> (platform_->get_position());
-  if (test != 0)
-    position_ptr = test;
-
-  if (position_ptr->approximately_equal(next_position_, platform_->get_accuracy()))
+  utility::GPS_Position current;
+  current.from_container (self_->device.location);
+  if (current.approximately_equal (next_position_, platform_->get_accuracy ()))
   {
     madara_logger_ptr_log (gams::loggers::global_logger.get (),
       gams::loggers::LOG_DETAILED,
