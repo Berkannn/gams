@@ -152,9 +152,10 @@ gams::platforms::VREP_UAV_Ranger::get_target_handle ()
 
   if (node_target_ < 0)
   {
-    GAMS_DEBUG (gams::utility::LOG_EMERGENCY, (LM_DEBUG, 
-      DLINFO "gams::platforms::VREP_UAV_Ranger::get_target_handle:" \
-      " invalid target handle id\n"));
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_EMERGENCY,
+      "gams::platforms::VREP_UAV_Ranger::get_target_handle:" \
+      " invalid target handle id\n");
   }
 }
 

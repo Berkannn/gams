@@ -73,10 +73,10 @@ gams::platforms::VREP_UAV_Factory::make_new (
 }
 
 gams::platforms::VREP_UAV::VREP_UAV (
-  Madara::Knowledge_Engine::Knowledge_Base * knowledge,
-  variables::Sensors * sensors,
-  variables::Platforms * platforms,
-  variables::Self * self)
+Madara::Knowledge_Engine::Knowledge_Base * knowledge,
+variables::Sensors * sensors,
+variables::Platforms * platforms,
+variables::Self * self)
   : VREP_Aerial_Base (knowledge, sensors, platforms, self)
 { }
 
@@ -123,9 +123,10 @@ gams::platforms::VREP_UAV::get_target_handle ()
 
   if (node_target_ < 0)
   {
-    GAMS_DEBUG (gams::utility::LOG_EMERGENCY, (LM_DEBUG, 
-      DLINFO "gams::platforms::VREP_UAV::get_target_handle:" \
-      " invalid target handle id\n"));
+    madara_logger_ptr_log (gams::loggers::global_logger.get (),
+      gams::loggers::LOG_ERROR,
+       "gams::platforms::VREP_UAV::get_target_handle:" \
+      " invalid target handle id\n");
   }
 }
 
