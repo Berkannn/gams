@@ -1,6 +1,6 @@
 project (dynamic_simulation) : using_gams, using_madara, using_ace, using_vrep {
   exeout = $(GAMS_ROOT)/bin
-  exename = dynamic_simulation
+  exename = dynamic_game
 
   requires += vrep
 
@@ -18,13 +18,13 @@ project (dynamic_simulation) : using_gams, using_madara, using_ace, using_vrep {
     using_madara.mpb
     using_vrep.mpb
     using_gams.mpb
-    simulation.mpc
+    dynamic_game.mpc
   }
 
   Source_Files {
 
     Simulation {
-      src/simulation/dynamic_simulation.cpp
+      src/simulation/dynamic_game.cpp
     }
   }
 }

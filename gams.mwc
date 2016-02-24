@@ -17,5 +17,6 @@ workspace {
   gams.mpc
   tests.mpc
   simulation.mpc
+  dynamic_game.mpc
   docs/Documentation.mpc
 }

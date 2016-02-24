@@ -64,6 +64,7 @@
 #include "gams/algorithms/Wait.h"
 #include "gams/algorithms/PerformanceProfiling.h"
 #include "gams/algorithms/GroupBarrier.h"
+#include "gams/algorithms/PatrollingGame.h"
 
 #include "gams/algorithms/area_coverage/UniformRandomAreaCoverage.h"
 #include "gams/algorithms/area_coverage/UniformRandomEdgeCoverage.h"
@@ -270,6 +271,12 @@ void algorithms::ControllerAlgorithmFactory::initialize_default_mappings (
   aliases[0] = "zone coverage";
 
   add (aliases, new ZoneCoverageFactory ());
+  
+  // Testing TestingDemo
+  aliases.resize(1);
+  aliases[0] = "patrolling game";
+  
+  add(aliases, new PatrollingGameFactory ());
 
 }
 
