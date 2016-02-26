@@ -10,3 +10,4 @@ agent.5.command.formation=.formation_protectors;
 agent.5.command.assets="assets";
 agent.5.command.protectors="protectors";
 agent.5.command.enemies="enemies";
+agent.5.command.name="Boat#4";

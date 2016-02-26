@@ -1,7 +1,7 @@
 .vrep_port=19910;
 
-.initial_lat=40.443131;
-.initial_lon=-79.940470;
+.initial_lat=40.443290;
+.initial_lon=-79.940334;
 .initial_alt=4;
 
 agent.4.command="patrolling game";

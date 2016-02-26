@@ -62,6 +62,7 @@ using std::string;
 #include <cmath>
 
 #include "madara/knowledge/containers/DoubleVector.h"
+#include "madara/knowledge/containers/Integer.h"
 
 #include "gams/variables/Sensor.h"
 
@@ -137,6 +138,12 @@ gams::platforms::VREPBoat::VREPBoat (
   add_model_to_environment (file, client_side);
   set_initial_position ();
   get_target_handle ();
+  //Set the id of the boat in knowledge base
+  std::stringstream to_find;
+  to_find << "agent." << self_->id.to_integer()<<".command.id";
+  //madara::knowledge::containers::Integer name = madara::knowledge::containers::Integer(to_find.str(), *knowledge);
+  knowledge->set(to_find.str(),madara::knowledge::KnowledgeRecord::Integer(node_id_));
+  //name = node_id_;
   wait_for_go ();
 }
 

@@ -12,4 +12,3 @@ agent.2.command.formation=.formation_enemies;
 agent.2.command.assets="assets";
 agent.2.command.protectors="protectors";
 agent.2.command.enemies="enemies";
-agent.2.command.name="Boat#1";

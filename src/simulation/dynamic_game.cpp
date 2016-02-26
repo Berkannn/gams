@@ -587,10 +587,41 @@ void start_simulator (const int & client_id,
   cout << "done" << endl;
 }
 
+int
+get_target_handle (int client_id, int node_id)
+{
+  //find the dummy base sub-object
+  simxInt handlesCount = 0,*handles = NULL;
+  simxInt parentsCount = 0,*parents = NULL;
+  simxGetObjectGroupData (client_id, sim_object_dummy_type, 2, &handlesCount,
+    &handles, &parentsCount, &parents, NULL, NULL, NULL, NULL,
+    simx_opmode_oneshot_wait);
+
+  // find node base
+  simxInt nodeBase = -1;
+  for(simxInt i = 0; i < handlesCount; ++i)
+  {
+    if(parents[i] == node_id)
+    {
+      nodeBase = handles[i];
+      break;
+    }
+  }
+
+  // find the target sub-object of the base sub-object
+  int node_target = -1;
+  simxGetObjectChild (client_id, nodeBase, 0, &node_target,
+    simx_opmode_oneshot_wait);
+  return node_target;
+}
+/**
+ * Place the enemy robots randomly outside of the view point of the protectors
+ * [[TODO: randomly place them]]
+ **/
 void reposition_enemies(int client_id,
           madara::knowledge::KnowledgeBase& knowledge)
 {
-  //Get the enemie boats
+  //Get the enemy boats
   madara::knowledge::containers::StringVector enemies;
   madara::knowledge::containers::Integer sizeArray;
   enemies = madara::knowledge::containers::StringVector(
@@ -601,24 +632,104 @@ void reposition_enemies(int client_id,
   //Search through all the enemy robots found
   for(int i=0; i<sizeArray.to_double(); ++i)
   {
-    //Getting name of robot
-    engine::containers::String name = engine::containers::String(enemies[i]+".command.name",knowledge);
-    //cout<<"Found boat = "<<name<<endl;
-    
-    //Get the robot handle and move it {{Need to move all attached objects}}
-    int objHandle;
-    if (simxGetObjectHandle(client_id,name.to_string().c_str(),&objHandle,simx_opmode_oneshot_wait)==simx_error_noerror)
+    //Getting id of robot (robot handle) and move it
+    engine::containers::Integer robotHandle = engine::containers::Integer(enemies[i]+".command.id",knowledge);
+    if(robotHandle.exists()) 
     {
-      // Here I have the handle of my object
-      cout<<"Moving "<<name.to_string()<<"...";
-      float newPos[3]={0,0,.16};
+      int objHandle = *robotHandle;
+      cout<<"Moving id="<<objHandle<<"...";
+      
       // Moving the robot
-      cout<<"("<<simxSetObjectPosition(client_id, objHandle,-1,newPos,simx_opmode_oneshot_wait)<<") Finished!"<<endl;
-    } else {
-      cout<<"Error in getting handle!"<<endl;
+      float newPos[3]={0,0,.16};
+      int errorValue = simxSetObjectPosition(client_id, objHandle,-1,newPos,simx_opmode_oneshot_wait);
+      cout<<"Boat("<<errorValue<<")...";
+      // Moving target
+      int node_target = get_target_handle(client_id, objHandle);
+      errorValue = simxSetObjectPosition(client_id, node_target,-1,newPos,simx_opmode_oneshot_wait);
+      cout<<"Boat_target("<<errorValue<<")"<<endl;
+      cout<<"Finished!"<<endl;
     }
   }
+}
+
+void reposition_protectors(int client_id,
+                           madara::knowledge::KnowledgeBase& knowledge)
+{
+  //Get the protector boats
+  madara::knowledge::containers::StringVector protectors;
+  madara::knowledge::containers::Integer sizeArray;
+  protectors = madara::knowledge::containers::StringVector(
+              "group.protectors.members", knowledge);
+  sizeArray = madara::knowledge::containers::Integer(
+              "group.protectors.members.size", knowledge);
+
+  //Search through all the enemy robots found
+  for(int i=0; i<sizeArray.to_double(); ++i)
+  {
+    //Getting id of robot (robot handle) and move it
+    engine::containers::Integer robotHandle = engine::containers::Integer(protectors[i]+".command.id",knowledge);
+    if(robotHandle.exists()) 
+    {
+      int objHandle = *robotHandle;
+      cout<<"Moving id="<<objHandle<<"...";
+      
+      // Moving target
+      simxFloat curr_arr[3];
+      simxGetObjectPosition (client_id, objHandle, -1, curr_arr, simx_opmode_oneshot_wait);
+      int node_target = get_target_handle(client_id, objHandle);
+      int errorValue = simxSetObjectPosition(client_id, node_target, -1, curr_arr,simx_opmode_oneshot_wait);
+      cout<<"Boat_target("<<errorValue<<")"<<endl;
+      cout<<"Finished!"<<endl;
+    }
+  }  
+}
+
+bool 
+checkWorldConditions(int client_id,
+                     madara::knowledge::KnowledgeBase& knowledge)
+{
+  //Get the enemy boats
+  madara::knowledge::containers::StringVector enemies, assets;
+  madara::knowledge::containers::Integer sizeArrayEnemies, sizeArrayAssets;
+  enemies = madara::knowledge::containers::StringVector(
+              "group.enemies.members", knowledge);
+  sizeArrayEnemies = madara::knowledge::containers::Integer(
+              "group.enemies.members.size", knowledge);
+  assets = madara::knowledge::containers::StringVector(
+              "group.assets.members", knowledge);
+  sizeArrayAssets = madara::knowledge::containers::Integer(
+              "group.assets.members.size", knowledge);
   
+  //Check if any enemy is within a limited distance of an asset
+  for(int i=0; i<sizeArrayEnemies.to_double(); ++i)
+  {
+    //Getting id of robot (robot handle)
+    engine::containers::Integer robotHandle = engine::containers::Integer(enemies[i]+".command.id",knowledge);
+    if(robotHandle.exists()) 
+    {
+      int objHandle = *robotHandle;
+      simxFloat curr_arr[3];
+      simxGetObjectPosition (client_id, objHandle, -1, curr_arr, simx_opmode_oneshot_wait);
+      
+      for(int j=0; j<sizeArrayAssets.to_double(); ++j)
+      {
+        //Getting id of robot (robot handle)
+        engine::containers::Integer assetHandle = engine::containers::Integer(assets[i]+".command.id",knowledge);
+        if(assetHandle.exists()) 
+        {
+          int asset = *assetHandle;
+          simxFloat a_curr_arr[3];
+          simxGetObjectPosition (client_id, asset, -1, a_curr_arr, simx_opmode_oneshot_wait);
+          gams::utility::Position enemyPos(curr_arr[0],curr_arr[1],curr_arr[2]);
+          gams::utility::Position assetPos(a_curr_arr[0],a_curr_arr[1],a_curr_arr[2]);
+          double distance = abs(enemyPos.distance_to_2d(assetPos));
+          if(distance<=1)
+            return false;
+        }
+      }
+    }
+  }
+  return true;
 }
 
 void 
@@ -629,29 +740,35 @@ game_loop(int client_id,
   // record start time
   time_t start = time (NULL);
   unsigned int repeat = 100;
+  bool conditions = false;
+  //simxInt console;
+  //simxAuxiliaryConsoleOpen(client_id,"Log",20,0,NULL,NULL,NULL,NULL,&console,simx_opmode_oneshot_wait);
   for(unsigned int i = 0; i<repeat; i++)
-  {
-      time_t inner_start = time (NULL), inner_end = time (NULL);
-      
+  {   
       //Stopping the simulation
       cout << "Stopping simulation...";
       simxStopSimulation (client_id, simx_opmode_oneshot_wait);
-      cout << "done" << endl;
       simxPauseSimulation(client_id, simx_opmode_oneshot_wait);
+      cout << "done" << endl;
       
+      cout<<"Repositioning boats...";
       reposition_enemies(client_id,knowledge);
-      madara::utility::sleep (1);
+      reposition_protectors(client_id,knowledge);
+      cout<<"Finished"<<endl;
       
+      //Starting timer
+      time_t inner_start = time (NULL), inner_end;
       //starting simulation again
       if (num_agents > 0)
         start_simulator (client_id, knowledge);
-
+      
       do
       {
         madara::utility::sleep (1);
-        inner_end = time (NULL);
-        cout << inner_end - inner_start << " seconds of game play out of "<<repeat<<" Game:"<< (i + 1) << endl;
-      } while(inner_end - inner_start<10);
+        conditions = checkWorldConditions(client_id, knowledge);
+      } while(conditions);
+      inner_end = time (NULL);
+      cout << inner_end - inner_start << " seconds of game play ("<<i+1<<"/"<<repeat<<")"<<endl;
   }
   
 }
@@ -678,14 +795,13 @@ int main (int argc, char ** argv)
 
   // connect to vrep
   cout << "connecting to vrep...";
-  int client_id = 
-    simxStart (vrep_host.c_str (), vrep_port, true, true, 2000, 5);
+  int client_id = simxStart (vrep_host.c_str (), vrep_port, true, true, 2000, 5);
   if (client_id == -1)
   {
     cerr << "failure connecting to vrep" << endl;
     exit (-1);
   }
-  simxStopSimulation (client_id, simx_opmode_oneshot);
+  simxStopSimulation (client_id, simx_opmode_oneshot_wait);
   cout << "done" << endl;
 
   // create environment and start simulation
