@@ -324,8 +324,8 @@ gams::algorithms::PatrollingGame::execute (void)
     gams::loggers::LOG_MAJOR,
     "gams::algorithms::PatrollingGame::execute:" \
     " entering execute method\n");
-
-  if(!next_loc_.is_invalid())
+  engine::containers::Integer robotTagged = engine::containers::Integer(enemies_[index_]+".command.tagged",*knowledge_);
+  if(!next_loc_.is_invalid() && robotTagged!=1)
     platform_->move(next_loc_);
   return OK;
 }
@@ -390,6 +390,30 @@ gams::algorithms::PatrollingGame::diving_attack() const
   return ret;
 }
 
+Location
+gams::algorithms::PatrollingGame::defensive_formation() const
+{
+  // We get location
+  Location ret(platform_->get_frame());
+  const Location &enemy_loc = enemy_locs_[0];
+  
+  if(old_enemy_loc_.x()!=INVAL_COORD)
+  {
+    double dx, dy, dz, distance;
+    dx = enemy_loc.x()-old_enemy_loc_.x();
+    dy = enemy_loc.y()-old_enemy_loc_.y();
+    dz = enemy_loc.z()-old_enemy_loc_.z();
+    
+    distance = sqrt(dx*dx +dy*dy+dz*dz);
+    
+    ret.x(enemy_loc.x()+dx*10);
+    ret.y(enemy_loc.y()+dy*10);
+    ret.z(enemy_loc.z()+dz);
+  }
+  
+  return ret;
+}
+
 gams::algorithms::PatrollingGame::formation_func
 gams::algorithms::PatrollingGame::get_form_func(const std::string &form_name)
 {
@@ -410,3 +434,4 @@ gams::algorithms::PatrollingGame::get_form_func(const std::string &form_name)
     return &PatrollingGame::attack_formation;
   }
 }
+

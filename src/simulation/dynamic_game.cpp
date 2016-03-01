@@ -99,6 +99,7 @@ using std::map;
 #include <functional>
 using std::function;
 #include <sstream>
+#include<cstdlib>
 
 #define DEG_TO_RAD(x) ((x) * M_PI / 180.0)
 
@@ -315,65 +316,52 @@ void get_dimensions (double &max_x, double &max_y,
 }
 
 /**
- * Put border around a region
+ * Put border around asset by radius
  * @param region region object to put border around
  */
-void put_border (madara::knowledge::KnowledgeBase& knowledge, 
-   const Region& reg, const int& client_id)
+void put_border (const int& client_id, madara::knowledge::KnowledgeBase& knowledge, const double& radius)
 {
   string model_file = getenv ("GAMS_ROOT");
   model_file += "/resources/vrep/border.ttm";
-
-  for (size_t j = 0; j < reg.vertices.size (); ++j)
+  madara::knowledge::containers::StringVector assets;
+  madara::knowledge::containers::Integer sizeArrayAssets;
+  assets = madara::knowledge::containers::StringVector(
+              "group.assets.members", knowledge);
+  sizeArrayAssets = madara::knowledge::containers::Integer(
+              "group.assets.members.size", knowledge);
+  
+  for(int i=0; i<sizeArrayAssets.to_double(); ++i)
   {
-    size_t next = (j + 1) % reg.vertices.size ();
-    string sw_position = knowledge.get (".vrep_sw_position").to_string ();
-    gams::utility::GPSPosition origin;
-    double latitude, longitude;
-    sscanf (sw_position.c_str (), "%lf,%lf", &latitude, &longitude);
-    origin.latitude (latitude); origin.longitude (longitude);
-
-    const gams::utility::GPSPosition gps_pos_1 = reg.vertices[j];
-    const gams::utility::GPSPosition gps_pos_2 = reg.vertices[next];
-    const gams::utility::Position pos_1 = gps_pos_1.to_position (origin);
-    const gams::utility::Position pos_2 = gps_pos_2.to_position (origin);
-    const double delta_x = pos_2.x - pos_1.x;
-
-    const unsigned int NUM_PLANTS_PER_SIDE = 5;
-    for (unsigned int k = 0; k < NUM_PLANTS_PER_SIDE; ++k)
+    //Getting id of robot (robot handle)
+    engine::containers::Integer assetHandle = engine::containers::Integer(assets[i]+".command.id",knowledge);
+    if(assetHandle.exists()) 
     {
-      double plant_x, plant_y;
-      if (delta_x != 0)
+      int asset = *assetHandle;
+      simxFloat a_curr_arr[3];
+      simxGetObjectPosition (client_id, asset, -1, a_curr_arr, simx_opmode_oneshot_wait);
+      float x, y;
+      for(int angle=0; angle<360; angle=angle+10)
       {
-        const double m = (pos_2.y - pos_1.y) / delta_x;
-        const double k_del_x = k * delta_x / NUM_PLANTS_PER_SIDE;
-        plant_x = pos_1.x + k_del_x;
-        plant_y = pos_1.y + m * k_del_x;
+        x = radius*cos(DEG_TO_RAD(angle))+a_curr_arr[0];
+        y = radius*sin(DEG_TO_RAD(angle))+a_curr_arr[1];
+        // find where it should go
+        simxFloat pos[3];
+        pos[0] = x;
+        pos[1] = y;
+        pos[2] = 0.0;
+    
+        // load object
+        int node_id;
+        if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
+          simx_opmode_oneshot_wait) != simx_error_noerror)
+        {
+          cerr << "failure loading border model:" << model_file << endl;
+          exit (-1);
+        }
+    
+        // move object
+        simxSetObjectPosition (client_id, node_id, -1, pos, simx_opmode_oneshot_wait);
       }
-      else // vertical line
-      {
-        plant_x = pos_1.x;
-        plant_y = pos_1.y + (pos_2.y - pos_1.y) * k / NUM_PLANTS_PER_SIDE;
-      }
-
-      // find where it should go
-      simxFloat pos[3];
-      pos[0] = plant_y;
-      pos[1] = plant_x;
-      pos[2] = 0.0;
-  
-      // load object
-      int node_id;
-      if (simxLoadModel (client_id, model_file.c_str (), 0, &node_id,
-        simx_opmode_oneshot_wait) != simx_error_noerror)
-      {
-        cerr << "failure loading border model:" << model_file << endl;
-        exit (-1);
-      }
-  
-      // move object
-      simxSetObjectPosition (client_id, node_id, sim_handle_parent, pos,
-        simx_opmode_oneshot_wait);
     }
   }
 }
@@ -531,26 +519,7 @@ void create_environment (const int& client_id,
   {
     cout << "placing border models as markers...";
     cout << std::flush;
-
-    // paint each selected region
-    for (size_t i = 0; i < regions.size (); ++i)
-    {
-      if (regions[i].find ("region") != std::string::npos)
-      {
-        gams::utility::Region reg;
-        reg.from_container (knowledge, regions[i]);
-        put_border (knowledge, reg, client_id);
-      }
-      else // search_area
-      {
-        SearchArea search;
-        search.from_container (knowledge, regions[i]);
-        vector<PrioritizedRegion> search_regions = search.get_regions ();
-        for (size_t j = 0; j < search_regions.size (); ++j)
-          put_border (knowledge, search_regions[j], client_id);
-      }
-    }
-
+    put_border(client_id, knowledge, 10);
     cout << "done" << endl;
   }
 }
@@ -616,18 +585,32 @@ get_target_handle (int client_id, int node_id)
 }
 /**
  * Place the enemy robots randomly outside of the view point of the protectors
- * [[TODO: randomly place them]]
+ * [[TODO: randomly place them safely]]
  **/
 void reposition_enemies(int client_id,
-          madara::knowledge::KnowledgeBase& knowledge)
+          madara::knowledge::KnowledgeBase& knowledge,
+          double minRadius, double maxRadius)
 {
   //Get the enemy boats
-  madara::knowledge::containers::StringVector enemies;
-  madara::knowledge::containers::Integer sizeArray;
+  madara::knowledge::containers::StringVector enemies, assets;
+  madara::knowledge::containers::Integer sizeArray, sizeArrayAssets;
   enemies = madara::knowledge::containers::StringVector(
               "group.enemies.members", knowledge);
   sizeArray = madara::knowledge::containers::Integer(
               "group.enemies.members.size", knowledge);
+  assets = madara::knowledge::containers::StringVector(
+              "group.assets.members", knowledge);
+  sizeArrayAssets = madara::knowledge::containers::Integer(
+              "group.assets.members.size", knowledge);
+  
+  //Getting id of robot (robot handle)
+  simxFloat a_curr_arr[3];
+  engine::containers::Integer assetHandle = engine::containers::Integer(assets[0]+".command.id",knowledge);
+  if(assetHandle.exists()) 
+  {
+    int asset = *assetHandle;
+    simxGetObjectPosition (client_id, asset, -1, a_curr_arr, simx_opmode_oneshot_wait);
+  }
   
   //Search through all the enemy robots found
   for(int i=0; i<sizeArray.to_double(); ++i)
@@ -640,7 +623,12 @@ void reposition_enemies(int client_id,
       cout<<"Moving id="<<objHandle<<"...";
       
       // Moving the robot
-      float newPos[3]={0,0,.16};
+      float x, y, radius, angle;
+      radius = ((rand() % int(maxRadius)) + minRadius);
+      angle = (rand()%360);
+      x = radius*cos(DEG_TO_RAD(angle))+a_curr_arr[0];
+      y = radius*sin(DEG_TO_RAD(angle))+a_curr_arr[1];
+      float newPos[3]={x,y,.16};
       int errorValue = simxSetObjectPosition(client_id, objHandle,-1,newPos,simx_opmode_oneshot_wait);
       cout<<"Boat("<<errorValue<<")...";
       // Moving target
@@ -689,8 +677,8 @@ checkWorldConditions(int client_id,
                      madara::knowledge::KnowledgeBase& knowledge)
 {
   //Get the enemy boats
-  madara::knowledge::containers::StringVector enemies, assets;
-  madara::knowledge::containers::Integer sizeArrayEnemies, sizeArrayAssets;
+  madara::knowledge::containers::StringVector enemies, assets, protectors;
+  madara::knowledge::containers::Integer sizeArrayEnemies, sizeArrayAssets, sizeArrayProtectors;
   enemies = madara::knowledge::containers::StringVector(
               "group.enemies.members", knowledge);
   sizeArrayEnemies = madara::knowledge::containers::Integer(
@@ -699,6 +687,10 @@ checkWorldConditions(int client_id,
               "group.assets.members", knowledge);
   sizeArrayAssets = madara::knowledge::containers::Integer(
               "group.assets.members.size", knowledge);
+  protectors = madara::knowledge::containers::StringVector(
+              "group.protectors.members", knowledge);
+  sizeArrayProtectors = madara::knowledge::containers::Integer(
+              "group.protectors.members.size", knowledge);
   
   //Check if any enemy is within a limited distance of an asset
   for(int i=0; i<sizeArrayEnemies.to_double(); ++i)
@@ -710,6 +702,7 @@ checkWorldConditions(int client_id,
       int objHandle = *robotHandle;
       simxFloat curr_arr[3];
       simxGetObjectPosition (client_id, objHandle, -1, curr_arr, simx_opmode_oneshot_wait);
+      gams::utility::Position enemyPos(curr_arr[0],curr_arr[1],curr_arr[2]);
       
       for(int j=0; j<sizeArrayAssets.to_double(); ++j)
       {
@@ -720,16 +713,68 @@ checkWorldConditions(int client_id,
           int asset = *assetHandle;
           simxFloat a_curr_arr[3];
           simxGetObjectPosition (client_id, asset, -1, a_curr_arr, simx_opmode_oneshot_wait);
-          gams::utility::Position enemyPos(curr_arr[0],curr_arr[1],curr_arr[2]);
           gams::utility::Position assetPos(a_curr_arr[0],a_curr_arr[1],a_curr_arr[2]);
           double distance = abs(enemyPos.distance_to_2d(assetPos));
+          //[END GAME] If an enemy is too close to the asset then end the game
           if(distance<=1)
             return false;
         }
       }
+      
+      for(int j=0; j<sizeArrayProtectors.to_double(); ++j)
+      {
+        //Getting id of robot (robot handle)
+        engine::containers::Integer protectorHandle = engine::containers::Integer(protectors[i]+".command.id",knowledge);
+        if(protectorHandle.exists()) 
+        {
+          int asset = *protectorHandle;
+          simxFloat p_curr_arr[3];
+          simxGetObjectPosition (client_id, asset, -1, p_curr_arr, simx_opmode_oneshot_wait);
+          gams::utility::Position protectorPos(p_curr_arr[0],p_curr_arr[1],p_curr_arr[2]);
+          double distance = abs(enemyPos.distance_to_2d(protectorPos));
+          if(distance<=1)
+          {
+            knowledge.set(enemies[i]+".command.tagged", Integer (1));
+            cout<<"Set tagged!"<<endl;
+            break;
+          }
+        }
+      }
     }
   }
+  
+  //[END GAME] If all enemies are tagged then end game
+  int taggedCount = 0;
+  for(int i=0; i<sizeArrayEnemies.to_double(); ++i)
+  {
+    engine::containers::Integer robotTagged = engine::containers::Integer(enemies[i]+".command.tagged",knowledge);
+    if(robotTagged.exists() && robotTagged==1)
+    {
+      taggedCount++;
+    }
+  }
+  if(taggedCount==sizeArrayEnemies.to_double())
+  {
+    return false;
+  }
+  // Return true no condition is failed
   return true;
+}
+
+void 
+setTagged(madara::knowledge::KnowledgeBase& knowledge)
+{
+  //Get the enemy boats
+  madara::knowledge::containers::StringVector enemies;
+  madara::knowledge::containers::Integer sizeArrayEnemies;
+  enemies = madara::knowledge::containers::StringVector(
+              "group.enemies.members", knowledge);
+  sizeArrayEnemies = madara::knowledge::containers::Integer(
+              "group.enemies.members.size", knowledge);
+  for(int i=0; i<sizeArrayEnemies.to_double(); ++i)
+  {
+    knowledge.set(enemies[i]+".command.tagged", Integer (0));
+  }
 }
 
 void 
@@ -752,9 +797,14 @@ game_loop(int client_id,
       cout << "done" << endl;
       
       cout<<"Repositioning boats...";
-      reposition_enemies(client_id,knowledge);
+      //Places enemies out side the minradius and within the maxradius of the asset
+      reposition_enemies(client_id,knowledge, 10, 15);
+      //Repositions the targets of the protectors
       reposition_protectors(client_id,knowledge);
       cout<<"Finished"<<endl;
+      
+      //Setting tagged to false
+      setTagged(knowledge);
       
       //Starting timer
       time_t inner_start = time (NULL), inner_end;
@@ -778,6 +828,7 @@ game_loop(int client_id,
  **/
 int main (int argc, char ** argv)
 {
+  srand(time(0));
   // handle all user arguments
   handle_arguments (argc, argv);
 

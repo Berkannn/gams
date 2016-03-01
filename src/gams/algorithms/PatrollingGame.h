@@ -143,8 +143,12 @@ namespace gams
       typedef utility::Location (PatrollingGame::*formation_func)() const;
 
       formation_func form_func_;
-
+      
+      //Protector functions
       utility::Location attack_formation() const;
+      utility::Location defensive_formation() const;
+      
+      //Enemy fucntions
       utility::Location diving_attack() const;
 
       static formation_func get_form_func(const std::string &form_name);
@@ -158,6 +162,7 @@ namespace gams
       std::vector<utility::Location> enemy_locs_;
       utility::Location next_loc_;
       utility::Location old_enemy_loc_;
+      bool tagged_out;
 
     private:
       madara::knowledge::containers::StringVector get_group(const std::string &name) const;
